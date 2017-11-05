@@ -1,5 +1,6 @@
 group 'eu.pretix.pretixdesk'
-version '0.0-SNAPSHOT'
+version = '0.0-SNAPSHOT'
+version version
 
 buildscript {
     ext.kotlin_version = '1.1.51'
@@ -9,13 +10,18 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: 'javafx-gradle-plugin'
+
 
 sourceCompatibility = 1.9
+mainClassName = 'eu.pretix.pretixdesk.PretixDeskMain'
 
 repositories {
     mavenCentral()
@@ -26,4 +32,31 @@ dependencies {
     compile 'no.tornado:tornadofx:1.7.12'
     compile files('libs/jfoenix-9.0.0.jar')
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jfx {
+    mainClass = mainClassName
+    vendor = 'pretix.eu'
+    jfxMainAppJarName = "pretixdesk-${version}.jar"
+
+    // gradle jfxNative
+    identifier = null
+    nativeReleaseVersion = version
+    needShortcut = false
+    needMenu = false
+    appName = "pretixdesk"
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Version': version,
+                'Main-Class': mainClassName
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+task buildDist(type: Exec, dependsOn: 'fatJar') {
+    executable "cmd"
+    args "/c", "build"
 }

@@ -14,8 +14,8 @@ Project status
 
 This is really early stage. Please do not use it yet.
 
-Building
---------
+Building and Running
+--------------------
 
 This project is built using Gradle. It requires a JDK in version 9 with JavaFX. As this is
 currently hard to achieve using OpenJDK, we advise using Oracle's Java distribution. You
@@ -23,7 +23,20 @@ can then build the project using::
 
     JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew build
 
-We recommend using IntelliJ IDEA as an development environemnt.
+You of course need to replace ``JAVA_HOME`` with the location of your Java 9 SDK.
+We recommend using IntelliJ IDEA as an development environment.
+To run the application from the command line, use::
+
+    JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew build
+
+To build a stand-alone JAR file for distributing::
+    
+    JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew fatJar
+
+The JAR file will be created at ``build/jfx/app/pretixdesk-all-VERSION.jar``.
+
+To build the standalone windows executable, you will also need the [Inno Setup](http://www.jrsoftware.org/isdl.php#stable) compiler
+iscc.exe in your executable Path.
 
 FAQ
 ---
