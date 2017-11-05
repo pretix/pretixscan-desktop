@@ -35,8 +35,20 @@ To build a stand-alone JAR file for distributing::
 
 The JAR file will be created at ``build/jfx/app/pretixdesk-all-VERSION.jar``.
 
-To build the standalone windows executable, you will also need the [Inno Setup](http://www.jrsoftware.org/isdl.php#stable) compiler
-iscc.exe in your executable Path.
+Windows package
+^^^^^^^^^^^^^^^
+
+To build the windows executable, you can run::
+    
+    JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew createExe
+
+To then create the installer, you will need to download the .tar.gz file of the
+[Java 9 JRE](http://www.oracle.com/technetwork/java/javase/downloads/jre9-downloads-3848532.html) and
+unpack it to a folger called ``jre`` within the source directory. You also need to 
+install [Nullsoft Install System](http://nsis.sourceforge.net/Download). Then, you can create
+the installer with::
+
+    makensis windows.nsi
 
 FAQ
 ---

@@ -7,4 +7,8 @@ import tornadofx.*
 class HelloWorld : View() {
     override val root: HBox by fxml()
 
+    init {
+        title = "pretixdesk"
+    }
+
 }

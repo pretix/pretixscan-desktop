@@ -6,10 +6,12 @@ buildscript {
     ext.kotlin_version = '1.1.51'
 
     repositories {
+        jcenter()
         mavenCentral()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'edu.sc.seis.gradle:launch4j:2.4.2'
         classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
     }
 }
@@ -18,6 +20,7 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: 'javafx-gradle-plugin'
+apply plugin: 'edu.sc.seis.launch4j'
 
 
 sourceCompatibility = 1.9
@@ -56,7 +59,18 @@ task fatJar(type: Jar) {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
-task buildDist(type: Exec, dependsOn: 'fatJar') {
-    executable "cmd"
-    args "/c", "build"
+
+launch4j {
+    mainClassName = mainClassName
+    jar = "lib/${project.tasks.fatJar.archiveName}"
+    copyConfigurable = project.tasks.fatJar.outputs.files
+    bundledJrePath = "jre"
+    bundledJre64Bit = true
+    version = version
+    fileDescription = "pretix Check-in application"
+    copyright = "pretix.eu"
+    companyName = "pretix.eu"
+    productName = "pretixdesk"
+    //splashFileName = "../../../img/splash.bmp"
+    icon = "../../../img/icon_on_shape.ico"
 }
