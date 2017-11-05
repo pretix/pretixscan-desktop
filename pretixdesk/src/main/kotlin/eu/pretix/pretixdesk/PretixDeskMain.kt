@@ -1,4 +1,5 @@
 package eu.pretix.pretixdesk
+import eu.pretix.pretixdesk.ui.HelloWorld
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import tornadofx.*
