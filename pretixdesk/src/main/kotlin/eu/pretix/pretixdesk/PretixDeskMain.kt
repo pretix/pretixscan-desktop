@@ -8,8 +8,8 @@ class PretixDeskMain : App() {
     override val primaryView = HelloWorld::class
 
     override fun start(stage: Stage) {
-
         stage.icons += Image(PretixDeskMain::class.java.getResourceAsStream("icon.png"))
+        stage.isMaximized = true
         super.start(stage)
     }
 }
