@@ -6,13 +6,11 @@ bin/
 gen/
 doc/
 build/
+out/
 
 # Local configuration file (sdk path, etc)
 local.properties
 ant.properties
-
-web/
-testproject/
 
 .classpath
 .project
@@ -29,6 +27,7 @@ Thumbs.db
 .gradle
 local.properties
 .idea/*
+.idea
 *.iml
 .DS_Store
 build/
