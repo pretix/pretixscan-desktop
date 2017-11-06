@@ -1,6 +1,9 @@
 pretixdesk
 ==========
 
+.. image:: https://travis-ci.org/pretix/pretixdesk.svg?branch=master
+   :target: https://travis-ci.org/pretix/pretixdesk
+
 Checking in your attendees, one ticket at a time.
 
 What is this?
