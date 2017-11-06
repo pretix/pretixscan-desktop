@@ -5,10 +5,11 @@ import tornadofx.*
 
 class HelloWorld : View() {
     override val root = hbox {
+        style {
+            backgroundColor += c(STYLE_BACKGROUND_COLOR)
+        }
+
         jfxButton("Foo")
-        jfxTextfield {  }
-        jfxScrollpane {  }
-        jfxSlider{  }
     }
 
     init {
