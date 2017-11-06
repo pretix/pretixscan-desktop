@@ -3,7 +3,7 @@
  Name "pretixdesk"
  OutFile "dist/pretixdesk.exe"
 
- InstallDir "$PROGRAMFILES\pretixdesk"
+ InstallDir "$PROGRAMFILES64\pretixdesk"
 
  InstallDirRegKey HKCU "Software\pretixdesk" ""
 
