@@ -39,11 +39,10 @@ compileKotlin {
         languageVersion = "1.1"
     }
 }
-
-
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'no.tornado:tornadofx:1.7.12'
+    compile(project(':libpretixsync'))
     compile files('libs/jfoenix-9.0.0.jar')
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

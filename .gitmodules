@@ -1,0 +1,4 @@
+[submodule "pretixdesk/libpretixsync-repo"]
+	path = pretixdesk/libpretixsync-repo
+	url = https://github.com/pretix/libpretixsync.git
+	branch = master
