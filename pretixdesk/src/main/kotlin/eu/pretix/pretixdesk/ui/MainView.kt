@@ -1,19 +1,14 @@
 package eu.pretix.pretixdesk.ui
 
 import eu.pretix.pretixdesk.PretixDeskMain
-import eu.pretix.pretixdesk.ui.helpers.jfxButton
-import eu.pretix.pretixdesk.ui.helpers.jfxSpinner
-import eu.pretix.pretixdesk.ui.helpers.jfxTogglebutton
+import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
-import eu.pretix.pretixdesk.ui.style.STYLE_PRIMARY_DARK_COLOR
-import javafx.animation.Interpolator
 import javafx.animation.Timeline
 import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.VBox
-import javafx.util.Duration
 import tornadofx.*
 
 class MainView : View() {
@@ -95,9 +90,9 @@ class MainView : View() {
         val oldResultCard = resultCard
         if (oldResultCard != null) {
             timeline {
-                keyframe(Duration.seconds(0.25)) {
-                    keyvalue(oldResultCard.translateXProperty(), 480.0, Interpolator.EASE_IN)
-                    keyvalue(oldResultCard.opacityProperty(), 0.0, Interpolator.EASE_IN)
+                keyframe(MaterialDuration.EXIT) {
+                    keyvalue(oldResultCard.translateXProperty(), 480.0, MaterialInterpolator.EXIT)
+                    keyvalue(oldResultCard.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
                 }
             }.setOnFinished {
                 oldResultCard.removeFromParent()
@@ -106,8 +101,8 @@ class MainView : View() {
 
         spinnerAnimation?.stop()
         spinnerAnimation = timeline {
-            keyframe(Duration.seconds(0.25)) {
-                keyvalue(mainSpinner.opacityProperty(), 1.0, Interpolator.EASE_OUT)
+            keyframe(MaterialDuration.ENTER) {
+                keyvalue(mainSpinner.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
             }
         }
 
@@ -116,8 +111,8 @@ class MainView : View() {
         } ui {
             spinnerAnimation?.stop()
             spinnerAnimation = timeline {
-                keyframe(Duration.seconds(0.25)) {
-                    keyvalue(mainSpinner.opacityProperty(), 0.0, Interpolator.EASE_OUT)
+                keyframe(MaterialDuration.EXIT) {
+                    keyvalue(mainSpinner.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
                 }
             }
 
@@ -126,9 +121,9 @@ class MainView : View() {
             resultCard = newCard
 
             timeline {
-                keyframe(Duration.seconds(0.5)) {
-                    keyvalue(newCard.translateXProperty(), 0.0, Interpolator.EASE_OUT)
-                    keyvalue(newCard.opacityProperty(), 1.0, Interpolator.EASE_OUT)
+                keyframe(MaterialDuration.ENTER) {
+                    keyvalue(newCard.translateXProperty(), 0.0, MaterialInterpolator.ENTER)
+                    keyvalue(newCard.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
                 }
             }.setOnFinished {
                 mainSpinner.opacity = 0.0
