@@ -1,5 +1,6 @@
 package eu.pretix.pretixdesk.ui
 
+import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
@@ -13,6 +14,7 @@ import javafx.scene.layout.VBox
 import tornadofx.*
 
 class MainView : View() {
+    val controller: MainController by inject()
     var resultCards: List<VBox> = ArrayList<VBox>()
     var spinnerAnimation: Timeline? = null
 
@@ -109,8 +111,12 @@ class MainView : View() {
             }
         }
 
+        val value = searchField.text
+        searchField.text = ""
+
+        var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
-            Thread.sleep(1000)
+            resultData = controller.handleScanInput(value)
         } ui {
             spinnerAnimation?.stop()
             spinnerAnimation = timeline {
@@ -119,7 +125,7 @@ class MainView : View() {
                 }
             }
 
-            val newCard = makeNewCard("Foo")
+            val newCard = makeNewCard(resultData)
             resultHolder += newCard
             resultCards += newCard
 
@@ -134,7 +140,7 @@ class MainView : View() {
         }
     }
 
-    fun makeNewCard(name: String): VBox {
+    fun makeNewCard(data: TicketCheckProvider.CheckResult?): VBox {
         val vb = VBox()
         with(vb) {
             translateX = -480.0
@@ -146,15 +152,33 @@ class MainView : View() {
 
                 vbox {
                     addClass(MainStyleSheet.cardBody)
-                    addClass(MainStyleSheet.cardHeaderValid)
-                    label("VALID") {
+                    addClass(when (data?.type) {
+                        TicketCheckProvider.CheckResult.Type.INVALID -> MainStyleSheet.cardHeaderError
+                        TicketCheckProvider.CheckResult.Type.VALID -> MainStyleSheet.cardHeaderValid
+                        TicketCheckProvider.CheckResult.Type.USED -> MainStyleSheet.cardHeaderRepeat
+                        TicketCheckProvider.CheckResult.Type.ERROR -> MainStyleSheet.cardHeaderError
+                        TicketCheckProvider.CheckResult.Type.UNPAID -> MainStyleSheet.cardHeaderError
+                        TicketCheckProvider.CheckResult.Type.PRODUCT -> MainStyleSheet.cardHeaderError
+                        null -> MainStyleSheet.cardHeaderError
+                    })
+
+                    val headline = when (data?.type) {
+                        TicketCheckProvider.CheckResult.Type.INVALID -> "INVALID"
+                        TicketCheckProvider.CheckResult.Type.VALID -> "VALID"
+                        TicketCheckProvider.CheckResult.Type.USED -> "ALREADY SCANNED"
+                        TicketCheckProvider.CheckResult.Type.ERROR -> "ERROR"
+                        TicketCheckProvider.CheckResult.Type.UNPAID -> "NOT PAID"
+                        TicketCheckProvider.CheckResult.Type.PRODUCT -> "INVALID PRODUCT"
+                        null -> "UNKNOWN ERROR"
+                    }
+
+                    label(headline) {
                         addClass(MainStyleSheet.cardHeaderLabel)
                     }
                 }
-
                 vbox {
                     addClass(MainStyleSheet.cardBody)
-                    label(name);
+                    label(data?.message ?: "?");
                 }
             }
         }

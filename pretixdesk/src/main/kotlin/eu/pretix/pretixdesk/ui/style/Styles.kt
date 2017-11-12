@@ -11,6 +11,8 @@ val STYLE_INPUT_PROMPT_COLOR = "#9D91A3"
 val STYLE_INPUT_PROMPT_FOCUSED_COLOR = "#C5BDC9"
 val STYLE_CARD_BACKGROUND_COLOR = "#ffffff"
 val STYLE_STATE_VALID_COLOR = "#2E7D32"
+val STYLE_STATE_REPEAT_COLOR = "#f0ad4e"
+val STYLE_STATE_ERROR_COLOR = "#d9534f"
 val STYLE_STATE_TEXT_COLOR = "#FFFFFF"
 val STYLE_PRIMARY_DARK_COLOR = "#3b1c4a"
 val STYLE_TOOLBAR_TEXT_COLOR = "#ffffff"
@@ -24,6 +26,8 @@ class MainStyleSheet : Stylesheet() {
         val resultCard by cssclass()
         val resultHolder by cssclass()
         val cardHeaderValid by cssclass()
+        val cardHeaderRepeat by cssclass()
+        val cardHeaderError by cssclass()
         val cardHeaderLabel by cssclass()
         val toolBar by cssclass()
     }
@@ -67,6 +71,16 @@ class MainStyleSheet : Stylesheet() {
 
         cardHeaderValid {
             backgroundColor += c(STYLE_STATE_VALID_COLOR)
+            backgroundRadius += tornadofx.box(4.px, 4.px, 0.px, 0.px)
+            alignment = Pos.CENTER
+        }
+        cardHeaderError {
+            backgroundColor += c(STYLE_STATE_ERROR_COLOR)
+            backgroundRadius += tornadofx.box(4.px, 4.px, 0.px, 0.px)
+            alignment = Pos.CENTER
+        }
+        cardHeaderRepeat {
+            backgroundColor += c(STYLE_STATE_REPEAT_COLOR)
             backgroundRadius += tornadofx.box(4.px, 4.px, 0.px, 0.px)
             alignment = Pos.CENTER
         }
