@@ -95,9 +95,9 @@ class MainView : View() {
         val oldResultCard = resultCard
         if (oldResultCard != null) {
             timeline {
-                keyframe(Duration.seconds(0.25)) {
-                    keyvalue(oldResultCard.translateXProperty(), 480.0, Interpolator.EASE_IN)
-                    keyvalue(oldResultCard.opacityProperty(), 0.0, Interpolator.EASE_IN)
+                keyframe(MaterialDuration.EXIT) {
+                    keyvalue(oldResultCard.translateXProperty(), 480.0, MaterialInterpolator.EXIT)
+                    keyvalue(oldResultCard.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
                 }
             }.setOnFinished {
                 oldResultCard.removeFromParent()
@@ -106,8 +106,8 @@ class MainView : View() {
 
         spinnerAnimation?.stop()
         spinnerAnimation = timeline {
-            keyframe(Duration.seconds(0.25)) {
-                keyvalue(mainSpinner.opacityProperty(), 1.0, Interpolator.EASE_OUT)
+            keyframe(MaterialDuration.ENTER) {
+                keyvalue(mainSpinner.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
             }
         }
 
@@ -116,8 +116,8 @@ class MainView : View() {
         } ui {
             spinnerAnimation?.stop()
             spinnerAnimation = timeline {
-                keyframe(Duration.seconds(0.25)) {
-                    keyvalue(mainSpinner.opacityProperty(), 0.0, Interpolator.EASE_OUT)
+                keyframe(MaterialDuration.EXIT) {
+                    keyvalue(mainSpinner.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
                 }
             }
 
@@ -126,9 +126,9 @@ class MainView : View() {
             resultCard = newCard
 
             timeline {
-                keyframe(Duration.seconds(0.5)) {
-                    keyvalue(newCard.translateXProperty(), 0.0, Interpolator.EASE_OUT)
-                    keyvalue(newCard.opacityProperty(), 1.0, Interpolator.EASE_OUT)
+                keyframe(MaterialDuration.ENTER) {
+                    keyvalue(newCard.translateXProperty(), 0.0, MaterialInterpolator.ENTER)
+                    keyvalue(newCard.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
                 }
             }.setOnFinished {
                 mainSpinner.opacity = 0.0
