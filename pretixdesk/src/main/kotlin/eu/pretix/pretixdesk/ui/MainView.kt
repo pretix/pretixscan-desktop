@@ -1,9 +1,12 @@
 package eu.pretix.pretixdesk.ui
 
 import eu.pretix.pretixdesk.PretixDeskMain
+import eu.pretix.pretixdesk.ui.helpers.jfxButton
 import eu.pretix.pretixdesk.ui.helpers.jfxSpinner
+import eu.pretix.pretixdesk.ui.helpers.jfxTogglebutton
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
+import eu.pretix.pretixdesk.ui.style.STYLE_PRIMARY_DARK_COLOR
 import javafx.animation.Interpolator
 import javafx.animation.Timeline
 import javafx.geometry.Pos
@@ -14,22 +17,6 @@ import javafx.util.Duration
 import tornadofx.*
 
 class MainView : View() {
-    override val root = vbox {
-        style {
-            alignment = Pos.CENTER
-            backgroundColor += c(STYLE_BACKGROUND_COLOR)
-            spacing = 20.px
-        }
-
-        hbox {
-            style {
-                paddingBottom = 20.0
-                alignment = Pos.CENTER
-            }
-            imageview(Image(PretixDeskMain::class.java.getResourceAsStream("logo.png")))
-        }
-    }
-
     var resultCard: VBox? = null
     var spinnerAnimation: Timeline? = null
 
@@ -58,13 +45,50 @@ class MainView : View() {
         }
     }
 
+    val contentBox = vbox {
+        useMaxHeight = true
+
+        style {
+            alignment = Pos.CENTER
+            backgroundColor += c(STYLE_BACKGROUND_COLOR)
+            spacing = 20.px
+        }
+
+        hbox {
+            style {
+                paddingBottom = 20.0
+                alignment = Pos.CENTER
+            }
+            imageview(Image(PretixDeskMain::class.java.getResourceAsStream("logo.png")))
+        }
+
+        this += searchField
+        this += resultHolder
+    }
+
+    override val root = vbox {
+        useMaxHeight = true
+
+        style {
+            alignment = Pos.CENTER
+            backgroundColor += c(STYLE_BACKGROUND_COLOR)
+            spacing = 20.px
+        }
+
+        spacer {  }
+        this += contentBox
+        spacer {  }
+        hbox {
+            addClass(MainStyleSheet.toolBar)
+
+            jfxTogglebutton ("SCAN ONLINE") {  }
+            spacer {}
+            jfxButton("SETTINGS")
+        }
+    }
+
     init {
         title = "pretixdesk"
-
-        with(root) {
-            this += searchField
-            this += resultHolder
-        }
     }
 
     fun loadNewCard() {
@@ -88,7 +112,7 @@ class MainView : View() {
         }
 
         runAsync {
-            Thread.sleep(2000)
+            Thread.sleep(500)
         } ui {
             spinnerAnimation?.stop()
             spinnerAnimation = timeline {

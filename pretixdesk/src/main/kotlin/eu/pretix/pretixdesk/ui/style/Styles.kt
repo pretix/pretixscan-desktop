@@ -15,6 +15,7 @@ val STYLE_CARD_BACKGROUND_COLOR = "#ffffff"
 val STYLE_STATE_VALID_COLOR = "#2E7D32"
 val STYLE_STATE_TEXT_COLOR = "#FFFFFF"
 val STYLE_PRIMARY_DARK_COLOR = "#3b1c4a"
+val STYLE_TOOLBAR_TEXT_COLOR = "#ffffff"
 
 class MainStyleSheet : Stylesheet() {
 
@@ -26,6 +27,7 @@ class MainStyleSheet : Stylesheet() {
         val resultHolder by cssclass()
         val cardHeaderValid by cssclass()
         val cardHeaderLabel by cssclass()
+        val toolBar by cssclass()
     }
 
     init {
@@ -78,6 +80,24 @@ class MainStyleSheet : Stylesheet() {
         select("JFXSpinner .arc") {
             stroke = c(STYLE_PRIMARY_DARK_COLOR)
             strokeWidth = 4.px
+        }
+
+        toolBar {
+            alignment = Pos.CENTER
+            backgroundColor += c(STYLE_PRIMARY_DARK_COLOR)
+            minHeight = 48.px
+            maxHeight = 48.px
+
+            select("JFXToggleButton") {
+                select("LabeledText") {
+                    fill = c(STYLE_TOOLBAR_TEXT_COLOR)
+                }
+            }
+            select("JFXButton") {
+                select("LabeledText") {
+                    fill = c(STYLE_TOOLBAR_TEXT_COLOR)
+                }
+            }
         }
     }
 }
