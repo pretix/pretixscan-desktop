@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox
 import tornadofx.*
 
 class MainView : View() {
-    var resultCard: VBox? = null
+    var resultCards: List<VBox> = ArrayList<VBox>()
     var spinnerAnimation: Timeline? = null
 
     val searchField = textfield {
@@ -71,13 +71,13 @@ class MainView : View() {
             spacing = 20.px
         }
 
-        spacer {  }
+        spacer { }
         this += contentBox
-        spacer {  }
+        spacer { }
         hbox {
             addClass(MainStyleSheet.toolBar)
 
-            jfxTogglebutton ("SCAN ONLINE") {
+            jfxTogglebutton("SCAN ONLINE") {
                 toggleColor = c(STYLE_STATE_VALID_COLOR)
             }
             spacer {}
@@ -90,8 +90,7 @@ class MainView : View() {
     }
 
     fun loadNewCard() {
-        val oldResultCard = resultCard
-        if (oldResultCard != null) {
+        for (oldResultCard in resultCards) {
             timeline {
                 keyframe(MaterialDuration.EXIT) {
                     keyvalue(oldResultCard.translateXProperty(), 480.0, MaterialInterpolator.EXIT)
@@ -99,6 +98,7 @@ class MainView : View() {
                 }
             }.setOnFinished {
                 oldResultCard.removeFromParent()
+                resultCards -= oldResultCard
             }
         }
 
@@ -110,7 +110,7 @@ class MainView : View() {
         }
 
         runAsync {
-            Thread.sleep(500)
+            Thread.sleep(1000)
         } ui {
             spinnerAnimation?.stop()
             spinnerAnimation = timeline {
@@ -121,7 +121,7 @@ class MainView : View() {
 
             val newCard = makeNewCard("Foo")
             resultHolder += newCard
-            resultCard = newCard
+            resultCards += newCard
 
             timeline {
                 keyframe(MaterialDuration.ENTER) {
