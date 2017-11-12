@@ -2,8 +2,6 @@ package eu.pretix.pretixdesk.ui.style;
 
 import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow
-import javafx.scene.text.FontWeight
-import javafx.scene.text.TextAlignment
 import tornadofx.*
 
 val STYLE_BACKGROUND_COLOR = "#f6f1f9"

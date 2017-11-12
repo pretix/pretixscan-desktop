@@ -4,6 +4,7 @@ import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
+import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
 import javafx.animation.Timeline
 import javafx.geometry.Pos
 import javafx.scene.image.Image
@@ -76,7 +77,9 @@ class MainView : View() {
         hbox {
             addClass(MainStyleSheet.toolBar)
 
-            jfxTogglebutton ("SCAN ONLINE") {  }
+            jfxTogglebutton ("SCAN ONLINE") {
+                toggleColor = c(STYLE_STATE_VALID_COLOR)
+            }
             spacer {}
             jfxButton("SETTINGS")
         }
