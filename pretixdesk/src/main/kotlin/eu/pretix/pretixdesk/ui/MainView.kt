@@ -1,19 +1,14 @@
 package eu.pretix.pretixdesk.ui
 
 import eu.pretix.pretixdesk.PretixDeskMain
-import eu.pretix.pretixdesk.ui.helpers.jfxButton
-import eu.pretix.pretixdesk.ui.helpers.jfxSpinner
-import eu.pretix.pretixdesk.ui.helpers.jfxTogglebutton
+import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
-import eu.pretix.pretixdesk.ui.style.STYLE_PRIMARY_DARK_COLOR
-import javafx.animation.Interpolator
 import javafx.animation.Timeline
 import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.VBox
-import javafx.util.Duration
 import tornadofx.*
 
 class MainView : View() {
