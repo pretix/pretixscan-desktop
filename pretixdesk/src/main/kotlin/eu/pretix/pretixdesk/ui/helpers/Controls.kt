@@ -73,6 +73,12 @@ fun EventTarget.jfxCheckbox(text: String? = null, property: Property<Boolean>? =
     if (property != null) bind(property)
 }, op)
 
+fun EventTarget.jfxSpinner(op: (JFXSpinner.() -> Unit)? = null) = opcr(this, JFXSpinner().apply { }, op)
+fun EventTarget.jfxSpinner(property: ObservableValue<Number>, op: (JFXSpinner.() -> Unit)? = null) = jfxSpinner().apply {
+    bind(property)
+    op?.invoke(this)
+}
+
 
 fun EventTarget.jfxProgressbar(initialValue: Double? = null, op: (JFXProgressBar.() -> Unit)? = null) = opcr(this, JFXProgressBar().apply { if (initialValue != null) progress = initialValue }, op)
 fun EventTarget.jfxPprogressbar(property: ObservableValue<Number>, op: (JFXProgressBar.() -> Unit)? = null) = jfxProgressbar().apply {
