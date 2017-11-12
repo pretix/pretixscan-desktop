@@ -7,6 +7,7 @@ import tornadofx.*
 
 
 class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
+    val configStore = PretixDeskConfig()
 
     override fun start(stage: Stage) {
         stage.icons += Image(PretixDeskMain::class.java.getResourceAsStream("icon.png"))
