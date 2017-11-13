@@ -32,6 +32,8 @@ class MainView : View() {
     private var searchCardAnimation: Timeline? = null
     private var syncStatusTimeline: Timeline? = null
     private var syncTriggerTimeline: Timeline? = null
+    private var startSearchTimeline: Timeline? = null
+    private var lastSearchQuery: String? = null
 
     private val searchField = textfield {
         promptText = "Ticket code or name…"
@@ -39,6 +41,7 @@ class MainView : View() {
         val sF = this
 
         setOnKeyReleased {
+            startSearchTimeline?.stop()
             if (it.code == KeyCode.ENTER) {
                 if (sF.text == "" && searchResultCard.isVisible && searchResultListView.selectionModel.selectedIndex >= 0) {
                     handleSearchResultSelected(searchResultListView.selectionModel.selectedItem)
@@ -55,6 +58,18 @@ class MainView : View() {
                 searchResultListView.selectionModel.select(searchResultListView.selectionModel.selectedIndex - 1)
                 searchResultListView.scrollTo(searchResultListView.selectionModel.selectedIndex)
                 it.consume()
+            } else {
+                if (sF.text.length >= 4) {
+                    startSearchTimeline = timeline {
+                        keyframe(Duration.seconds(.1)) {
+                            setOnFinished {
+                                handleSearchInput(sF.text)
+                            }
+                        }
+                    }
+                } else {
+                    hideSearchResultCard()
+                }
             }
         }
     }
@@ -313,28 +328,36 @@ class MainView : View() {
     }
 
     private fun showSearchResultCard() {
-        searchCardAnimation?.stop()
-        searchResultCard.translateY = 200.0
-        searchResultCard.opacity = 0.0
-        searchResultCard.isVisible = true
-        searchCardAnimation = timeline {
-            keyframe(MaterialDuration.ENTER) {
-                keyvalue(searchResultCard.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
-                keyvalue(searchResultCard.translateYProperty(), 0.0, MaterialInterpolator.ENTER)
+        if (!searchResultCard.isVisible) {
+            searchCardAnimation?.stop()
+            searchResultCard.translateY = 200.0
+            searchResultCard.opacity = 0.0
+            searchResultCard.isVisible = true
+            searchCardAnimation = timeline {
+                keyframe(MaterialDuration.ENTER) {
+                    keyvalue(searchResultCard.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
+                    keyvalue(searchResultCard.translateYProperty(), 0.0, MaterialInterpolator.ENTER)
+                }
             }
+        } else {
+            searchResultCard.translateY = 0.0
+            searchResultCard.opacity = 1.0
         }
     }
 
     private fun hideSearchResultCard() {
         searchCardAnimation?.stop()
-        searchCardAnimation = timeline {
-            keyframe(MaterialDuration.EXIT) {
-                keyvalue(searchResultCard.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
-                keyvalue(searchResultCard.translateYProperty(), 200.0, MaterialInterpolator.EXIT)
+        startSearchTimeline?.stop()
+        if (searchResultCard.isVisible) {
+            searchCardAnimation = timeline {
+                keyframe(MaterialDuration.EXIT) {
+                    keyvalue(searchResultCard.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
+                    keyvalue(searchResultCard.translateYProperty(), 200.0, MaterialInterpolator.EXIT)
+                }
             }
-        }
-        searchCardAnimation?.setOnFinished {
-            searchResultCard.isVisible = false
+            searchCardAnimation?.setOnFinished {
+                searchResultCard.isVisible = false
+            }
         }
     }
 
@@ -357,20 +380,35 @@ class MainView : View() {
     }
 
     private fun handleSearchInput(value: String) {
+        for (oldResultCard in resultCards) {
+            removeCard(oldResultCard)
+        }
+        showSpinner()
+
         var resultData: List<TicketCheckProvider.SearchResult>? = null
+        lastSearchQuery = value
         runAsync {
             resultData = controller.handleSearchInput(value)
         } ui {
-            searchResultList.clear()
-            if (resultData != null) {
-                searchResultList.addAll(resultData!!)
+            if (lastSearchQuery == value) {
+                // Prevent race condition
+                searchResultList.clear()
+                if (resultData != null) {
+                    searchResultList.addAll(resultData!!)
+                }
+                hideSpinner()
+                showSearchResultCard()
             }
-            hideSpinner()
-            showSearchResultCard()
         }
     }
 
     private fun handleTicketInput(value: String) {
+        for (oldResultCard in resultCards) {
+            removeCard(oldResultCard)
+        }
+        hideSearchResultCard()
+        showSpinner()
+
         searchField.text = ""
         var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
@@ -388,12 +426,6 @@ class MainView : View() {
     }
 
     private fun handleInput(value: String) {
-        for (oldResultCard in resultCards) {
-            removeCard(oldResultCard)
-        }
-        hideSearchResultCard()
-
-        showSpinner()
 
         // TODO: Support pretix instances with lower entropy levels
         if (value.matches(Regex("[a-z0-9]{32,}"))) {
