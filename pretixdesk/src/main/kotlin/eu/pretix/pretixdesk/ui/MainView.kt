@@ -11,6 +11,7 @@ import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.VBox
+import javafx.util.Duration
 import tornadofx.*
 
 class MainView : View() {
@@ -64,6 +65,8 @@ class MainView : View() {
         this += resultHolder
     }
 
+    private val syncStatusLabel = label("")
+
     override val root = vbox {
         useMaxHeight = true
 
@@ -88,12 +91,41 @@ class MainView : View() {
                 }
             }
             spacer {}
+            this += syncStatusLabel
+            spacer {}
             jfxButton("SETTINGS")
         }
     }
 
     init {
         title = "pretixdesk"
+
+        timeline {
+            cycleCount = Timeline.INDEFINITE
+
+            keyframe(Duration.seconds(.5)) {
+                setOnFinished {
+                    var text = "?"
+                    runAsync {
+                        text = controller.syncStatusText()
+                    } ui {
+                        syncStatusLabel.text = text
+                    }
+                }
+            }
+        }
+
+        timeline {
+            cycleCount = Timeline.INDEFINITE
+
+            keyframe(Duration.seconds(10.0)) {
+                setOnFinished {
+                    runAsync {
+                        controller.triggerSync()
+                    }
+                }
+            }
+        }
     }
 
     private fun handleInput() {

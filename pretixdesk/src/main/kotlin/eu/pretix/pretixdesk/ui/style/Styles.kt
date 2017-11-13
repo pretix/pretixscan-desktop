@@ -119,6 +119,9 @@ class MainStyleSheet : Stylesheet() {
                     fill = c(STYLE_TOOLBAR_TEXT_COLOR)
                 }
             }
+            label {
+                textFill = c(STYLE_TOOLBAR_TEXT_COLOR)
+            }
         }
     }
 }

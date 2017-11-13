@@ -2,6 +2,7 @@ package eu.pretix.pretixdesk
 
 import eu.pretix.libpretixsync.DummySentryImplementation
 import eu.pretix.libpretixsync.api.DefaultHttpClientFactory
+import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
@@ -29,6 +30,7 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
     private var dataStore: BlockingEntityStore<Persistable>? = null
     private val appDirs = AppDirsFactory.getInstance()!!
     private val dataDir = appDirs.getUserDataDir("pretixdesk", "1.0.0", "pretix")
+    private var apiClient: PretixApi? = null
 
     override fun start(stage: Stage) {
         stage.icons += Image(PretixDeskMain::class.java.getResourceAsStream("icon.png"))
@@ -78,6 +80,13 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
             dataStore = EntityDataStore<Persistable>(configuration)
         }
         return dataStore!!
+    }
+
+    fun api(): PretixApi {
+        if (apiClient == null) {
+            apiClient = PretixApi.fromConfig(configStore, DefaultHttpClientFactory());
+        }
+        return apiClient!!
     }
 
     fun newCheckProvider(): TicketCheckProvider {

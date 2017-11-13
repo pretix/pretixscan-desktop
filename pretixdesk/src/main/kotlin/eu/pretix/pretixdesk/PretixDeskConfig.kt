@@ -87,6 +87,11 @@ class PretixDeskConfig : ConfigStore {
         return String(prefs.getByteArray(PREFS_KEY_LAST_STATUS_DATA, kotlin.ByteArray(0)))
     }
 
+    override fun setLastStatusData(value: String?) {
+        prefs.putByteArray(PREFS_KEY_LAST_STATUS_DATA, value?.toByteArray())
+        prefs.flush()
+    }
+
     override fun getLastDownload(): Long {
         return prefs.getLong(PREFS_KEY_LAST_DOWNLOAD, 0)
     }
