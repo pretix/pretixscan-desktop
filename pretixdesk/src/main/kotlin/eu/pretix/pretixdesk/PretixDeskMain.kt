@@ -14,6 +14,8 @@ import io.requery.Persistable
 import io.requery.cache.EntityCacheBuilder
 import io.requery.sql.ConfigurationBuilder
 import io.requery.sql.EntityDataStore
+import io.requery.sql.SchemaModifier
+import io.requery.sql.TableCreationMode
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import net.harawata.appdirs.AppDirsFactory
@@ -21,8 +23,6 @@ import org.sqlite.SQLiteConfig
 import org.sqlite.SQLiteDataSource
 import tornadofx.App
 import java.io.File
-import io.requery.sql.TableCreationMode
-import io.requery.sql.SchemaModifier
 
 
 class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
@@ -47,6 +47,10 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
         )
 
         super.start(stage)
+
+        val stylesheets = stage.scene.getStylesheets()
+        stylesheets.addAll(PretixDeskMain::class.java.getResource("/css/jfoenix-fonts.css").toExternalForm(),
+                PretixDeskMain::class.java.getResource("/css/jfoenix-design.css").toExternalForm())
     }
 
 
