@@ -16,6 +16,8 @@ val STYLE_STATE_ERROR_COLOR = "#d9534f"
 val STYLE_STATE_TEXT_COLOR = "#FFFFFF"
 val STYLE_PRIMARY_DARK_COLOR = "#3b1c4a"
 val STYLE_TOOLBAR_TEXT_COLOR = "#ffffff"
+val STYLE_ATTENTION_COLOR = "#3B1C4A"
+val STYLE_ATTENTION_ALTERNATE_COLOR = "#ffee58"
 
 class MainStyleSheet : Stylesheet() {
 
@@ -30,6 +32,8 @@ class MainStyleSheet : Stylesheet() {
         val cardHeaderError by cssclass()
         val cardHeaderErrorNoMessage by cssclass()
         val cardHeaderLabel by cssclass()
+        val cardFooterAttention by cssclass()
+        val cardFooterAttentionBlink by cssclass()
         val toolBar by cssclass()
     }
 
@@ -94,6 +98,22 @@ class MainStyleSheet : Stylesheet() {
             backgroundColor += c(STYLE_STATE_REPEAT_COLOR)
             backgroundRadius += tornadofx.box(4.px, 4.px, 0.px, 0.px)
             alignment = Pos.CENTER
+        }
+        cardFooterAttention {
+            backgroundColor += c(STYLE_ATTENTION_COLOR)
+            backgroundRadius += tornadofx.box(0.px, 0.px, 4.px, 4.px)
+            alignment = Pos.CENTER
+            label {
+                textFill = c("#ffffff")
+            }
+        }
+        cardFooterAttentionBlink {
+            backgroundColor += c(STYLE_ATTENTION_ALTERNATE_COLOR)
+            backgroundRadius += tornadofx.box(0.px, 0.px, 4.px, 4.px)
+            alignment = Pos.CENTER
+            label {
+                textFill = c(STYLE_ATTENTION_COLOR)
+            }
         }
 
         cardBody {

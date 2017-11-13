@@ -258,6 +258,28 @@ class MainView : View() {
                         }
                     }
                 }
+                if (data?.isRequireAttention() ?: false) {
+                    val attbox = vbox {
+                        addClass(MainStyleSheet.cardFooterAttention)
+                        addClass(MainStyleSheet.cardBody)
+                        label("Attention, special ticket!")
+                    }
+                    timeline {
+                        cycleCount = 10
+                        keyframe(Duration.seconds(0.2)) {
+                            setOnFinished {
+                                attbox.removeClass(MainStyleSheet.cardFooterAttention)
+                                attbox.addClass(MainStyleSheet.cardFooterAttentionBlink)
+                            }
+                        }
+                        keyframe(Duration.seconds(0.4)) {
+                            setOnFinished {
+                                attbox.removeClass(MainStyleSheet.cardFooterAttentionBlink)
+                                attbox.addClass(MainStyleSheet.cardFooterAttention)
+                            }
+                        }
+                    }
+                }
             }
         }
         return vb
