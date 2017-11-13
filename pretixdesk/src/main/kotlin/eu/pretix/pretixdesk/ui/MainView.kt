@@ -178,6 +178,10 @@ class MainView : View() {
             }.setOnFinished {
                 mainSpinner.opacity = 0.0
             }
+
+            runAsync {
+                controller.triggerSync()
+            }
         }
     }
 
