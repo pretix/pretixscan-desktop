@@ -92,7 +92,14 @@ class MainView : View() {
                     if (it.variation != null && it.variation != "null") {
                         ticketname += " – " + it.variation
                     }
-                    // TODO: require attention
+                    if (it.isRequireAttention) {
+                        imageview(Image(PretixDeskMain::class.java.getResourceAsStream("icons/alert.png"))) {
+                            fitWidth = 18.0
+                            fitHeight = 18.0
+                            translateY = 3.0
+                        }
+                    }
+
                     label(ticketname) { addClass(MainStyleSheet.searchItemProduct) }
                     spacer {}
                     if (it.isRedeemed) {
