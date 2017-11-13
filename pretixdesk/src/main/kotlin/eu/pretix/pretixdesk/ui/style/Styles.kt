@@ -34,6 +34,10 @@ class MainStyleSheet : Stylesheet() {
     }
 
     init {
+        label {
+            fontFamily = "Roboto"
+        }
+
         textInput {
             and(focused) {
                 promptTextFill = c(STYLE_INPUT_PROMPT_FOCUSED_COLOR)
@@ -51,6 +55,7 @@ class MainStyleSheet : Stylesheet() {
             fontSize = 24.px
             minWidth = 480.px
             maxWidth = 480.px
+            fontFamily = "Roboto"
         }
 
         resultHolder {
@@ -112,6 +117,7 @@ class MainStyleSheet : Stylesheet() {
             select("JFXToggleButton") {
                 select("LabeledText") {
                     fill = c(STYLE_TOOLBAR_TEXT_COLOR)
+                    fontFamily = "Roboto"
                 }
             }
             select("JFXButton") {

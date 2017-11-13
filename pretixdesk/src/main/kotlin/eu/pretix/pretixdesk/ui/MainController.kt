@@ -2,15 +2,15 @@ package eu.pretix.pretixdesk.ui
 
 import eu.pretix.libpretixsync.DummySentryImplementation
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.libpretixsync.db.QueuedCheckIn
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixdesk.PretixDeskMain
-import tornadofx.Controller
 import org.joda.time.Period
-import org.joda.time.format.PeriodFormatterBuilder
 import org.joda.time.format.PeriodFormatter
-
-
-
+import org.joda.time.format.PeriodFormatterBuilder
+import tornadofx.Controller
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainController : Controller() {
@@ -55,6 +55,27 @@ class MainController : Controller() {
             }
             return "SYNCED " + formatter.print(period) + " AGO"
         }
+    }
+
+    fun syncStatusLongText(): String {
+        val lastSync = Calendar.getInstance()
+        lastSync.timeInMillis = configStore.lastSync
+        val lastSyncFailed = Calendar.getInstance()
+        lastSyncFailed.timeInMillis = configStore.lastFailedSync
+        val cnt = (app as PretixDeskMain).data().count(QueuedCheckIn::class.java).get().value()
+
+        val formatter = SimpleDateFormat("yyy-MM-dd HH:mm:ss")
+
+        var res = "Last successful synchronization:\n" +
+                formatter.format(lastSync.time) + "\n\n" +
+                "Checkins queued to upload: " + cnt;
+        if (configStore.lastFailedSync > 0) {
+            res += "\n\nLast failed synchronization:\n"
+            res += formatter.format(lastSyncFailed.time)
+            res += "\n"
+            res += configStore.lastFailedSyncMsg
+        }
+        return res
     }
 
     fun triggerSync() {

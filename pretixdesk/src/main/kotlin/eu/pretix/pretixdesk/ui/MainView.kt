@@ -1,5 +1,7 @@
 package eu.pretix.pretixdesk.ui
 
+import com.jfoenix.controls.JFXButton
+import com.jfoenix.controls.JFXDialog
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
@@ -18,6 +20,8 @@ class MainView : View() {
     private val controller: MainController by inject()
     private var resultCards: List<VBox> = ArrayList()
     private var spinnerAnimation: Timeline? = null
+    private var syncStatusTimeline: Timeline? = null
+    private var syncTriggerTimeline: Timeline? = null
 
     private val searchField = textfield {
         promptText = "Ticket code or name…"
@@ -65,42 +69,48 @@ class MainView : View() {
         this += resultHolder
     }
 
-    private val syncStatusLabel = label("")
-
-    override val root = vbox {
-        useMaxHeight = true
-
-        style {
-            alignment = Pos.CENTER
-            backgroundColor += c(STYLE_BACKGROUND_COLOR)
-            spacing = 20.px
+    private val syncStatusLabel = jfxButton("") {
+        action {
+            displaySyncStatus()
         }
+    }
 
-        spacer { }
-        this += contentBox
-        spacer { }
-        hbox {
-            addClass(MainStyleSheet.toolBar)
+    override val root = stackpane {
+        vbox {
+            useMaxHeight = true
 
-            jfxTogglebutton("SCAN ONLINE") {
-                toggleColor = c(STYLE_STATE_VALID_COLOR)
-                isSelected = !(app as PretixDeskMain).configStore.getAsyncModeEnabled()
-
-                action {
-                    controller.toggleAsync(!isSelected)
-                }
+            style {
+                alignment = Pos.CENTER
+                backgroundColor += c(STYLE_BACKGROUND_COLOR)
+                spacing = 20.px
             }
-            spacer {}
-            this += syncStatusLabel
-            spacer {}
-            jfxButton("SETTINGS")
+
+            spacer { }
+            this += contentBox
+            spacer { }
+            hbox {
+                addClass(MainStyleSheet.toolBar)
+
+                jfxTogglebutton("SCAN ONLINE") {
+                    toggleColor = c(STYLE_STATE_VALID_COLOR)
+                    isSelected = !(app as PretixDeskMain).configStore.getAsyncModeEnabled()
+
+                    action {
+                        controller.toggleAsync(!isSelected)
+                    }
+                }
+                spacer {}
+                this += syncStatusLabel
+                spacer {}
+                jfxButton("SETTINGS")
+            }
         }
     }
 
     init {
         title = "pretixdesk"
 
-        timeline {
+        syncStatusTimeline = timeline {
             cycleCount = Timeline.INDEFINITE
 
             keyframe(Duration.seconds(.5)) {
@@ -115,7 +125,7 @@ class MainView : View() {
             }
         }
 
-        timeline {
+        syncTriggerTimeline = timeline {
             cycleCount = Timeline.INDEFINITE
 
             keyframe(Duration.seconds(10.0)) {
@@ -125,6 +135,11 @@ class MainView : View() {
                     }
                 }
             }
+        }
+
+        currentStage?.setOnCloseRequest {
+            syncTriggerTimeline?.stop()
+            syncStatusTimeline?.stop()
         }
     }
 
@@ -246,5 +261,18 @@ class MainView : View() {
             }
         }
         return vb
+    }
+
+    private fun displaySyncStatus() {
+        val closeButton: JFXButton = jfxButton("CLOSE")
+        val dialog = jfxDialog (transitionType = JFXDialog.DialogTransition.BOTTOM) {
+            setHeading(label("Synchronization status"))
+            setBody(label(controller.syncStatusLongText()))
+            setActions(closeButton)
+        }
+        closeButton.action {
+            dialog.close()
+        }
+        dialog.show(root)
     }
 }
