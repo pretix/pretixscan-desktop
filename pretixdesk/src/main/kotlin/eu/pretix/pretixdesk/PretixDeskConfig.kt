@@ -67,7 +67,7 @@ class PretixDeskConfig : ConfigStore {
     }
 
     override fun getApiKey(): String {
-        return String(prefs.getByteArray(PREFS_KEY_API_URL, kotlin.ByteArray(0)));
+        return String(prefs.getByteArray(PREFS_KEY_API_KEY, kotlin.ByteArray(0)));
     }
 
     override fun getShowInfo(): Boolean {
