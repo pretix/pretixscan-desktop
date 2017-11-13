@@ -19,6 +19,9 @@ import net.harawata.appdirs.AppDirsFactory
 import org.sqlite.SQLiteConfig
 import org.sqlite.SQLiteDataSource
 import tornadofx.App
+import java.io.File
+import io.requery.sql.TableCreationMode
+import io.requery.sql.SchemaModifier
 
 
 class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
@@ -47,14 +50,23 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
 
     fun data(): BlockingEntityStore<Persistable> {
         if (dataStore == null) {
+            File(dataDir).mkdirs()
+            val dbFile = File(dataDir + "/data.sqlite");
+            val dbIsNew = !dbFile.exists();
+
             val dataSource = SQLiteDataSource()
-            dataSource.setUrl("jdbc:sqlite:" + dataDir + "/data.sqlite");
+            dataSource.setUrl("jdbc:sqlite:" + dbFile.absolutePath);
             val config = SQLiteConfig()
             config.setDateClass("TEXT");
             dataSource.setConfig(config);
             dataSource.setEnforceForeignKeys(true);
-
             val model = Models.DEFAULT
+
+            if (dbIsNew) {
+                // TODO: Database upgrades/migrations
+                SchemaModifier(dataSource, model).createTables(TableCreationMode.CREATE_NOT_EXISTS)
+            }
+
             val configuration = ConfigurationBuilder(dataSource, model)
                     .useDefaultLogging()
                     .setEntityCache(EntityCacheBuilder(model)
