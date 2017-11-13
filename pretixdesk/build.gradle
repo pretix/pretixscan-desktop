@@ -44,6 +44,7 @@ dependencies {
     compile 'no.tornado:tornadofx:1.7.12'
     compile 'org.xerial:sqlite-jdbc:3.20.1'
     compile 'net.harawata:appdirs:1.0.0'
+    compile 'net.java.dev.jna:platform:3.5.2'
     compile(project(':libpretixsync'))
     compile files('libs/jfoenix-9.0.0.jar')
     testCompile group: 'junit', name: 'junit', version: '4.12'
