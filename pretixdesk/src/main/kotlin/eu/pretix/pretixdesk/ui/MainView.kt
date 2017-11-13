@@ -143,56 +143,71 @@ class MainView : View() {
         }
     }
 
-    private fun handleInput() {
-        if (searchField.text == "") {
-            return
-        }
-
-        for (oldResultCard in resultCards) {
-            timeline {
-                keyframe(MaterialDuration.EXIT) {
-                    keyvalue(oldResultCard.translateXProperty(), 480.0, MaterialInterpolator.EXIT)
-                    keyvalue(oldResultCard.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
-                }
-            }.setOnFinished {
-                oldResultCard.removeFromParent()
-                resultCards -= oldResultCard
+    private fun removeCard(card: VBox) {
+        timeline {
+            keyframe(MaterialDuration.EXIT) {
+                keyvalue(card.translateXProperty(), 480.0, MaterialInterpolator.EXIT)
+                keyvalue(card.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
             }
+        }.setOnFinished {
+            card.removeFromParent()
+            resultCards -= card
         }
+    }
 
+    private fun showCard(card: VBox) {
+        resultHolder += card
+        resultCards += card
+
+        timeline {
+            keyframe(MaterialDuration.ENTER) {
+                keyvalue(card.translateXProperty(), 0.0, MaterialInterpolator.ENTER)
+                keyvalue(card.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
+            }
+        }.setOnFinished {
+            mainSpinner.opacity = 0.0
+        }
+    }
+
+    private fun showSpinner() {
         spinnerAnimation?.stop()
         spinnerAnimation = timeline {
             keyframe(MaterialDuration.ENTER) {
                 keyvalue(mainSpinner.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
             }
         }
+    }
 
+    private fun hideSpinner() {
+        spinnerAnimation?.stop()
+        spinnerAnimation = timeline {
+            keyframe(MaterialDuration.EXIT) {
+                keyvalue(mainSpinner.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
+            }
+        }
+    }
+
+    private fun handleInput() {
         val value = searchField.text
+        if (value == "") {
+            return
+        }
+
+        for (oldResultCard in resultCards) {
+            removeCard(oldResultCard)
+        }
+
+        showSpinner()
         searchField.text = ""
 
         var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
             resultData = controller.handleScanInput(value)
         } ui {
-            spinnerAnimation?.stop()
-            spinnerAnimation = timeline {
-                keyframe(MaterialDuration.EXIT) {
-                    keyvalue(mainSpinner.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
-                }
-            }
+            hideSpinner()
 
             val newCard = makeNewCard(resultData)
-            resultHolder += newCard
-            resultCards += newCard
-
-            timeline {
-                keyframe(MaterialDuration.ENTER) {
-                    keyvalue(newCard.translateXProperty(), 0.0, MaterialInterpolator.ENTER)
-                    keyvalue(newCard.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
-                }
-            }.setOnFinished {
-                mainSpinner.opacity = 0.0
-            }
+            showCard(newCard)
 
             runAsync {
                 controller.triggerSync()
