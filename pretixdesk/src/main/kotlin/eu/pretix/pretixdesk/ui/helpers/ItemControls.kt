@@ -19,7 +19,7 @@ fun <T> EventTarget.jfxCombobox(property: Property<T>? = null, values: List<T>? 
 }, op)
 
 
-fun <T> EventTarget.listview(values: ObservableList<T>? = null, op: (JFXListView<T>.() -> Unit)? = null) = opcr(this, JFXListView<T>().apply {
+fun <T> EventTarget.jfxListview(values: ObservableList<T>? = null, op: (JFXListView<T>.() -> Unit)? = null) = opcr(this, JFXListView<T>().apply {
     if (values != null) {
         if (values is SortedFilteredList<T>) values.bindTo(this)
         else items = values

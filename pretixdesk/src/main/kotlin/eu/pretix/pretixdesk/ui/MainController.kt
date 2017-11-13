@@ -27,6 +27,10 @@ class MainController : Controller() {
         reloadCheckProvider()
     }
 
+    fun handleSearchInput(value: String): List<TicketCheckProvider.SearchResult>? {
+        return provider.search(value)
+    }
+
     fun handleScanInput(value: String): TicketCheckProvider.CheckResult? {
         return provider.check(value)
     }

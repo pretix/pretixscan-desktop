@@ -14,6 +14,7 @@ import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
+import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.util.Duration
 import tornadofx.*
@@ -46,12 +47,28 @@ class MainView : View() {
         opacity = 0.0
     }
 
+    private val searchResultList = ArrayList<TicketCheckProvider.SearchResult>().observable()
+
+    private val searchResultCard = vbox {
+        addClass(MainStyleSheet.card)
+        vboxConstraints { vGrow = Priority.ALWAYS }
+        style {
+            padding = box(5.px)
+            minHeight = 200.px
+            maxHeight = 200.px
+        }
+        jfxListview(searchResultList) {
+            vboxConstraints { vGrow = Priority.ALWAYS }
+        }
+    }
+
     private val resultHolder = stackpane {
         addClass(eu.pretix.pretixdesk.ui.style.MainStyleSheet.resultHolder)
 
         vbox {
             this += mainSpinner
         }
+        this += searchResultCard
     }
 
     private val contentBox = vbox {
@@ -244,7 +261,6 @@ class MainView : View() {
 
             vbox {
                 addClass(MainStyleSheet.card)
-                addClass(MainStyleSheet.resultCard)
 
                 vbox {
                     addClass(MainStyleSheet.cardBody)

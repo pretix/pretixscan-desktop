@@ -25,7 +25,6 @@ class MainStyleSheet : Stylesheet() {
         val mainSearchField by cssclass()
         val card by cssclass()
         val cardBody by cssclass()
-        val resultCard by cssclass()
         val resultHolder by cssclass()
         val cardHeaderValid by cssclass()
         val cardHeaderRepeat by cssclass()
@@ -50,9 +49,9 @@ class MainStyleSheet : Stylesheet() {
 
             promptTextFill = c(STYLE_INPUT_PROMPT_COLOR)
             backgroundColor += c(STYLE_INPUT_BACKGROUND_COLOR)
-            borderWidth += tornadofx.box(0.px)
+            borderWidth += box(0.px)
             effect = DropShadow(5.0, 0.0, 2.0, c(STYLE_SHADOW_COLOR_COLOR, 0.1))
-            borderRadius += tornadofx.box(4.px)
+            borderRadius += box(4.px)
         }
 
         mainSearchField {
@@ -71,7 +70,7 @@ class MainStyleSheet : Stylesheet() {
         card {
             backgroundColor += c(STYLE_CARD_BACKGROUND_COLOR)
             effect = DropShadow(5.0, 0.0, 2.0, c(STYLE_SHADOW_COLOR_COLOR, 0.1))
-            backgroundRadius += tornadofx.box(4.px)
+            backgroundRadius += box(4.px)
         }
 
         cardHeaderLabel {
@@ -79,29 +78,35 @@ class MainStyleSheet : Stylesheet() {
             fontSize = 24.px
         }
 
+        select("JFXListView") {
+            borderWidth += box(0.px)
+            borderRadius += box(4.px)
+            backgroundColor += c(STYLE_CARD_BACKGROUND_COLOR)
+        }
+
         cardHeaderValid {
             backgroundColor += c(STYLE_STATE_VALID_COLOR)
-            backgroundRadius += tornadofx.box(4.px, 4.px, 0.px, 0.px)
+            backgroundRadius += box(4.px, 4.px, 0.px, 0.px)
             alignment = Pos.CENTER
         }
         cardHeaderError {
             backgroundColor += c(STYLE_STATE_ERROR_COLOR)
-            backgroundRadius += tornadofx.box(4.px, 4.px, 0.px, 0.px)
+            backgroundRadius += box(4.px, 4.px, 0.px, 0.px)
             alignment = Pos.CENTER
         }
         cardHeaderErrorNoMessage {
             backgroundColor += c(STYLE_STATE_ERROR_COLOR)
-            backgroundRadius += tornadofx.box(4.px, 4.px, 4.px, 4.px)
+            backgroundRadius += box(4.px, 4.px, 4.px, 4.px)
             alignment = Pos.CENTER
         }
         cardHeaderRepeat {
             backgroundColor += c(STYLE_STATE_REPEAT_COLOR)
-            backgroundRadius += tornadofx.box(4.px, 4.px, 0.px, 0.px)
+            backgroundRadius += box(4.px, 4.px, 0.px, 0.px)
             alignment = Pos.CENTER
         }
         cardFooterAttention {
             backgroundColor += c(STYLE_ATTENTION_COLOR)
-            backgroundRadius += tornadofx.box(0.px, 0.px, 4.px, 4.px)
+            backgroundRadius += box(0.px, 0.px, 4.px, 4.px)
             alignment = Pos.CENTER
             label {
                 textFill = c("#ffffff")
@@ -109,7 +114,7 @@ class MainStyleSheet : Stylesheet() {
         }
         cardFooterAttentionBlink {
             backgroundColor += c(STYLE_ATTENTION_ALTERNATE_COLOR)
-            backgroundRadius += tornadofx.box(0.px, 0.px, 4.px, 4.px)
+            backgroundRadius += box(0.px, 0.px, 4.px, 4.px)
             alignment = Pos.CENTER
             label {
                 textFill = c(STYLE_ATTENTION_COLOR)
