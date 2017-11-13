@@ -2,6 +2,7 @@ package eu.pretix.pretixdesk.ui.style
 
 import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow
+import javafx.scene.text.FontWeight
 import tornadofx.*
 
 val STYLE_BACKGROUND_COLOR = "#f6f1f9"
@@ -33,6 +34,12 @@ class MainStyleSheet : Stylesheet() {
         val cardHeaderLabel by cssclass()
         val cardFooterAttention by cssclass()
         val cardFooterAttentionBlink by cssclass()
+        val searchItemProduct by cssclass()
+        val searchItemOrderCode by cssclass()
+        val searchItemAttendeeName by cssclass()
+        val searchItemStatusRedeemed by cssclass()
+        val searchItemStatusUnpaid by cssclass()
+        val searchItemStatusValid by cssclass()
         val toolBar by cssclass()
     }
 
@@ -153,6 +160,32 @@ class MainStyleSheet : Stylesheet() {
             label {
                 textFill = c(STYLE_TOOLBAR_TEXT_COLOR)
             }
+        }
+
+        searchItemAttendeeName {
+            fontSize = 18.px
+        }
+        searchItemOrderCode {
+            fontSize = 18.px
+            fontWeight = FontWeight.BOLD
+        }
+        searchItemProduct {
+            fontSize = 18.px
+        }
+        searchItemStatusUnpaid {
+            fontSize = 18.px
+            textFill = c(STYLE_STATE_ERROR_COLOR)
+            fontWeight = FontWeight.BOLD
+        }
+        searchItemStatusValid{
+            fontSize = 18.px
+            textFill = c(STYLE_STATE_VALID_COLOR)
+            fontWeight = FontWeight.BOLD
+        }
+        searchItemStatusRedeemed {
+            fontSize = 18.px
+            textFill = c(STYLE_STATE_REPEAT_COLOR)
+            fontWeight = FontWeight.BOLD
         }
     }
 }

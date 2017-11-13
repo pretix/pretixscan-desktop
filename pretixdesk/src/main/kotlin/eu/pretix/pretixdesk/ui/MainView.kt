@@ -2,6 +2,8 @@ package eu.pretix.pretixdesk.ui
 
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
+import com.jfoenix.controls.JFXDialogLayout
+import com.jfoenix.controls.JFXListView
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
@@ -15,6 +17,7 @@ import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Priority
+import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.util.Duration
 import tornadofx.*
@@ -34,10 +37,12 @@ class MainView : View() {
     private val searchField = textfield {
         promptText = "Ticket code or name…"
         addClass(MainStyleSheet.mainSearchField)
+        val sF = this
 
         setOnKeyReleased {
             if (it.code == KeyCode.ENTER) {
-                handleInput()
+                handleInput(sF.text)
+                sF.text = ""
             }
         }
     }
@@ -49,6 +54,37 @@ class MainView : View() {
     }
 
     private val searchResultList = ArrayList<TicketCheckProvider.SearchResult>().observable()
+    private val searchResultListView = jfxListview(searchResultList) {
+        vboxConstraints { vGrow = Priority.ALWAYS }
+
+        cellCache {
+            vbox {
+                label(it.secret.substring(0, 20) + "…")
+                hbox {
+                    var ticketname = it.ticket
+                    if (it.variation != null && it.variation != "null") {
+                        ticketname += " – " + it.variation
+                    }
+                    // TODO: require attention
+                    label(ticketname) { addClass(MainStyleSheet.searchItemProduct) }
+                    spacer {}
+                    if (it.isRedeemed) {
+                        label("REDEEMED") { addClass(MainStyleSheet.searchItemStatusRedeemed) }
+                    } else if (!it.isPaid) {
+                        label("UNPAID") { addClass(MainStyleSheet.searchItemStatusUnpaid) }
+                    } else {
+                        label("VALID") { addClass(MainStyleSheet.searchItemStatusValid) }
+                    }
+                }
+                hbox {
+                    label(it.orderCode + "  ") { addClass(MainStyleSheet.searchItemOrderCode) }
+                    label(it.attendee_name ?: "") { addClass(MainStyleSheet.searchItemAttendeeName) }
+                }
+            }
+        }
+        cellFormat {
+        }
+    }
 
     private val searchResultCard = vbox {
         opacity = 0.0
@@ -60,8 +96,19 @@ class MainView : View() {
             minHeight = 200.px
             maxHeight = 200.px
         }
-        jfxListview(searchResultList) {
-            vboxConstraints { vGrow = Priority.ALWAYS }
+        this += searchResultListView
+
+        searchResultListView.setOnMouseClicked {
+            if (it.clickCount == 2) {
+                handleSearchResultSelected(searchResultListView.selectionModel.selectedItem)
+                it.consume()
+            }
+        }
+        searchResultListView.setOnKeyReleased {
+            if (it.code == KeyCode.ENTER) {
+                handleSearchResultSelected(searchResultListView.selectionModel.selectedItem)
+                it.consume()
+            }
         }
     }
 
@@ -101,7 +148,7 @@ class MainView : View() {
         }
     }
 
-    override val root = stackpane {
+    override val root: StackPane = stackpane {
         vbox {
             useMaxHeight = true
 
@@ -176,6 +223,48 @@ class MainView : View() {
         })
     }
 
+    private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult) {
+        var resultData: TicketCheckProvider.CheckResult? = null
+
+        val progressDialog = jfxProgressDialog(heading="Redeeming ticket") {}
+        progressDialog.show(root)
+        runAsync {
+            resultData = controller.handleScanInput(searchResult.secret)
+        } ui {
+            val message = when(resultData?.type) {
+                TicketCheckProvider.CheckResult.Type.INVALID -> "Unknown ticket."
+                TicketCheckProvider.CheckResult.Type.VALID -> "Ticket successfully redeemed."
+                TicketCheckProvider.CheckResult.Type.USED -> "Ticket already used."
+                TicketCheckProvider.CheckResult.Type.ERROR -> "Unknown error."
+                TicketCheckProvider.CheckResult.Type.UNPAID -> "Ticket not paid."
+                TicketCheckProvider.CheckResult.Type.PRODUCT -> "This product type is invalid."
+                null -> ""
+            }
+            progressDialog.isOverlayClose = true
+            (progressDialog.content as JFXDialogLayout).setBody(label(message))
+            (progressDialog.content as JFXDialogLayout).setActions(
+                    jfxButton("CLOSE") {
+                        action {
+                            progressDialog.close()
+                        }
+                    }
+            )
+
+            if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
+                searchResult.isRedeemed = true
+                val i: Int = searchResultList.indexOf(searchResult)
+                val cloned = TicketCheckProvider.SearchResult(searchResult)
+                searchResultList.remove(searchResult)
+                searchResultList.add(i, cloned)
+                searchResultListView.selectionModel.select(cloned)
+            }
+
+            runAsync {
+                controller.triggerSync()
+            }
+        }
+    }
+
     private fun removeCard(card: VBox) {
         timeline {
             keyframe(MaterialDuration.EXIT) {
@@ -203,7 +292,7 @@ class MainView : View() {
 
         timeline {
             keyframe(Duration.seconds(15.0)) {
-                setOnFinished{
+                setOnFinished {
                     removeCard(card)
                 }
             }
@@ -254,20 +343,7 @@ class MainView : View() {
         }
     }
 
-    private fun handleInput() {
-        val value = searchField.text
-        if (value == "") {
-            return
-        }
-
-        for (oldResultCard in resultCards) {
-            removeCard(oldResultCard)
-        }
-
-        showSpinner()
-        searchField.text = ""
-
-
+    private fun handleSearchInput(value: String) {
         var resultData: List<TicketCheckProvider.SearchResult>? = null
         runAsync {
             resultData = controller.handleSearchInput(value)
@@ -278,13 +354,11 @@ class MainView : View() {
             if (resultData != null) {
                 searchResultList.addAll(resultData!!)
             }
-
-            runAsync {
-                controller.triggerSync()
-            }
         }
+    }
 
-        /*
+    private fun handleTicketInput(value: String) {
+        searchField.text = ""
         var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
             resultData = controller.handleScanInput(value)
@@ -298,7 +372,22 @@ class MainView : View() {
                 controller.triggerSync()
             }
         }
-        */
+    }
+
+    private fun handleInput(value: String) {
+        for (oldResultCard in resultCards) {
+            removeCard(oldResultCard)
+        }
+        hideSearchResultCard()
+
+        showSpinner()
+
+        if (value.matches(Regex("[a-z0-9]{32,}"))) {
+            handleTicketInput(value)
+        } else {
+            handleSearchInput(value)
+        }
+
     }
 
     private fun makeNewCard(data: TicketCheckProvider.CheckResult?): VBox {
@@ -387,7 +476,7 @@ class MainView : View() {
 
     private fun displaySyncStatus() {
         val closeButton: JFXButton = jfxButton("CLOSE")
-        val dialog = jfxDialog (transitionType = JFXDialog.DialogTransition.BOTTOM) {
+        val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
             setHeading(label("Synchronization status"))
             setBody(label(controller.syncStatusLongText()))
             setActions(closeButton)
