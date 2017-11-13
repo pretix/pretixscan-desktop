@@ -27,6 +27,7 @@ class MainView : View() {
     private val controller: MainController by inject()
     private var resultCards: List<VBox> = ArrayList()
     private var spinnerAnimation: Timeline? = null
+    private var searchCardAnimation: Timeline? = null
     private var syncStatusTimeline: Timeline? = null
     private var syncTriggerTimeline: Timeline? = null
 
@@ -50,6 +51,8 @@ class MainView : View() {
     private val searchResultList = ArrayList<TicketCheckProvider.SearchResult>().observable()
 
     private val searchResultCard = vbox {
+        opacity = 0.0
+        isVisible = false
         addClass(MainStyleSheet.card)
         vboxConstraints { vGrow = Priority.ALWAYS }
         style {
@@ -207,6 +210,32 @@ class MainView : View() {
         }
     }
 
+    private fun showSearchResultCard() {
+        searchCardAnimation?.stop()
+        searchResultCard.translateY = 200.0
+        searchResultCard.opacity = 0.0
+        searchResultCard.isVisible = true
+        searchCardAnimation = timeline {
+            keyframe(MaterialDuration.ENTER) {
+                keyvalue(searchResultCard.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
+                keyvalue(searchResultCard.translateYProperty(), 0.0, MaterialInterpolator.ENTER)
+            }
+        }
+    }
+
+    private fun hideSearchResultCard() {
+        searchCardAnimation?.stop()
+        searchCardAnimation = timeline {
+            keyframe(MaterialDuration.EXIT) {
+                keyvalue(searchResultCard.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
+                keyvalue(searchResultCard.translateYProperty(), 200.0, MaterialInterpolator.EXIT)
+            }
+        }
+        searchCardAnimation?.setOnFinished {
+            searchResultCard.isVisible = false
+        }
+    }
+
     private fun showSpinner() {
         spinnerAnimation?.stop()
         spinnerAnimation = timeline {
@@ -238,6 +267,24 @@ class MainView : View() {
         showSpinner()
         searchField.text = ""
 
+
+        var resultData: List<TicketCheckProvider.SearchResult>? = null
+        runAsync {
+            resultData = controller.handleSearchInput(value)
+        } ui {
+            hideSpinner()
+            showSearchResultCard()
+            searchResultList.clear()
+            if (resultData != null) {
+                searchResultList.addAll(resultData!!)
+            }
+
+            runAsync {
+                controller.triggerSync()
+            }
+        }
+
+        /*
         var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
             resultData = controller.handleScanInput(value)
@@ -251,6 +298,7 @@ class MainView : View() {
                 controller.triggerSync()
             }
         }
+        */
     }
 
     private fun makeNewCard(data: TicketCheckProvider.CheckResult?): VBox {
