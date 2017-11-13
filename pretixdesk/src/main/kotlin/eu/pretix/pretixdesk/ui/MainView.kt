@@ -10,11 +10,17 @@ import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
 import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
 import javafx.animation.Timeline
 import javafx.geometry.Pos
+import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
 import javafx.scene.layout.VBox
 import javafx.util.Duration
 import tornadofx.*
+import java.util.regex.Pattern
+
+
+var re_alphanum = Pattern.compile("^[a-zA-Z0-9]+\$")
 
 class MainView : View() {
     private val controller: MainController by inject()
@@ -141,6 +147,13 @@ class MainView : View() {
             syncTriggerTimeline?.stop()
             syncStatusTimeline?.stop()
         }
+
+        // Focus grabber
+        currentStage?.addEventFilter(KeyEvent.KEY_PRESSED, {
+            if (currentStage?.scene?.focusOwner !is TextField && re_alphanum.matcher(it.text).matches()) {
+                searchField.requestFocus()
+            }
+        })
     }
 
     private fun removeCard(card: VBox) {
