@@ -3,7 +3,6 @@ package eu.pretix.pretixdesk.ui
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import com.jfoenix.controls.JFXDialogLayout
-import com.jfoenix.controls.JFXListView
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
@@ -41,8 +40,21 @@ class MainView : View() {
 
         setOnKeyReleased {
             if (it.code == KeyCode.ENTER) {
-                handleInput(sF.text)
-                sF.text = ""
+                if (sF.text == "" && searchResultCard.isVisible && searchResultListView.selectionModel.selectedIndex >= 0) {
+                    handleSearchResultSelected(searchResultListView.selectionModel.selectedItem)
+                } else {
+                    handleInput(sF.text)
+                    sF.text = ""
+                }
+                it.consume()
+            } else if (it.code == KeyCode.DOWN && searchResultCard.isVisible) {
+                searchResultListView.selectionModel.select(searchResultListView.selectionModel.selectedIndex + 1)
+                searchResultListView.scrollTo(searchResultListView.selectionModel.selectedIndex)
+                it.consume()
+            } else if (it.code == KeyCode.UP && searchResultCard.isVisible) {
+                searchResultListView.selectionModel.select(searchResultListView.selectionModel.selectedIndex - 1)
+                searchResultListView.scrollTo(searchResultListView.selectionModel.selectedIndex)
+                it.consume()
             }
         }
     }
@@ -226,12 +238,12 @@ class MainView : View() {
     private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult) {
         var resultData: TicketCheckProvider.CheckResult? = null
 
-        val progressDialog = jfxProgressDialog(heading="Redeeming ticket") {}
+        val progressDialog = jfxProgressDialog(heading = "Redeeming ticket") {}
         progressDialog.show(root)
         runAsync {
             resultData = controller.handleScanInput(searchResult.secret)
         } ui {
-            val message = when(resultData?.type) {
+            val message = when (resultData?.type) {
                 TicketCheckProvider.CheckResult.Type.INVALID -> "Unknown ticket."
                 TicketCheckProvider.CheckResult.Type.VALID -> "Ticket successfully redeemed."
                 TicketCheckProvider.CheckResult.Type.USED -> "Ticket already used."
@@ -348,12 +360,12 @@ class MainView : View() {
         runAsync {
             resultData = controller.handleSearchInput(value)
         } ui {
-            hideSpinner()
-            showSearchResultCard()
             searchResultList.clear()
             if (resultData != null) {
                 searchResultList.addAll(resultData!!)
             }
+            hideSpinner()
+            showSearchResultCard()
         }
     }
 
@@ -382,6 +394,7 @@ class MainView : View() {
 
         showSpinner()
 
+        // TODO: Support pretix instances with lower entropy levels
         if (value.matches(Regex("[a-z0-9]{32,}"))) {
             handleTicketInput(value)
         } else {
