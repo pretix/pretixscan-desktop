@@ -182,7 +182,23 @@ class MainView : View() {
                 if (data?.type != TicketCheckProvider.CheckResult.Type.INVALID) {
                     vbox {
                         addClass(MainStyleSheet.cardBody)
-                        label(data?.message ?: "?");
+
+                        if (data?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
+                            label(data.message ?: "?");
+                        } else {
+                            var ticket = data?.ticket ?: "";
+                            if (data?.variation != null && data?.variation != "null") {
+                                ticket += " – " + data.variation;
+                            }
+                            hbox {
+                                label(data?.attendee_name ?: "")
+                                spacer {}
+                                label(data?.orderCode ?: "")
+                            }
+                            hbox {
+                                label(ticket)
+                            }
+                        }
                     }
                 }
             }

@@ -93,6 +93,9 @@ class MainStyleSheet : Stylesheet() {
 
         cardBody {
             padding = box(15.px)
+            label {
+                fontSize = 18.px
+            }
         }
 
         select("JFXSpinner .arc") {
