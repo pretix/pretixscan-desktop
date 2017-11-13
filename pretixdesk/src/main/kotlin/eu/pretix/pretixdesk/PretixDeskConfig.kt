@@ -30,7 +30,7 @@ class PretixDeskConfig : ConfigStore {
         prefs.remove(PREFS_KEY_LAST_SYNC)
         prefs.remove(PREFS_KEY_LAST_FAILED_SYNC)
         prefs.remove(PREFS_KEY_LAST_STATUS_DATA)
-        prefs.flush();
+        prefs.flush()
     }
 
     fun resetEventConfig() {
@@ -56,7 +56,7 @@ class PretixDeskConfig : ConfigStore {
     }
 
     override fun isDebug(): Boolean {
-        return false;
+        return false
     }
 
     override fun isConfigured(): Boolean {

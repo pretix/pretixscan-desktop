@@ -1,4 +1,4 @@
-package eu.pretix.pretixdesk.ui.style;
+package eu.pretix.pretixdesk.ui.style
 
 import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow

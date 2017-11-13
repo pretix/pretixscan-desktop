@@ -5,8 +5,8 @@ import eu.pretix.pretixdesk.PretixDeskMain
 import tornadofx.Controller
 
 class MainController: Controller() {
-    var provider = (app as PretixDeskMain).newCheckProvider()
-    var configStore = (app as PretixDeskMain).configStore
+    private var provider = (app as PretixDeskMain).newCheckProvider()
+    private var configStore = (app as PretixDeskMain).configStore
 
     fun reloadCheckProvider() {
         provider = (app as PretixDeskMain).newCheckProvider()

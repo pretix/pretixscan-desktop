@@ -26,9 +26,9 @@ import io.requery.sql.SchemaModifier
 
 class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
     val configStore = PretixDeskConfig()
-    var dataStore: BlockingEntityStore<Persistable>? = null
-    val appDirs = AppDirsFactory.getInstance();
-    val dataDir = appDirs.getUserDataDir("pretixdesk", "1.0.0", "pretix")
+    private var dataStore: BlockingEntityStore<Persistable>? = null
+    private val appDirs = AppDirsFactory.getInstance()!!
+    private val dataDir = appDirs.getUserDataDir("pretixdesk", "1.0.0", "pretix")
 
     override fun start(stage: Stage) {
         stage.icons += Image(PretixDeskMain::class.java.getResourceAsStream("icon.png"))
@@ -51,15 +51,15 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
     fun data(): BlockingEntityStore<Persistable> {
         if (dataStore == null) {
             File(dataDir).mkdirs()
-            val dbFile = File(dataDir + "/data.sqlite");
-            val dbIsNew = !dbFile.exists();
+            val dbFile = File(dataDir + "/data.sqlite")
+            val dbIsNew = !dbFile.exists()
 
             val dataSource = SQLiteDataSource()
-            dataSource.setUrl("jdbc:sqlite:" + dbFile.absolutePath);
+            dataSource.url = "jdbc:sqlite:" + dbFile.absolutePath
             val config = SQLiteConfig()
-            config.setDateClass("TEXT");
-            dataSource.setConfig(config);
-            dataSource.setEnforceForeignKeys(true);
+            config.setDateClass("TEXT")
+            dataSource.config = config
+            dataSource.setEnforceForeignKeys(true)
             val model = Models.DEFAULT
 
             if (dbIsNew) {
@@ -75,7 +75,7 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
                             .build())
                     .build()
 
-            dataStore = EntityDataStore<Persistable>(configuration);
+            dataStore = EntityDataStore<Persistable>(configuration)
         }
         return dataStore!!
     }

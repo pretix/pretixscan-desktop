@@ -14,28 +14,28 @@ import javafx.scene.layout.VBox
 import tornadofx.*
 
 class MainView : View() {
-    val controller: MainController by inject()
-    var resultCards: List<VBox> = ArrayList<VBox>()
-    var spinnerAnimation: Timeline? = null
+    private val controller: MainController by inject()
+    private var resultCards: List<VBox> = ArrayList()
+    private var spinnerAnimation: Timeline? = null
 
-    val searchField = textfield {
+    private val searchField = textfield {
         promptText = "Ticket code or name…"
         addClass(MainStyleSheet.mainSearchField)
 
         setOnKeyReleased {
             if (it.code == KeyCode.ENTER) {
-                loadNewCard()
+                handleInput()
             }
         }
     }
 
-    val mainSpinner = jfxSpinner {
+    private val mainSpinner = jfxSpinner {
         useMaxHeight = false
         useMaxWidth = false
         opacity = 0.0
     }
 
-    val resultHolder = stackpane {
+    private val resultHolder = stackpane {
         addClass(eu.pretix.pretixdesk.ui.style.MainStyleSheet.resultHolder)
 
         vbox {
@@ -43,7 +43,7 @@ class MainView : View() {
         }
     }
 
-    val contentBox = vbox {
+    private val contentBox = vbox {
         useMaxHeight = true
 
         style {
@@ -96,7 +96,7 @@ class MainView : View() {
         title = "pretixdesk"
     }
 
-    fun loadNewCard() {
+    private fun handleInput() {
         if (searchField.text == "") {
             return
         }
@@ -149,7 +149,7 @@ class MainView : View() {
         }
     }
 
-    fun makeNewCard(data: TicketCheckProvider.CheckResult?): VBox {
+    private fun makeNewCard(data: TicketCheckProvider.CheckResult?): VBox {
         val vb = VBox()
         with(vb) {
             translateX = -480.0
@@ -190,11 +190,11 @@ class MainView : View() {
                         addClass(MainStyleSheet.cardBody)
 
                         if (data?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
-                            label(data.message ?: "?");
+                            label(data.message ?: "?")
                         } else {
-                            var ticket = data?.ticket ?: "";
-                            if (data?.variation != null && data?.variation != "null") {
-                                ticket += " – " + data.variation;
+                            var ticket = data?.ticket ?: ""
+                            if (data?.variation != null && data.variation != "null") {
+                                ticket += " – " + data.variation
                             }
                             hbox {
                                 label(data?.attendee_name ?: "")

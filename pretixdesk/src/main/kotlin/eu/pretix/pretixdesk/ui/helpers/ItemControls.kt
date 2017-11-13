@@ -3,7 +3,6 @@ package eu.pretix.pretixdesk.ui.helpers
 
 import com.jfoenix.controls.JFXComboBox
 import com.jfoenix.controls.JFXListView
-import com.jfoenix.controls.JFXTreeTableView
 import com.jfoenix.controls.JFXTreeView
 import javafx.beans.property.Property
 import javafx.beans.property.ReadOnlyListProperty
