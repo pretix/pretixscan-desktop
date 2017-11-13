@@ -96,6 +96,7 @@ class MainView : View() {
         }
         cellFormat {
         }
+        placeholder = label("No search result found (enter at least 4 characters).")
     }
 
     private val searchResultCard = vbox {
