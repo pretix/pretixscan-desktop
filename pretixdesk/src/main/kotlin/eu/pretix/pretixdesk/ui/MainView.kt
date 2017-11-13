@@ -156,7 +156,7 @@ class MainView : View() {
                 vbox {
                     addClass(MainStyleSheet.cardBody)
                     addClass(when (data?.type) {
-                        TicketCheckProvider.CheckResult.Type.INVALID -> MainStyleSheet.cardHeaderError
+                        TicketCheckProvider.CheckResult.Type.INVALID -> MainStyleSheet.cardHeaderErrorNoMessage
                         TicketCheckProvider.CheckResult.Type.VALID -> MainStyleSheet.cardHeaderValid
                         TicketCheckProvider.CheckResult.Type.USED -> MainStyleSheet.cardHeaderRepeat
                         TicketCheckProvider.CheckResult.Type.ERROR -> MainStyleSheet.cardHeaderError
@@ -166,7 +166,7 @@ class MainView : View() {
                     })
 
                     val headline = when (data?.type) {
-                        TicketCheckProvider.CheckResult.Type.INVALID -> "INVALID"
+                        TicketCheckProvider.CheckResult.Type.INVALID -> "UNKNOWN TICKET"
                         TicketCheckProvider.CheckResult.Type.VALID -> "VALID"
                         TicketCheckProvider.CheckResult.Type.USED -> "ALREADY SCANNED"
                         TicketCheckProvider.CheckResult.Type.ERROR -> "ERROR"
@@ -179,9 +179,11 @@ class MainView : View() {
                         addClass(MainStyleSheet.cardHeaderLabel)
                     }
                 }
-                vbox {
-                    addClass(MainStyleSheet.cardBody)
-                    label(data?.message ?: "?");
+                if (data?.type != TicketCheckProvider.CheckResult.Type.INVALID) {
+                    vbox {
+                        addClass(MainStyleSheet.cardBody)
+                        label(data?.message ?: "?");
+                    }
                 }
             }
         }

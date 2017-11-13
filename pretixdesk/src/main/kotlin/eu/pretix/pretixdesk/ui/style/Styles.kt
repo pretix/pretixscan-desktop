@@ -28,6 +28,7 @@ class MainStyleSheet : Stylesheet() {
         val cardHeaderValid by cssclass()
         val cardHeaderRepeat by cssclass()
         val cardHeaderError by cssclass()
+        val cardHeaderErrorNoMessage by cssclass()
         val cardHeaderLabel by cssclass()
         val toolBar by cssclass()
     }
@@ -77,6 +78,11 @@ class MainStyleSheet : Stylesheet() {
         cardHeaderError {
             backgroundColor += c(STYLE_STATE_ERROR_COLOR)
             backgroundRadius += tornadofx.box(4.px, 4.px, 0.px, 0.px)
+            alignment = Pos.CENTER
+        }
+        cardHeaderErrorNoMessage {
+            backgroundColor += c(STYLE_STATE_ERROR_COLOR)
+            backgroundRadius += tornadofx.box(4.px, 4.px, 4.px, 4.px)
             alignment = Pos.CENTER
         }
         cardHeaderRepeat {
