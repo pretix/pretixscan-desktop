@@ -47,7 +47,12 @@ class PretixDeskConfig : ConfigStore {
     }
 
     fun getAsyncModeEnabled(): Boolean {
-        return prefs.getBoolean(PREFS_KEY_ASYNC_MODE, false);
+        return prefs.getBoolean(PREFS_KEY_ASYNC_MODE, false)
+    }
+
+    fun setAsyncModeEnabled(value: Boolean) {
+        prefs.putBoolean(PREFS_KEY_ASYNC_MODE, value)
+        prefs.flush()
     }
 
     override fun isDebug(): Boolean {
@@ -55,35 +60,35 @@ class PretixDeskConfig : ConfigStore {
     }
 
     override fun isConfigured(): Boolean {
-        return prefs.getByteArray(PREFS_KEY_API_URL, null) != null;
+        return prefs.getByteArray(PREFS_KEY_API_URL, null) != null
     }
 
     override fun getApiVersion(): Int {
-        return prefs.getInt(PREFS_KEY_API_VERSION, PretixApi.SUPPORTED_API_VERSION);
+        return prefs.getInt(PREFS_KEY_API_VERSION, PretixApi.SUPPORTED_API_VERSION)
     }
 
     override fun getApiUrl(): String {
-        return String(prefs.getByteArray(PREFS_KEY_API_URL, kotlin.ByteArray(0)));
+        return String(prefs.getByteArray(PREFS_KEY_API_URL, kotlin.ByteArray(0)))
     }
 
     override fun getApiKey(): String {
-        return String(prefs.getByteArray(PREFS_KEY_API_KEY, kotlin.ByteArray(0)));
+        return String(prefs.getByteArray(PREFS_KEY_API_KEY, kotlin.ByteArray(0)))
     }
 
     override fun getShowInfo(): Boolean {
-        return prefs.getBoolean(PREFS_KEY_SHOW_INFO, true);
+        return prefs.getBoolean(PREFS_KEY_SHOW_INFO, true)
     }
 
     override fun getAllowSearch(): Boolean {
-        return prefs.getBoolean(PREFS_KEY_ALLOW_SEARCH, true);
+        return prefs.getBoolean(PREFS_KEY_ALLOW_SEARCH, true)
     }
 
     override fun getLastStatusData(): String {
-        return String(prefs.getByteArray(PREFS_KEY_LAST_STATUS_DATA, kotlin.ByteArray(0)));
+        return String(prefs.getByteArray(PREFS_KEY_LAST_STATUS_DATA, kotlin.ByteArray(0)))
     }
 
     override fun getLastDownload(): Long {
-        return prefs.getLong(PREFS_KEY_LAST_DOWNLOAD, 0);
+        return prefs.getLong(PREFS_KEY_LAST_DOWNLOAD, 0)
     }
 
     override fun setLastDownload(value: Long) {
@@ -92,7 +97,7 @@ class PretixDeskConfig : ConfigStore {
     }
 
     override fun getLastSync(): Long {
-        return prefs.getLong(PREFS_KEY_LAST_SYNC, 0);
+        return prefs.getLong(PREFS_KEY_LAST_SYNC, 0)
     }
 
     override fun setLastSync(value: Long) {
@@ -101,7 +106,7 @@ class PretixDeskConfig : ConfigStore {
     }
 
     override fun getLastFailedSync(): Long {
-        return prefs.getLong(PREFS_KEY_LAST_FAILED_SYNC, 0);
+        return prefs.getLong(PREFS_KEY_LAST_FAILED_SYNC, 0)
     }
 
     override fun setLastFailedSync(value: Long) {
@@ -110,7 +115,7 @@ class PretixDeskConfig : ConfigStore {
     }
 
     override fun getLastFailedSyncMsg(): String {
-        return String(prefs.getByteArray(PREFS_KEY_LAST_FAILED_SYNC_MSG, kotlin.ByteArray(0)));
+        return String(prefs.getByteArray(PREFS_KEY_LAST_FAILED_SYNC_MSG, kotlin.ByteArray(0)))
     }
 
     override fun setLastFailedSyncMsg(value: String?) {

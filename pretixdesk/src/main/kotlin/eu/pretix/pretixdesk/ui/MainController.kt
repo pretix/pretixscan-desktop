@@ -6,6 +6,16 @@ import tornadofx.Controller
 
 class MainController: Controller() {
     var provider = (app as PretixDeskMain).newCheckProvider()
+    var configStore = (app as PretixDeskMain).configStore
+
+    fun reloadCheckProvider() {
+        provider = (app as PretixDeskMain).newCheckProvider()
+    }
+
+    fun toggleAsync(value: Boolean) {
+        configStore.setAsyncModeEnabled(value)
+        reloadCheckProvider()
+    }
 
     fun handleScanInput(value: String): TicketCheckProvider.CheckResult? {
         return provider.check(value)

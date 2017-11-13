@@ -81,6 +81,11 @@ class MainView : View() {
 
             jfxTogglebutton("SCAN ONLINE") {
                 toggleColor = c(STYLE_STATE_VALID_COLOR)
+                isSelected = !(app as PretixDeskMain).configStore.getAsyncModeEnabled()
+
+                action {
+                    controller.toggleAsync(!isSelected)
+                }
             }
             spacer {}
             jfxButton("SETTINGS")
@@ -92,6 +97,10 @@ class MainView : View() {
     }
 
     fun loadNewCard() {
+        if (searchField.text == "") {
+            return
+        }
+
         for (oldResultCard in resultCards) {
             timeline {
                 keyframe(MaterialDuration.EXIT) {
@@ -113,9 +122,6 @@ class MainView : View() {
 
         val value = searchField.text
         searchField.text = ""
-        if (value == "") {
-            return
-        }
 
         var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
