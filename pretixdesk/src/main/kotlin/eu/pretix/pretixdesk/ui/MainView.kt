@@ -167,6 +167,14 @@ class MainView : View() {
         }.setOnFinished {
             mainSpinner.opacity = 0.0
         }
+
+        timeline {
+            keyframe(Duration.seconds(15.0)) {
+                setOnFinished{
+                    removeCard(card)
+                }
+            }
+        }
     }
 
     private fun showSpinner() {
