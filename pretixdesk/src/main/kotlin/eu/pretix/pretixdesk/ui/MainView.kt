@@ -113,6 +113,9 @@ class MainView : View() {
 
         val value = searchField.text
         searchField.text = ""
+        if (value == "") {
+            return
+        }
 
         var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
