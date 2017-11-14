@@ -201,7 +201,7 @@ class MainView : View() {
 
                 jfxTogglebutton("SCAN ONLINE") {
                     toggleColor = c(STYLE_STATE_VALID_COLOR)
-                    isSelected = !(app as PretixDeskMain).configStore.getAsyncModeEnabled()
+                    isSelected = !(app as PretixDeskMain).configStore.asyncModeEnabled
 
                     action {
                         controller.toggleAsync(!isSelected)
