@@ -46,14 +46,12 @@ class PretixDeskConfig : ConfigStore {
         prefs.flush()
     }
 
-    fun getAsyncModeEnabled(): Boolean {
-        return prefs.getBoolean(PREFS_KEY_ASYNC_MODE, false)
-    }
-
-    fun setAsyncModeEnabled(value: Boolean) {
-        prefs.putBoolean(PREFS_KEY_ASYNC_MODE, value)
-        prefs.flush()
-    }
+    var asyncModeEnabled
+        get() = prefs.getBoolean(PREFS_KEY_ASYNC_MODE, false)
+        set(value) {
+            prefs.putBoolean(PREFS_KEY_ASYNC_MODE, value)
+            prefs.flush()
+        }
 
     override fun isDebug(): Boolean {
         return false

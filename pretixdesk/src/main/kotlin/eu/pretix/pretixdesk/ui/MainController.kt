@@ -23,7 +23,7 @@ class MainController : Controller() {
     }
 
     fun toggleAsync(value: Boolean) {
-        configStore.setAsyncModeEnabled(value)
+        configStore.asyncModeEnabled = value
         reloadCheckProvider()
     }
 
@@ -90,7 +90,7 @@ class MainController : Controller() {
 
         val upload_interval: Long = 1000
         var download_interval: Long = 30000
-        if (!configStore.getAsyncModeEnabled()) {
+        if (!configStore.asyncModeEnabled) {
             download_interval = 120000
         }
 
