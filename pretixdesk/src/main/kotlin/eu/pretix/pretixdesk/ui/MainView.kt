@@ -179,7 +179,7 @@ class MainView : View() {
 
     private val syncStatusLabel = jfxButton("") {
         action {
-            displaySyncStatus()
+            displaySyncStatus(controller, root)
         }
     }
 
@@ -210,6 +210,11 @@ class MainView : View() {
                 spacer {}
                 this += syncStatusLabel
                 spacer {}
+                jfxButton("INFORMATION") {
+                    action {
+                        replaceWith(StatusView::class, MaterialSlide(ViewTransition.Direction.LEFT))
+                    }
+                }
                 jfxButton("SETTINGS")
             }
         }
@@ -525,18 +530,5 @@ class MainView : View() {
             }
         }
         return vb
-    }
-
-    private fun displaySyncStatus() {
-        val closeButton: JFXButton = jfxButton("CLOSE")
-        val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
-            setHeading(label("Synchronization status"))
-            setBody(label(controller.syncStatusLongText()))
-            setActions(closeButton)
-        }
-        closeButton.action {
-            dialog.close()
-        }
-        dialog.show(root)
     }
 }

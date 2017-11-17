@@ -12,15 +12,14 @@ import tornadofx.Controller
 import java.text.SimpleDateFormat
 import java.util.*
 
-
-class MainController : BaseController() {
+class StatusController : BaseController() {
 
     fun reloadCheckProvider() {
         provider = (app as PretixDeskMain).newCheckProvider()
     }
 
     fun toggleAsync(value: Boolean) {
-        configStore.asyncModeEnabled = value
+        configStore.setAsyncModeEnabled(value)
         reloadCheckProvider()
     }
 
