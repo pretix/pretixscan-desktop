@@ -209,21 +209,11 @@ class MainView : View() {
                         }
                         jfxTogglebutton("SCAN ONLINE") {
                             toggleColor = c(STYLE_STATE_VALID_COLOR)
-                            isSelected = !(app as PretixDeskMain).configStore.getAsyncModeEnabled()
-
-<<<<<<< HEAD
-                jfxTogglebutton("SCAN ONLINE") {
-                    toggleColor = c(STYLE_STATE_VALID_COLOR)
-                    isSelected = !(app as PretixDeskMain).configStore.asyncModeEnabled
-
-                    action {
-                        controller.toggleAsync(!isSelected)
-=======
+                            isSelected = !(app as PretixDeskMain).configStore.asyncModeEnabled
                             action {
                                 controller.toggleAsync(!isSelected)
                             }
                         }
->>>>>>> Improve toolbar, reload status page on dock
                     }
                     hbox {
                         gridpaneColumnConstraints { percentWidth = 33.33 }

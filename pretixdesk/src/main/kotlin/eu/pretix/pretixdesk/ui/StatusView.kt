@@ -1,10 +1,7 @@
 package eu.pretix.pretixdesk.ui
 
 import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.pretixdesk.PretixDeskMain
-import eu.pretix.pretixdesk.ui.helpers.MaterialSlide
-import eu.pretix.pretixdesk.ui.helpers.jfxButton
-import eu.pretix.pretixdesk.ui.helpers.jfxListview
+import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
 import javafx.animation.Timeline
@@ -19,6 +16,8 @@ import tornadofx.*
 class StatusView : View() {
     private val controller: StatusController by inject()
     private var syncStatusTimeline: Timeline? = null
+    private var loadDataTimeline: Timeline? = null
+    private var spinnerAnimation: Timeline? = null
     private var statusData: TicketCheckProvider.StatusResult? = null
 
     private val eventInfoList = ArrayList<TicketCheckProvider.StatusResultItem>().observable()
@@ -55,7 +54,32 @@ class StatusView : View() {
         }
         cellFormat {
         }
-        placeholder = label("Nothing to show here.")
+    }
+
+    private fun showSpinner() {
+        spinnerAnimation?.stop()
+        spinnerAnimation = timeline {
+            keyframe(MaterialDuration.ENTER) {
+                keyvalue(mainSpinner.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
+            }
+        }
+    }
+
+    private fun hideSpinner() {
+        spinnerAnimation?.stop()
+        spinnerAnimation = timeline {
+            keyframe(MaterialDuration.EXIT) {
+                keyvalue(mainSpinner.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
+            }
+        }
+    }
+
+    private val mainSpinner = jfxSpinner {
+        useMaxHeight = false
+        useMaxWidth = false
+        opacity = 0.0
+        maxWidth = 64.0
+        maxHeight = 64.0
     }
 
     private val syncStatusLabel = jfxButton("") {
@@ -107,7 +131,10 @@ class StatusView : View() {
         }
 
         this += headerCardHolder
-        this += eventInfoListView
+        stackpane {
+            this += eventInfoListView
+            this += mainSpinner
+        }
     }
 
     override val root: StackPane = stackpane {
@@ -158,6 +185,11 @@ class StatusView : View() {
                         style {
                             alignment = Pos.CENTER_RIGHT
                         }
+                        jfxButton("REFRESH") {
+                            action {
+                                loadStatus()
+                            }
+                        }
                         jfxButton("SETTINGS")
                     }
                 }
@@ -171,6 +203,7 @@ class StatusView : View() {
     }
 
     fun loadStatus() {
+        showSpinner()
         runAsync {
             statusData = controller.retrieveInfo()
         } ui {
@@ -179,7 +212,7 @@ class StatusView : View() {
                 eventInfoList.addAll(statusData!!.items)
                 refreshHeaderCard(statusData!!)
             }
-
+            hideSpinner()
         }
     }
 
@@ -196,6 +229,18 @@ class StatusView : View() {
                         text = controller.syncStatusText()
                     } ui {
                         syncStatusLabel.text = text
+                    }
+                }
+            }
+        }
+
+        loadDataTimeline = timeline {
+            cycleCount = Timeline.INDEFINITE
+
+            keyframe(Duration.seconds(30.0)) {
+                setOnFinished {
+                    if (isDocked) {
+                        loadStatus()
                     }
                 }
             }
