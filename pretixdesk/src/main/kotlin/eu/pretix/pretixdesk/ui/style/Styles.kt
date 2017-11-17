@@ -3,6 +3,7 @@ package eu.pretix.pretixdesk.ui.style
 import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow
 import javafx.scene.text.FontWeight
+import javafx.scene.text.TextAlignment
 import tornadofx.*
 
 val STYLE_BACKGROUND_COLOR = "#f6f1f9"
@@ -19,6 +20,7 @@ val STYLE_PRIMARY_DARK_COLOR = "#3b1c4a"
 val STYLE_TOOLBAR_TEXT_COLOR = "#ffffff"
 val STYLE_ATTENTION_COLOR = "#3B1C4A"
 val STYLE_ATTENTION_ALTERNATE_COLOR = "#ffee58"
+val STYLE_TEXT_COLOR_MUTED = "#909090"
 
 class MainStyleSheet : Stylesheet() {
 
@@ -41,6 +43,11 @@ class MainStyleSheet : Stylesheet() {
         val searchItemStatusUnpaid by cssclass()
         val searchItemStatusValid by cssclass()
         val toolBar by cssclass()
+        val eventInfoList by cssclass()
+        val eventInfoItemHeader by cssclass()
+        val eventInfoItemBody by cssclass()
+        val eventInfoHeader by cssclass()
+        val eventInfoItemNumber by cssclass()
     }
 
     init {
@@ -72,6 +79,18 @@ class MainStyleSheet : Stylesheet() {
             minWidth = 480.px
             maxWidth = 480.px
             minHeight = 200.px
+        }
+
+        eventInfoList {
+            minWidth = 480.px
+            maxWidth = 480.px
+            minHeight = 250.px
+            backgroundColor += c(STYLE_BACKGROUND_COLOR)
+
+            cell {
+                backgroundColor += c(STYLE_BACKGROUND_COLOR)
+                padding = box(10.px, 10.px, 10.px, 10.px)
+            }
         }
 
         card {
@@ -186,6 +205,28 @@ class MainStyleSheet : Stylesheet() {
             fontSize = 18.px
             textFill = c(STYLE_STATE_REPEAT_COLOR)
             fontWeight = FontWeight.BOLD
+        }
+
+        eventInfoItemHeader {
+            fontSize = 16.px
+            fontWeight = FontWeight.BOLD
+        }
+        eventInfoItemBody {
+            fontSize = 14.px
+            textFill = c(STYLE_TEXT_COLOR_MUTED)
+        }
+        eventInfoHeader {
+            minWidth = 460.px
+            maxWidth = 460.px
+            backgroundColor += c(STYLE_PRIMARY_DARK_COLOR)
+            label {
+                textFill = c(STYLE_TOOLBAR_TEXT_COLOR)
+            }
+        }
+        eventInfoItemNumber {
+            textAlignment = TextAlignment.RIGHT
+            alignment = Pos.CENTER_RIGHT
+            minWidth = 60.px
         }
     }
 }

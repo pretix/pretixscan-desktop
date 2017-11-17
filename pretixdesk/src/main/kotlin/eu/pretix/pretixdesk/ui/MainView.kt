@@ -196,26 +196,55 @@ class MainView : View() {
             spacer { }
             this += contentBox
             spacer { }
-            hbox {
+            gridpane {
                 addClass(MainStyleSheet.toolBar)
+                style {
+                    minWidth = 100.percent
+                }
+                row {
+                    hbox {
+                        gridpaneColumnConstraints { percentWidth = 33.33 }
+                        style {
+                            alignment = Pos.CENTER_LEFT
+                        }
+                        jfxTogglebutton("SCAN ONLINE") {
+                            toggleColor = c(STYLE_STATE_VALID_COLOR)
+                            isSelected = !(app as PretixDeskMain).configStore.getAsyncModeEnabled()
 
+<<<<<<< HEAD
                 jfxTogglebutton("SCAN ONLINE") {
                     toggleColor = c(STYLE_STATE_VALID_COLOR)
                     isSelected = !(app as PretixDeskMain).configStore.asyncModeEnabled
 
                     action {
                         controller.toggleAsync(!isSelected)
+=======
+                            action {
+                                controller.toggleAsync(!isSelected)
+                            }
+                        }
+>>>>>>> Improve toolbar, reload status page on dock
+                    }
+                    hbox {
+                        gridpaneColumnConstraints { percentWidth = 33.33 }
+                        style {
+                            alignment = Pos.CENTER
+                        }
+                        this += syncStatusLabel
+                    }
+                    hbox {
+                        gridpaneColumnConstraints { percentWidth = 33.33 }
+                        style {
+                            alignment = Pos.CENTER_RIGHT
+                        }
+                        jfxButton("INFORMATION") {
+                            action {
+                                replaceWith(StatusView::class, MaterialSlide(ViewTransition.Direction.LEFT))
+                            }
+                        }
+                        jfxButton("SETTINGS")
                     }
                 }
-                spacer {}
-                this += syncStatusLabel
-                spacer {}
-                jfxButton("INFORMATION") {
-                    action {
-                        replaceWith(StatusView::class, MaterialSlide(ViewTransition.Direction.LEFT))
-                    }
-                }
-                jfxButton("SETTINGS")
             }
         }
     }
