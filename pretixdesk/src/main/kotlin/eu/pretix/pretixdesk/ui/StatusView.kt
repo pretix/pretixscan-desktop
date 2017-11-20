@@ -167,7 +167,7 @@ class StatusView : View() {
                         style {
                             alignment = Pos.CENTER_LEFT
                         }
-                        jfxButton("GO BACK") {
+                        jfxButton(messages["toolbar_back"]) {
                             action {
                                 replaceWith(MainView::class, MaterialSlide(ViewTransition.Direction.RIGHT))
                             }
@@ -185,12 +185,12 @@ class StatusView : View() {
                         style {
                             alignment = Pos.CENTER_RIGHT
                         }
-                        jfxButton("REFRESH") {
+                        jfxButton(messages["toolbar_refresh"]) {
                             action {
                                 loadStatus()
                             }
                         }
-                        jfxButton("SETTINGS")
+                        jfxButton(messages["toolbar_settings"])
                     }
                 }
             }
@@ -217,7 +217,7 @@ class StatusView : View() {
     }
 
     init {
-        title = "pretixdesk"
+        title = messages["title"]
 
         syncStatusTimeline = timeline {
             cycleCount = Timeline.INDEFINITE

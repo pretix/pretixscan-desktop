@@ -9,6 +9,7 @@ import org.joda.time.Period
 import org.joda.time.format.PeriodFormatter
 import org.joda.time.format.PeriodFormatterBuilder
 import tornadofx.Controller
+import tornadofx.get
 import java.text.SimpleDateFormat
 import java.util.*
 

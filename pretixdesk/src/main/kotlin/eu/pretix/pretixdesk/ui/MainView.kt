@@ -1,7 +1,5 @@
 package eu.pretix.pretixdesk.ui
 
-import com.jfoenix.controls.JFXButton
-import com.jfoenix.controls.JFXDialog
 import com.jfoenix.controls.JFXDialogLayout
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixdesk.PretixDeskMain
@@ -36,7 +34,7 @@ class MainView : View() {
     private var lastSearchQuery: String? = null
 
     private val searchField = textfield {
-        promptText = "Ticket code or name…"
+        promptText = messages["searchfield_prompt"]
         addClass(MainStyleSheet.mainSearchField)
         val sF = this
 
@@ -103,11 +101,11 @@ class MainView : View() {
                     label(ticketname) { addClass(MainStyleSheet.searchItemProduct) }
                     spacer {}
                     if (it.isRedeemed) {
-                        label("REDEEMED") { addClass(MainStyleSheet.searchItemStatusRedeemed) }
+                        label(messages["searchresult_state_redeemed"]) { addClass(MainStyleSheet.searchItemStatusRedeemed) }
                     } else if (!it.isPaid) {
-                        label("UNPAID") { addClass(MainStyleSheet.searchItemStatusUnpaid) }
+                        label(messages["searchresult_state_unpaid"]) { addClass(MainStyleSheet.searchItemStatusUnpaid) }
                     } else {
-                        label("VALID") { addClass(MainStyleSheet.searchItemStatusValid) }
+                        label(messages["searchresult_state_valid"]) { addClass(MainStyleSheet.searchItemStatusValid) }
                     }
                 }
                 hbox {
@@ -118,7 +116,7 @@ class MainView : View() {
         }
         cellFormat {
         }
-        placeholder = label("No search result found (enter at least 4 characters).")
+        placeholder = label(messages["search_no_result"])
     }
 
     private val searchResultCard = vbox {
@@ -207,7 +205,7 @@ class MainView : View() {
                         style {
                             alignment = Pos.CENTER_LEFT
                         }
-                        jfxTogglebutton("SCAN ONLINE") {
+                        jfxTogglebutton(messages["toolbar_toggle_async"]) {
                             toggleColor = c(STYLE_STATE_VALID_COLOR)
                             isSelected = !(app as PretixDeskMain).configStore.asyncModeEnabled
                             action {
@@ -227,12 +225,12 @@ class MainView : View() {
                         style {
                             alignment = Pos.CENTER_RIGHT
                         }
-                        jfxButton("INFORMATION") {
+                        jfxButton(messages["toolbar_info"]) {
                             action {
                                 replaceWith(StatusView::class, MaterialSlide(ViewTransition.Direction.LEFT))
                             }
                         }
-                        jfxButton("SETTINGS")
+                        jfxButton(messages["toolbar_settings"])
                     }
                 }
             }
@@ -240,7 +238,7 @@ class MainView : View() {
     }
 
     init {
-        title = "pretixdesk"
+        title = messages["title"]
 
         syncStatusTimeline = timeline {
             cycleCount = Timeline.INDEFINITE
@@ -285,24 +283,24 @@ class MainView : View() {
     private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult) {
         var resultData: TicketCheckProvider.CheckResult? = null
 
-        val progressDialog = jfxProgressDialog(heading = "Redeeming ticket") {}
+        val progressDialog = jfxProgressDialog(heading = messages["progress_redeeming"]) {}
         progressDialog.show(root)
         runAsync {
             resultData = controller.handleScanInput(searchResult.secret)
         } ui {
             val message = when (resultData?.type) {
-                TicketCheckProvider.CheckResult.Type.INVALID -> "Unknown ticket."
-                TicketCheckProvider.CheckResult.Type.VALID -> "Ticket successfully redeemed."
-                TicketCheckProvider.CheckResult.Type.USED -> "Ticket already used."
-                TicketCheckProvider.CheckResult.Type.ERROR -> "Unknown error."
-                TicketCheckProvider.CheckResult.Type.UNPAID -> "Ticket not paid."
-                TicketCheckProvider.CheckResult.Type.PRODUCT -> "This product type is invalid."
+                TicketCheckProvider.CheckResult.Type.INVALID -> messages["result_invalid"]
+                TicketCheckProvider.CheckResult.Type.VALID -> messages["result_valid"]
+                TicketCheckProvider.CheckResult.Type.USED -> messages["result_used"]
+                TicketCheckProvider.CheckResult.Type.ERROR -> messages["result_error"]
+                TicketCheckProvider.CheckResult.Type.UNPAID -> messages["result_unpaid"]
+                TicketCheckProvider.CheckResult.Type.PRODUCT -> messages["result_product"]
                 null -> ""
             }
             progressDialog.isOverlayClose = true
             (progressDialog.content as JFXDialogLayout).setBody(label(message))
             (progressDialog.content as JFXDialogLayout).setActions(
-                    jfxButton("CLOSE") {
+                    jfxButton(messages["dialog_close"]) {
                         action {
                             progressDialog.close()
                         }
@@ -489,13 +487,13 @@ class MainView : View() {
                     })
 
                     val headline = when (data?.type) {
-                        TicketCheckProvider.CheckResult.Type.INVALID -> "UNKNOWN TICKET"
-                        TicketCheckProvider.CheckResult.Type.VALID -> "VALID"
-                        TicketCheckProvider.CheckResult.Type.USED -> "ALREADY SCANNED"
-                        TicketCheckProvider.CheckResult.Type.ERROR -> "ERROR"
-                        TicketCheckProvider.CheckResult.Type.UNPAID -> "NOT PAID"
-                        TicketCheckProvider.CheckResult.Type.PRODUCT -> "INVALID PRODUCT"
-                        null -> "UNKNOWN ERROR"
+                        TicketCheckProvider.CheckResult.Type.INVALID -> messages["state_invalid"]
+                        TicketCheckProvider.CheckResult.Type.VALID -> messages["state_valid"]
+                        TicketCheckProvider.CheckResult.Type.USED -> messages["state_used"]
+                        TicketCheckProvider.CheckResult.Type.ERROR -> messages["state_error"]
+                        TicketCheckProvider.CheckResult.Type.UNPAID -> messages["state_unpaid"]
+                        TicketCheckProvider.CheckResult.Type.PRODUCT -> messages["state_product"]
+                        null -> messages["state_unknown"]
                     }
 
                     label(headline) {
@@ -528,7 +526,7 @@ class MainView : View() {
                     val attbox = vbox {
                         addClass(MainStyleSheet.cardFooterAttention)
                         addClass(MainStyleSheet.cardBody)
-                        label("Attention, special ticket!")
+                        label(messages["special_ticket"])
                     }
                     timeline {
                         cycleCount = 10

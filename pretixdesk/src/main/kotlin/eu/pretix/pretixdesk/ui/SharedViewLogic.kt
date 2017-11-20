@@ -12,42 +12,43 @@ import javafx.scene.layout.StackPane
 import org.joda.time.Period
 import org.joda.time.format.PeriodFormatter
 import org.joda.time.format.PeriodFormatterBuilder
-import tornadofx.Controller
-import tornadofx.View
-import tornadofx.action
-import tornadofx.label
+import tornadofx.*
+import java.text.MessageFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-open class BaseController: Controller() {
+open class BaseController : Controller() {
     protected var provider = (app as PretixDeskMain).newCheckProvider()
     protected var configStore = (app as PretixDeskMain).configStore
     private var syncStarted = -1L
 
     fun syncStatusText(): String {
         if (configStore.lastDownload == 0L) {
-            return "NOT SYNCHRONIZED"
+            return messages.getString("sync_status_no")
         } else {
             val period = Period(configStore.lastDownload, System.currentTimeMillis())
             var formatter: PeriodFormatter
 
             if (period.days > 0) {
                 formatter = PeriodFormatterBuilder()
-                        .appendDays().appendSuffix(" DAY, ", " DAYS, ")
-                        .appendHours().appendSuffix(" HOUR", " HOURS, ")
+                        .appendDays().appendSuffix(" " + messages.getString("day_singular") + ", ", " " + messages.getString("day_plural") + ", ")
+                        .appendHours().appendSuffix(" " + messages.getString("hour_singular"), " " + messages.getString("hour_plural"))
                         .printZeroNever()
                         .toFormatter()
             } else if (period.toStandardDuration().millis < 60 * 1000) {
-                return "SYNCED JUST NOW"
+                return messages.getString("sync_status_now")
             } else {
                 formatter = PeriodFormatterBuilder()
-                        .appendHours().appendSuffix(" HOUR, ", " HOURS, ")
-                        .appendMinutes().appendSuffix(" MINUTE", " MINUTES")
+                        .appendHours().appendSuffix(" " + messages.getString("hour_singular") + ", ", " " + messages.getString("hour_plural") + ", ")
+                        .appendMinutes().appendSuffix(" " + messages.getString("minute_singular"), " " + messages.getString("minute_plural"))
                         .printZeroNever()
                         .toFormatter()
             }
-            return "SYNCED " + formatter.print(period) + " AGO"
+            return MessageFormat.format(
+                    messages.getString("sync_status_ago"),
+                    formatter.print(period)
+            );
         }
     }
 
@@ -58,13 +59,13 @@ open class BaseController: Controller() {
         lastSyncFailed.timeInMillis = configStore.lastFailedSync
         val cnt = (app as PretixDeskMain).data().count(QueuedCheckIn::class.java).get().value()
 
-        val formatter = SimpleDateFormat("yyy-MM-dd HH:mm:ss")
+        val formatter = SimpleDateFormat(messages.getString("date_format"))
 
-        var res = "Last successful synchronization:\n" +
+        var res = messages.getString("sync_status_last") + "\n" +
                 formatter.format(lastSync.time) + "\n\n" +
-                "Checkins queued to upload: " + cnt;
+                messages.getString("sync_status_queue") + " " + cnt;
         if (configStore.lastFailedSync > 0) {
-            res += "\n\nLast failed synchronization:\n"
+            res += "\n\n" + messages.getString("sync_status_last_failed") + "\n"
             res += formatter.format(lastSyncFailed.time)
             res += "\n"
             res += configStore.lastFailedSyncMsg
@@ -100,9 +101,9 @@ open class BaseController: Controller() {
 
 
 fun View.displaySyncStatus(controller: BaseController, root: StackPane) {
-    val closeButton: JFXButton = this.jfxButton("CLOSE")
+    val closeButton: JFXButton = this.jfxButton(messages.getString("dialog_close"))
     val dialog = this.jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
-        setHeading(label("Synchronization status"))
+        setHeading(label(messages.getString("sync_status_head")))
         setBody(label(controller.syncStatusLongText()))
         setActions(closeButton)
     }
