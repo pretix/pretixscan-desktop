@@ -24,6 +24,7 @@ import org.sqlite.SQLiteDataSource
 import tornadofx.App
 import java.io.File
 
+val VERSION = "0.1.0"
 
 class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
     val configStore = PretixDeskConfig()

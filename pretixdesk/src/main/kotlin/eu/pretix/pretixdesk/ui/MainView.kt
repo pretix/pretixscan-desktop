@@ -1,5 +1,7 @@
 package eu.pretix.pretixdesk.ui
 
+import com.jfoenix.controls.JFXButton
+import com.jfoenix.controls.JFXDialog
 import com.jfoenix.controls.JFXDialogLayout
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixdesk.PretixDeskMain
@@ -18,6 +20,8 @@ import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.util.Duration
 import tornadofx.*
+import java.awt.Desktop
+import java.net.URI
 import java.util.regex.Pattern
 
 
@@ -278,6 +282,37 @@ class MainView : View() {
                 searchField.requestFocus()
             }
         })
+
+        timeline {
+            keyframe(Duration.seconds(0.1)) {
+                setOnFinished {
+                    runAsync {
+                        controller.updateCheck()
+                    } ui {
+                        if (controller.updateCheckNewerVersion().length > 1) {
+                            val closeButton: JFXButton = jfxButton(messages.getString("dialog_close"))
+                            val downloadButton: JFXButton = jfxButton(messages.getString("update_download").toUpperCase())
+                            val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
+                                setBody(label(messages.getString("update_available").replace("{0}", controller.updateCheckNewerVersion())))
+                                setHeading(label(messages.getString("update_head")))
+                                setActions(downloadButton, closeButton)
+                            }
+                            closeButton.action {
+                                dialog.close()
+                            }
+                            downloadButton.action {
+                                runAsync {
+                                    Desktop.getDesktop().browse(URI("https://pretix.eu/about/en/desk"));
+                                } ui {
+                                    dialog.close()
+                                }
+                            }
+                            dialog.show(root)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult) {

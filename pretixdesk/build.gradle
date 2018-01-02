@@ -46,6 +46,7 @@ dependencies {
     compile 'net.harawata:appdirs:1.0.0'
     compile 'net.java.dev.jna:platform:3.5.2'
     compile 'joda-time:joda-time:2.9.9'
+    compile 'com.github.kittinunf.fuel:fuel:1.12.0'
     compile(project(':libpretixsync'))
     compile files('libs/jfoenix-9.0.0.jar')
     testCompile group: 'junit', name: 'junit', version: '4.12'

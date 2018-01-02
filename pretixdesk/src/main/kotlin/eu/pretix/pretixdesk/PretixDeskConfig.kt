@@ -19,6 +19,8 @@ class PretixDeskConfig : ConfigStore {
     private val PREFS_KEY_LAST_FAILED_SYNC_MSG = "last_failed_sync_msg"
     private val PREFS_KEY_LAST_DOWNLOAD = "last_download"
     private val PREFS_KEY_LAST_STATUS_DATA = "last_status_data"
+    private val PREFS_KEY_LAST_UPDATE_CHECK = "last_update_check_"
+    private val PREFS_KEY_UPDATE_CHECK_NEWER_VERSION = "update_check_newer_version_"
 
     fun setEventConfig(url: String, key: String, version: Int, show_info: Boolean, allow_search: Boolean) {
         prefs.putByteArray(PREFS_KEY_API_URL, url.toByteArray())
@@ -125,4 +127,18 @@ class PretixDeskConfig : ConfigStore {
         prefs.putByteArray(PREFS_KEY_LAST_FAILED_SYNC_MSG, value?.toByteArray())
         prefs.flush()
     }
+
+    var lastUpdateCheck: Long
+        get() = prefs.getLong(PREFS_KEY_LAST_UPDATE_CHECK + VERSION, 0)
+        set(value) {
+            prefs.putLong(PREFS_KEY_LAST_UPDATE_CHECK + VERSION, value)
+            prefs.flush()
+        }
+
+    var updateCheckNewerVersion: String
+        get() = prefs.get(PREFS_KEY_UPDATE_CHECK_NEWER_VERSION + VERSION, "")
+        set (value) {
+            prefs.put(PREFS_KEY_UPDATE_CHECK_NEWER_VERSION + VERSION, value)
+            prefs.flush()
+        }
 }
