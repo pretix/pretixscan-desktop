@@ -132,13 +132,13 @@ class MainView : View() {
         this += searchResultListView
 
         searchResultListView.setOnMouseClicked {
-            if (it.clickCount == 2) {
+            if (it.clickCount == 2 && searchResultListView.selectionModel.selectedItem != null) {
                 handleSearchResultSelected(searchResultListView.selectionModel.selectedItem)
                 it.consume()
             }
         }
         searchResultListView.setOnKeyReleased {
-            if (it.code == KeyCode.ENTER) {
+            if (it.code == KeyCode.ENTER && searchResultListView.selectionModel.selectedItem != null) {
                 handleSearchResultSelected(searchResultListView.selectionModel.selectedItem)
                 it.consume()
             }
