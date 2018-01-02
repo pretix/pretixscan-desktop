@@ -41,9 +41,9 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
         stage.minWidth = 800.0
 
         configStore.setEventConfig(
-                "foo",
-                "bar",
-                2,
+                "http://localhost:8000/pretixdroid/api/foo/democon/",
+                "8AGYNOCds0K06Jmp3be8zjUlCKTO1gfg",
+                3,
                 true,
                 true
         )

@@ -191,7 +191,11 @@ class StatusView : View() {
                                 loadStatus()
                             }
                         }
-                        jfxButton(messages["toolbar_settings"])
+                        jfxButton(messages["toolbar_settings"]) {
+                            action {
+                                replaceWith(SettingsView::class, MaterialSlide(ViewTransition.Direction.LEFT))
+                            }
+                        }
                     }
                 }
             }

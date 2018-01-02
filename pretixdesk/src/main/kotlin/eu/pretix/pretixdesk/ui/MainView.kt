@@ -234,7 +234,11 @@ class MainView : View() {
                                 replaceWith(StatusView::class, MaterialSlide(ViewTransition.Direction.LEFT))
                             }
                         }
-                        jfxButton(messages["toolbar_settings"])
+                        jfxButton(messages["toolbar_settings"]) {
+                            action {
+                                replaceWith(SettingsView::class, MaterialSlide(ViewTransition.Direction.LEFT))
+                            }
+                        }
                     }
                 }
             }

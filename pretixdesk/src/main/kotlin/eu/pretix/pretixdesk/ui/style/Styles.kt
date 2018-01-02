@@ -48,6 +48,7 @@ class MainStyleSheet : Stylesheet() {
         val eventInfoItemBody by cssclass()
         val eventInfoHeader by cssclass()
         val eventInfoItemNumber by cssclass()
+        val eventSettingsCard by cssclass()
     }
 
     init {
@@ -227,6 +228,10 @@ class MainStyleSheet : Stylesheet() {
             textAlignment = TextAlignment.RIGHT
             alignment = Pos.CENTER_RIGHT
             minWidth = 60.px
+        }
+        eventSettingsCard {
+            minWidth = 460.px
+            maxWidth = 460.px
         }
     }
 }

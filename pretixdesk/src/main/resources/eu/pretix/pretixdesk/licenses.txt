@@ -1,0 +1,36 @@
+pretixdesk is developed by:
+
+rami.io Software development
+Raphael Michel
+Heinrich-Fuchs-Str. 120
+69126 Heidelberg
+Germany
+
+Contact:
+Email: support@pretix.eu
+Phone: +49 621 180 696 58
+
+This app is free software and released without warranty under the terms of the GPL license version 3.
+Source code: https://github.com/pretix/pretixdesk
+
+This app contains code from the following projects:
+
+* Java SE by Oracle America, Inc.
+  License: http://www.oracle.com/technetwork/java/javase/terms/license/index.html
+* Kotlin by JetBrains s.r.o – Apache License 2.0
+* libpretixsync by Raphael Michel – Apache License 2.0
+* TornadoFX by Edvin Syse – Apache License 2.0
+* SQLite JDBC by Xerial – Apache License 2.0
+* appdirs by Iwao AVE – Apache License 2.0
+* Joda Time by Joda.org – Apache License 2.0
+* Fuel by Kittinun Vantasin – MIT License
+* JFoeniX – Apache License 2.0
+
+GPL license
+Please see https://www.gnu.org/licenses/gpl-3.0.
+
+Apache License
+Please see http://www.apache.org/licenses/LICENSE-2.0.
+
+MIT License
+Please see https://opensource.org/licenses/MIT
