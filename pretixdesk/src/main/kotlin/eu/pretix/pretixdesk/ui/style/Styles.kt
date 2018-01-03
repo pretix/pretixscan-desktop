@@ -55,6 +55,7 @@ class MainStyleSheet : Stylesheet() {
     init {
         label {
             fontFamily = "Roboto"
+            fontSize = 13.px
         }
 
         textInput {
