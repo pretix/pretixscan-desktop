@@ -23,6 +23,10 @@ open class BaseController : Controller() {
     protected var configStore = (app as PretixDeskMain).configStore
     private var syncStarted = -1L
 
+    fun soundEnabled(): Boolean {
+        return configStore.playSound
+    }
+
     fun syncStatusText(): String {
         if (configStore.lastDownload == 0L) {
             return messages.getString("sync_status_no")

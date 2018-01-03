@@ -11,6 +11,7 @@ class PretixDeskConfig : ConfigStore {
     private val PREFS_KEY_API_URL = "pretix_api_url"
     private val PREFS_KEY_API_KEY = "pretix_api_key"
     private val PREFS_KEY_SHOW_INFO = "show_info"
+    private val PREFS_KEY_PLAY_SOUND = "play_sound"
     private val PREFS_KEY_ALLOW_SEARCH = "allow_search"
     private val PREFS_KEY_API_VERSION = "pretix_api_version"
     private val PREFS_KEY_ASYNC_MODE = "async"
@@ -127,6 +128,13 @@ class PretixDeskConfig : ConfigStore {
         prefs.putByteArray(PREFS_KEY_LAST_FAILED_SYNC_MSG, value?.toByteArray())
         prefs.flush()
     }
+
+    var playSound: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_PLAY_SOUND, true)
+        set (value) {
+            prefs.putBoolean(PREFS_KEY_PLAY_SOUND, value)
+            prefs.flush()
+        }
 
     var lastUpdateCheck: Long
         get() = prefs.getLong(PREFS_KEY_LAST_UPDATE_CHECK + VERSION, 0)

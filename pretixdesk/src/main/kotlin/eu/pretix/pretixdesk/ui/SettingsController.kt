@@ -15,4 +15,8 @@ class SettingsController : BaseController() {
     fun hasLocalChanges(): Boolean {
         return (app as PretixDeskMain).data().count(QueuedCheckIn::class.java).get().value() > 0
     }
+
+    fun toggleSound(value: Boolean ) {
+        configStore.playSound = value
+    }
 }

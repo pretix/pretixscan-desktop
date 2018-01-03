@@ -23,6 +23,9 @@ import tornadofx.*
 import java.awt.Desktop
 import java.net.URI
 import java.util.regex.Pattern
+import javax.sound.sampled.AudioSystem
+
+
 
 
 var re_alphanum = Pattern.compile("^[a-zA-Z0-9]+\$")
@@ -245,6 +248,20 @@ class MainView : View() {
         }
     }
 
+    private fun beep() {
+        if (!controller.soundEnabled()) {
+            return
+        }
+        try {
+            val clip = AudioSystem.getClip()
+            val inputStream = AudioSystem.getAudioInputStream(PretixDeskMain::class.java.getResourceAsStream("beep.wav"))
+            clip.open(inputStream)
+            clip.start()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     init {
         title = messages["title"]
 
@@ -347,6 +364,7 @@ class MainView : View() {
             )
 
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
+                beep()
                 searchResult.isRedeemed = true
                 val i: Int = searchResultList.indexOf(searchResult)
                 val cloned = TicketCheckProvider.SearchResult(searchResult)
@@ -486,6 +504,9 @@ class MainView : View() {
 
             val newCard = makeNewCard(resultData)
             showCard(newCard)
+            if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
+                beep()
+            }
 
             runAsync {
                 controller.triggerSync()

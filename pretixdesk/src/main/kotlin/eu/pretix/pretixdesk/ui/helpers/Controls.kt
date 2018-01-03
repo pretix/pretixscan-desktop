@@ -157,6 +157,13 @@ fun Node.jfxTogglebutton(text: String? = null, group: ToggleGroup? = getToggleGr
             if (toggleGroup?.selectedToggle == null && selectFirst) isSelected = true
         }, op)
 
+fun EventTarget.jfxTogglebutton(text: String? = null, selectFirst: Boolean = true, value: Any? = null, op: (JFXToggleButton.() -> Unit)? = null) =
+        opcr(this, JFXToggleButton().apply {
+            this.text = if (value != null && text == null) value.toString() else text ?: ""
+            properties["tornadofx.toggleGroupValue"] = value ?: text
+            if (toggleGroup?.selectedToggle == null && selectFirst) isSelected = true
+        }, op)
+
 
 fun Node.jfxRadiobutton(text: String? = null, group: ToggleGroup? = getToggleGroup(), value: Any? = null, op: (JFXRadioButton.() -> Unit)? = null)
         = opcr(this, JFXRadioButton().apply {

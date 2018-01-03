@@ -8,16 +8,12 @@ import eu.pretix.pretixdesk.readFromInputStream
 import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
+import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
 import javafx.animation.Timeline
 import javafx.geometry.Pos
-import javafx.scene.image.Image
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
-import javafx.scene.layout.VBox
-import javafx.util.Duration
 import tornadofx.*
-import java.awt.Desktop
-import java.net.URI
 
 class SettingsView : View() {
     private val controller: SettingsController by inject()
@@ -39,6 +35,14 @@ class SettingsView : View() {
                     label(messages["settings_head"]) { addClass(MainStyleSheet.eventInfoItemHeader) }
                 }
             }
+        }
+    }
+
+    private val soundBtn = jfxTogglebutton() {
+        toggleColor = c(STYLE_STATE_VALID_COLOR)
+        isSelected = !(app as PretixDeskMain).configStore.playSound
+        action {
+            controller.toggleSound(isSelected)
         }
     }
 
@@ -85,6 +89,25 @@ class SettingsView : View() {
                             }
                         }
                     }
+                }
+            }
+        }
+
+        vbox {
+            addClass(MainStyleSheet.card)
+            addClass(MainStyleSheet.eventSettingsCard)
+            vbox {
+                addClass(MainStyleSheet.cardBody)
+                style {
+                    padding = box(0.px, 15.px)
+                }
+                hbox {
+                    style {
+                        alignment = Pos.CENTER
+                    }
+                    label(messages["settings_sound"])
+                    spacer {}
+                    this += soundBtn
                 }
             }
         }
@@ -158,6 +181,7 @@ class SettingsView : View() {
                                 replaceWith(MainView::class, MaterialSlide(ViewTransition.Direction.RIGHT))
                             }
                         }
+                        spacer {}
                     }
                 }
             }
@@ -166,6 +190,7 @@ class SettingsView : View() {
 
     override fun onDock() {
         super.onDock()
+        soundBtn.isSelected = (app as PretixDeskMain).configStore.playSound
     }
 
     init {
