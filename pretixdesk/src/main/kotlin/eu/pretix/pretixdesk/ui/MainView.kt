@@ -66,7 +66,7 @@ class MainView : View() {
             } else {
                 if (sF.text.length >= 4) {
                     startSearchTimeline = timeline {
-                        keyframe(Duration.seconds(.1)) {
+                        keyframe(Duration.seconds(.2)) {
                             setOnFinished {
                                 handleSearchInput(sF.text)
                             }
@@ -501,6 +501,7 @@ class MainView : View() {
             resultData = controller.handleScanInput(value)
         } ui {
             hideSpinner()
+            hideSearchResultCard()
 
             val newCard = makeNewCard(resultData)
             showCard(newCard)
