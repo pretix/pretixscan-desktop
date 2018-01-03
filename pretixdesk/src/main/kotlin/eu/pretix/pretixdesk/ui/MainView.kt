@@ -262,6 +262,13 @@ class MainView : View() {
         }
     }
 
+    override fun onDock() {
+        super.onDock()
+        if (!(app as PretixDeskMain).configStore.isConfigured()) {
+            replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+        }
+    }
+
     init {
         title = messages["title"]
 

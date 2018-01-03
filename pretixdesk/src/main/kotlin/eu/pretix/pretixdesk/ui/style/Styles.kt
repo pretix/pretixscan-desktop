@@ -49,6 +49,7 @@ class MainStyleSheet : Stylesheet() {
         val eventInfoHeader by cssclass()
         val eventInfoItemNumber by cssclass()
         val eventSettingsCard by cssclass()
+        val setupScreen by cssclass()
     }
 
     init {
@@ -232,6 +233,15 @@ class MainStyleSheet : Stylesheet() {
         eventSettingsCard {
             minWidth = 460.px
             maxWidth = 460.px
+        }
+
+        setupScreen {
+            minWidth = 460.px
+            maxWidth = 460.px
+
+            label {
+                textFill = c(STYLE_TOOLBAR_TEXT_COLOR)
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package eu.pretix.pretixdesk.ui
 
 import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
@@ -204,6 +205,9 @@ class StatusView : View() {
 
     override fun onDock() {
         super.onDock()
+        if (!(app as PretixDeskMain).configStore.isConfigured()) {
+            replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+        }
         loadStatus()
     }
 

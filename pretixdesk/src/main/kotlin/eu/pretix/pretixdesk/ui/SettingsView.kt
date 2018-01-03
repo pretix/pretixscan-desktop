@@ -17,10 +17,6 @@ import tornadofx.*
 
 class SettingsView : View() {
     private val controller: SettingsController by inject()
-    private var syncStatusTimeline: Timeline? = null
-    private var loadDataTimeline: Timeline? = null
-    private var spinnerAnimation: Timeline? = null
-    private var statusData: TicketCheckProvider.StatusResult? = null
 
     private var headerCardHolder = vbox {
         style {
@@ -69,7 +65,6 @@ class SettingsView : View() {
                     jfxButton(messages["settings_reset_button"].toUpperCase()) {
                         action {
                             if (controller.hasLocalChanges()) {
-
                                 val okButton: JFXButton = jfxButton(messages.getString("dialog_ok").toUpperCase())
                                 val cancelButton: JFXButton = jfxButton(messages.getString("dialog_cancel").toUpperCase())
                                 val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
@@ -82,10 +77,12 @@ class SettingsView : View() {
                                 okButton.action {
                                     dialog.close()
                                     controller.resetApp()
+                                    replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
                                 }
                                 dialog.show(root)
                             } else {
                                 controller.resetApp()
+                                replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
                             }
                         }
                     }
@@ -190,6 +187,9 @@ class SettingsView : View() {
 
     override fun onDock() {
         super.onDock()
+        if (!(app as PretixDeskMain).configStore.isConfigured()) {
+            replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+        }
         soundBtn.isSelected = (app as PretixDeskMain).configStore.playSound
     }
 

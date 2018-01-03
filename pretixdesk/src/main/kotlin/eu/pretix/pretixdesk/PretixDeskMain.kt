@@ -39,15 +39,6 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
         stage.isMaximized = true
         stage.minHeight = 600.0
         stage.minWidth = 800.0
-
-        configStore.setEventConfig(
-                "http://localhost:8000/pretixdroid/api/foo/democon/",
-                "8AGYNOCds0K06Jmp3be8zjUlCKTO1gfg",
-                3,
-                true,
-                true
-        )
-
         super.start(stage)
 
         val stylesheets = stage.scene.getStylesheets()
