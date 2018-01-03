@@ -43,6 +43,15 @@
    ;Store installation folder
    WriteRegStr HKCU "Software\pretixdesk" "" $INSTDIR
 
+   DetailPrint "Register pretixdesk URI Handler"
+   DeleteRegKey HKCR "pretixdesk"
+   WriteRegStr HKCR "pretixdesk" "" "URL: pretixdesk"
+   WriteRegStr HKCR "pretixdesk" "URL Protocol" "pretixdesk setup URLs"
+   WriteRegStr HKCR "pretixdesk\DefaultIcon" "" "$INSTDIR\pretixdesk.exe"
+   WriteRegStr HKCR "pretixdesk\shell" "" ""
+   WriteRegStr HKCR "pretixdesk\shell\Open" "" ""
+   WriteRegStr HKCR "pretixdesk\shell\Open\command" "" "$INSTDIR\pretixdesk.exe %1"
+
    ;Create uninstaller
    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\pretixdesk" "DisplayName" "pretixdesk"
    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\pretixdesk" "UninstallString" "$INSTDIR\uninstall.exe"
@@ -77,4 +86,5 @@
 
    DeleteRegKey /ifempty HKCU "Software\pretixdesk"
    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\pretixdesk"
+   DeleteRegKey HKCR "pretixdesk"
  SectionEnd

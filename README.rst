@@ -50,10 +50,10 @@ Windows package
 
 To build the windows executable, you can run::
     
-    JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew createExe
+    ./gradlew createExe
 
 To then create the installer, you will need to download the .tar.gz file of the
-`Java 9 JRE`_ and unpack it to a folger called ``jre`` within the source directory. You also need to 
+`Java 9 JRE`_ and unpack it to a folder called ``jre`` within the source directory. You also need to 
 install `Nullsoft Install System`_. Then, you can create
 the installer with::
 
