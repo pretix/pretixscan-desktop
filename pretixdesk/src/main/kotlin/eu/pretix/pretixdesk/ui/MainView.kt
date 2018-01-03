@@ -40,6 +40,12 @@ class MainView : View() {
     private var startSearchTimeline: Timeline? = null
     private var lastSearchQuery: String? = null
 
+    private val infoButton = jfxButton(messages["toolbar_info"]) {
+        action {
+            replaceWith(StatusView::class, MaterialSlide(ViewTransition.Direction.LEFT))
+        }
+    }
+
     private val searchField = textfield {
         promptText = messages["searchfield_prompt"]
         addClass(MainStyleSheet.mainSearchField)
@@ -232,11 +238,7 @@ class MainView : View() {
                         style {
                             alignment = Pos.CENTER_RIGHT
                         }
-                        jfxButton(messages["toolbar_info"]) {
-                            action {
-                                replaceWith(StatusView::class, MaterialSlide(ViewTransition.Direction.LEFT))
-                            }
-                        }
+                        this += infoButton
                         jfxButton(messages["toolbar_settings"]) {
                             action {
                                 replaceWith(SettingsView::class, MaterialSlide(ViewTransition.Direction.LEFT))
@@ -266,6 +268,8 @@ class MainView : View() {
         super.onDock()
         if (!(app as PretixDeskMain).configStore.isConfigured()) {
             replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+        } else {
+            infoButton.isVisible = (app as PretixDeskMain).configStore.showInfo
         }
     }
 
@@ -523,7 +527,6 @@ class MainView : View() {
     }
 
     private fun handleInput(value: String) {
-
         // TODO: Support pretix instances with lower entropy levels
         if (value.matches(Regex("[a-z0-9]{32,}"))) {
             handleTicketInput(value)
