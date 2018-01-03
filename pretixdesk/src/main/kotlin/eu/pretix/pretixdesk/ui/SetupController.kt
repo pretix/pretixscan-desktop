@@ -3,6 +3,8 @@ package eu.pretix.pretixdesk.ui
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.queryToMap
+import org.json.JSONException
+import org.json.JSONObject
 import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
@@ -19,7 +21,42 @@ class SetupController : BaseController() {
         provider = (app as PretixDeskMain).newCheckProvider()
     }
 
+    private fun configureLikePretixdroid(jsonData: String): SetupResult {
+        try {
+            val jsonobject = JSONObject(jsonData)
+
+            if (!jsonobject.has("version") || !jsonobject.has("url") || !jsonobject.has("key")) {
+                return SetupResult.INVALID_URL
+            }
+            if (jsonobject.getInt("version") < 3) {
+                return SetupResult.VERSION_PRETIX_OLD
+            }
+            if (jsonobject.getInt("version") > PretixApi.SUPPORTED_API_VERSION) {
+                return SetupResult.VERSION_PRETIXDROID_OLD
+            }
+
+            configStore.resetEventConfig()
+
+            configStore.setEventConfig(
+                    jsonobject.getString("url"),
+                    jsonobject.getString("key"),
+                    jsonobject.getInt("version"),
+                    jsonobject.optBoolean("show_info", true),
+                    jsonobject.optBoolean("allow_search", true)
+            )
+            reloadCheckProvider()
+            return SetupResult.OK
+
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            return SetupResult.INVALID_URL
+        }
+    }
+
     fun configure(rawUrl: String): SetupResult {
+        if (rawUrl.startsWith("{")) {
+            return configureLikePretixdroid(rawUrl);
+        }
         try {
             val url = URI(rawUrl)
 
