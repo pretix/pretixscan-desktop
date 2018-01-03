@@ -3,6 +3,7 @@ package eu.pretix.pretixdesk.ui
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.pretixdesk.ConfigureEvent
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.readFromInputStream
 import eu.pretix.pretixdesk.ui.helpers.*
@@ -14,6 +15,10 @@ import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import tornadofx.*
+import java.awt.SystemColor.window
+import javafx.stage.Stage
+
+
 
 class SettingsView : View() {
     private val controller: SettingsController by inject()
@@ -195,5 +200,10 @@ class SettingsView : View() {
 
     init {
         title = messages["title"]
+
+        subscribe<ConfigureEvent> {
+            forceFocus(root)
+            requestReset(root)
+        }
     }
 }

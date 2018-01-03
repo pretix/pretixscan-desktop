@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import com.jfoenix.controls.JFXDialogLayout
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.pretixdesk.ConfigureEvent
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
@@ -269,12 +270,21 @@ class MainView : View() {
         if (!(app as PretixDeskMain).configStore.isConfigured()) {
             replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
         } else {
+            if ((app as PretixDeskMain).getInitUrl() != null && !(app as PretixDeskMain).parameters_handled) {
+                requestReset(root)
+                (app as PretixDeskMain).parameters_handled = true
+            }
             infoButton.isVisible = (app as PretixDeskMain).configStore.showInfo
         }
     }
 
     init {
         title = messages["title"]
+
+        subscribe<ConfigureEvent> {
+            forceFocus(root)
+            requestReset(root)
+        }
 
         syncStatusTimeline = timeline {
             cycleCount = Timeline.INDEFINITE
@@ -480,6 +490,7 @@ class MainView : View() {
         for (oldResultCard in resultCards) {
             removeCard(oldResultCard)
         }
+
         showSpinner()
 
         var resultData: List<TicketCheckProvider.SearchResult>? = null

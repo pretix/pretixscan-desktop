@@ -25,12 +25,16 @@ This app contains code from the following projects:
 * Joda Time by Joda.org – Apache License 2.0
 * Fuel by Kittinun Vantasin – MIT License
 * JFoeniX – Apache License 2.0
+* JUnique by Sauron Software – LPL
 
-GPL license
-Please see https://www.gnu.org/licenses/gpl-3.0.
+GPL
+Please see https://www.gnu.org/licenses/gpl-3.0
+
+LGPL
+Please see https://www.gnu.org/licenses/lgpl-3.0
 
 Apache License
-Please see http://www.apache.org/licenses/LICENSE-2.0.
+Please see http://www.apache.org/licenses/LICENSE-2.0
 
 MIT License
 Please see https://opensource.org/licenses/MIT

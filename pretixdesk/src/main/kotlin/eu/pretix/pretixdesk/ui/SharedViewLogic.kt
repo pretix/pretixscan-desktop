@@ -8,7 +8,9 @@ import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.jfxButton
 import eu.pretix.pretixdesk.ui.helpers.jfxDialog
+import javafx.application.Platform
 import javafx.scene.layout.StackPane
+import javafx.stage.Stage
 import org.joda.time.Period
 import org.joda.time.format.PeriodFormatter
 import org.joda.time.format.PeriodFormatterBuilder
@@ -115,4 +117,31 @@ fun View.displaySyncStatus(controller: BaseController, root: StackPane) {
         dialog.close()
     }
     dialog.show(root)
+}
+
+fun View.requestReset(root: StackPane) {
+    if (isDocked) {
+        val okButton: JFXButton = jfxButton(messages.getString("dialog_ok").toUpperCase())
+        val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
+            setBody(label(messages.getString("setup_reset_first")))
+            setActions(okButton)
+        }
+        okButton.action {
+            dialog.close()
+        }
+        dialog.show(root)
+    }
+}
+
+fun View.forceFocus(root: StackPane) {
+    // Hacky way to *really* bring the window to the front on Windows
+    if (root.scene.window is Stage) {
+        val stage = root.scene.window as Stage
+        stage.toFront()
+    }
+    root.scene.window.requestFocus()
+    Platform.runLater({
+        primaryStage.isIconified = true
+        primaryStage.isIconified = false
+    })
 }

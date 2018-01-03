@@ -1,8 +1,13 @@
 package eu.pretix.pretixdesk
 
+import it.sauronsoftware.junique.JUnique
+import it.sauronsoftware.junique.MessageHandler
+import tornadofx.App
+import tornadofx.FXEvent
 import java.net.URLDecoder
 import java.util.HashMap
 
+class ConfigureEvent(val rawUrl: String) : FXEvent()
 
 fun queryToMap(query: String): Map<String, String> {
     val params = query.split("&".toRegex())
@@ -14,4 +19,11 @@ fun queryToMap(query: String): Map<String, String> {
         map[name] = value
     }
     return map
+}
+fun App.acquireLock(appId: String, f: (message: String) -> String) {
+    JUnique.acquireLock(appId, object : MessageHandler {
+        public override fun handle(message: String) : String {
+            return f(message)
+        }
+    })
 }

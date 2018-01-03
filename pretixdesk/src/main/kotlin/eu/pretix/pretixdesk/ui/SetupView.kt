@@ -3,6 +3,7 @@ package eu.pretix.pretixdesk.ui
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.pretixdesk.ConfigureEvent
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.readFromInputStream
 import eu.pretix.pretixdesk.ui.helpers.MaterialSlide
@@ -13,12 +14,14 @@ import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
 import eu.pretix.pretixdesk.ui.style.STYLE_PRIMARY_DARK_COLOR
 import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
 import javafx.animation.Timeline
+import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.text.TextAlignment
+import javafx.stage.Stage
 import javafx.util.Duration
 import tornadofx.*
 
@@ -120,9 +123,22 @@ class SetupView : View() {
 
     override fun onDock() {
         super.onDock()
+        if ((app as PretixDeskMain).getInitUrl() != null && !(app as PretixDeskMain).parameters_handled) {
+            runAsync {
+                Thread.sleep(100)
+            } ui {
+                handleConfiguration((app as PretixDeskMain).getInitUrl()!!)
+            }
+            (app as PretixDeskMain).parameters_handled = true
+        }
     }
 
     init {
         title = messages["title"]
+
+        subscribe<ConfigureEvent> { event ->
+            forceFocus(root)
+            handleConfiguration(event.rawUrl)
+        }
     }
 }
