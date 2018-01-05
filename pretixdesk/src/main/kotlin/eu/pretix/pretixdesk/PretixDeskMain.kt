@@ -162,6 +162,7 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
             p = OnlineCheckProvider(configStore, DefaultHttpClientFactory())
         }
         p.setSentry(DummySentryImplementation())
+        apiClient = PretixApi.fromConfig(configStore, DefaultHttpClientFactory());
         return p
     }
 }
