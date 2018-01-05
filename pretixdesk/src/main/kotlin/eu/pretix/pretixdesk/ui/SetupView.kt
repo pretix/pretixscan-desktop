@@ -50,12 +50,12 @@ class SetupView : View() {
 
         style {
             alignment = Pos.CENTER
-            spacing = 20.px
+            spacing = 15.px
         }
 
         hbox {
             style {
-                paddingBottom = 20.0
+                paddingBottom = 10.0
                 alignment = Pos.CENTER
             }
             imageview(Image(PretixDeskMain::class.java.getResourceAsStream("logo_white.png")))
@@ -70,7 +70,7 @@ class SetupView : View() {
             isWrapText = true
             textAlignment = TextAlignment.CENTER
             style {
-                fontSize = 16.pt
+                fontSize = 13.pt
             }
         }
         label(messages["setup_instructions_step1"]) {
@@ -78,7 +78,10 @@ class SetupView : View() {
             textAlignment = TextAlignment.LEFT
             graphic = icon(MaterialIcon.CHECK)
             style {
-                fontSize = 14.pt
+                alignment = Pos.CENTER_LEFT
+                fontSize = 13.pt
+                minWidth = 460.px
+                maxWidth = 460.px
             }
         }
         label(messages["setup_instructions_step2"]) {
@@ -86,7 +89,10 @@ class SetupView : View() {
             textAlignment = TextAlignment.LEFT
             graphic = icon(MaterialIcon.CHECK)
             style {
-                fontSize = 14.pt
+                alignment = Pos.CENTER_LEFT
+                fontSize = 13.pt
+                minWidth = 460.px
+                maxWidth = 460.px
             }
         }
         label(messages["setup_instructions_step3"]) {
@@ -94,7 +100,10 @@ class SetupView : View() {
             textAlignment = TextAlignment.LEFT
             graphic = icon(MaterialIcon.CHECK)
             style {
-                fontSize = 14.pt
+                alignment = Pos.CENTER_LEFT
+                fontSize = 13.pt
+                minWidth = 460.px
+                maxWidth = 460.px
             }
         }
         label(messages["setup_instructions2"]) {
