@@ -2,6 +2,8 @@ package eu.pretix.pretixdesk.ui
 
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
+import de.jensd.fx.glyphs.materialicons.MaterialIcon
+import de.jensd.fx.glyphs.materialicons.MaterialIconView
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixdesk.ConfigureEvent
 import eu.pretix.pretixdesk.PretixDeskMain
@@ -24,6 +26,7 @@ import javafx.scene.text.TextAlignment
 import javafx.stage.Stage
 import javafx.util.Duration
 import tornadofx.*
+import java.awt.Color
 
 class SetupView : View() {
     private val controller: SetupController by inject()
@@ -63,14 +66,42 @@ class SetupView : View() {
                 fontSize = 20.pt
             }
         }
-        label(messages["setup_instructions"]) {
+        label(messages["setup_instructions_headline"]) {
             isWrapText = true
             textAlignment = TextAlignment.CENTER
+            style {
+                fontSize = 16.pt
+            }
+        }
+        label(messages["setup_instructions_step1"]) {
+            isWrapText = true
+            textAlignment = TextAlignment.LEFT
+            graphic = icon(MaterialIcon.CHECK)
+            style {
+                fontSize = 14.pt
+            }
+        }
+        label(messages["setup_instructions_step2"]) {
+            isWrapText = true
+            textAlignment = TextAlignment.LEFT
+            graphic = icon(MaterialIcon.CHECK)
+            style {
+                fontSize = 14.pt
+            }
+        }
+        label(messages["setup_instructions_step3"]) {
+            isWrapText = true
+            textAlignment = TextAlignment.LEFT
+            graphic = icon(MaterialIcon.CHECK)
+            style {
+                fontSize = 14.pt
+            }
         }
         label(messages["setup_instructions2"]) {
             isWrapText = true
-            textAlignment = TextAlignment.CENTER
+            textAlignment = TextAlignment.JUSTIFY
         }
+
         this += manualInput
     }
 
@@ -140,5 +171,12 @@ class SetupView : View() {
             forceFocus(root)
             handleConfiguration(event.rawUrl)
         }
+    }
+
+    private fun icon(icon: MaterialIcon): MaterialIconView {
+        val iconView = MaterialIconView(icon)
+        iconView.glyphSize = 25
+        iconView.glyphStyle = "-fx-fill: white;"
+        return iconView
     }
 }
