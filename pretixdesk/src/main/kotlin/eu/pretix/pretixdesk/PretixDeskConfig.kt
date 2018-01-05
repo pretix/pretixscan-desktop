@@ -61,7 +61,7 @@ class PretixDeskConfig : ConfigStore {
     }
 
     override fun isConfigured(): Boolean {
-        return prefs.getByteArray(PREFS_KEY_API_URL, null) != null
+        return prefs.getByteArray(PREFS_KEY_API_URL, null) != null && apiUrl.isNotEmpty()
     }
 
     override fun getApiVersion(): Int {
