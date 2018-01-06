@@ -316,6 +316,7 @@ class MainView : View() {
         currentStage?.setOnCloseRequest {
             syncTriggerTimeline?.stop()
             syncStatusTimeline?.stop()
+            terminateAsyncExecutors(5000)
         }
 
         // Focus grabber
