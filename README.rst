@@ -18,7 +18,8 @@ with `pretix`_, the open source ticket sales system of choice.
 Project status
 --------------
 
-This is really early stage. Please do not use it yet.
+pretixdesk has all features required to be useful but is still in it's early days. Feel free to
+use it, but do have a backup plan.
 
 Building and Running
 --------------------
@@ -58,6 +59,23 @@ install `Nullsoft Install System`_. Then, you can create
 the installer with::
 
     makensis windows.nsi
+
+Ubuntu/Debian package
+^^^^^^^^^^^^^^^^^^^^^
+
+To build the Ubuntu/Debian package, run ``./gradlew fatJar`` first and then execute::
+
+    ./packaging/build_deb.sh
+
+If you are on linux, but not on a debian-based distribution that lacks the ``dpkg`` command,
+a docker image will be downloaded and executed to get the debian toolchain. There is a similar
+command ``build_deb_repo.sh`` that you probably won't need, except if you are myself reading
+this in a couple of years.
+
+Arch Linux package
+^^^^^^^^^^^^^^^^^^
+
+The `pretixdesk-git` AUR package always automatically builds from the latest git revision.
 
 FAQ
 ---
@@ -120,3 +138,4 @@ go to `pretix.eu`_ or contact Raphael directly.
 .. _tornadofx: https://github.com/edvin/tornadofx
 .. _JFoenix: https://github.com/jfoenixadmin/JFoenix
 .. _pretixdroid: https://github.com/pretix/pretixdroid
+.. _pretixdesk-git: https://aur.archlinux.org/packages/pretixdesk-git/
