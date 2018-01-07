@@ -313,12 +313,6 @@ class MainView : View() {
             }
         }
 
-        currentStage?.setOnCloseRequest {
-            syncTriggerTimeline?.stop()
-            syncStatusTimeline?.stop()
-            terminateAsyncExecutors(5000)
-        }
-
         // Focus grabber
         currentStage?.addEventFilter(KeyEvent.KEY_PRESSED, {
             if (currentStage?.scene?.focusOwner !is TextField && re_alphanum.matcher(it.text).matches()) {
