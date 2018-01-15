@@ -3,6 +3,7 @@ package eu.pretix.pretixdesk.ui.helpers
 import com.jfoenix.controls.*
 import javafx.beans.property.Property
 import javafx.beans.value.ObservableValue
+import javafx.collections.ObservableList
 import javafx.event.EventTarget
 import javafx.geometry.Orientation
 import javafx.scene.Node
@@ -11,6 +12,7 @@ import javafx.scene.paint.Color
 import javafx.util.StringConverter
 import tornadofx.*
 import java.time.LocalDate
+import java.time.LocalTime
 
 
 enum class ColorPickerMode { Button, MenuButton, SplitMenuButton }
@@ -50,6 +52,17 @@ fun <T> EventTarget.jfxTextfield(property: Property<T>, converter: StringConvert
     ViewModel.register(textProperty(), property)
     op.invoke(this)
 }
+
+fun JFXTimePicker.bind(property: ObservableValue<LocalTime>, readonly: Boolean = false) {
+    ViewModel.register(valueProperty(), property)
+    if (readonly || (property !is Property<*>)) valueProperty().bind(property) else valueProperty().bindBidirectional(property as Property<LocalTime>)
+}
+
+
+fun EventTarget.jfxTimepicker(property: Property<LocalTime>? = null, op: (JFXTimePicker.() -> Unit) = {}) = opcr(this, JFXTimePicker().apply {
+    if (property != null) bind(property)
+    setIs24HourView(true)
+}, op)
 
 fun EventTarget.jfxDatepicker(op: (JFXDatePicker.() -> Unit) = {}) = opcr(this, JFXDatePicker(), op)
 fun EventTarget.jfxDatepicker(property: Property<LocalDate>, op: (JFXDatePicker.() -> Unit) = {}) = jfxDatepicker().apply {

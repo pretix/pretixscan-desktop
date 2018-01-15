@@ -2,6 +2,7 @@ package eu.pretix.pretixdesk.ui.style
 
 import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow
+import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import javafx.scene.text.TextAlignment
 import tornadofx.*
@@ -50,6 +51,7 @@ class MainStyleSheet : Stylesheet() {
         val eventInfoItemNumber by cssclass()
         val eventSettingsCard by cssclass()
         val setupScreen by cssclass()
+        val questionsForm by cssclass()
     }
 
     init {
@@ -243,6 +245,18 @@ class MainStyleSheet : Stylesheet() {
 
             label {
                 textFill = c(STYLE_TOOLBAR_TEXT_COLOR)
+            }
+        }
+
+        questionsForm {
+            textField {
+                backgroundColor += c("#000000", 0.0)
+            }
+            textArea {
+                backgroundColor += c("#000000", 0.0)
+            }
+            label {
+                endMargin = 5.px
             }
         }
     }
