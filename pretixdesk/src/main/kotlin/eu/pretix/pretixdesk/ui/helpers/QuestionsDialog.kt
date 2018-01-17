@@ -45,18 +45,18 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
 
     for (ra in requiredAnswers) {
         val fieldcontrol = when (ra.question.type) {
-            QuestionType.TEXT -> jfxTextarea(ra.currentValue ?: "") {
+            QuestionType.T -> jfxTextarea(ra.currentValue ?: "") {
                 prefRowCount = 2
             }
-            QuestionType.BOOLEAN -> jfxCheckbox(ra.question.question)
-            QuestionType.CHOICE -> jfxCombobox<QuestionOption> {
+            QuestionType.B -> jfxCheckbox(ra.question.question)
+            QuestionType.C -> jfxCombobox<QuestionOption> {
                 useMaxWidth = true
                 items = FXCollections.observableArrayList(ra.question.options)
             }
-            QuestionType.FILE -> label("-not supported-")
-            QuestionType.DATE -> jfxDatepicker()
-            QuestionType.TIME -> jfxTimepicker()
-            QuestionType.DATETIME -> hbox {
+            QuestionType.F -> label("-not supported-")
+            QuestionType.D -> jfxDatepicker()
+            QuestionType.H -> jfxTimepicker()
+            QuestionType.W -> hbox {
                 val dp = jfxDatepicker { }
                 val tp = jfxTimepicker { }
                 this += dp
@@ -65,10 +65,10 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
             }
             else -> jfxTextfield(ra.currentValue ?: "")
         }
-        if (ra.question.type != QuestionType.BOOLEAN) {
+        if (ra.question.type != QuestionType.B) {
             fview += label(ra.question.question)
         }
-        if (ra.question.type == QuestionType.CHOICE_MULTIPLE) {
+        if (ra.question.type == QuestionType.M) {
             val cbl = ArrayList<Any>()
             for (opt in ra.question.options) {
                 val cb = jfxCheckbox(opt.value) {
@@ -93,7 +93,7 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
         if (ra.question.isRequired && fieldcontrol is TextInputControl) {
             fieldcontrol.required()
         }
-        if (ra.question.type == QuestionType.NUMBER && fieldcontrol is TextInputControl) {
+        if (ra.question.type == QuestionType.N && fieldcontrol is TextInputControl) {
             fieldcontrol.stripNonNumeric()
         }
     }
@@ -118,13 +118,13 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
         for (ra in requiredAnswers) {
             val view = fviews[ra.question]
             val answerstring = when (ra.question.type) {
-                QuestionType.BOOLEAN -> if ((view as CheckBox).isSelected) "True" else ""
-                QuestionType.CHOICE -> (view as ComboBoxBase<QuestionOption>).value.getServer_id().toString()
-                QuestionType.FILE -> ""
-                QuestionType.DATE -> df.format((view as JFXDatePicker).value)
-                QuestionType.TIME -> tf.format((view as JFXTimePicker).value)
-                QuestionType.DATETIME -> dtf.format(LocalDateTime.of(((view as DateTimeFieldCombo).datefield as JFXDatePicker).value, ((view as DateTimeFieldCombo).timefield as JFXTimePicker).value))
-                QuestionType.CHOICE_MULTIPLE -> (view as List<CheckBox>).filter { it.isSelected }.map { it.tag }.joinToString(",")
+                QuestionType.B -> if ((view as CheckBox).isSelected) "True" else ""
+                QuestionType.C -> (view as ComboBoxBase<QuestionOption>).value.getServer_id().toString()
+                QuestionType.F -> ""
+                QuestionType.D -> df.format((view as JFXDatePicker).value)
+                QuestionType.H -> tf.format((view as JFXTimePicker).value)
+                QuestionType.W -> dtf.format(LocalDateTime.of(((view as DateTimeFieldCombo).datefield as JFXDatePicker).value, ((view as DateTimeFieldCombo).timefield as JFXTimePicker).value))
+                QuestionType.M -> (view as List<CheckBox>).filter { it.isSelected }.map { it.tag }.joinToString(",")
                 else -> (view as TextInputControl).text
             }
             answers.add(TicketCheckProvider.Answer(ra.question, answerstring))
