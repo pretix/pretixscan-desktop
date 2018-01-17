@@ -80,8 +80,8 @@ class SetupController : BaseController() {
                     params.get("url")!!,
                     params.get("key")!!,
                     Integer.parseInt(params.get("version")),
-                    params.getOrDefault("show_info", "true") == "true",
-                    params.getOrDefault("allow_search", "true") == "true"
+                    params.getOrDefault("show_info", "True") == "True",
+                    params.getOrDefault("allow_search", "True") == "True"
             )
             reloadCheckProvider()
             return SetupResult.OK
