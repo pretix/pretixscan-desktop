@@ -3,21 +3,27 @@ package eu.pretix.pretixdesk.ui.helpers
 import com.jfoenix.controls.*
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.libpretixsync.db.AbstractQuestion
 import eu.pretix.libpretixsync.db.Question
 import eu.pretix.libpretixsync.db.QuestionOption
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import javafx.collections.FXCollections
 import javafx.event.EventTarget
-import javafx.scene.control.CheckBox
-import javafx.scene.control.ComboBoxBase
-import javafx.scene.control.TextInputControl
+import javafx.scene.Node
+import javafx.scene.control.*
 import tornadofx.*
 import tornadofx.FX.Companion.messages
 import java.text.SimpleDateFormat
 import java.text.DateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+
+val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+val timeFormat = DateTimeFormatter.ofPattern("HH:mm")
 
 class DateTimeFieldCombo {
     var datefield: JFXDatePicker? = null
@@ -52,13 +58,25 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
             QuestionType.C -> jfxCombobox<QuestionOption> {
                 useMaxWidth = true
                 items = FXCollections.observableArrayList(ra.question.options)
+                for (item in items) {
+                    if (item.getServer_id().toString() == ra.currentValue) {
+                        value = item
+                        break
+                    }
+                }
             }
             QuestionType.F -> label("-not supported-")
-            QuestionType.D -> jfxDatepicker()
-            QuestionType.H -> jfxTimepicker()
+            QuestionType.D ->
+                jfxDatepicker(if (!ra.currentValue.isNullOrBlank()) LocalDate.parse(ra.currentValue, dateFormat) else null)
+            QuestionType.H ->
+                jfxTimepicker(if (!ra.currentValue.isNullOrBlank()) LocalTime.parse(ra.currentValue, dateFormat) else null)
             QuestionType.W -> hbox {
-                val dp = jfxDatepicker { }
-                val tp = jfxTimepicker { }
+                val dp = jfxDatepicker(
+                        if (!ra.currentValue.isNullOrBlank()) LocalDateTime.parse(ra.currentValue, dateFormat).toLocalDate() else null
+                )
+                val tp = jfxTimepicker(
+                        if (!ra.currentValue.isNullOrBlank()) LocalDateTime.parse(ra.currentValue, dateFormat).toLocalTime() else null
+                )
                 this += dp
                 this += tp
                 fviews[ra.question] = DateTimeFieldCombo(dp, tp)
@@ -69,6 +87,10 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
             fview += label(ra.question.question)
         }
         if (ra.question.type == QuestionType.M) {
+            val selected = ArrayList<String>()
+            if (!ra.currentValue.isNullOrBlank()) {
+                ra.currentValue.split(",")
+            }
             val cbl = ArrayList<Any>()
             for (opt in ra.question.options) {
                 val cb = jfxCheckbox(opt.value) {
@@ -79,6 +101,9 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
                 }
                 fview += cb
                 cb.tag = opt.getServer_id()
+                if (selected.contains(opt.getServer_id().toString())) {
+                    cb.isSelected = true
+                }
                 cbl.add(cb)
             }
             fviews[ra.question] = cbl
@@ -90,9 +115,6 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
             }
         }
         fview += label(" ") {}
-        if (ra.question.isRequired && fieldcontrol is TextInputControl) {
-            fieldcontrol.required()
-        }
         if (ra.question.type == QuestionType.N && fieldcontrol is TextInputControl) {
             fieldcontrol.stripNonNumeric()
         }
@@ -111,27 +133,66 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
     }
     okButton.action {
         val answers = ArrayList<TicketCheckProvider.Answer>()
-        val df = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm'Z'")
-        val tf = DateTimeFormatter.ofPattern("HH:mm")
+        var has_errors = false
 
         for (ra in requiredAnswers) {
             val view = fviews[ra.question]
-            val answerstring = when (ra.question.type) {
-                QuestionType.B -> if ((view as CheckBox).isSelected) "True" else ""
-                QuestionType.C -> (view as ComboBoxBase<QuestionOption>).value.getServer_id().toString()
-                QuestionType.F -> ""
-                QuestionType.D -> df.format((view as JFXDatePicker).value)
-                QuestionType.H -> tf.format((view as JFXTimePicker).value)
-                QuestionType.W -> dtf.format(LocalDateTime.of(((view as DateTimeFieldCombo).datefield as JFXDatePicker).value, ((view as DateTimeFieldCombo).timefield as JFXTimePicker).value))
-                QuestionType.M -> (view as List<CheckBox>).filter { it.isSelected }.map { it.tag }.joinToString(",")
-                else -> (view as TextInputControl).text
+
+            val empty = when (ra.question.type) {
+                QuestionType.B -> !((view as CheckBox).isSelected)
+                QuestionType.C -> ((view as ComboBoxBase<QuestionOption>).value == null)
+                QuestionType.F -> true
+                QuestionType.D -> (view as JFXDatePicker).value == null
+                QuestionType.H -> (view as JFXTimePicker).value == null
+                QuestionType.W -> (((view as DateTimeFieldCombo).datefield as JFXDatePicker).value == null
+                        || (view.timefield as JFXTimePicker).value == null)
+                QuestionType.M -> (view as List<CheckBox>).filter { it.isSelected }.isEmpty()
+                else -> (view as TextInputControl).text.isBlank()
             }
-            answers.add(TicketCheckProvider.Answer(ra.question, answerstring))
+
+            if (empty && ra.question.required) {
+                // error!
+                if (view is Node) {
+                    view.addDecorator(SimpleMessageDecorator("Error!", ValidationSeverity.Error))
+                } else if (view is DateTimeFieldCombo) {
+                    (view.datefield as Control).addDecorator(SimpleMessageDecorator("Error!", ValidationSeverity.Error))
+                }
+                has_errors = true
+            } else if (empty) {
+                answers.add(TicketCheckProvider.Answer(ra.question, ""))
+            } else {
+                val answerstring = when (ra.question.type) {
+                    QuestionType.B -> if ((view as CheckBox).isSelected) "True" else ""
+                    QuestionType.C -> (view as ComboBoxBase<QuestionOption>).value.getServer_id().toString()
+                    QuestionType.F -> ""
+                    QuestionType.D -> dateFormat.format((view as JFXDatePicker).value)
+                    QuestionType.H -> timeFormat.format((view as JFXTimePicker).value)
+                    QuestionType.W ->
+                        dateTimeFormat.format(
+                                LocalDateTime.of(((view as DateTimeFieldCombo).datefield as JFXDatePicker).value,
+                                        (view.timefield as JFXTimePicker).value)
+                        )
+                    QuestionType.M -> (view as List<CheckBox>).filter { it.isSelected }.map { it.tag }.joinToString(",")
+                    else -> (view as TextInputControl).text
+                }
+                try {
+                    ra.question.clean_answer(answerstring)
+                } catch (e: AbstractQuestion.ValidationException) {
+                    if (view is Node) {
+                        view.addDecorator(SimpleMessageDecorator("Error!", ValidationSeverity.Warning))
+                    } else if (view is DateTimeFieldCombo) {
+                        (view.datefield as Control).addDecorator(SimpleMessageDecorator("Error!", ValidationSeverity.Warning))
+                    }
+                    has_errors = true
+                }
+                answers.add(TicketCheckProvider.Answer(ra.question, answerstring))
+            }
         }
 
-        dialog.close()
-        retry?.invoke(answers)
+        if (!has_errors || true) {
+            dialog.close()
+            retry?.invoke(answers)
+        }
     }
     return dialog
 }

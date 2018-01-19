@@ -155,7 +155,7 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
     fun newCheckProvider(): TicketCheckProvider {
         val p: TicketCheckProvider
         if (configStore.asyncModeEnabled) {
-            p = AsyncCheckProvider(configStore, data(), DefaultHttpClientFactory())
+            p = AsyncCheckProvider(configStore, data())
         } else {
             p = OnlineCheckProvider(configStore, DefaultHttpClientFactory())
         }

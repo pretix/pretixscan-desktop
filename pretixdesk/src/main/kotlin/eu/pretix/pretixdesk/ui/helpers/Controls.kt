@@ -58,13 +58,17 @@ fun JFXTimePicker.bind(property: ObservableValue<LocalTime>, readonly: Boolean =
     if (readonly || (property !is Property<*>)) valueProperty().bind(property) else valueProperty().bindBidirectional(property as Property<LocalTime>)
 }
 
-
+fun EventTarget.jfxTimepicker(v: LocalTime? = null, op: (JFXTimePicker.() -> Unit) = {}) = opcr(this, JFXTimePicker(), op).apply {
+    if (v != null) value = v
+}
 fun EventTarget.jfxTimepicker(property: Property<LocalTime>? = null, op: (JFXTimePicker.() -> Unit) = {}) = opcr(this, JFXTimePicker().apply {
     if (property != null) bind(property)
     setIs24HourView(true)
 }, op)
 
-fun EventTarget.jfxDatepicker(op: (JFXDatePicker.() -> Unit) = {}) = opcr(this, JFXDatePicker(), op)
+fun EventTarget.jfxDatepicker(v: LocalDate? = null, op: (JFXDatePicker.() -> Unit) = {}) = opcr(this, JFXDatePicker(), op).apply {
+    if (v != null) value = v
+}
 fun EventTarget.jfxDatepicker(property: Property<LocalDate>, op: (JFXDatePicker.() -> Unit) = {}) = jfxDatepicker().apply {
     bind(property)
     op.invoke(this)
