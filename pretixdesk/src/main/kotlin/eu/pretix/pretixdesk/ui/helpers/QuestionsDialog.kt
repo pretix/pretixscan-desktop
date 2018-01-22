@@ -127,7 +127,7 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
     }
 
     val closeButton: JFXButton = jfxButton(messages.getString("dialog_close"))
-    val okButton: JFXButton = jfxButton(messages.getString("dialog_ok").toUpperCase())
+    val okButton: JFXButton = jfxButton(messages.getString("dialog_continue").toUpperCase())
 
     content.setActions(closeButton, okButton)
     content.setBody(fview)  // TODO: scrollpane?
@@ -159,9 +159,9 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
             if (empty && ra.question.required) {
                 // error!
                 if (view is Node) {
-                    view.addDecorator(SimpleMessageDecorator("Error!", ValidationSeverity.Error))
+                    view.addDecorator(SimpleMessageDecorator(messages["field_required"], ValidationSeverity.Error))
                 } else if (view is DateTimeFieldCombo) {
-                    (view.datefield as Control).addDecorator(SimpleMessageDecorator("Error!", ValidationSeverity.Error))
+                    (view.datefield as Control).addDecorator(SimpleMessageDecorator(messages["field_required"], ValidationSeverity.Error))
                 }
                 has_errors = true
             } else if (empty) {
@@ -188,9 +188,9 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
                     ra.question.clean_answer(answerstring, ra.question.options)
                 } catch (e: AbstractQuestion.ValidationException) {
                     if (view is Node) {
-                        view.addDecorator(SimpleMessageDecorator("Error!", ValidationSeverity.Warning))
+                        view.addDecorator(SimpleMessageDecorator(messages["field_invalid"], ValidationSeverity.Warning))
                     } else if (view is DateTimeFieldCombo) {
-                        (view.datefield as Control).addDecorator(SimpleMessageDecorator("Error!", ValidationSeverity.Warning))
+                        (view.datefield as Control).addDecorator(SimpleMessageDecorator(messages["field_invalid"], ValidationSeverity.Warning))
                     }
                     has_errors = true
                 }
