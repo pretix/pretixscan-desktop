@@ -12,7 +12,9 @@ import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
 import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
 import javafx.animation.Timeline
 import javafx.geometry.Pos
+import javafx.scene.control.ComboBoxBase
 import javafx.scene.control.TextField
+import javafx.scene.control.TextInputControl
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
@@ -315,7 +317,8 @@ class MainView : View() {
 
         // Focus grabber
         currentStage?.addEventFilter(KeyEvent.KEY_PRESSED, {
-            if (currentStage?.scene?.focusOwner !is TextField && re_alphanum.matcher(it.text).matches()) {
+            val fo = currentStage?.scene?.focusOwner
+            if (fo !is TextInputControl && fo !is ComboBoxBase<*> && re_alphanum.matcher(it.text).matches()) {
                 searchField.requestFocus()
             }
         })
@@ -352,13 +355,13 @@ class MainView : View() {
         }
     }
 
-    private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult) {
+    private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult, answers: List<TicketCheckProvider.Answer>? = null) {
         var resultData: TicketCheckProvider.CheckResult? = null
 
         val progressDialog = jfxProgressDialog(heading = messages["progress_redeeming"]) {}
         progressDialog.show(root)
         runAsync {
-            resultData = controller.handleScanInput(searchResult.secret)
+            resultData = controller.handleScanInput(searchResult.secret, answers)
         } ui {
             val message = when (resultData?.type) {
                 TicketCheckProvider.CheckResult.Type.INVALID -> messages["result_invalid"]
@@ -367,6 +370,7 @@ class MainView : View() {
                 TicketCheckProvider.CheckResult.Type.ERROR -> messages["result_error"]
                 TicketCheckProvider.CheckResult.Type.UNPAID -> messages["result_unpaid"]
                 TicketCheckProvider.CheckResult.Type.PRODUCT -> messages["result_product"]
+                TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> messages["result_questions"]
                 null -> ""
             }
             progressDialog.isOverlayClose = true
@@ -387,6 +391,14 @@ class MainView : View() {
                 searchResultList.remove(searchResult)
                 searchResultList.add(i, cloned)
                 searchResultListView.selectionModel.select(cloned)
+            }
+
+            if (resultData?.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
+                val dialog = questionsDialog(resultData!!.requiredAnswers) { a ->
+                    handleSearchResultSelected(searchResult, a)
+                }
+                dialog.show(root)
+                progressDialog.close()
             }
 
             runAsync {
@@ -505,7 +517,7 @@ class MainView : View() {
         }
     }
 
-    private fun handleTicketInput(value: String) {
+    private fun handleTicketInput(value: String, answers: List<TicketCheckProvider.Answer>? = null) {
         for (oldResultCard in resultCards) {
             removeCard(oldResultCard)
         }
@@ -515,7 +527,7 @@ class MainView : View() {
         searchField.text = ""
         var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
-            resultData = controller.handleScanInput(value)
+            resultData = controller.handleScanInput(value, answers)
         } ui {
             hideSpinner()
             hideSearchResultCard()
@@ -524,6 +536,13 @@ class MainView : View() {
             showCard(newCard)
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
                 beep()
+            }
+
+            if (resultData?.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
+                val dialog = questionsDialog(resultData!!.requiredAnswers) { a ->
+                    handleTicketInput(value, a)
+                }
+                dialog.show(root)
             }
 
             runAsync {
@@ -557,6 +576,7 @@ class MainView : View() {
                         TicketCheckProvider.CheckResult.Type.INVALID -> MainStyleSheet.cardHeaderErrorNoMessage
                         TicketCheckProvider.CheckResult.Type.VALID -> MainStyleSheet.cardHeaderValid
                         TicketCheckProvider.CheckResult.Type.USED -> MainStyleSheet.cardHeaderRepeat
+                        TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> MainStyleSheet.cardHeaderRepeat
                         TicketCheckProvider.CheckResult.Type.ERROR -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.UNPAID -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.PRODUCT -> MainStyleSheet.cardHeaderError
@@ -567,6 +587,7 @@ class MainView : View() {
                         TicketCheckProvider.CheckResult.Type.INVALID -> messages["state_invalid"]
                         TicketCheckProvider.CheckResult.Type.VALID -> messages["state_valid"]
                         TicketCheckProvider.CheckResult.Type.USED -> messages["state_used"]
+                        TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> messages["state_questions"]
                         TicketCheckProvider.CheckResult.Type.ERROR -> messages["state_error"]
                         TicketCheckProvider.CheckResult.Type.UNPAID -> messages["state_unpaid"]
                         TicketCheckProvider.CheckResult.Type.PRODUCT -> messages["state_product"]

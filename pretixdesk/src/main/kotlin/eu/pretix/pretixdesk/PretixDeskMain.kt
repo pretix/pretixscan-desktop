@@ -6,6 +6,7 @@ import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.libpretixsync.db.Migrations
 import eu.pretix.libpretixsync.db.Models
 import eu.pretix.pretixdesk.ui.MainView
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
@@ -129,10 +130,7 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
             dataSource.setEnforceForeignKeys(true)
             val model = Models.DEFAULT
 
-            if (dbIsNew) {
-                // TODO: Database upgrades/migrations
-                SchemaModifier(dataSource, model).createTables(TableCreationMode.CREATE_NOT_EXISTS)
-            }
+            Migrations.migrate(dataSource, dbIsNew)
 
             val configuration = ConfigurationBuilder(dataSource, model)
                     .useDefaultLogging()
@@ -157,7 +155,7 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
     fun newCheckProvider(): TicketCheckProvider {
         val p: TicketCheckProvider
         if (configStore.asyncModeEnabled) {
-            p = AsyncCheckProvider(configStore, data(), DefaultHttpClientFactory())
+            p = AsyncCheckProvider(configStore, data())
         } else {
             p = OnlineCheckProvider(configStore, DefaultHttpClientFactory())
         }
