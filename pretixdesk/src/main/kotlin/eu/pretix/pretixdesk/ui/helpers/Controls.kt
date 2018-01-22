@@ -86,6 +86,10 @@ fun <T> EventTarget.jfxTextarea(property: Property<T>, converter: StringConverte
     op.invoke(this)
 }
 
+fun EventTarget.jfxCheckbox(t: String? = null, value: Boolean, op: (JFXCheckBox.() -> Unit) = {}) = opcr(this, JFXCheckBox().apply {
+    text = t
+    isSelected = value
+}, op)
 fun EventTarget.jfxCheckbox(text: String? = null, property: Property<Boolean>? = null, op: (JFXCheckBox.() -> Unit) = {}) = opcr(this, JFXCheckBox(text).apply {
     if (property != null) bind(property)
 }, op)

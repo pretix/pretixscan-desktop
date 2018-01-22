@@ -54,13 +54,19 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
             QuestionType.T -> jfxTextarea(ra.currentValue ?: "") {
                 prefRowCount = 2
             }
-            QuestionType.B -> jfxCheckbox(ra.question.question)
+            QuestionType.B -> jfxCheckbox(ra.question.question, ra.currentValue == "True")
             QuestionType.C -> jfxCombobox<QuestionOption> {
                 useMaxWidth = true
                 items = FXCollections.observableArrayList(ra.question.options)
+                if (!ra.question.required) {
+                    val qoempty = QuestionOption()
+                    qoempty.setServer_id(0)
+                    qoempty.setValue("")
+                    items.add(0, qoempty)
+                }
                 for (item in items) {
                     if (item.getServer_id().toString() == ra.currentValue) {
-                        value = item
+                        selectionModel.select(item)
                         break
                     }
                 }
@@ -69,13 +75,13 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
             QuestionType.D ->
                 jfxDatepicker(if (!ra.currentValue.isNullOrBlank()) LocalDate.parse(ra.currentValue, dateFormat) else null)
             QuestionType.H ->
-                jfxTimepicker(if (!ra.currentValue.isNullOrBlank()) LocalTime.parse(ra.currentValue, dateFormat) else null)
+                jfxTimepicker(if (!ra.currentValue.isNullOrBlank()) LocalTime.parse(ra.currentValue, timeFormat) else null)
             QuestionType.W -> hbox {
                 val dp = jfxDatepicker(
-                        if (!ra.currentValue.isNullOrBlank()) LocalDateTime.parse(ra.currentValue, dateFormat).toLocalDate() else null
+                        if (!ra.currentValue.isNullOrBlank()) LocalDateTime.parse(ra.currentValue, dateTimeFormat).toLocalDate() else null
                 )
                 val tp = jfxTimepicker(
-                        if (!ra.currentValue.isNullOrBlank()) LocalDateTime.parse(ra.currentValue, dateFormat).toLocalTime() else null
+                        if (!ra.currentValue.isNullOrBlank()) LocalDateTime.parse(ra.currentValue, dateTimeFormat).toLocalTime() else null
                 )
                 this += dp
                 this += tp
@@ -87,9 +93,9 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
             fview += label(ra.question.question)
         }
         if (ra.question.type == QuestionType.M) {
-            val selected = ArrayList<String>()
+            var selected: List<String> = ArrayList()
             if (!ra.currentValue.isNullOrBlank()) {
-                ra.currentValue.split(",")
+                selected = ra.currentValue.split(",")
             }
             val cbl = ArrayList<Any>()
             for (opt in ra.question.options) {
@@ -163,7 +169,10 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
             } else {
                 val answerstring = when (ra.question.type) {
                     QuestionType.B -> if ((view as CheckBox).isSelected) "True" else ""
-                    QuestionType.C -> (view as ComboBoxBase<QuestionOption>).value.getServer_id().toString()
+                    QuestionType.C ->
+                        if ((view as ComboBoxBase<QuestionOption>).value.getServer_id() != 0L)
+                            view.value.getServer_id().toString()
+                            else ""
                     QuestionType.F -> ""
                     QuestionType.D -> dateFormat.format((view as JFXDatePicker).value)
                     QuestionType.H -> timeFormat.format((view as JFXTimePicker).value)
@@ -176,7 +185,7 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
                     else -> (view as TextInputControl).text
                 }
                 try {
-                    ra.question.clean_answer(answerstring)
+                    ra.question.clean_answer(answerstring, ra.question.options)
                 } catch (e: AbstractQuestion.ValidationException) {
                     if (view is Node) {
                         view.addDecorator(SimpleMessageDecorator("Error!", ValidationSeverity.Warning))
@@ -189,7 +198,7 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
             }
         }
 
-        if (!has_errors || true) {
+        if (!has_errors) {
             dialog.close()
             retry?.invoke(answers)
         }
