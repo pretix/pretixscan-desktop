@@ -34,7 +34,7 @@ import tornadofx.*
 import java.util.*
 
 
-val VERSION = "0.1.0"
+val VERSION = "0.2.0"
 val APP_ID = "eu.pretix.pretixdesk"
 
 class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {

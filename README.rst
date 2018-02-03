@@ -44,7 +44,7 @@ To build a stand-alone JAR file for distributing::
     
     JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew fatJar
 
-The JAR file will be created at ``build/jfx/app/pretixdesk-all-VERSION.jar``.
+The JAR file will be created at ``build/libs/pretixdesk.jar``.
 
 Windows package
 ^^^^^^^^^^^^^^^

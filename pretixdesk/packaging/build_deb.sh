@@ -1,7 +1,8 @@
 #!/bin/bash
-JAVA_RELEASE=9.0.1
+JAVA_RELEASE=9.0.4
 JAVA_PATCH=11
-VERSION=0.1.0
+JAVA_HASH=c2514751926b4512b076cc82f959763f
+VERSION=0.2.0
 
 mkdir -p dist
 mkdir deb.tmp
@@ -9,7 +10,7 @@ pushd deb.tmp
 
 # Download java
 wget -nc --header "Cookie: gpw_e24=http://www.oracle.com; oraclelicense=accept-securebackup-cookie" \
-    http://download.oracle.com/otn-pub/java/jdk/$JAVA_RELEASE+$JAVA_PATCH/jre-"$JAVA_RELEASE"_linux-x64_bin.tar.gz
+    http://download.oracle.com/otn-pub/java/jdk/$JAVA_RELEASE+$JAVA_PATCH/$JAVA_HASH/jre-"$JAVA_RELEASE"_linux-x64_bin.tar.gz
 tar xzf jre-"$JAVA_RELEASE"_linux-x64_bin.tar.gz
 mv jre-$JAVA_RELEASE jre
 
