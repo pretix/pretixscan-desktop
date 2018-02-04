@@ -3,16 +3,18 @@ package eu.pretix.pretixdesk.ui.helpers
 import com.jfoenix.controls.*
 import javafx.beans.property.Property
 import javafx.beans.value.ObservableValue
-import javafx.collections.ObservableList
 import javafx.event.EventTarget
 import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.paint.Color
 import javafx.util.StringConverter
+import javafx.util.converter.LocalDateStringConverter
+import javafx.util.converter.LocalTimeStringConverter
 import tornadofx.*
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.FormatStyle
 
 
 enum class ColorPickerMode { Button, MenuButton, SplitMenuButton }
@@ -60,6 +62,7 @@ fun JFXTimePicker.bind(property: ObservableValue<LocalTime>, readonly: Boolean =
 
 fun EventTarget.jfxTimepicker(v: LocalTime? = null, op: (JFXTimePicker.() -> Unit) = {}) = opcr(this, JFXTimePicker(), op).apply {
     if (v != null) value = v
+    this.converter = LocalTimeStringConverter(FormatStyle.SHORT, FX.locale)
 }
 fun EventTarget.jfxTimepicker(property: Property<LocalTime>? = null, op: (JFXTimePicker.() -> Unit) = {}) = opcr(this, JFXTimePicker().apply {
     if (property != null) bind(property)
@@ -68,6 +71,7 @@ fun EventTarget.jfxTimepicker(property: Property<LocalTime>? = null, op: (JFXTim
 
 fun EventTarget.jfxDatepicker(v: LocalDate? = null, op: (JFXDatePicker.() -> Unit) = {}) = opcr(this, JFXDatePicker(), op).apply {
     if (v != null) value = v
+    this.converter = LocalDateStringConverter(FormatStyle.SHORT, FX.locale, null)
 }
 fun EventTarget.jfxDatepicker(property: Property<LocalDate>, op: (JFXDatePicker.() -> Unit) = {}) = jfxDatepicker().apply {
     bind(property)
