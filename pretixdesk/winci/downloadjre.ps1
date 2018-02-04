@@ -1,5 +1,6 @@
-$jre_version = '9.0.1'
+$jre_version = '9.0.4'
 $build = '11'
+$hash = 'c2514751926b4512b076cc82f959763f'
 $script_path = $(Split-Path -parent $MyInvocation.MyCommand.Definition)
 
 function has_file($filename) {
@@ -73,7 +74,7 @@ function download-jre-file($url, $output_filename) {
 function download-jre() {
     $filename = "jre-" + $jre_version + "_windows-x64_bin.tar.gz"
     Write-Host "Checking for $filename"
-    $url = "http://download.oracle.com/otn-pub/java/jdk/$jre_version+$build/$filename"
+    $url = "http://download.oracle.com/otn-pub/java/jdk/$jre_version+$build/$hash/$filename"
     $output_filename = Join-Path $script_path $filename
 
     $dummy = download-jre-file $url $output_filename
