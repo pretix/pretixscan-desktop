@@ -11,6 +11,7 @@ import javafx.scene.paint.Color
 import javafx.util.StringConverter
 import javafx.util.converter.LocalDateStringConverter
 import javafx.util.converter.LocalTimeStringConverter
+import org.joda.time.format.DateTimeFormat
 import tornadofx.*
 import java.time.LocalDate
 import java.time.LocalTime
@@ -63,6 +64,7 @@ fun JFXTimePicker.bind(property: ObservableValue<LocalTime>, readonly: Boolean =
 fun EventTarget.jfxTimepicker(v: LocalTime? = null, op: (JFXTimePicker.() -> Unit) = {}) = opcr(this, JFXTimePicker(), op).apply {
     if (v != null) value = v
     this.converter = LocalTimeStringConverter(FormatStyle.SHORT, FX.locale)
+    setIs24HourView(DateTimeFormat.patternForStyle("-S", FX.locale).indexOf('H') >= 0)
 }
 fun EventTarget.jfxTimepicker(property: Property<LocalTime>? = null, op: (JFXTimePicker.() -> Unit) = {}) = opcr(this, JFXTimePicker().apply {
     if (property != null) bind(property)
