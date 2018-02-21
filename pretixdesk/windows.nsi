@@ -34,7 +34,7 @@
    CreateDirectory "$INSTDIR"
 
    File /r "build\launch4j\*"
-   File /r "jre"
+   File /r /x deb.tmp "jre"
 
    CreateDirectory "$SMPROGRAMS\pretixdesk"
    CreateShortCut "$SMPROGRAMS\pretixdesk\pretixdesk.lnk" "$INSTDIR\pretixdesk.exe"
