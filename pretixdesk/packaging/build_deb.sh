@@ -12,7 +12,7 @@ pushd deb.tmp
 wget -nc --header "Cookie: gpw_e24=http://www.oracle.com; oraclelicense=accept-securebackup-cookie" \
     http://download.oracle.com/otn-pub/java/jdk/$JAVA_RELEASE+$JAVA_PATCH/$JAVA_HASH/jre-"$JAVA_RELEASE"_linux-x64_bin.tar.gz
 tar xzf jre-"$JAVA_RELEASE"_linux-x64_bin.tar.gz
-mv jre-$JAVA_RELEASE jre
+mv -T jre-$JAVA_RELEASE jre
 
 mkdir -p debian
 mkdir -p debian/DEBIAN
