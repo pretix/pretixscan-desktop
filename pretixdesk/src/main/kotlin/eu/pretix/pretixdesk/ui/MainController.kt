@@ -36,11 +36,11 @@ class MainController : BaseController() {
         return provider.search(value)
     }
 
-    fun handleScanInput(value: String, answers: List<TicketCheckProvider.Answer>? = null): TicketCheckProvider.CheckResult? {
+    fun handleScanInput(value: String, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean=false): TicketCheckProvider.CheckResult? {
         if (answers != null) {
-            return provider.check(value, answers)
+            return provider.check(value, answers, ignore_pending)
         } else {
-            return provider.check(value)
+            return provider.check(value, ArrayList<TicketCheckProvider.Answer>(), ignore_pending)
         }
     }
 

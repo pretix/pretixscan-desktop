@@ -29,8 +29,6 @@ import java.util.regex.Pattern
 import javax.sound.sampled.AudioSystem
 
 
-
-
 var re_alphanum = Pattern.compile("^[a-zA-Z0-9]+\$")
 
 class MainView : View() {
@@ -355,13 +353,13 @@ class MainView : View() {
         }
     }
 
-    private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult, answers: List<TicketCheckProvider.Answer>? = null) {
+    private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean = false) {
         var resultData: TicketCheckProvider.CheckResult? = null
 
         val progressDialog = jfxProgressDialog(heading = messages["progress_redeeming"]) {}
         progressDialog.show(root)
         runAsync {
-            resultData = controller.handleScanInput(searchResult.secret, answers)
+            resultData = controller.handleScanInput(searchResult.secret, answers, ignore_pending)
         } ui {
             val message = when (resultData?.type) {
                 TicketCheckProvider.CheckResult.Type.INVALID -> messages["result_invalid"]
@@ -374,7 +372,8 @@ class MainView : View() {
                 null -> ""
             }
             progressDialog.isOverlayClose = true
-            (progressDialog.content as JFXDialogLayout).setBody(label(message))
+            (progressDialog.content as JFXDialogLayout).setHeading(label(message))
+            (progressDialog.content as JFXDialogLayout).setBody(label())
             (progressDialog.content as JFXDialogLayout).setActions(
                     jfxButton(messages["dialog_close"]) {
                         action {
@@ -395,7 +394,15 @@ class MainView : View() {
 
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
                 val dialog = questionsDialog(resultData!!.requiredAnswers) { a ->
-                    handleSearchResultSelected(searchResult, a)
+                    handleSearchResultSelected(searchResult, a, ignore_pending)
+                }
+                dialog.show(root)
+                progressDialog.close()
+            }
+
+            if (resultData?.type == TicketCheckProvider.CheckResult.Type.UNPAID && resultData?.isCheckinAllowed == true) {
+                val dialog = unpaidOrderDialog { new_ignore_pending ->
+                    handleSearchResultSelected(searchResult, answers, new_ignore_pending)
                 }
                 dialog.show(root)
                 progressDialog.close()
@@ -503,7 +510,7 @@ class MainView : View() {
         var resultData: List<TicketCheckProvider.SearchResult>? = null
         lastSearchQuery = value
         runAsync {
-            resultData = controller.handleSearchInput(value)
+            resultData = controller.handleSearchInput(value.trim())
         } ui {
             if (lastSearchQuery == value) {
                 // Prevent race condition
@@ -517,7 +524,7 @@ class MainView : View() {
         }
     }
 
-    private fun handleTicketInput(value: String, answers: List<TicketCheckProvider.Answer>? = null) {
+    private fun handleTicketInput(value: String, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean = false) {
         for (oldResultCard in resultCards) {
             removeCard(oldResultCard)
         }
@@ -527,7 +534,7 @@ class MainView : View() {
         searchField.text = ""
         var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
-            resultData = controller.handleScanInput(value, answers)
+            resultData = controller.handleScanInput(value, answers, ignore_pending)
         } ui {
             hideSpinner()
             hideSearchResultCard()
@@ -540,7 +547,14 @@ class MainView : View() {
 
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
                 val dialog = questionsDialog(resultData!!.requiredAnswers) { a ->
-                    handleTicketInput(value, a)
+                    handleTicketInput(value, a, ignore_pending)
+                }
+                dialog.show(root)
+            }
+
+            if (resultData?.type == TicketCheckProvider.CheckResult.Type.UNPAID && resultData?.isCheckinAllowed == true) {
+                val dialog = unpaidOrderDialog { new_ignore_pending ->
+                    handleTicketInput(value, answers, new_ignore_pending)
                 }
                 dialog.show(root)
             }
