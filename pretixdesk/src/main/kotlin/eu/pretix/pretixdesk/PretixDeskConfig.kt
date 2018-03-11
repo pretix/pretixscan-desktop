@@ -2,10 +2,11 @@ package eu.pretix.pretixdesk
 
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
+import java.io.File
 import java.util.prefs.Preferences
 
 
-class PretixDeskConfig : ConfigStore {
+class PretixDeskConfig(private var data_dir: String) : ConfigStore {
     private val prefs = Preferences.userNodeForPackage(PretixDeskConfig::class.java)
 
     private val PREFS_KEY_API_URL = "pretix_api_url"
@@ -32,6 +33,10 @@ class PretixDeskConfig : ConfigStore {
         prefs.remove(PREFS_KEY_LAST_DOWNLOAD)
         prefs.remove(PREFS_KEY_LAST_SYNC)
         prefs.remove(PREFS_KEY_LAST_FAILED_SYNC)
+        val f = File(data_dir, PREFS_KEY_LAST_STATUS_DATA + ".json")
+        if (f.exists()) {
+            f.delete()
+        }
         prefs.remove(PREFS_KEY_LAST_STATUS_DATA)
         prefs.flush()
     }
@@ -46,6 +51,10 @@ class PretixDeskConfig : ConfigStore {
         prefs.remove(PREFS_KEY_LAST_SYNC)
         prefs.remove(PREFS_KEY_LAST_FAILED_SYNC)
         prefs.remove(PREFS_KEY_LAST_STATUS_DATA)
+        val f = File(data_dir, PREFS_KEY_LAST_STATUS_DATA + ".json")
+        if (f.exists()) {
+            f.delete()
+        }
         prefs.flush()
     }
 
@@ -85,12 +94,17 @@ class PretixDeskConfig : ConfigStore {
     }
 
     override fun getLastStatusData(): String {
-        return String(prefs.getByteArray(PREFS_KEY_LAST_STATUS_DATA, kotlin.ByteArray(0)))
+        val f = File(data_dir, PREFS_KEY_LAST_STATUS_DATA + ".json")
+        if (f.exists()) {
+            return f.readText()
+        } else {
+            return ""
+        }
     }
 
     override fun setLastStatusData(value: String?) {
-        prefs.putByteArray(PREFS_KEY_LAST_STATUS_DATA, value?.toByteArray())
-        prefs.flush()
+        val f = File(data_dir, PREFS_KEY_LAST_STATUS_DATA + ".json")
+        f.writeText(value ?: "")
     }
 
     override fun getLastDownload(): Long {
