@@ -34,15 +34,17 @@ open class BaseController : Controller() {
             return messages.getString("sync_status_no")
         } else {
             val period = Period(configStore.lastDownload, System.currentTimeMillis())
-            var formatter: PeriodFormatter
+            val formatter: PeriodFormatter
 
-            if (period.days > 0) {
+            if (period.months > 0 || period.years > 0) {
+                return messages.getString("sync_status_long_time")
+            } else if (period.days > 0) {
                 formatter = PeriodFormatterBuilder()
                         .appendDays().appendSuffix(" " + messages.getString("day_singular") + ", ", " " + messages.getString("day_plural") + ", ")
                         .appendHours().appendSuffix(" " + messages.getString("hour_singular"), " " + messages.getString("hour_plural"))
                         .printZeroNever()
                         .toFormatter()
-            } else if (period.toStandardDuration().millis < 60 * 1000) {
+            } else if (System.currentTimeMillis() - configStore.lastDownload < 60 * 1000) {
                 return messages.getString("sync_status_now")
             } else {
                 formatter = PeriodFormatterBuilder()
