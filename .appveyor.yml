@@ -6,16 +6,16 @@ install:
   - SET JAVA_HOME=C:\jdk9
   - SET PATH=C:\jdk9\bin;%PATH%
   - ps: .\pretixdesk\winci\downloadjre.ps1
-  - 7z e pretixdesk\winci\jre-9.0.1_windows-x64_bin.tar.gz
-  - 7z x jre-9.0.1_windows-x64_bin.tar
-  - move jre-9.0.1 jre
+  - 7z e pretixdesk\winci\jre-9.0.4_windows-x64_bin.tar.gz
+  - 7z x jre-9.0.4_windows-x64_bin.tar
+  - move jre-9.0.4 jre
   - move jre pretixdesk\
 
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
   - C:\jdk9 -> appveyor.yml
   - '%USERPROFILE%\.gradle -> appveyor.yml'
-  - pretixdesk\winci\jre-9.0.1_windows-x64_bin.tar.gz
+  - pretixdesk\winci\jre-9.0.4_windows-x64_bin.tar.gz
 
 test_script:
   - cd pretixdesk

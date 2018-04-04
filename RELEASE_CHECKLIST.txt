@@ -1,0 +1,12 @@
+- [ ] Bump version in all places
+- [ ] Commit
+- [ ] Tag
+- [ ] JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew fatJar
+- [ ] Windows: .\gradlew.bat createExe
+- [ ] Linux: ./packaging/sign_exe.bat
+- [ ] Windows: & "C:\Program Files (x86)\NSIS\makensis.exe" .\windows.nsi
+- [ ] Linux: ./packaging/sign_installer.bat
+- [ ] ./packaging/build_deb.sh
+- [ ] ./packaging/build_deb_repo.sh
+- [ ] Update Arch package
+- [ ] Upload build/libs/pretixdesk.jar, dist/pretixdesk.exe, and deb repo files
