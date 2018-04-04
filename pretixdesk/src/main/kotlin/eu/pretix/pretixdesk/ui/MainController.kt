@@ -1,24 +1,13 @@
 package eu.pretix.pretixdesk.ui
 
 import com.github.kittinunf.fuel.httpPost
-import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.getAs
-import eu.pretix.libpretixsync.DummySentryImplementation
 import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.libpretixsync.db.QueuedCheckIn
-import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.VERSION
-import org.joda.time.Period
-import org.joda.time.format.PeriodFormatter
-import org.joda.time.format.PeriodFormatterBuilder
 import org.json.JSONObject
-import tornadofx.Controller
-import tornadofx.get
-import tornadofx.toJSON
-import java.nio.charset.Charset
-import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.List
+import kotlin.collections.set
 
 
 class MainController : BaseController() {
