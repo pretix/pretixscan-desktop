@@ -9,6 +9,7 @@ import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
 import javafx.animation.Timeline
 import javafx.geometry.Pos
+import javafx.scene.control.OverrunStyle
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
@@ -32,10 +33,14 @@ class StatusView : View() {
         cellCache {
             vbox {
                 addClass(MainStyleSheet.card)
+                addClass(MainStyleSheet.eventInfoItem)
                 vbox {
                     addClass(MainStyleSheet.cardBody)
                     hbox {
-                        label(it.name) { addClass(MainStyleSheet.eventInfoItemHeader) }
+                        label(it.name) {
+                            addClass(MainStyleSheet.eventInfoItemHeader)
+                            isWrapText = true
+                        }
                         spacer {}
                         label(it.checkins.toString() + "/" + it.total.toString()) {
                             addClass(MainStyleSheet.eventInfoItemHeader)
@@ -44,7 +49,10 @@ class StatusView : View() {
                     }
                     for (variation in it.variations) {
                         hbox {
-                            label(variation.name) { addClass(MainStyleSheet.eventInfoItemBody) }
+                            label(variation.name) {
+                                addClass(MainStyleSheet.eventInfoItemBody)
+                                isWrapText = true
+                            }
                             spacer {}
                             label(variation.checkins.toString() + "/" + variation.total.toString()) {
                                 addClass(MainStyleSheet.eventInfoItemBody)

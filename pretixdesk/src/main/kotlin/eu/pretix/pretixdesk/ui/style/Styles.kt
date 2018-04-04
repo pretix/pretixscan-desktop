@@ -45,6 +45,7 @@ class MainStyleSheet : Stylesheet() {
         val searchItemStatusValid by cssclass()
         val toolBar by cssclass()
         val eventInfoList by cssclass()
+        val eventInfoItem by cssclass()
         val eventInfoItemHeader by cssclass()
         val eventInfoItemBody by cssclass()
         val eventInfoHeader by cssclass()
@@ -88,14 +89,15 @@ class MainStyleSheet : Stylesheet() {
         }
 
         eventInfoList {
-            minWidth = 480.px
-            maxWidth = 480.px
+            minWidth = 500.px
+            maxWidth = 500.px
             minHeight = 250.px
             backgroundColor += c(STYLE_BACKGROUND_COLOR)
 
             cell {
                 backgroundColor += c(STYLE_BACKGROUND_COLOR)
                 padding = box(10.px, 10.px, 10.px, 10.px)
+                alignment = Pos.CENTER
             }
         }
 
@@ -220,6 +222,10 @@ class MainStyleSheet : Stylesheet() {
         eventInfoItemBody {
             fontSize = 14.px
             textFill = c(STYLE_TEXT_COLOR_MUTED)
+        }
+        eventInfoItem {
+            minWidth = 460.px
+            maxWidth = 460.px
         }
         eventInfoHeader {
             minWidth = 460.px
