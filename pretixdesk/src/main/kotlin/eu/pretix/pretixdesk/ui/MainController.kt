@@ -23,24 +23,20 @@ import java.util.*
 
 class MainController : BaseController() {
 
-    fun reloadCheckProvider() {
-        provider = (app as PretixDeskMain).newCheckProvider()
-    }
-
     fun toggleAsync(value: Boolean) {
         configStore.asyncModeEnabled = value
-        reloadCheckProvider()
+        (app as PretixDeskMain).reloadCheckProvider()
     }
 
     fun handleSearchInput(value: String): List<TicketCheckProvider.SearchResult>? {
-        return provider.search(value)
+        return (app as PretixDeskMain).provider.search(value)
     }
 
     fun handleScanInput(value: String, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean=false): TicketCheckProvider.CheckResult? {
         if (answers != null) {
-            return provider.check(value, answers, ignore_pending)
+            return (app as PretixDeskMain).provider.check(value, answers, ignore_pending)
         } else {
-            return provider.check(value, ArrayList<TicketCheckProvider.Answer>(), ignore_pending)
+            return (app as PretixDeskMain).provider.check(value, ArrayList<TicketCheckProvider.Answer>(), ignore_pending)
         }
     }
 

@@ -17,10 +17,6 @@ enum class SetupResult {
 }
 
 class SetupController : BaseController() {
-    fun reloadCheckProvider() {
-        provider = (app as PretixDeskMain).newCheckProvider()
-    }
-
     private fun configureLikePretixdroid(jsonData: String): SetupResult {
         try {
             val jsonobject = JSONObject(jsonData)
@@ -44,7 +40,7 @@ class SetupController : BaseController() {
                     jsonobject.optBoolean("show_info", true),
                     jsonobject.optBoolean("allow_search", true)
             )
-            reloadCheckProvider()
+            (app as PretixDeskMain).reloadCheckProvider()
             return SetupResult.OK
 
         } catch (e: JSONException) {
@@ -83,7 +79,7 @@ class SetupController : BaseController() {
                     params.getOrDefault("show_info", "True") == "True",
                     params.getOrDefault("allow_search", "True") == "True"
             )
-            reloadCheckProvider()
+            (app as PretixDeskMain).reloadCheckProvider()
             return SetupResult.OK
         } catch(e: MalformedURLException) {
             e.printStackTrace()

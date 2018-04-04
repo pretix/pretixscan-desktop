@@ -21,7 +21,6 @@ import java.util.*
 
 
 open class BaseController : Controller() {
-    protected var provider = (app as PretixDeskMain).newCheckProvider()
     protected var configStore = (app as PretixDeskMain).configStore
     private var syncStarted = -1L
 

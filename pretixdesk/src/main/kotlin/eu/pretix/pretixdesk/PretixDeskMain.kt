@@ -46,6 +46,7 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
     private var apiClient: PretixApi? = null
     var stage: Stage? = null
     var parameters_handled = false
+    var _provider: TicketCheckProvider? = null
 
     private val _messages: SimpleObjectProperty<ResourceBundle> = object : SimpleObjectProperty<ResourceBundle>() {
         override fun get(): ResourceBundle? {
@@ -150,6 +151,18 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
             apiClient = PretixApi.fromConfig(configStore, DefaultHttpClientFactory());
         }
         return apiClient!!
+    }
+
+    val provider: TicketCheckProvider
+        get() {
+            if (_provider == null) {
+                reloadCheckProvider();
+            }
+            return _provider!!
+        }
+
+    fun reloadCheckProvider() {
+        _provider = newCheckProvider();
     }
 
     fun newCheckProvider(): TicketCheckProvider {
