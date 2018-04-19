@@ -1,6 +1,6 @@
-$jre_version = '9.0.4'
-$build = '11'
-$hash = 'c2514751926b4512b076cc82f959763f'
+$jre_version = '10.0.1'
+$build = '10'
+$hash = 'fb4372174a714e6b8c52526dc134031e'
 $script_path = $(Split-Path -parent $MyInvocation.MyCommand.Definition)
 
 function has_file($filename) {
