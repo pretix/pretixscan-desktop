@@ -1,18 +1,9 @@
 #!/bin/bash
-JAVA_RELEASE=9.0.4
-JAVA_PATCH=11
-JAVA_HASH=c2514751926b4512b076cc82f959763f
 VERSION=0.3.3
 
 mkdir -p dist
 mkdir deb.tmp
 pushd deb.tmp
-
-# Download java
-wget -nc --header "Cookie: gpw_e24=http://www.oracle.com; oraclelicense=accept-securebackup-cookie" \
-    http://download.oracle.com/otn-pub/java/jdk/$JAVA_RELEASE+$JAVA_PATCH/$JAVA_HASH/jre-"$JAVA_RELEASE"_linux-x64_bin.tar.gz
-tar xzf jre-"$JAVA_RELEASE"_linux-x64_bin.tar.gz
-mv -T jre-$JAVA_RELEASE jre
 
 mkdir -p debian
 mkdir -p debian/DEBIAN
@@ -25,10 +16,11 @@ Section: web
 Priority: optional
 Architecture: amd64
 Maintainer: Raphael Michel
-License: GPL-3 and Oracle Binary Code License Agreement for Java SE
+License: GPL-3
+Depends: openjdk-8-jre, openjfx
 Description: pretix ticket check-in tool
  .
- pretixdesk distribution with bundled JRE
+ pretixdesk distribution
  .
 END
 
@@ -36,12 +28,11 @@ mkdir -p debian/usr/lib/pretixdesk
 mkdir -p debian/usr/share/applications
 mkdir -p debian/usr/bin
 
-cp -r jre debian/usr/lib/pretixdesk/jre
 cp ../build/libs/pretixdesk.jar debian/usr/lib/pretixdesk
 
 cat <<'END' > debian/usr/bin/pretixdesk
 #!/bin/sh
-export JAVA_HOME=/usr/lib/pretixdesk/jre
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre/
 $JAVA_HOME/bin/java -jar /usr/lib/pretixdesk/pretixdesk.jar $*
 END
 chmod +x debian/usr/bin/pretixdesk
@@ -64,7 +55,7 @@ then
 fi
 $DPKG --build $DEBDIR/debian
 
-mv debian.deb ../dist/pretixdesk.deb
+mv -f debian.deb ../dist/pretixdesk.deb
 
 popd
 #rm -rf deb.tmp

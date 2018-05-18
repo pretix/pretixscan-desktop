@@ -1,5 +1,5 @@
 language: java
-jdk: oraclejdk9
+jdk: oraclejdk8
 sudo: false
 script:
     - cd pretixdesk

@@ -2,20 +2,20 @@ build: off
 
 install:
   - git submodule update --init
-  - cinst jdk9 -version 9.0.4.11 -params 'installdir=C:\\jdk9'
-  - SET JAVA_HOME=C:\jdk9
-  - SET PATH=C:\jdk9\bin;%PATH%
-  - ps: .\pretixdesk\winci\downloadjre.ps1
-  - 7z e pretixdesk\winci\jre-9.0.4_windows-x64_bin.tar.gz
-  - 7z x jre-9.0.4_windows-x64_bin.tar
-  - move jre-9.0.4 jre
-  - move jre pretixdesk\
+  - cinst jdk8 -version 8.0.172 -params 'installdir=C:\\jdk8'
+  - SET JAVA_HOME=C:\jdk8
+  - SET PATH=C:\jdk8\bin;%PATH%
+  - curl -fsS -L -o jre.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.161-1/java-1.8.0-openjdk-1.8.0.161-1.b14.ojdkbuild.windows.x86_64.zip
+  - 7z x jre.zip -aoa
+  - move java-1.8.0-openjdk-1.8.0.161-1.b14.ojdkbuild.windows.x86_64\jre pretixdesk\
+  - curl -fsS -L -o jfx.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.171-1/openjfx-8.0.171-1.b11.ojdkbuild.windows.x86_64.zip
+  - 7z x jfx.zip -aoa
+  - xcopy openjfx-8.0.171-1.b11.ojdkbuild.windows.x86_64\jre pretixdesk\jre  /s /y
 
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
-  - C:\jdk9 -> appveyor.yml
+  - C:\jdk8 -> appveyor.yml
   - '%USERPROFILE%\.gradle -> appveyor.yml'
-  - pretixdesk\winci\jre-9.0.4_windows-x64_bin.tar.gz
 
 test_script:
   - cd pretixdesk
