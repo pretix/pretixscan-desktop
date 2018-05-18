@@ -48,7 +48,7 @@ dependencies {
     compile 'joda-time:joda-time:2.9.9'
     compile "de.huxhorn.lilith:de.huxhorn.lilith.3rdparty.junique:1.0.4"
     compile 'com.github.kittinunf.fuel:fuel:1.12.0'
-    compile 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2'
+    compile 'de.jensd:fontawesomefx-materialicons:2.2.0-5'
     compile 'com.jfoenix:jfoenix:8.0.3'
     compile(project(':libpretixsync'))
     testCompile group: 'junit', name: 'junit', version: '4.12'
