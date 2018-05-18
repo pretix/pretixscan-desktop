@@ -15,7 +15,7 @@ then
     DEBDIR=/tmp/deb
 fi
 $APTARCHIVE packages . > Packages
-gzip -k9 Packages
+gzip -f -k9 Packages
 $APTARCHIVE release . > Release
 gpg --output Release.gpg -u support-executables@pretix.eu -ba Release
 

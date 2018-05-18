@@ -17,7 +17,7 @@ Priority: optional
 Architecture: amd64
 Maintainer: Raphael Michel
 License: GPL-3
-Depends: openjdk-8-jre, openjfk
+Depends: openjdk-8-jre, openjfx
 Description: pretix ticket check-in tool
  .
  pretixdesk distribution
@@ -55,7 +55,7 @@ then
 fi
 $DPKG --build $DEBDIR/debian
 
-mv debian.deb ../dist/pretixdesk.deb
+mv -f debian.deb ../dist/pretixdesk.deb
 
 popd
 #rm -rf deb.tmp
