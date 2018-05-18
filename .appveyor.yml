@@ -7,6 +7,7 @@ install:
   - SET PATH=C:\jdk8\bin;%PATH%
   - curl -fsS -L -o jre.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.161-1/java-1.8.0-openjdk-1.8.0.161-1.b14.ojdkbuild.windows.x86_64.zip
   - 7z e jre.zip -aoa
+  - dir /ad /b /s
   - move java-1.8.0-openjdk-1.8.0.161-1.b14.ojdkbuild.windows.x86_64\jre pretixdesk\
 
 cache:
