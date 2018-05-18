@@ -76,6 +76,8 @@
    Delete "$INSTDIR\*.exe"
    RMDIR  /r "$INSTDIR\icons"
    RMDIR  /r "$INSTDIR\pretixdesk"
+   RMDIR  /r "$INSTDIR\lib"
+   RMDIR  /r "$INSTDIR\jre"
 
    Delete "$SMPROGRAMS\pretixdesk\pretixdesk.lnk"
    Delete "$SMPROGRAMS\pretixdesk\Uninstall.lnk"
