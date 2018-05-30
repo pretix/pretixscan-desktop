@@ -2,7 +2,7 @@ pretixdesk is developed by:
 
 rami.io Software development
 Raphael Michel
-Heinrich-Fuchs-Str. 120
+Rathausstr. 19/2
 69126 Heidelberg
 Germany
 
