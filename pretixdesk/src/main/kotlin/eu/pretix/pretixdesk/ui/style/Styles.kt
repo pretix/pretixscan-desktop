@@ -22,6 +22,7 @@ val STYLE_TOOLBAR_TEXT_COLOR = "#ffffff"
 val STYLE_ATTENTION_COLOR = "#3B1C4A"
 val STYLE_ATTENTION_ALTERNATE_COLOR = "#ffee58"
 val STYLE_TEXT_COLOR_MUTED = "#909090"
+val STYLE_BACKGROUND_IMAGE: String? = null
 
 class MainStyleSheet : Stylesheet() {
 

@@ -9,6 +9,7 @@ import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
+import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_IMAGE
 import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
 import javafx.animation.Timeline
 import javafx.geometry.Pos
@@ -178,7 +179,9 @@ class MainView : View() {
 
         style {
             alignment = Pos.CENTER
-            backgroundColor += c(STYLE_BACKGROUND_COLOR)
+            if (STYLE_BACKGROUND_IMAGE == null) {
+                backgroundColor += c(STYLE_BACKGROUND_COLOR)
+            }
             spacing = 20.px
         }
 
@@ -206,7 +209,11 @@ class MainView : View() {
 
             style {
                 alignment = Pos.CENTER
-                backgroundColor += c(STYLE_BACKGROUND_COLOR)
+                if (STYLE_BACKGROUND_IMAGE != null) {
+                    backgroundImage += URI(STYLE_BACKGROUND_IMAGE)
+                } else {
+                    backgroundColor += c(STYLE_BACKGROUND_COLOR)
+                }
                 spacing = 20.px
             }
 
