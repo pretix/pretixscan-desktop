@@ -7,8 +7,6 @@ import tornadofx.FXEvent
 import java.net.URLDecoder
 import java.util.HashMap
 
-class ConfigureEvent(val rawUrl: String) : FXEvent()
-
 fun queryToMap(query: String): Map<String, String> {
     val params = query.split("&".toRegex())
     val map = HashMap<String, String>()
@@ -20,9 +18,10 @@ fun queryToMap(query: String): Map<String, String> {
     }
     return map
 }
+
 fun App.acquireLock(appId: String, f: (message: String) -> String) {
     JUnique.acquireLock(appId, object : MessageHandler {
-        public override fun handle(message: String) : String {
+        public override fun handle(message: String): String {
             return f(message)
         }
     })

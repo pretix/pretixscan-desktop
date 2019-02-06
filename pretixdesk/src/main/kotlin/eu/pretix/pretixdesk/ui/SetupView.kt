@@ -4,42 +4,43 @@ import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import de.jensd.fx.glyphs.materialicons.MaterialIcon
 import de.jensd.fx.glyphs.materialicons.MaterialIconView
-import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.pretixdesk.ConfigureEvent
 import eu.pretix.pretixdesk.PretixDeskMain
-import eu.pretix.pretixdesk.readFromInputStream
 import eu.pretix.pretixdesk.ui.helpers.MaterialSlide
 import eu.pretix.pretixdesk.ui.helpers.jfxButton
 import eu.pretix.pretixdesk.ui.helpers.jfxDialog
+import eu.pretix.pretixdesk.ui.helpers.jfxProgressDialog
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
-import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
 import eu.pretix.pretixdesk.ui.style.STYLE_PRIMARY_DARK_COLOR
-import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
-import javafx.animation.Timeline
-import javafx.application.Platform
 import javafx.geometry.Pos
+import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
-import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.text.TextAlignment
-import javafx.stage.Stage
-import javafx.util.Duration
 import tornadofx.*
-import java.awt.Color
 
 class SetupView : View() {
     private val controller: SetupController by inject()
 
-    private val manualInput = textfield {
-        promptText = "pretixdesk://setup?url=…"
+    private val manualInputURL : TextField = textfield {
+        text = "https://pretix.eu"
         addClass(MainStyleSheet.mainSearchField)
         val mI = this
 
         setOnKeyReleased {
             if (it.code == KeyCode.ENTER && mI.text.length > 1) {
-                handleConfiguration(mI.text)
-                mI.clear()
+                manualInputToken.requestFocus()
+            }
+        }
+    }
+    private val manualInputToken : TextField = textfield {
+        promptText = "wnc5y04mlpmvguky"
+        addClass(MainStyleSheet.mainSearchField)
+        val mI = this
+
+        setOnKeyReleased {
+            if (it.code == KeyCode.ENTER && mI.text.length > 1) {
+                handleConfiguration(manualInputURL.text, mI.text)
             }
         }
     }
@@ -106,12 +107,10 @@ class SetupView : View() {
                 maxWidth = 460.px
             }
         }
-        label(messages["setup_instructions2"]) {
-            isWrapText = true
-            textAlignment = TextAlignment.JUSTIFY
-        }
 
-        this += manualInput
+        this += manualInputURL
+        this += manualInputToken
+        manualInputToken.requestFocus()
     }
 
     override val root: StackPane = stackpane {
@@ -137,49 +136,40 @@ class SetupView : View() {
         }
     }
 
-    fun handleConfiguration(rawUrl: String) {
-        val res = controller.configure(rawUrl)
-        if (res == SetupResult.OK) {
-            replaceWith(MainView::class, MaterialSlide(ViewTransition.Direction.UP))
-        } else {
-            val message = when (res) {
-                SetupResult.INVALID_URL -> messages["setup_invalid"]
-                SetupResult.VERSION_PRETIXDROID_OLD -> messages["setup_pretixdroid_old"]
-                SetupResult.VERSION_PRETIX_OLD -> messages["setup_pretix_old"]
-                else -> ""
-            }
+    fun handleConfiguration(url: String, token: String) {
+        val progressDialog = jfxProgressDialog(heading = messages["progress_connecting"]) {}
+        progressDialog.show(root)
+        runAsync {
+            controller.configure(url, token)
+        } ui {
+            progressDialog.close()
+            if (it.state == SetupResultState.OK) {
+                replaceWith(MainView::class, MaterialSlide(ViewTransition.Direction.UP))
+            } else {
+                val message = when(it.state) {
+                    SetupResultState.ERR_SSL -> messages["setup_error_ssl"]
+                    SetupResultState.ERR_IO -> messages["setup_error_io"]
+                    SetupResultState.ERR_SERVERERROR -> messages["setup_error_server"]
+                    SetupResultState.ERR_BADREQUEST -> it.message
+                    SetupResultState.ERR_BADRESPONSE -> messages["setup_error_response"]
+                    else -> ""
+                }
 
-            val okButton: JFXButton = jfxButton(messages.getString("dialog_ok").toUpperCase())
-            val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
-                setBody(label(message))
-                setActions(okButton)
+                val okButton: JFXButton = jfxButton(messages.getString("dialog_ok").toUpperCase())
+                val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
+                    setBody(label(message))
+                    setActions(okButton)
+                }
+                okButton.action {
+                    dialog.close()
+                }
+                dialog.show(root)
             }
-            okButton.action {
-                dialog.close()
-            }
-            dialog.show(root)
-        }
-    }
-
-    override fun onDock() {
-        super.onDock()
-        if ((app as PretixDeskMain).getInitUrl() != null && !(app as PretixDeskMain).parameters_handled) {
-            runAsync {
-                Thread.sleep(100)
-            } ui {
-                handleConfiguration((app as PretixDeskMain).getInitUrl()!!)
-            }
-            (app as PretixDeskMain).parameters_handled = true
         }
     }
 
     init {
         title = messages["title"]
-
-        subscribe<ConfigureEvent> { event ->
-            forceFocus(root)
-            handleConfiguration(event.rawUrl)
-        }
     }
 
     private fun icon(icon: MaterialIcon): MaterialIconView {

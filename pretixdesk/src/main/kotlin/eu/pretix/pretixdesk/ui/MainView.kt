@@ -4,7 +4,6 @@ import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import com.jfoenix.controls.JFXDialogLayout
 import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.pretixdesk.ConfigureEvent
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
@@ -13,7 +12,6 @@ import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
 import javafx.animation.Timeline
 import javafx.geometry.Pos
 import javafx.scene.control.ComboBoxBase
-import javafx.scene.control.TextField
 import javafx.scene.control.TextInputControl
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
@@ -276,22 +274,11 @@ class MainView : View() {
         super.onDock()
         if (!(app as PretixDeskMain).configStore.isConfigured()) {
             replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
-        } else {
-            if ((app as PretixDeskMain).getInitUrl() != null && !(app as PretixDeskMain).parameters_handled) {
-                requestReset(root)
-                (app as PretixDeskMain).parameters_handled = true
-            }
-            infoButton.isVisible = (app as PretixDeskMain).configStore.showInfo
         }
     }
 
     init {
         title = messages["title"]
-
-        subscribe<ConfigureEvent> {
-            forceFocus(root)
-            requestReset(root)
-        }
 
         syncStatusTimeline = timeline {
             cycleCount = Timeline.INDEFINITE

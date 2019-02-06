@@ -12,10 +12,12 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
 
     private val PREFS_KEY_API_URL = "pretix_api_url"
     private val PREFS_KEY_API_KEY = "pretix_api_key"
+    private val PREFS_KEY_API_DEVICE_ID = "pretix_api_device_id"
     private val PREFS_KEY_EVENT_SLUG = "pretix_api_event_slug"
     private val PREFS_KEY_ORGANIZER_SLUG = "pretix_api_organizer_slug"
     private val PREFS_KEY_SUBEVENT_ID = "pretix_api_subevent_id"
     private val PREFS_KEY_SHOW_INFO = "show_info"
+    private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
     private val PREFS_KEY_PLAY_SOUND = "play_sound"
     private val PREFS_KEY_ALLOW_SEARCH = "allow_search"
     private val PREFS_KEY_API_VERSION = "pretix_api_version"
@@ -28,19 +30,15 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_LAST_UPDATE_CHECK = "last_update_check_"
     private val PREFS_KEY_UPDATE_CHECK_NEWER_VERSION = "update_check_newer_version_"
 
-    fun setEventConfig(url: String, key: String, version: Int, show_info: Boolean, allow_search: Boolean) {
-        prefs.putByteArray(PREFS_KEY_API_URL, url.toByteArray())
-        prefs.putByteArray(PREFS_KEY_API_KEY, key.toByteArray())
-        prefs.putBoolean(PREFS_KEY_ALLOW_SEARCH, allow_search)
-        prefs.putBoolean(PREFS_KEY_SHOW_INFO, show_info)
-        prefs.putInt(PREFS_KEY_API_VERSION, version)
+    fun setDeviceConfig(url: String, key: String, orga_slug: String, device_id: Long, serial: String, sent_version: Int) {
+        prefs.put(PREFS_KEY_API_URL, url)
+        prefs.put(PREFS_KEY_API_KEY, key)
+        prefs.putLong(PREFS_KEY_API_DEVICE_ID, device_id)
+        prefs.put(PREFS_KEY_ORGANIZER_SLUG, orga_slug)
+        prefs.putInt(PREFS_KEY_DEVICE_KNOWN_VERSION, sent_version)
         prefs.remove(PREFS_KEY_LAST_DOWNLOAD)
         prefs.remove(PREFS_KEY_LAST_SYNC)
         prefs.remove(PREFS_KEY_LAST_FAILED_SYNC)
-        val f = File(data_dir, PREFS_KEY_LAST_STATUS_DATA + ".json")
-        if (f.exists()) {
-            f.delete()
-        }
         prefs.remove(PREFS_KEY_LAST_STATUS_DATA)
         prefs.flush()
     }
@@ -74,7 +72,7 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
     }
 
     override fun isConfigured(): Boolean {
-        return prefs.getByteArray(PREFS_KEY_API_URL, null) != null && apiUrl.isNotEmpty()
+        return prefs.get(PREFS_KEY_API_URL, null) != null && apiUrl.isNotEmpty()
     }
 
     override fun getApiVersion(): Int {
@@ -82,11 +80,11 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
     }
 
     override fun getApiUrl(): String {
-        return String(prefs.getByteArray(PREFS_KEY_API_URL, kotlin.ByteArray(0)))
+        return prefs.get(PREFS_KEY_API_URL, "")
     }
 
     override fun getApiKey(): String {
-        return String(prefs.getByteArray(PREFS_KEY_API_KEY, kotlin.ByteArray(0)))
+        return prefs.get(PREFS_KEY_API_KEY, "")
     }
 
     override fun getShowInfo(): Boolean {
@@ -139,11 +137,11 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
     }
 
     override fun getLastFailedSyncMsg(): String {
-        return String(prefs.getByteArray(PREFS_KEY_LAST_FAILED_SYNC_MSG, kotlin.ByteArray(0)))
+        return prefs.get(PREFS_KEY_LAST_FAILED_SYNC_MSG, "")
     }
 
     override fun setLastFailedSyncMsg(value: String?) {
-        prefs.putByteArray(PREFS_KEY_LAST_FAILED_SYNC_MSG, value?.toByteArray())
+        prefs.put(PREFS_KEY_LAST_FAILED_SYNC_MSG, value)
         prefs.flush()
     }
 

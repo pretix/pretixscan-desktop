@@ -2,22 +2,16 @@ package eu.pretix.pretixdesk.ui
 
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
-import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.pretixdesk.ConfigureEvent
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.readFromInputStream
 import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
 import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
-import javafx.animation.Timeline
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import tornadofx.*
-import java.awt.SystemColor.window
-import javafx.stage.Stage
-
 
 
 class SettingsView : View() {
@@ -200,10 +194,5 @@ class SettingsView : View() {
 
     init {
         title = messages["title"]
-
-        subscribe<ConfigureEvent> {
-            forceFocus(root)
-            requestReset(root)
-        }
     }
 }

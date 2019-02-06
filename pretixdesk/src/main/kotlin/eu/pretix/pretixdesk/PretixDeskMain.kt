@@ -35,6 +35,7 @@ import java.util.*
 
 
 val VERSION = "0.3.3"
+val VERSION_CODE = 1
 val APP_ID = "eu.pretix.pretixdesk"
 
 class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
@@ -68,40 +69,25 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
         get() = _messages.get()
         set(value) = _messages.set(value)
 
-    fun getInitUrl(): String? {
-        for (param in parameters.unnamed) {
-            if (param.startsWith("pretixdesk://")) {
-                return param
-            }
-        }
-        return null
-    }
-
     override fun start(stage: Stage) {
         this.stage = stage
         try {
-            acquireLock(APP_ID, fun (message: String): String {
-                fire(ConfigureEvent(message))
+            acquireLock(APP_ID, fun(message: String): String {
                 return "ok"
             })
         } catch (e: AlreadyLockedException) {
-            if (getInitUrl() != null) {
-                JUnique.sendMessage(APP_ID, getInitUrl())
-                System.exit(0)
-            } else {
-                val alert = Alert(AlertType.INFORMATION)
-                alert.title = messages["running_already_title"]
-                alert.headerText = messages["running_already_title"]
-                alert.contentText = messages["running_already"]
+            val alert = Alert(AlertType.INFORMATION)
+            alert.title = messages["running_already_title"]
+            alert.headerText = messages["running_already_title"]
+            alert.contentText = messages["running_already"]
 
-                val buttonTypeCancel = ButtonType(messages["alert_cancel"], ButtonBar.ButtonData.OK_DONE)
-                val buttonTypeIgnore = ButtonType(messages["alert_ignore"], ButtonBar.ButtonData.OTHER)
-                alert.buttonTypes.setAll(buttonTypeIgnore, buttonTypeCancel)
+            val buttonTypeCancel = ButtonType(messages["alert_cancel"], ButtonBar.ButtonData.OK_DONE)
+            val buttonTypeIgnore = ButtonType(messages["alert_ignore"], ButtonBar.ButtonData.OTHER)
+            alert.buttonTypes.setAll(buttonTypeIgnore, buttonTypeCancel)
 
-                val res = alert.showAndWait()
-                if (res.get() == buttonTypeCancel) {
-                    System.exit(1)
-                }
+            val res = alert.showAndWait()
+            if (res.get() == buttonTypeCancel) {
+                System.exit(1)
             }
         }
 
