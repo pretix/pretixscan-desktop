@@ -7,10 +7,14 @@ import java.util.prefs.Preferences
 
 
 class PretixDeskConfig(private var data_dir: String) : ConfigStore {
+
     private val prefs = Preferences.userNodeForPackage(PretixDeskConfig::class.java)
 
     private val PREFS_KEY_API_URL = "pretix_api_url"
     private val PREFS_KEY_API_KEY = "pretix_api_key"
+    private val PREFS_KEY_EVENT_SLUG = "pretix_api_event_slug"
+    private val PREFS_KEY_ORGANIZER_SLUG = "pretix_api_organizer_slug"
+    private val PREFS_KEY_SUBEVENT_ID = "pretix_api_subevent_id"
     private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_PLAY_SOUND = "play_sound"
     private val PREFS_KEY_ALLOW_SEARCH = "allow_search"
@@ -141,6 +145,37 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
     override fun setLastFailedSyncMsg(value: String?) {
         prefs.putByteArray(PREFS_KEY_LAST_FAILED_SYNC_MSG, value?.toByteArray())
         prefs.flush()
+    }
+
+    override fun getOrganizerSlug(): String {
+        return prefs.get(PREFS_KEY_ORGANIZER_SLUG, "")
+    }
+
+    override fun getEventSlug(): String {
+        return prefs.get(PREFS_KEY_EVENT_SLUG, "")
+    }
+
+    override fun getSubEventId(): Long {
+        return prefs.getLong(PREFS_KEY_SUBEVENT_ID, 0L)
+    }
+
+    fun setOrganizerSlug(value: String) {
+        prefs.put(PREFS_KEY_ORGANIZER_SLUG, value)
+        prefs.flush()
+    }
+
+    fun setEventSlug(value: String) {
+        prefs.put(PREFS_KEY_EVENT_SLUG, value)
+        prefs.flush()
+    }
+
+    fun getSubEventId(value: Long) {
+        prefs.putLong(PREFS_KEY_SUBEVENT_ID, value)
+        prefs.flush()
+    }
+
+    override fun getPosId(): Long {
+        return 0;
     }
 
     var playSound: Boolean

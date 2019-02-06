@@ -41,7 +41,7 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
     private var dataStore: BlockingEntityStore<Persistable>? = null
     private val appDirs = AppDirsFactory.getInstance()!!
     // Keep version argument at 1, we do not want new folders for every new version for now.
-    private val dataDir = appDirs.getUserDataDir("pretixdesk", "1", "pretix")
+    val dataDir = appDirs.getUserDataDir("pretixdesk", "1", "pretix")
     val configStore = PretixDeskConfig(dataDir)
     private var apiClient: PretixApi? = null
     var stage: Stage? = null

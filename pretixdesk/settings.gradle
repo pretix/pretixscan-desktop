@@ -2,3 +2,5 @@ rootProject.name = 'pretixdesk'
 
 include ':libpretixsync'
 project(':libpretixsync').projectDir = new File('libpretixsync-repo/libpretixsync')
+include ':libpretixprint'
+project(':libpretixprint').projectDir = new File('libpretixprint-repo/libpretixprint')

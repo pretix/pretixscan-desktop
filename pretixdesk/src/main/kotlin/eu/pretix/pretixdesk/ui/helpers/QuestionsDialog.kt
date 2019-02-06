@@ -59,9 +59,7 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
                 useMaxWidth = true
                 items = FXCollections.observableArrayList(ra.question.options)
                 if (!ra.question.required) {
-                    val qoempty = QuestionOption()
-                    qoempty.setServer_id(0)
-                    qoempty.setValue("")
+                    val qoempty = QuestionOption(0, 0, "", "")
                     items.add(0, qoempty)
                 }
                 for (item in items) {

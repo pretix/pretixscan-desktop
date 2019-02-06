@@ -126,11 +126,13 @@ class MainView : View() {
                     label(it.orderCode + "  ") { addClass(MainStyleSheet.searchItemOrderCode) }
                     label(it.attendee_name ?: "") { addClass(MainStyleSheet.searchItemAttendeeName) }
                 }
+                /*
                 if (it.addonText != "") {
                     hbox {
                         label("+ " + it.addonText) { addClass(MainStyleSheet.searchItemAttendeeName) }
                     }
                 }
+                */
             }
         }
         cellFormat {
@@ -636,11 +638,13 @@ class MainView : View() {
                             hbox {
                                 label(ticket)
                             }
+                            /*
                             if (data?.addonText != "") {
                                 hbox {
                                     label("+ " + data?.addonText ?: "")
                                 }
                             }
+                            */
                         }
                     }
                 }

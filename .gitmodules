@@ -2,3 +2,6 @@
 	path = pretixdesk/libpretixsync-repo
 	url = https://github.com/pretix/libpretixsync.git
 	branch = master
+[submodule "pretixdesk/libpretixprint-repo"]
+	path = pretixdesk/libpretixprint-repo
+	url = https://github.com/pretix/libpretixprint.git

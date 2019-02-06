@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXDialog
 import eu.pretix.libpretixsync.DummySentryImplementation
 import eu.pretix.libpretixsync.db.QueuedCheckIn
 import eu.pretix.libpretixsync.sync.SyncManager
+import eu.pretix.pretixdesk.DesktopFileStorage
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.jfxButton
 import eu.pretix.pretixdesk.ui.helpers.jfxDialog
@@ -15,6 +16,7 @@ import org.joda.time.Period
 import org.joda.time.format.PeriodFormatter
 import org.joda.time.format.PeriodFormatterBuilder
 import tornadofx.*
+import java.io.File
 import java.text.MessageFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -97,10 +99,11 @@ open class BaseController : Controller() {
                 (app as PretixDeskMain).api(),
                 DummySentryImplementation(),
                 (app as PretixDeskMain).data(),
+                DesktopFileStorage(File((app as PretixDeskMain).dataDir)),
                 upload_interval,
                 download_interval
         )
-        syncManager.sync()
+        syncManager.sync(false)
 
         syncStarted = -1L
     }
