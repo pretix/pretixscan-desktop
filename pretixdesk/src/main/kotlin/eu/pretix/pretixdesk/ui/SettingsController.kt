@@ -2,6 +2,11 @@ package eu.pretix.pretixdesk.ui
 
 import eu.pretix.libpretixsync.db.*
 import eu.pretix.pretixdesk.PretixDeskMain
+import javax.print.DocFlavor
+import javax.print.PrintService
+import javax.print.PrintServiceLookup
+
+
 
 class SettingsController : BaseController() {
 
@@ -35,5 +40,21 @@ class SettingsController : BaseController() {
 
     fun toggleSound(value: Boolean ) {
         configStore.playSound = value
+    }
+
+    fun getCurrentPrinterName(): String? {
+        return configStore.badgePrinterName
+    }
+
+    fun setBadgePrinter(p: PrintService?) {
+        if (p is FakePrintService) {
+            configStore.badgePrinterName = null
+        } else {
+            configStore.badgePrinterName = p?.name
+        }
+    }
+
+    fun getPrinters(): Array<PrintService> {
+        return PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.PAGEABLE, null)
     }
 }

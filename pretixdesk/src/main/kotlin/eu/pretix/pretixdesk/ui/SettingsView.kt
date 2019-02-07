@@ -8,11 +8,83 @@ import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
 import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
 import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
+import javafx.collections.FXCollections
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import tornadofx.*
+import javax.print.DocFlavor
+import javax.print.DocPrintJob
+import javax.print.PrintService
+import javax.print.ServiceUIFactory
+import javax.print.attribute.Attribute
+import javax.print.attribute.AttributeSet
+import javax.print.attribute.PrintServiceAttribute
+import javax.print.attribute.PrintServiceAttributeSet
+import javax.print.event.PrintServiceAttributeListener
 
+
+class FakePrintService : PrintService {
+    override fun isDocFlavorSupported(flavor: DocFlavor?): Boolean {
+        return false
+    }
+
+    override fun getName(): String? {
+        return ""
+    }
+
+    override fun removePrintServiceAttributeListener(listener: PrintServiceAttributeListener?) {}
+    override fun getDefaultAttributeValue(category: Class<out Attribute>?): Any? {
+        return null
+    }
+
+    override fun getSupportedDocFlavors(): Array<DocFlavor> {
+        return emptyArray()
+    }
+
+    override fun getAttributes(): PrintServiceAttributeSet? {
+        return null
+    }
+
+    override fun getServiceUIFactory(): ServiceUIFactory? {
+        return null
+    }
+
+    override fun isAttributeValueSupported(attrval: Attribute?, flavor: DocFlavor?, attributes: AttributeSet?): Boolean {
+        return false
+    }
+
+    override fun getSupportedAttributeValues(category: Class<out Attribute>?, flavor: DocFlavor?, attributes: AttributeSet?): Any? {
+        return null
+    }
+
+    override fun getSupportedAttributeCategories(): Array<Class<*>> {
+        return emptyArray()
+    }
+
+    override fun <T : PrintServiceAttribute?> getAttribute(category: Class<T>?): T? {
+        return null
+    }
+
+    override fun addPrintServiceAttributeListener(listener: PrintServiceAttributeListener?) {
+    }
+
+    override fun getUnsupportedAttributes(flavor: DocFlavor?, attributes: AttributeSet?): AttributeSet? {
+        return null
+    }
+
+    override fun createPrintJob(): DocPrintJob? {
+        return null
+    }
+
+    override fun isAttributeCategorySupported(category: Class<out Attribute>?): Boolean {
+        return false
+    }
+
+    override fun toString(): String {
+        return ""
+    }
+}
 
 class SettingsView : View() {
     private val controller: SettingsController by inject()
@@ -30,6 +102,22 @@ class SettingsView : View() {
                     label(messages["settings_head"]) { addClass(MainStyleSheet.eventInfoItemHeader) }
                 }
             }
+        }
+    }
+
+    private val printersComboBox = jfxCombobox<PrintService> {
+        useMaxWidth = true
+        items = FXCollections.observableList(controller.getPrinters().toMutableList())
+        items.add(0, FakePrintService())
+        for (item in items) {
+            if (item.name == controller.getCurrentPrinterName()) {
+                selectionModel.select(item)
+                break
+            }
+        }
+
+        valueProperty().onChange {
+            controller.setBadgePrinter(it)
         }
     }
 
@@ -104,6 +192,32 @@ class SettingsView : View() {
                     label(messages["settings_sound"])
                     spacer {}
                     this += soundBtn
+                }
+            }
+        }
+
+        vbox {
+            addClass(MainStyleSheet.card)
+            addClass(MainStyleSheet.eventSettingsCard)
+            vbox {
+                addClass(MainStyleSheet.cardBody)
+                style {
+                    padding = box(15.px, 15.px)
+                }
+                hbox {
+                    style {
+                        alignment = Pos.CENTER
+                    }
+                    label(messages["settings_printers_badge"]) {
+                        hboxConstraints {
+                            hGrow = Priority.ALWAYS
+                        }
+                    }
+                    spacer {}
+                    this += printersComboBox
+                    printersComboBox.hboxConstraints {
+                        hGrow = Priority.ALWAYS
+                    }
                 }
             }
         }
