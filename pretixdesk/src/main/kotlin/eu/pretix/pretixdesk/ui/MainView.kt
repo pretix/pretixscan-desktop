@@ -124,7 +124,7 @@ class MainView : View() {
                     label(it.orderCode + "  ") { addClass(MainStyleSheet.searchItemOrderCode) }
                     label(it.attendee_name ?: "") { addClass(MainStyleSheet.searchItemAttendeeName) }
                 }
-                /*
+                /* TODO:
                 if (it.addonText != "") {
                     hbox {
                         label("+ " + it.addonText) { addClass(MainStyleSheet.searchItemAttendeeName) }
@@ -272,8 +272,14 @@ class MainView : View() {
 
     override fun onDock() {
         super.onDock()
-        if (!(app as PretixDeskMain).configStore.isConfigured()) {
+        val conf = (app as PretixDeskMain).configStore
+        if (!conf.isConfigured()) {
             replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+        }
+        if (conf.eventName == null || conf.eventSlug == null) {
+            replaceWith(SelectEventView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+        } else if (conf.checkInListId == 0L) {
+            replaceWith(SelectCheckInListView::class, MaterialSlide(ViewTransition.Direction.DOWN))
         }
     }
 

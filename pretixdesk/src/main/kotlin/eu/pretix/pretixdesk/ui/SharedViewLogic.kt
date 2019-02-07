@@ -68,7 +68,7 @@ open class BaseController : Controller() {
         lastSyncFailed.timeInMillis = configStore.lastFailedSync
         val cnt = (app as PretixDeskMain).data().count(QueuedCheckIn::class.java).get().value()
 
-        val formatter = SimpleDateFormat(messages.getString("date_format"))
+        val formatter = SimpleDateFormat(messages.getString("datetime_format"))
 
         var res = messages.getString("sync_status_last") + "\n" +
                 formatter.format(lastSync.time) + "\n\n" +
@@ -82,7 +82,7 @@ open class BaseController : Controller() {
         return res
     }
 
-    fun triggerSync() {
+    fun triggerSync(force: Boolean = false) {
         if (syncStarted > 0 && System.currentTimeMillis() - syncStarted < 1000 * 60) {
             return
         }
@@ -103,7 +103,7 @@ open class BaseController : Controller() {
                 upload_interval,
                 download_interval
         )
-        syncManager.sync(false)
+        syncManager.sync(force)
 
         syncStarted = -1L
     }

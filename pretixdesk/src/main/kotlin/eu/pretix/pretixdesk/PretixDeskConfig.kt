@@ -14,8 +14,10 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_API_KEY = "pretix_api_key"
     private val PREFS_KEY_API_DEVICE_ID = "pretix_api_device_id"
     private val PREFS_KEY_EVENT_SLUG = "pretix_api_event_slug"
+    private val PREFS_KEY_EVENT_NAME = "pretix_api_event_name"
     private val PREFS_KEY_ORGANIZER_SLUG = "pretix_api_organizer_slug"
     private val PREFS_KEY_SUBEVENT_ID = "pretix_api_subevent_id"
+    private val PREFS_KEY_CHECKINLIST_ID = "pretix_api_checkin_list_id"
     private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
     private val PREFS_KEY_PLAY_SOUND = "play_sound"
@@ -40,6 +42,9 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
         prefs.remove(PREFS_KEY_LAST_SYNC)
         prefs.remove(PREFS_KEY_LAST_FAILED_SYNC)
         prefs.remove(PREFS_KEY_LAST_STATUS_DATA)
+        prefs.remove(PREFS_KEY_SUBEVENT_ID)
+        prefs.remove(PREFS_KEY_EVENT_SLUG)
+        prefs.remove(PREFS_KEY_EVENT_NAME)
         prefs.flush()
     }
 
@@ -53,6 +58,9 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
         prefs.remove(PREFS_KEY_LAST_SYNC)
         prefs.remove(PREFS_KEY_LAST_FAILED_SYNC)
         prefs.remove(PREFS_KEY_LAST_STATUS_DATA)
+        prefs.remove(PREFS_KEY_SUBEVENT_ID)
+        prefs.remove(PREFS_KEY_EVENT_SLUG)
+        prefs.remove(PREFS_KEY_EVENT_NAME)
         val f = File(data_dir, PREFS_KEY_LAST_STATUS_DATA + ".json")
         if (f.exists()) {
             f.delete()
@@ -149,12 +157,16 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
         return prefs.get(PREFS_KEY_ORGANIZER_SLUG, "")
     }
 
-    override fun getEventSlug(): String {
-        return prefs.get(PREFS_KEY_EVENT_SLUG, "")
+    override fun getEventSlug(): String? {
+        return prefs.get(PREFS_KEY_EVENT_SLUG, null)
     }
 
-    override fun getSubEventId(): Long {
-        return prefs.getLong(PREFS_KEY_SUBEVENT_ID, 0L)
+    override fun getSubEventId(): Long? {
+        val l = prefs.getLong(PREFS_KEY_SUBEVENT_ID, 0L)
+        if (l == 0L) {
+            return null
+        }
+        return l
     }
 
     fun setOrganizerSlug(value: String) {
@@ -162,13 +174,13 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
         prefs.flush()
     }
 
-    fun setEventSlug(value: String) {
+    fun setEventSlug(value: String?) {
         prefs.put(PREFS_KEY_EVENT_SLUG, value)
         prefs.flush()
     }
 
-    fun getSubEventId(value: Long) {
-        prefs.putLong(PREFS_KEY_SUBEVENT_ID, value)
+    fun setSubEventId(value: Long?) {
+        prefs.putLong(PREFS_KEY_SUBEVENT_ID, value ?: 0L)
         prefs.flush()
     }
 
@@ -176,10 +188,24 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
         return 0;
     }
 
+    var eventName: String?
+        get() = prefs.get(PREFS_KEY_EVENT_NAME, null)
+        set (value) {
+            prefs.put(PREFS_KEY_EVENT_NAME, value)
+            prefs.flush()
+        }
+
     var playSound: Boolean
         get() = prefs.getBoolean(PREFS_KEY_PLAY_SOUND, true)
         set (value) {
             prefs.putBoolean(PREFS_KEY_PLAY_SOUND, value)
+            prefs.flush()
+        }
+
+    var checkInListId: Long
+        get() = prefs.getLong(PREFS_KEY_CHECKINLIST_ID, 0)
+        set(value) {
+            prefs.putLong(PREFS_KEY_CHECKINLIST_ID, value)
             prefs.flush()
         }
 
