@@ -1,9 +1,6 @@
 package eu.pretix.pretixdesk.ui
 
-import com.sun.deploy.net.proxy.RemoveCommentReader
 import eu.pretix.libpretixsync.check.CheckException
-import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.libpretixsync.db.Event
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
@@ -15,9 +12,7 @@ import javafx.geometry.Pos
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
-import javafx.scene.layout.VBox
 import javafx.scene.text.FontWeight
-import javafx.util.Duration
 import tornadofx.*
 import java.text.SimpleDateFormat
 
