@@ -144,7 +144,7 @@ class SetupView : View() {
         } ui {
             progressDialog.close()
             if (it.state == SetupResultState.OK) {
-                replaceWith(MainView::class, MaterialSlide(ViewTransition.Direction.UP))
+                replaceWith(SelectEventView::class, MaterialSlide(ViewTransition.Direction.UP))
             } else {
                 val message = when(it.state) {
                     SetupResultState.ERR_SSL -> messages["setup_error_ssl"]
