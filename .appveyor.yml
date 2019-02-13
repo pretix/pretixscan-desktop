@@ -2,15 +2,15 @@ build: off
 
 install:
   - git submodule update --init
-  - cinst jdk8 -version 8.0.172 -params 'installdir=C:\\jdk8'
+  - cinst jdk8 -version 8.0.201 -params 'installdir=C:\\jdk8'
   - SET JAVA_HOME=C:\jdk8
   - SET PATH=C:\jdk8\bin;%PATH%
-  - curl -fsS -L -o jre.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.161-1/java-1.8.0-openjdk-1.8.0.161-1.b14.ojdkbuild.windows.x86_64.zip
+  - curl -fsS -L -o jre.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.201-1/java-1.8.0-openjdk-1.8.0.201-1.b09.ojdkbuild.windows.x86_64.zip
   - 7z x jre.zip -aoa
-  - move java-1.8.0-openjdk-1.8.0.161-1.b14.ojdkbuild.windows.x86_64\jre pretixdesk\
-  - curl -fsS -L -o jfx.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.171-1/openjfx-8.0.171-1.b11.ojdkbuild.windows.x86_64.zip
+  - move java-1.8.0-openjdk-1.8.0.201-1.b14.ojdkbuild.windows.x86_64\jre pretixdesk\
+  - curl -fsS -L -o jfx.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.201-1/openjfx-8.0.201-1.b09.ojdkbuild.windows.x86_64.zip
   - 7z x jfx.zip -aoa
-  - xcopy openjfx-8.0.171-1.b11.ojdkbuild.windows.x86_64\jre pretixdesk\jre  /s /y
+  - xcopy openjfx-8.0.201-1.b11.ojdkbuild.windows.x86_64\jre pretixdesk\jre  /s /y
 
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
