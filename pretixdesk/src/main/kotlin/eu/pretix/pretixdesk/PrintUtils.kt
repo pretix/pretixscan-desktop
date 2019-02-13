@@ -21,6 +21,8 @@ import java.io.File
 import java.io.InputStream
 import java.nio.charset.Charset
 import javax.print.PrintServiceLookup
+import javax.print.attribute.HashPrintRequestAttributeSet
+import javax.print.attribute.standard.OrientationRequested
 
 
 fun getDefaultBadgeLayout(): BadgeLayout {
@@ -67,8 +69,9 @@ fun printBadge(application: PretixDeskMain, position: JSONObject) {
             val job = PrinterJob.getPrinterJob()
             job.setPageable(PDFPageable(document, Orientation.AUTO, false, 0f))
             job.printService = printService
-            job.print()
-            System.out.println("Print job executed")
+            val attributes = HashPrintRequestAttributeSet()
+            attributes.add(OrientationRequested.LANDSCAPE)
+            job.print(attributes)
             break
         }
     }
