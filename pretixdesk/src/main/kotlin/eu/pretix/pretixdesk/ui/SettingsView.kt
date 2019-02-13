@@ -121,6 +121,14 @@ class SettingsView : View() {
         }
     }
 
+    private val badgesBtn = jfxTogglebutton() {
+        toggleColor = c(STYLE_STATE_VALID_COLOR)
+        isSelected = !(app as PretixDeskMain).configStore.autoPrintBadges
+        action {
+            controller.toggleAutoPrintBadges(isSelected)
+        }
+    }
+
     private val soundBtn = jfxTogglebutton() {
         toggleColor = c(STYLE_STATE_VALID_COLOR)
         isSelected = !(app as PretixDeskMain).configStore.playSound
@@ -192,6 +200,25 @@ class SettingsView : View() {
                     label(messages["settings_sound"])
                     spacer {}
                     this += soundBtn
+                }
+            }
+        }
+
+        vbox {
+            addClass(MainStyleSheet.card)
+            addClass(MainStyleSheet.eventSettingsCard)
+            vbox {
+                addClass(MainStyleSheet.cardBody)
+                style {
+                    padding = box(0.px, 15.px)
+                }
+                hbox {
+                    style {
+                        alignment = Pos.CENTER
+                    }
+                    label(messages["settings_autoprint_badges"])
+                    spacer {}
+                    this += badgesBtn
                 }
             }
         }
@@ -304,6 +331,7 @@ class SettingsView : View() {
             replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
         }
         soundBtn.isSelected = (app as PretixDeskMain).configStore.playSound
+        badgesBtn.isSelected = (app as PretixDeskMain).configStore.autoPrintBadges
     }
 
     init {

@@ -21,5 +21,6 @@ class SelectEventController : BaseController() {
         configStore.subEventId = event.subevent_id ?: 0L
         configStore.eventName = event.name
         configStore.checkInListId = 0
+        (app as PretixDeskMain).reloadCheckProvider()
     }
 }

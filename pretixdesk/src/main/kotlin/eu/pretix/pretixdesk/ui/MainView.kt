@@ -6,9 +6,8 @@ import com.jfoenix.controls.JFXDialogLayout
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixdesk.PretixDeskMain
 import eu.pretix.pretixdesk.ui.helpers.*
-import eu.pretix.pretixdesk.ui.style.MainStyleSheet
-import eu.pretix.pretixdesk.ui.style.STYLE_BACKGROUND_COLOR
-import eu.pretix.pretixdesk.ui.style.STYLE_STATE_VALID_COLOR
+import eu.pretix.pretixdesk.ui.style.*
+import eu.pretix.pretixpos.ui.printBadge
 import javafx.animation.Timeline
 import javafx.geometry.Pos
 import javafx.scene.control.ComboBoxBase
@@ -20,11 +19,21 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.util.Duration
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.printing.PDFPageable
 import tornadofx.*
 import java.awt.Desktop
+import java.awt.print.PrinterJob
 import java.net.URI
 import java.util.regex.Pattern
 import javax.sound.sampled.AudioSystem
+import java.awt.print.PrinterJob.getPrinterJob
+import java.io.File
+import javax.print.PrintServiceLookup
+
+
+
+
 
 
 var re_alphanum = Pattern.compile("^[a-zA-Z0-9]+\$")
@@ -281,6 +290,7 @@ class MainView : View() {
         } else if (conf.checkInListId == 0L) {
             replaceWith(SelectCheckInListView::class, MaterialSlide(ViewTransition.Direction.DOWN))
         }
+
     }
 
     init {
@@ -543,6 +553,11 @@ class MainView : View() {
             showCard(newCard)
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
                 beep()
+                if (resultData?.position != null && (app as PretixDeskMain).configStore.badgePrinterName != null && (app as PretixDeskMain).configStore.autoPrintBadges) {
+                    runAsync {
+                        printBadge(app as PretixDeskMain, resultData!!.position!!)
+                    }
+                }
             }
 
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
@@ -638,6 +653,21 @@ class MainView : View() {
                                 }
                             }
                             */
+
+                        }
+                        if (data?.position != null && (app as PretixDeskMain).configStore.badgePrinterName != null && (data.type == TicketCheckProvider.CheckResult.Type.VALID || data.type == TicketCheckProvider.CheckResult.Type.USED)) {
+                            jfxButton(messages["button_reprint_badge"]) {
+                                style {
+                                    buttonType = JFXButton.ButtonType.RAISED
+                                    textFill = c(STYLE_TOOLBAR_TEXT_COLOR)
+                                    backgroundColor += c(STYLE_PRIMARY_DARK_COLOR)
+                                }
+                                setOnMouseClicked {
+                                    runAsync {
+                                        printBadge(app as PretixDeskMain, data.position!!)
+                                    }
+                                }
+                            }
                         }
                     }
                 }

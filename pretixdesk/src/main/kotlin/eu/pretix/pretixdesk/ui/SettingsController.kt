@@ -42,6 +42,10 @@ class SettingsController : BaseController() {
         configStore.playSound = value
     }
 
+    fun toggleAutoPrintBadges(value: Boolean) {
+        configStore.autoPrintBadges = value
+    }
+
     fun getCurrentPrinterName(): String? {
         return configStore.badgePrinterName
     }

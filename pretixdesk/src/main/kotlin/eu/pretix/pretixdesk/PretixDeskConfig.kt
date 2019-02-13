@@ -19,6 +19,7 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_SUBEVENT_ID = "pretix_api_subevent_id"
     private val PREFS_KEY_CHECKINLIST_ID = "pretix_api_checkin_list_id"
     private val PREFS_KEY_PRINTER_BADGE_NAME = "printer_badge_name"
+    private val PREFS_KEY_AUTO_PRINT_BADGES = "auto_print_badges"
     private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
     private val PREFS_KEY_PLAY_SOUND = "play_sound"
@@ -46,6 +47,7 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
         prefs.remove(PREFS_KEY_SUBEVENT_ID)
         prefs.remove(PREFS_KEY_EVENT_SLUG)
         prefs.remove(PREFS_KEY_EVENT_NAME)
+        prefs.remove(PREFS_KEY_CHECKINLIST_ID)
         prefs.flush()
     }
 
@@ -62,6 +64,7 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
         prefs.remove(PREFS_KEY_SUBEVENT_ID)
         prefs.remove(PREFS_KEY_EVENT_SLUG)
         prefs.remove(PREFS_KEY_EVENT_NAME)
+        prefs.remove(PREFS_KEY_CHECKINLIST_ID)
         val f = File(data_dir, PREFS_KEY_LAST_STATUS_DATA + ".json")
         if (f.exists()) {
             f.delete()
@@ -221,6 +224,13 @@ class PretixDeskConfig(private var data_dir: String) : ConfigStore {
         get() = prefs.get(PREFS_KEY_UPDATE_CHECK_NEWER_VERSION + VERSION, "")
         set (value) {
             prefs.put(PREFS_KEY_UPDATE_CHECK_NEWER_VERSION + VERSION, value)
+            prefs.flush()
+        }
+
+    var autoPrintBadges: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_AUTO_PRINT_BADGES, false)
+        set (value) {
+            prefs.putBoolean(PREFS_KEY_AUTO_PRINT_BADGES, value)
             prefs.flush()
         }
 

@@ -10,6 +10,7 @@ import eu.pretix.libpretixsync.db.Migrations
 import eu.pretix.libpretixsync.db.Models
 import eu.pretix.pretixdesk.ui.MainView
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
+import eu.pretix.pretixpos.ui.Renderer
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
 import io.requery.cache.EntityCacheBuilder
@@ -43,6 +44,7 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
     private val appDirs = AppDirsFactory.getInstance()!!
     // Keep version argument at 1, we do not want new folders for every new version for now.
     val dataDir = appDirs.getUserDataDir("pretixdesk", "1", "pretix")
+    val cacheDir = appDirs.getUserCacheDir("pretixdesk", "1", "pretix")
     val configStore = PretixDeskConfig(dataDir)
     private var apiClient: PretixApi? = null
     var stage: Stage? = null
@@ -71,6 +73,9 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
 
     override fun start(stage: Stage) {
         this.stage = stage
+
+        Renderer.registerFonts(this)
+
         try {
             acquireLock(APP_ID, fun(message: String): String {
                 return "ok"
@@ -156,7 +161,7 @@ class PretixDeskMain : App(MainView::class, MainStyleSheet::class) {
         if (configStore.asyncModeEnabled) {
             p = AsyncCheckProvider(configStore, data())
         } else {
-            p = OnlineCheckProvider(configStore, DefaultHttpClientFactory())
+            p = OnlineCheckProvider(configStore, DefaultHttpClientFactory(), data(), configStore.checkInListId)
         }
         p.setSentry(DummySentryImplementation())
         apiClient = PretixApi.fromConfig(configStore, DefaultHttpClientFactory());
