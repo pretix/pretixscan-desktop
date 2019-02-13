@@ -1,4 +1,4 @@
-package eu.pretix.pretixpos.ui
+package eu.pretix.pretixdesk
 
 import eu.pretix.libpretixprint.templating.ContentProvider
 import eu.pretix.libpretixprint.templating.FontRegistry

@@ -2,12 +2,11 @@ package eu.pretix.pretixdesk.ui
 
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
-import com.jfoenix.controls.JFXDialogLayout
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixdesk.PretixDeskMain
+import eu.pretix.pretixdesk.printBadge
 import eu.pretix.pretixdesk.ui.helpers.*
 import eu.pretix.pretixdesk.ui.style.*
-import eu.pretix.pretixpos.ui.printBadge
 import javafx.animation.Timeline
 import javafx.geometry.Pos
 import javafx.scene.control.ComboBoxBase
@@ -19,21 +18,11 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.util.Duration
-import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.printing.PDFPageable
 import tornadofx.*
 import java.awt.Desktop
-import java.awt.print.PrinterJob
 import java.net.URI
 import java.util.regex.Pattern
 import javax.sound.sampled.AudioSystem
-import java.awt.print.PrinterJob.getPrinterJob
-import java.io.File
-import javax.print.PrintServiceLookup
-
-
-
-
 
 
 var re_alphanum = Pattern.compile("^[a-zA-Z0-9]+\$")
@@ -364,64 +353,8 @@ class MainView : View() {
     }
 
     private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean = false) {
-        var resultData: TicketCheckProvider.CheckResult? = null
-
-        val progressDialog = jfxProgressDialog(heading = messages["progress_redeeming"]) {}
-        progressDialog.show(root)
-        runAsync {
-            resultData = controller.handleScanInput(searchResult.secret, answers, ignore_pending)
-        } ui {
-            val message = when (resultData?.type) {
-                TicketCheckProvider.CheckResult.Type.INVALID -> messages["result_invalid"]
-                TicketCheckProvider.CheckResult.Type.VALID -> messages["result_valid"]
-                TicketCheckProvider.CheckResult.Type.USED -> messages["result_used"]
-                TicketCheckProvider.CheckResult.Type.ERROR -> messages["result_error"]
-                TicketCheckProvider.CheckResult.Type.UNPAID -> messages["result_unpaid"]
-                TicketCheckProvider.CheckResult.Type.PRODUCT -> messages["result_product"]
-                TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> messages["result_questions"]
-                null -> ""
-            }
-            progressDialog.isOverlayClose = true
-            (progressDialog.content as JFXDialogLayout).setHeading(label(message))
-            (progressDialog.content as JFXDialogLayout).setBody(label())
-            (progressDialog.content as JFXDialogLayout).setActions(
-                    jfxButton(messages["dialog_close"]) {
-                        action {
-                            progressDialog.close()
-                        }
-                    }
-            )
-
-            if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
-                beep()
-                searchResult.isRedeemed = true
-                val i: Int = searchResultList.indexOf(searchResult)
-                val cloned = TicketCheckProvider.SearchResult(searchResult)
-                searchResultList.remove(searchResult)
-                searchResultList.add(i, cloned)
-                searchResultListView.selectionModel.select(cloned)
-            }
-
-            if (resultData?.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
-                val dialog = questionsDialog(resultData!!.requiredAnswers) { a ->
-                    handleSearchResultSelected(searchResult, a, ignore_pending)
-                }
-                dialog.show(root)
-                progressDialog.close()
-            }
-
-            if (resultData?.type == TicketCheckProvider.CheckResult.Type.UNPAID && resultData?.isCheckinAllowed == true) {
-                val dialog = unpaidOrderDialog { new_ignore_pending ->
-                    handleSearchResultSelected(searchResult, answers, new_ignore_pending)
-                }
-                dialog.show(root)
-                progressDialog.close()
-            }
-
-            runAsync {
-                controller.triggerSync()
-            }
-        }
+        hideSearchResultCard()
+        handleTicketInput(searchResult.secret, answers, ignore_pending)
     }
 
     private fun removeCard(card: VBox) {

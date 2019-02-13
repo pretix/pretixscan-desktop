@@ -10,28 +10,24 @@ import eu.pretix.libpretixsync.db.Migrations
 import eu.pretix.libpretixsync.db.Models
 import eu.pretix.pretixdesk.ui.MainView
 import eu.pretix.pretixdesk.ui.style.MainStyleSheet
-import eu.pretix.pretixpos.ui.Renderer
 import io.requery.BlockingEntityStore
 import io.requery.Persistable
 import io.requery.cache.EntityCacheBuilder
 import io.requery.sql.ConfigurationBuilder
 import io.requery.sql.EntityDataStore
-import io.requery.sql.SchemaModifier
-import io.requery.sql.TableCreationMode
 import it.sauronsoftware.junique.AlreadyLockedException
-import it.sauronsoftware.junique.JUnique
 import javafx.beans.property.SimpleObjectProperty
+import javafx.scene.control.Alert
+import javafx.scene.control.Alert.AlertType
+import javafx.scene.control.ButtonBar
+import javafx.scene.control.ButtonType
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import net.harawata.appdirs.AppDirsFactory
 import org.sqlite.SQLiteConfig
 import org.sqlite.SQLiteDataSource
-import java.io.File
-import javafx.scene.control.Alert.AlertType
-import javafx.scene.control.Alert
-import javafx.scene.control.ButtonBar
-import javafx.scene.control.ButtonType
 import tornadofx.*
+import java.io.File
 import java.util.*
 
 
