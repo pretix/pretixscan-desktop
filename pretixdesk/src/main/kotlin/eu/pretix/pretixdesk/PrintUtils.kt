@@ -70,7 +70,7 @@ fun printBadge(application: PretixDeskMain, position: JSONObject) {
             job.setPageable(PDFPageable(document, Orientation.AUTO, false, 0f))
             job.printService = printService
             val attributes = HashPrintRequestAttributeSet()
-            attributes.add(OrientationRequested.LANDSCAPE)
+            attributes.add(OrientationRequested.PORTRAIT)
             job.print(attributes)
             break
         }
