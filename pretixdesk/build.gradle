@@ -17,10 +17,12 @@ buildscript {
         classpath 'edu.sc.seis.gradle:launch4j:2.4.2'
         classpath "net.ltgt.gradle:gradle-apt-plugin:0.17"
         classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
     }
 }
 
 apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: 'javafx-gradle-plugin'
@@ -93,20 +95,16 @@ jfx {
     appName = "pretixdesk"
 }
 
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Version': version,
-                'Main-Class': mainClassName
-    }
-    archiveName = project.name + '.jar'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
+shadowJar {
+    baseName = project.name
+    classifier = null
+    version = null
 }
 
 launch4j {
     mainClassName = mainClassName
-    jar = "lib/${project.tasks.fatJar.archiveName}"
-    copyConfigurable = project.tasks.fatJar.outputs.files
+    jar = "lib/${project.tasks.shadowJar.archiveName}"
+    copyConfigurable = project.tasks.shadowJar.outputs.files
     bundledJrePath = "jre"
     bundledJre64Bit = true
     version = version
