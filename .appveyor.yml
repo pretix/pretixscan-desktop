@@ -20,7 +20,7 @@ cache:
 test_script:
   - cd pretixscan
   - gradlew --no-daemon -version
-  - gradlew --no-daemon --stacktrace clean check test build fatJar createExe
+  - gradlew --no-daemon --stacktrace clean check test build shadowJar createExe
   - mkdir dist
   - '"C:\Program Files (x86)\NSIS\makensis.exe" windows.nsi'
 

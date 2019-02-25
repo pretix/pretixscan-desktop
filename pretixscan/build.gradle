@@ -31,7 +31,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'net.ltgt.apt-idea'
 
 sourceCompatibility = 1.8
-mainClassName = 'eu.pretix.pretixscan.PretixScanMain'
+mainClassName = 'eu.pretix.pretixscan.desktop.PretixScanMain'
 
 repositories {
     mavenCentral()
