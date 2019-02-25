@@ -1,7 +1,7 @@
-[submodule "pretixdesk/libpretixsync-repo"]
-	path = pretixdesk/libpretixsync-repo
+[submodule "pretixscan/libpretixsync-repo"]
+	path = pretixscan/libpretixsync-repo
 	url = https://github.com/pretix/libpretixsync.git
 	branch = master
-[submodule "pretixdesk/libpretixprint-repo"]
-	path = pretixdesk/libpretixprint-repo
+[submodule "pretixscan/libpretixprint-repo"]
+	path = pretixscan/libpretixprint-repo
 	url = https://github.com/pretix/libpretixprint.git
