@@ -155,7 +155,7 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
     fun newCheckProvider(): TicketCheckProvider {
         val p: TicketCheckProvider
         if (configStore.asyncModeEnabled) {
-            p = AsyncCheckProvider(configStore, data())
+            p = AsyncCheckProvider(configStore, data(), configStore.checkInListId)
         } else {
             p = OnlineCheckProvider(configStore, DefaultHttpClientFactory(), data(), configStore.checkInListId)
         }
