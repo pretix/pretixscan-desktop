@@ -2,7 +2,7 @@ language: java
 jdk: oraclejdk8
 sudo: false
 script:
-    - cd pretixdesk
+    - cd pretixscan
     - TERM=dumb ./gradlew clean check test build fatJar
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

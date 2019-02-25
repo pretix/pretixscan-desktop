@@ -7,10 +7,10 @@ install:
   - SET PATH=C:\jdk8\bin;%PATH%
   - curl -fsS -L -o jre.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.201-1/java-1.8.0-openjdk-1.8.0.201-1.b09.ojdkbuild.windows.x86_64.zip
   - 7z x jre.zip -aoa
-  - move java-1.8.0-openjdk-1.8.0.201-1.b09.ojdkbuild.windows.x86_64\jre pretixdesk\
+  - move java-1.8.0-openjdk-1.8.0.201-1.b09.ojdkbuild.windows.x86_64\jre pretixscan\
   - curl -fsS -L -o jfx.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/1.8.0.201-1/openjfx-8.0.201-1.b09.ojdkbuild.windows.x86_64.zip
   - 7z x jfx.zip -aoa
-  - xcopy openjfx-8.0.201-1.b09.ojdkbuild.windows.x86_64\jre pretixdesk\jre  /s /y
+  - xcopy openjfx-8.0.201-1.b09.ojdkbuild.windows.x86_64\jre pretixscan\jre  /s /y
 
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
@@ -18,13 +18,13 @@ cache:
   - '%USERPROFILE%\.gradle -> appveyor.yml'
 
 test_script:
-  - cd pretixdesk
+  - cd pretixscan
   - gradlew --no-daemon -version
   - gradlew --no-daemon --stacktrace clean check test build fatJar createExe
   - mkdir dist
   - '"C:\Program Files (x86)\NSIS\makensis.exe" windows.nsi'
 
 artifacts:
-  - path: pretixdesk\dist\pretixdesk.exe
+  - path: pretixscan\dist\pretixscan.exe
     name: Installer
 
