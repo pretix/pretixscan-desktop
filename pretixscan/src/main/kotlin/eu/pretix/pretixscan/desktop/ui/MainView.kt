@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixscan.desktop.PretixScanMain
+import eu.pretix.pretixscan.desktop.getBadgeLayout
 import eu.pretix.pretixscan.desktop.printBadge
 import eu.pretix.pretixscan.desktop.ui.helpers.*
 import eu.pretix.pretixscan.desktop.ui.style.*
@@ -589,7 +590,14 @@ class MainView : View() {
                             */
 
                         }
-                        if (data?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (data.type == TicketCheckProvider.CheckResult.Type.VALID || data.type == TicketCheckProvider.CheckResult.Type.USED)) {
+                        val offer_print = (
+                                data?.position != null
+                                        && (app as PretixScanMain).configStore.badgePrinterName != null
+                                        && (data.type == TicketCheckProvider.CheckResult.Type.VALID
+                                            || data.type == TicketCheckProvider.CheckResult.Type.USED)
+                                        && getBadgeLayout(app as PretixScanMain, data.position) != null
+                                )
+                        if (offer_print) {
                             jfxButton(messages["button_reprint_badge"]) {
                                 style {
                                     buttonType = JFXButton.ButtonType.RAISED
@@ -598,7 +606,7 @@ class MainView : View() {
                                 }
                                 setOnMouseClicked {
                                     runAsync {
-                                        printBadge(app as PretixScanMain, data.position!!)
+                                        printBadge(app as PretixScanMain, data!!.position)
                                     }
                                 }
                             }

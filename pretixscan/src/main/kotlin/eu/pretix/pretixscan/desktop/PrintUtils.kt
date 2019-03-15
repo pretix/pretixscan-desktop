@@ -6,6 +6,7 @@ import eu.pretix.libpretixprint.templating.FontSpecification
 import eu.pretix.libpretixsync.db.BadgeLayout
 import eu.pretix.libpretixsync.db.Item
 import eu.pretix.libpretixprint.templating.Layout
+import eu.pretix.libpretixsync.db.BadgeLayoutItem
 import eu.pretix.pretixscan.desktop.DesktopFileStorage
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -31,8 +32,21 @@ fun getDefaultBadgeLayout(): BadgeLayout {
     return tl
 }
 
-fun getBadgeLayout(application: PretixScanMain, position: JSONObject): BadgeLayout {
+fun getBadgeLayout(application: PretixScanMain, position: JSONObject): BadgeLayout? {
     val itemid = position.getLong("item")
+
+    val litem = application.data().select(BadgeLayoutItem::class.java)
+            .where(BadgeLayoutItem.ITEM_ID.eq(itemid))
+            .get().firstOrNull()
+    if (litem != null) {
+        if (litem.getLayout() == null) {
+            return null
+        } else {
+            return litem.getLayout()
+        }
+    }
+
+    /* Legacy mechanism: Keep around until pretix 2.5 is end of life */
     val item = application.data().select(Item::class.java)
             .where(Item.SERVER_ID.eq(itemid))
             .get().firstOrNull() ?: return getDefaultBadgeLayout()
@@ -54,7 +68,7 @@ fun printBadge(application: PretixScanMain, position: JSONObject) {
     }
     val fs = DesktopFileStorage(File(application.dataDir))
 
-    val layout = getBadgeLayout(application, position)
+    val layout = getBadgeLayout(application, position) ?: return
     if (layout.getBackground_filename() != null) {
         fs.getFile(layout.getBackground_filename()).inputStream().use {
             Renderer(layout.json.getJSONArray("layout"), position, it, application).writePDF(pdffile)
