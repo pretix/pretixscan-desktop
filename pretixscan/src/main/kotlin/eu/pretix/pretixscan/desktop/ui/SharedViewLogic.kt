@@ -7,8 +7,10 @@ import eu.pretix.libpretixsync.db.QueuedCheckIn
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.desktop.DesktopFileStorage
 import eu.pretix.pretixscan.desktop.PretixScanMain
+import eu.pretix.pretixscan.desktop.ui.helpers.jfxAdvancedProgressDialog
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxButton
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxDialog
+import eu.pretix.pretixscan.desktop.ui.helpers.jfxProgressDialog
 import javafx.application.Platform
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage
@@ -83,7 +85,7 @@ open class BaseController : Controller() {
         return res
     }
 
-    fun triggerSync(force: Boolean = false) {
+    fun triggerSync(force: Boolean = false, feedback: SyncManager.ProgressFeedback? = null) {
         if (!(app as PretixScanMain).syncLock.tryLock()) {
             if (force) {
                 // A sync is already running – let's not sync, but instead just block until the
@@ -111,7 +113,7 @@ open class BaseController : Controller() {
                     download_interval,
                     false
             )
-            syncManager.sync(force)
+            syncManager.sync(force, feedback)
         } finally {
             (app as PretixScanMain).syncLock.unlock()
         }
@@ -121,15 +123,38 @@ open class BaseController : Controller() {
 
 fun View.displaySyncStatus(controller: BaseController, root: StackPane) {
     val closeButton: JFXButton = this.jfxButton(messages.getString("dialog_close"))
+    val syncButton: JFXButton = this.jfxButton(messages.getString("dialog_sync_now"))
     val dialog = this.jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
         setHeading(label(messages.getString("sync_status_head")))
         setBody(label(controller.syncStatusLongText()))
-        setActions(closeButton)
+        setActions(closeButton, syncButton)
     }
     closeButton.action {
         dialog.close()
     }
+    syncButton.action {
+        dialog.close()
+        foregroundSync(controller, root)
+    }
     dialog.show(root)
+}
+
+fun View.foregroundSync(controller: BaseController, root: StackPane) {
+    val progressDialog = jfxAdvancedProgressDialog(root, heading = messages["sync_progress_running"]) {}
+    progressDialog.show(root)
+    runAsync {
+        try {
+            controller.triggerSync(true, SyncManager.ProgressFeedback { current_action ->
+                runLater {
+                    progressDialog.messageLabel?.text = current_action
+                }
+            })
+        } finally {
+            runLater {
+                progressDialog.close()
+            }
+        }
+    }
 }
 
 fun View.requestReset(root: StackPane) {

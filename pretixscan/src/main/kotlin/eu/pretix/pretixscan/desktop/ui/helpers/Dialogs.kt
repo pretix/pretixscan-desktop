@@ -4,9 +4,10 @@ import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import com.jfoenix.controls.JFXDialogLayout
 import javafx.event.EventTarget
+import javafx.scene.control.Label
+import javafx.scene.layout.Region
 import javafx.scene.layout.StackPane
-import tornadofx.action
-import tornadofx.label
+import tornadofx.*
 
 
 fun EventTarget.jfxDialog(dialogContainer: StackPane? = null, transitionType: JFXDialog.DialogTransition = JFXDialog.DialogTransition.CENTER, overlayClose: Boolean = true, op: (JFXDialogLayout.() -> Unit)? = null): JFXDialog {
@@ -42,6 +43,30 @@ fun EventTarget.jfxProgressDialog(dialogContainer: StackPane? = null, heading: S
         }
         setBody(jfxSpinner { })
     }
+    op?.invoke(dialog)
+    return dialog
+}
+
+class AdvancedProgressDialog(dialogContainer: StackPane, content: Region, transitionType: DialogTransition, overlayClose: Boolean) : JFXDialog(dialogContainer, content, transitionType, overlayClose) {
+    public var messageLabel: Label? = null
+}
+
+fun EventTarget.jfxAdvancedProgressDialog(dialogContainer: StackPane, heading: String? = null, op: (JFXDialog.() -> Unit)? = null): AdvancedProgressDialog {
+    val content = JFXDialogLayout()
+    val dialog = AdvancedProgressDialog(dialogContainer, content, JFXDialog.DialogTransition.CENTER, true)
+    dialog.overlayCloseProperty().set(false)
+
+    if (heading != null) {
+        content.setHeading(label(heading))
+    }
+    content.setBody(
+            vbox {
+                label {
+                    dialog.messageLabel = this
+                }
+                jfxSpinner { }
+            }
+    )
     op?.invoke(dialog)
     return dialog
 }
