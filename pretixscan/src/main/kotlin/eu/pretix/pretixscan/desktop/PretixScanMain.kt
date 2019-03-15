@@ -29,6 +29,7 @@ import org.sqlite.SQLiteDataSource
 import tornadofx.*
 import java.io.File
 import java.util.*
+import java.util.concurrent.locks.ReentrantLock
 
 
 val VERSION = "0.3.3"
@@ -46,6 +47,7 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
     var stage: Stage? = null
     var parameters_handled = false
     var _provider: TicketCheckProvider? = null
+    val syncLock = ReentrantLock()
 
     private val _messages: SimpleObjectProperty<ResourceBundle> = object : SimpleObjectProperty<ResourceBundle>() {
         override fun get(): ResourceBundle? {

@@ -18,14 +18,14 @@ class MainController : BaseController() {
     }
 
     fun handleSearchInput(value: String): List<TicketCheckProvider.SearchResult>? {
-        return (app as PretixScanMain).provider.search(value)
+        return (app as PretixScanMain).provider.search(value, 1)
     }
 
     fun handleScanInput(value: String, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean=false): TicketCheckProvider.CheckResult? {
         if (answers != null) {
-            return (app as PretixScanMain).provider.check(value, answers, ignore_pending)
+            return (app as PretixScanMain).provider.check(value, answers, ignore_pending, configStore.badgePrinterName != null)
         } else {
-            return (app as PretixScanMain).provider.check(value, ArrayList<TicketCheckProvider.Answer>(), ignore_pending)
+            return (app as PretixScanMain).provider.check(value, ArrayList<TicketCheckProvider.Answer>(), ignore_pending, configStore.badgePrinterName != null)
         }
     }
 

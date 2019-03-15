@@ -21,6 +21,7 @@ import javafx.util.Duration
 import tornadofx.*
 import java.awt.Desktop
 import java.net.URI
+import java.util.concurrent.CompletableFuture.runAsync
 import java.util.regex.Pattern
 import javax.sound.sampled.AudioSystem
 

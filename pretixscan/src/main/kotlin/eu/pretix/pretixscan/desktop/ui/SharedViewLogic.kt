@@ -24,14 +24,15 @@ import java.util.*
 
 open class BaseController : Controller() {
     protected var configStore = (app as PretixScanMain).configStore
-    private var syncStarted = -1L
 
     fun soundEnabled(): Boolean {
         return configStore.playSound
     }
 
     fun syncStatusText(): String {
-        if (configStore.lastDownload == 0L) {
+        if ((app as PretixScanMain).syncLock.isLocked) {
+            return messages.getString("sync_status_progress");
+        } else if (configStore.lastDownload == 0L) {
             return messages.getString("sync_status_no")
         } else {
             val period = Period(configStore.lastDownload, System.currentTimeMillis())
@@ -83,29 +84,37 @@ open class BaseController : Controller() {
     }
 
     fun triggerSync(force: Boolean = false) {
-        if (syncStarted > 0 && System.currentTimeMillis() - syncStarted < 1000 * 60) {
+        if (!(app as PretixScanMain).syncLock.tryLock()) {
+            if (force) {
+                // A sync is already running – let's not sync, but instead just block until the
+                // sync is done and then continue :)
+                (app as PretixScanMain).syncLock.lock()
+                (app as PretixScanMain).syncLock.unlock()
+
+            }
             return
         }
-        syncStarted = System.currentTimeMillis()
+        try {
+            val upload_interval: Long = 1000
+            var download_interval: Long = 30000
+            if (!configStore.asyncModeEnabled) {
+                download_interval = 120000
+            }
 
-        val upload_interval: Long = 1000
-        var download_interval: Long = 30000
-        if (!configStore.asyncModeEnabled) {
-            download_interval = 120000
+            val syncManager = SyncManager(
+                    configStore,
+                    (app as PretixScanMain).api(),
+                    DummySentryImplementation(),
+                    (app as PretixScanMain).data(),
+                    DesktopFileStorage(File((app as PretixScanMain).dataDir)),
+                    upload_interval,
+                    download_interval,
+                    false
+            )
+            syncManager.sync(force)
+        } finally {
+            (app as PretixScanMain).syncLock.unlock()
         }
-
-        val syncManager = SyncManager(
-                configStore,
-                (app as PretixScanMain).api(),
-                DummySentryImplementation(),
-                (app as PretixScanMain).data(),
-                DesktopFileStorage(File((app as PretixScanMain).dataDir)),
-                upload_interval,
-                download_interval
-        )
-        syncManager.sync(force)
-
-        syncStarted = -1L
     }
 }
 
