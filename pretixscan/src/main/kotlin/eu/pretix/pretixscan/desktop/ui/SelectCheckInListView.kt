@@ -2,6 +2,7 @@ package eu.pretix.pretixscan.desktop.ui
 
 import eu.pretix.libpretixsync.db.CheckInList
 import eu.pretix.libpretixsync.setup.RemoteEvent
+import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.ui.helpers.*
 import eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet
@@ -38,9 +39,11 @@ class SelectCheckInListView : View() {
     private fun showSpinner() {
         listListView.hide()
         spinnerAnimation?.stop()
+        statusText.text = ""
         spinnerAnimation = timeline {
             keyframe(MaterialDuration.ENTER) {
                 keyvalue(mainSpinner.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
+                keyvalue(statusText.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
             }
         }
     }
@@ -50,6 +53,7 @@ class SelectCheckInListView : View() {
         spinnerAnimation = timeline {
             keyframe(MaterialDuration.EXIT) {
                 keyvalue(mainSpinner.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
+                keyvalue(statusText.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
             }
         }
         listListView.show()
@@ -62,6 +66,8 @@ class SelectCheckInListView : View() {
         maxWidth = 64.0
         maxHeight = 64.0
     }
+
+    private val statusText = text { "…" }
 
     private val contentBox = vbox {
         vboxConstraints { vGrow = Priority.ALWAYS }
@@ -79,8 +85,15 @@ class SelectCheckInListView : View() {
             hboxConstraints { hGrow = Priority.ALWAYS }
             stackpane {
                 hboxConstraints { hGrow = Priority.ALWAYS }
+                vbox {
+                    this += mainSpinner
+                    this += statusText
+                    style {
+                        alignment = Pos.CENTER
+                        spacing = 10.px
+                    }
+                }
                 this += listListView
-                this += mainSpinner
             }
 
             listListView.setOnMouseClicked {
@@ -169,7 +182,7 @@ class SelectCheckInListView : View() {
         showSpinner()
         var lists = emptyList<CheckInList>()
         runAsync {
-            controller.triggerSync(force)
+            controller.triggerSync(force, SyncManager.ProgressFeedback { statusText.text = it })
             lists = controller.getAllLists()
         } ui {
             listList.clear()
