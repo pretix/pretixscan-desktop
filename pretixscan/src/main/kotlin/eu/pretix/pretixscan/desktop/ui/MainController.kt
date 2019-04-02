@@ -23,9 +23,9 @@ class MainController : BaseController() {
 
     fun handleScanInput(value: String, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean=false): TicketCheckProvider.CheckResult? {
         if (answers != null) {
-            return (app as PretixScanMain).provider.check(value, answers, ignore_pending, configStore.badgePrinterName != null)
+            return (app as PretixScanMain).provider.check(value, answers, ignore_pending, true)
         } else {
-            return (app as PretixScanMain).provider.check(value, ArrayList<TicketCheckProvider.Answer>(), ignore_pending, configStore.badgePrinterName != null)
+            return (app as PretixScanMain).provider.check(value, ArrayList<TicketCheckProvider.Answer>(), ignore_pending, true)
         }
     }
 

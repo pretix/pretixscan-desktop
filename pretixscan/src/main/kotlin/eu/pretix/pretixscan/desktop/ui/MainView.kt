@@ -96,8 +96,13 @@ class MainView : View() {
 
         cellCache {
             vbox {
+
                 label(it.secret.substring(0, 20) + "…")
                 hbox {
+                    style {
+                        maxWidth = 430.px
+                    }
+
                     var ticketname = it.ticket
                     if (it.variation != null && it.variation != "null") {
                         ticketname += " – " + it.variation
@@ -110,19 +115,38 @@ class MainView : View() {
                         }
                     }
 
-                    label(ticketname) { addClass(MainStyleSheet.searchItemProduct) }
+                    label(ticketname) {
+                        addClass(MainStyleSheet.searchItemProduct)
+                        isWrapText = true
+                        vgrow = Priority.ALWAYS
+                        style {
+                            maxWidth = 330.px
+                        }
+                    }
                     spacer {}
                     if (it.isRedeemed) {
-                        label(messages["searchresult_state_redeemed"]) { addClass(MainStyleSheet.searchItemStatusRedeemed) }
+                        label(messages["searchresult_state_redeemed"]) {
+                            addClass(MainStyleSheet.searchItemStatusRedeemed)
+                            hgrow = Priority.NEVER
+                        }
                     } else if (!it.isPaid) {
-                        label(messages["searchresult_state_unpaid"]) { addClass(MainStyleSheet.searchItemStatusUnpaid) }
+                        label(messages["searchresult_state_unpaid"]) {
+                            addClass(MainStyleSheet.searchItemStatusUnpaid)
+                            hgrow = Priority.NEVER
+                        }
                     } else {
-                        label(messages["searchresult_state_valid"]) { addClass(MainStyleSheet.searchItemStatusValid) }
+                        label(messages["searchresult_state_valid"]) {
+                            addClass(MainStyleSheet.searchItemStatusValid)
+                            hgrow = Priority.NEVER
+                        }
                     }
                 }
                 hbox {
                     label(it.orderCode + "  ") { addClass(MainStyleSheet.searchItemOrderCode) }
-                    label(it.attendee_name ?: "") { addClass(MainStyleSheet.searchItemAttendeeName) }
+                    label(it.attendee_name ?: "") {
+                        addClass(MainStyleSheet.searchItemAttendeeName)
+                        isWrapText = true
+                    }
                 }
                 /* TODO:
                 if (it.addonText != "") {
@@ -574,20 +598,27 @@ class MainView : View() {
                                 ticket += " – " + data.variation
                             }
                             hbox {
-                                label(data?.attendee_name ?: "")
+                                label(data?.attendee_name ?: "") {
+                                    isWrapText = true
+                                }
                                 spacer {}
                                 label(data?.orderCode ?: "")
                             }
                             hbox {
-                                label(ticket)
-                            }
-                            /*
-                            if (data?.addonText != "") {
-                                hbox {
-                                    label("+ " + data?.addonText ?: "")
+                                label(ticket) {
+                                    isWrapText = true
                                 }
                             }
-                            */
+                            if (data?.position != null) {
+                                val t = data?.position.getJSONObject("pdf_data").getString("addons").replace("<br/>", ", ")
+                                if (t.isNotEmpty()) {
+                                    hbox {
+                                        label("+ " + t) {
+                                            isWrapText = true
+                                        }
+                                    }
+                                }
+                            }
 
                         }
                         val offer_print = (
