@@ -22,6 +22,8 @@ import javafx.util.Duration
 import tornadofx.*
 import java.awt.Desktop
 import java.net.URI
+import java.text.MessageFormat
+import java.text.SimpleDateFormat
 import java.util.concurrent.CompletableFuture.runAsync
 import java.util.regex.Pattern
 import javax.sound.sampled.AudioSystem
@@ -619,7 +621,15 @@ class MainView : View() {
                                     }
                                 }
                             }
-
+                            if (data?.firstScanned != null) {
+                                val df = SimpleDateFormat(messages.getString("short_datetime_format"))
+                                label(
+                                        MessageFormat.format(
+                                                messages.getString("first_scanned"),
+                                                df.format(data.firstScanned)
+                                        )
+                                )
+                            }
                         }
                         val offer_print = (
                                 data?.position != null
@@ -634,6 +644,7 @@ class MainView : View() {
                                     buttonType = JFXButton.ButtonType.RAISED
                                     textFill = c(STYLE_TOOLBAR_TEXT_COLOR)
                                     backgroundColor += c(STYLE_PRIMARY_DARK_COLOR)
+                                    alignment = Pos.CENTER_RIGHT
                                 }
                                 setOnMouseClicked {
                                     runAsync {
