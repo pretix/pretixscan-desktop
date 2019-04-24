@@ -332,6 +332,9 @@ class SettingsView : View() {
         }
         soundBtn.isSelected = (app as PretixScanMain).configStore.playSound
         badgesBtn.isSelected = (app as PretixScanMain).configStore.autoPrintBadges
+        currentWindow?.setOnCloseRequest {
+            controller.close()
+        }
     }
 
     init {

@@ -106,6 +106,8 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
     }
 
 
+
+
     fun data(): BlockingEntityStore<Persistable> {
         if (dataStore == null) {
             File(dataDir).mkdirs()

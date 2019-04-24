@@ -215,6 +215,9 @@ class StatusView : View() {
         if (!(app as PretixScanMain).configStore.isConfigured()) {
             replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
         }
+        currentWindow?.setOnCloseRequest {
+            controller.close()
+        }
         loadStatus()
     }
 

@@ -183,6 +183,9 @@ class SelectEventView : View() {
             replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
         }
         loadEvents()
+        currentWindow?.setOnCloseRequest {
+            controller.close()
+        }
     }
 
     fun loadEvents() {

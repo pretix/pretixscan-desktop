@@ -26,6 +26,7 @@ import java.util.*
 
 open class BaseController : Controller() {
     protected var configStore = (app as PretixScanMain).configStore
+    protected var syncManager: SyncManager? = null
 
     fun soundEnabled(): Boolean {
         return configStore.playSound
@@ -85,6 +86,12 @@ open class BaseController : Controller() {
         return res
     }
 
+    fun close() {
+        syncManager?.cancel()
+        Platform.exit()
+        System.exit(0)
+    }
+
     fun triggerSync(force: Boolean = false, feedback: SyncManager.ProgressFeedback? = null) {
         if (!(app as PretixScanMain).syncLock.tryLock()) {
             if (force) {
@@ -103,7 +110,7 @@ open class BaseController : Controller() {
                 download_interval = 120000
             }
 
-            val syncManager = SyncManager(
+            syncManager = SyncManager(
                     configStore,
                     (app as PretixScanMain).api(),
                     DummySentryImplementation(),
@@ -113,7 +120,7 @@ open class BaseController : Controller() {
                     download_interval,
                     false
             )
-            syncManager.sync(force, feedback)
+            syncManager!!.sync(force, feedback)
         } finally {
             (app as PretixScanMain).syncLock.unlock()
         }

@@ -9,12 +9,14 @@ import eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet
 import eu.pretix.pretixscan.desktop.ui.style.STYLE_BACKGROUND_COLOR
 import eu.pretix.pretixscan.desktop.ui.style.STYLE_TEXT_COLOR_MUTED
 import javafx.animation.Timeline
+import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.text.FontWeight
 import tornadofx.*
+import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 
 
@@ -176,7 +178,13 @@ class SelectCheckInListView : View() {
         }
         listListView.hide()
         loadLists(true)
+
+        currentWindow?.setOnCloseRequest {
+            controller.close()
+        }
     }
+
+
 
     fun loadLists(force: Boolean) {
         showSpinner()

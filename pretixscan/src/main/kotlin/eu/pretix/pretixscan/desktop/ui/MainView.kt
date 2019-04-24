@@ -307,7 +307,9 @@ class MainView : View() {
         } else if (conf.checkInListId == 0L) {
             replaceWith(SelectCheckInListView::class, MaterialSlide(ViewTransition.Direction.DOWN))
         }
-
+        currentWindow?.setOnCloseRequest {
+            controller.close()
+        }
     }
 
     init {
