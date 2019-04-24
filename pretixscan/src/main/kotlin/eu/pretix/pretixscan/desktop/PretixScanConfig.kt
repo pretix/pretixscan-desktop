@@ -18,6 +18,7 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_ORGANIZER_SLUG = "pretix_api_organizer_slug"
     private val PREFS_KEY_SUBEVENT_ID = "pretix_api_subevent_id"
     private val PREFS_KEY_CHECKINLIST_ID = "pretix_api_checkin_list_id"
+    private val PREFS_KEY_CHECKINLIST_NAME = "pretix_api_checkin_list_name"
     private val PREFS_KEY_PRINTER_BADGE_NAME = "printer_badge_name"
     private val PREFS_KEY_AUTO_PRINT_BADGES = "auto_print_badges"
     private val PREFS_KEY_SHOW_INFO = "show_info"
@@ -210,6 +211,13 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
         get() = prefs.getLong(PREFS_KEY_CHECKINLIST_ID, 0)
         set(value) {
             prefs.putLong(PREFS_KEY_CHECKINLIST_ID, value)
+            prefs.flush()
+        }
+
+    var checkInListName: String
+        get() = prefs.get(PREFS_KEY_CHECKINLIST_NAME, "")
+        set(value) {
+            prefs.put(PREFS_KEY_CHECKINLIST_NAME, value)
             prefs.flush()
         }
 

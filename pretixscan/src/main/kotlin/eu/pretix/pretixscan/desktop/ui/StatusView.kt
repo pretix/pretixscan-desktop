@@ -146,6 +146,8 @@ class StatusView : View() {
         }
     }
 
+    private val eventNameLabel = label("Event name")
+
     override val root: StackPane = stackpane {
         vbox {
             useMaxHeight = true
@@ -154,6 +156,34 @@ class StatusView : View() {
                 alignment = Pos.CENTER
                 backgroundColor += c(STYLE_BACKGROUND_COLOR)
                 spacing = 20.px
+            }
+
+            gridpane {
+                addClass(MainStyleSheet.toolBar)
+                style {
+                    minWidth = 100.percent
+                }
+                row {
+                    hbox {
+                        gridpaneColumnConstraints { percentWidth = 66.66 }
+                        style {
+                            alignment = Pos.CENTER_LEFT
+                            paddingLeft = 10.0
+                        }
+                        this += eventNameLabel
+                    }
+                    hbox {
+                        gridpaneColumnConstraints { percentWidth = 33.33 }
+                        style {
+                            alignment = Pos.CENTER_RIGHT
+                        }
+                        jfxButton(messages["toolbar_switch"]) {
+                            action {
+                                replaceWith(SelectEventView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+                            }
+                        }
+                    }
+                }
             }
 
             spacer {
@@ -212,9 +242,16 @@ class StatusView : View() {
 
     override fun onDock() {
         super.onDock()
-        if (!(app as PretixScanMain).configStore.isConfigured()) {
+        val conf = (app as PretixScanMain).configStore
+        if (!conf.isConfigured()) {
             replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
         }
+        if (conf.eventName == null || conf.eventSlug == null) {
+            replaceWith(SelectEventView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+        } else if (conf.checkInListId == 0L) {
+            replaceWith(SelectCheckInListView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+        }
+        eventNameLabel.text = conf.eventName + ": " + conf.checkInListName
         currentWindow?.setOnCloseRequest {
             controller.close()
         }

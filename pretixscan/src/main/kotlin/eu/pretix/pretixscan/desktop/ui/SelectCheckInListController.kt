@@ -17,6 +17,7 @@ class SelectCheckInListController : BaseController() {
 
     fun setList(list: CheckInList) {
         configStore.checkInListId = list.server_id
+        configStore.checkInListName = list.name
         (app as PretixScanMain).reloadCheckProvider()
     }
 }
