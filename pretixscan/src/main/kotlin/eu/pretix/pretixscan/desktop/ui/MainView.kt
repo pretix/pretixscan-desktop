@@ -369,7 +369,7 @@ class MainView : View() {
                             }
                             downloadButton.action {
                                 runAsync {
-                                    Desktop.getDesktop().browse(URI("https://pretix.eu/about/en/desk"));
+                                    Desktop.getDesktop().browse(URI("https://pretix.eu/about/en/scan"));
                                 } ui {
                                     dialog.close()
                                 }
