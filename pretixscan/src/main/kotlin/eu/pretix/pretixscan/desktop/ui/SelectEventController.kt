@@ -11,7 +11,8 @@ class SelectEventController : BaseController() {
         val em = EventManager(
                 (app as PretixScanMain).data(),
                 PretixApi.fromConfig(configStore),
-                configStore
+                configStore,
+                true
         )
         return em.getAvailableEvents()
     }

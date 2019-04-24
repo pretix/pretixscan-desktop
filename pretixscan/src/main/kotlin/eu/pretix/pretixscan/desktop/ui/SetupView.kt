@@ -17,6 +17,8 @@ import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.StackPane
 import javafx.scene.text.TextAlignment
+import org.json.JSONException
+import org.json.JSONObject
 import tornadofx.*
 
 class SetupView : View() {
@@ -28,7 +30,36 @@ class SetupView : View() {
         val mI = this
 
         setOnKeyReleased {
-            if (it.code == KeyCode.ENTER && mI.text.length > 1) {
+            if (mI.text.trim().startsWith("{") && mI.text.endsWith("}")) {
+                try {
+                    val jd = JSONObject(mI.text.trim())
+                    if (jd.has("version")) {
+                        error(messages["setup_error_legacy_qr_code"])
+                        mI.text = ""
+                        return@setOnKeyReleased
+                    }
+                    if (!jd.has("handshake_version")) {
+                        error(messages["setup_error_invalid_qr_code"])
+                        mI.text = ""
+                        return@setOnKeyReleased
+                    }
+                    if (jd.getInt("handshake_version") > 1) {
+                        error(messages["setup_error_version_too_high"])
+                        mI.text = ""
+                        return@setOnKeyReleased
+                    }
+                    if (!jd.has("url") || !jd.has("token")) {
+                        error(messages["setup_error_invalid_qr_code"])
+                        mI.text = ""
+                        return@setOnKeyReleased
+                    }
+                    handleConfiguration(jd.getString("url"), jd.getString("token"))
+                } catch (e: JSONException) {
+                    error(messages["setup_error_invalid_qr_code"])
+                    mI.text = ""
+                    return@setOnKeyReleased
+                }
+            } else if (it.code == KeyCode.ENTER && mI.text.length > 1) {
                 manualInputToken.requestFocus()
             }
         }
@@ -67,14 +98,14 @@ class SetupView : View() {
                 fontSize = 20.pt
             }
         }
-        label(messages["setup_instructions_headline"]) {
+        label(messages["setup_instructionsv2_headline"]) {
             isWrapText = true
             textAlignment = TextAlignment.CENTER
             style {
                 fontSize = 13.pt
             }
         }
-        label(messages["setup_instructions_step1"]) {
+        label(messages["setup_instructionsv2_step1"]) {
             isWrapText = true
             textAlignment = TextAlignment.LEFT
             graphic = icon(MaterialIcon.CHECK)
@@ -85,7 +116,7 @@ class SetupView : View() {
                 maxWidth = 460.px
             }
         }
-        label(messages["setup_instructions_step2"]) {
+        label(messages["setup_instructionsv2_step2"]) {
             isWrapText = true
             textAlignment = TextAlignment.LEFT
             graphic = icon(MaterialIcon.CHECK)
@@ -96,7 +127,7 @@ class SetupView : View() {
                 maxWidth = 460.px
             }
         }
-        label(messages["setup_instructions_step3"]) {
+        label(messages["setup_instructionsv2_step3"]) {
             isWrapText = true
             textAlignment = TextAlignment.LEFT
             graphic = icon(MaterialIcon.CHECK)
@@ -136,6 +167,18 @@ class SetupView : View() {
         }
     }
 
+    fun error(msg: String) {
+        val okButton: JFXButton = jfxButton(messages.getString("dialog_ok").toUpperCase())
+        val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
+            setBody(label(msg))
+            setActions(okButton)
+        }
+        okButton.action {
+            dialog.close()
+        }
+        dialog.show(root)
+    }
+
     fun handleConfiguration(url: String, token: String) {
         val progressDialog = jfxProgressDialog(heading = messages["progress_connecting"]) {}
         progressDialog.show(root)
@@ -154,16 +197,7 @@ class SetupView : View() {
                     SetupResultState.ERR_BADRESPONSE -> messages["setup_error_response"]
                     else -> ""
                 }
-
-                val okButton: JFXButton = jfxButton(messages.getString("dialog_ok").toUpperCase())
-                val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
-                    setBody(label(message))
-                    setActions(okButton)
-                }
-                okButton.action {
-                    dialog.close()
-                }
-                dialog.show(root)
+                error(message)
             }
         }
     }
