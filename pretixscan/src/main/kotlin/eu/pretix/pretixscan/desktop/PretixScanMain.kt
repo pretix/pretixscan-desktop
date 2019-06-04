@@ -116,6 +116,7 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
 
             val dataSource = SQLiteDataSource()
             dataSource.url = "jdbc:sqlite:" + dbFile.absolutePath
+
             val config = SQLiteConfig()
             config.setDateClass("TEXT")
             dataSource.config = config
@@ -125,7 +126,7 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
             Migrations.migrate(dataSource, dbIsNew)
 
             val configuration = ConfigurationBuilder(dataSource, model)
-                    .useDefaultLogging()
+                    // .useDefaultLogging()
                     .setEntityCache(EntityCacheBuilder(model)
                             .useReferenceCache(false)
                             .useSerializableCache(false)
