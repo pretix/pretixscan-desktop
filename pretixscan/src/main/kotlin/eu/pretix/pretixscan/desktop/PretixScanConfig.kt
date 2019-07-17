@@ -100,28 +100,6 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
         return prefs.get(PREFS_KEY_API_KEY, "")
     }
 
-    override fun getShowInfo(): Boolean {
-        return prefs.getBoolean(PREFS_KEY_SHOW_INFO, true)
-    }
-
-    override fun getAllowSearch(): Boolean {
-        return prefs.getBoolean(PREFS_KEY_ALLOW_SEARCH, true)
-    }
-
-    override fun getLastStatusData(): String {
-        val f = File(data_dir, PREFS_KEY_LAST_STATUS_DATA + ".json")
-        if (f.exists()) {
-            return f.readText()
-        } else {
-            return ""
-        }
-    }
-
-    override fun setLastStatusData(value: String?) {
-        val f = File(data_dir, PREFS_KEY_LAST_STATUS_DATA + ".json")
-        f.writeText(value ?: "")
-    }
-
     override fun getLastDownload(): Long {
         return prefs.getLong(PREFS_KEY_LAST_DOWNLOAD, 0)
     }
