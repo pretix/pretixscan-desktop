@@ -1,4 +1,0 @@
-rootProject.name = 'pretixdesk'
-
-include ':libpretixsync'
-project(':libpretixsync').projectDir = new File('libpretixsync-repo/libpretixsync')

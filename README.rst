@@ -1,11 +1,11 @@
-pretixdesk
+pretixSCAN
 ==========
 
-.. image:: https://travis-ci.org/pretix/pretixdesk.svg?branch=master
-   :target: https://travis-ci.org/pretix/pretixdesk
+.. image:: https://travis-ci.org/pretix/pretixscan-desktop.svg?branch=master
+   :target: https://travis-ci.org/pretix/pretixscan-desktop
 
 .. image:: https://ci.appveyor.com/api/projects/status/n3n5tp3wl3i2qg5p?svg=true
-   :target: https://ci.appveyor.com/project/raphaelm/pretixdesk
+   :target: https://ci.appveyor.com/project/raphaelm/pretixscan-desktop
 
 Checking in your attendees, one ticket at a time.
 
@@ -18,7 +18,7 @@ with `pretix`_, the open source ticket sales system of choice.
 Project status
 --------------
 
-pretixdesk has all features required to be useful but is still in it's early days. Feel free to
+pretixSCAN has all features required to be useful but is still in it's early days. Feel free to
 use it, but do have a backup plan.
 
 Building and Running
@@ -44,7 +44,7 @@ To build a stand-alone JAR file for distributing::
     
     JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew fatJar
 
-The JAR file will be created at ``build/libs/pretixdesk.jar``.
+The JAR file will be created at ``build/libs/pretixscan.jar``.
 
 Windows package
 ^^^^^^^^^^^^^^^
@@ -75,7 +75,7 @@ this in a couple of years.
 Arch Linux package
 ^^^^^^^^^^^^^^^^^^
 
-The `pretixdesk-git` AUR package always automatically builds from the latest git revision.
+The `pretixscan-git` AUR package always automatically builds from the latest git revision.
 
 FAQ
 ---
@@ -138,4 +138,4 @@ go to `pretix.eu`_ or contact Raphael directly.
 .. _tornadofx: https://github.com/edvin/tornadofx
 .. _JFoenix: https://github.com/jfoenixadmin/JFoenix
 .. _pretixdroid: https://github.com/pretix/pretixdroid
-.. _pretixdesk-git: https://aur.archlinux.org/packages/pretixdesk-git/
+.. _pretixscan-git: https://aur.archlinux.org/packages/pretixscan-git/
