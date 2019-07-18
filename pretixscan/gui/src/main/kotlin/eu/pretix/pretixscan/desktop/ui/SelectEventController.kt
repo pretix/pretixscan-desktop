@@ -1,7 +1,6 @@
 package eu.pretix.pretixscan.desktop.ui
 
 import eu.pretix.libpretixsync.api.PretixApi
-import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.setup.EventManager
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.pretixscan.desktop.PretixScanMain

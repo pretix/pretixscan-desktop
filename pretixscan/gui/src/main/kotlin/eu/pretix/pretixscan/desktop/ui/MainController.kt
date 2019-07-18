@@ -7,7 +7,6 @@ import eu.pretix.pretixscan.desktop.VERSION
 import org.json.JSONObject
 import java.util.*
 import kotlin.collections.List
-import kotlin.collections.set
 
 
 class MainController : BaseController() {

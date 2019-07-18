@@ -1,7 +1,6 @@
 package eu.pretix.pretixscan.desktop.ui
 
 import eu.pretix.libpretixsync.db.CheckInList
-import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.pretixscan.desktop.PretixScanMain
 
 class SelectCheckInListController : BaseController() {

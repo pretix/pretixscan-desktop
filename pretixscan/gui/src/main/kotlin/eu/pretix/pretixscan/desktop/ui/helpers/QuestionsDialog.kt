@@ -13,8 +13,6 @@ import javafx.scene.Node
 import javafx.scene.control.*
 import tornadofx.*
 import tornadofx.FX.Companion.messages
-import java.text.SimpleDateFormat
-import java.text.DateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime

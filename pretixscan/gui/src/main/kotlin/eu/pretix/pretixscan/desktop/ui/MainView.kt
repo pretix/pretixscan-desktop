@@ -24,7 +24,6 @@ import java.awt.Desktop
 import java.net.URI
 import java.text.MessageFormat
 import java.text.SimpleDateFormat
-import java.util.concurrent.CompletableFuture.runAsync
 import java.util.regex.Pattern
 import javax.sound.sampled.AudioSystem
 

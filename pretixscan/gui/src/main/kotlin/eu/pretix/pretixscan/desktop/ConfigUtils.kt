@@ -3,7 +3,6 @@ package eu.pretix.pretixscan.desktop
 import it.sauronsoftware.junique.JUnique
 import it.sauronsoftware.junique.MessageHandler
 import tornadofx.App
-import tornadofx.FXEvent
 import java.net.URLDecoder
 import java.util.HashMap
 

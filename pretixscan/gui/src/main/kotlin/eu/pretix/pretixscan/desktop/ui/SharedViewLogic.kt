@@ -10,7 +10,6 @@ import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxAdvancedProgressDialog
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxButton
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxDialog
-import eu.pretix.pretixscan.desktop.ui.helpers.jfxProgressDialog
 import javafx.application.Platform
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage

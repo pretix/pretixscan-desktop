@@ -1,23 +1,17 @@
 package eu.pretix.pretixscan.desktop.ui
 
 import eu.pretix.libpretixsync.db.CheckInList
-import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.ui.helpers.*
 import eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet
 import eu.pretix.pretixscan.desktop.ui.style.STYLE_BACKGROUND_COLOR
-import eu.pretix.pretixscan.desktop.ui.style.STYLE_TEXT_COLOR_MUTED
 import javafx.animation.Timeline
-import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
-import javafx.scene.text.FontWeight
 import tornadofx.*
-import java.lang.RuntimeException
-import java.text.SimpleDateFormat
 
 
 class SelectCheckInListView : View() {

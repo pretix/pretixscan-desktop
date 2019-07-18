@@ -2,7 +2,6 @@ package eu.pretix.pretixscan.desktop.ui.style
 
 import javafx.geometry.Pos
 import javafx.scene.effect.DropShadow
-import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import javafx.scene.text.TextAlignment
 import tornadofx.*
