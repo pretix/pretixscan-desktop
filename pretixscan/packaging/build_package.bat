@@ -17,7 +17,7 @@ call "%JAVA_HOME%\bin\java.exe" ^
     --add-modules "java.base,java.datatransfer,java.desktop,java.scripting,java.xml,jdk.jsobject,jdk.unsupported,jdk.unsupported.desktop,jdk.xml.dom,javafx.controls,javafx.fxml,javafx.graphics,java.naming,java.sql,jdk.charsets" ^
     --input "%INPUT%" ^
     --output "%OUTPUT%" ^
-    --name "Santulator" ^
+    --name "pretixSCAN" ^
     --main-jar "%JAR%" ^
     --version "%VERSION%" ^
     --jvm-args "--add-opens javafx.base/com.sun.javafx.reflect=ALL-UNNAMED" ^

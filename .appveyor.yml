@@ -22,7 +22,7 @@ test_script:
   - gradlew --no-daemon --stacktrace clean createBundle -PjavafxJmodsPath=../../javafx-jmods-11.0.2/
   - tree
   - mkdir dist
-  - '"C:\Program Files (x86)\NSIS\makensis.exe" windows.nsi'
+  - '"C:\Program Files (x86)\NSIS\makensis.exe" packaging\build\resources\main\windows.nsi'
 
 artifacts:
   - path: pretixscan\dist\pretixSCAN.exe

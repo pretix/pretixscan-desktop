@@ -163,7 +163,7 @@ if (operatingSystem.isWindows()) {
                 from windowsDllVCRUNTIME140
                 into "${bundlePath}/pretixSCAN"
             }
-            println("Inno Setup file: ${generatedNSISFile}")
+            println("NSIS Setup file: ${generatedNSISFile}")
         }
     }
 

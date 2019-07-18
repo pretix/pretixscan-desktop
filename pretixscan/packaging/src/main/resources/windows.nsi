@@ -1,7 +1,7 @@
 !include "MUI2.nsh"
 
  Name "pretixSCAN"
- OutFile "dist/pretixSCAN.exe"
+ OutFile "..\..\..\..\dist\pretixSCAN.exe"
 
  InstallDir "$PROGRAMFILES64\pretixSCAN"
 
@@ -10,12 +10,12 @@
  RequestExecutionLevel admin
 
  !define MUI_ABORTWARNING
- !define MUI_ICON "packaging\icons\windows\pretixSCAN.ico"
- !define MUI_WELCOMEFINISHPAGE_BITMAP "..\img\installer.bmp"
- !define MUI_UNWELCOMEFINISHPAGE_BITMAP "..\img\installer.bmp"
+ !define MUI_ICON "..\..\bundle\pretixSCAN.ico"
+ !define MUI_WELCOMEFINISHPAGE_BITMAP "..\..\..\..\..\img\installer.bmp"
+ !define MUI_UNWELCOMEFINISHPAGE_BITMAP "..\..\..\..\..\img\installer.bmp"
 
  !insertmacro MUI_PAGE_WELCOME
- !insertmacro MUI_PAGE_LICENSE "..\LICENSE"
+ !insertmacro MUI_PAGE_LICENSE "..\..\..\..\..\LICENSE"
  !insertmacro MUI_PAGE_COMPONENTS
  !insertmacro MUI_PAGE_DIRECTORY
  !insertmacro MUI_PAGE_INSTFILES
@@ -33,8 +33,7 @@
    SetOutPath "$INSTDIR"
    CreateDirectory "$INSTDIR"
 
-   File /r "build\launch4j\*"
-   File /r /x deb.tmp "jre"
+   File /r "..\..\bundle\pretixSCAN\*"
 
    CreateDirectory "$SMPROGRAMS\pretixSCAN"
    CreateShortCut "$SMPROGRAMS\pretixSCAN\pretixSCAN.lnk" "$INSTDIR\pretixSCAN.exe"
