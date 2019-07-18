@@ -130,8 +130,13 @@ class MainView : View() {
                             addClass(MainStyleSheet.searchItemStatusRedeemed)
                             hgrow = Priority.NEVER
                         }
-                    } else if (!it.isPaid) {
+                    } else if (it.status == TicketCheckProvider.SearchResult.Status.PENDING) {
                         label(messages["searchresult_state_unpaid"]) {
+                            addClass(MainStyleSheet.searchItemStatusUnpaid)
+                            hgrow = Priority.NEVER
+                        }
+                    } else if (it.status == TicketCheckProvider.SearchResult.Status.CANCELED) {
+                        label(messages["searchresult_state_canceled"]) {
                             addClass(MainStyleSheet.searchItemStatusUnpaid)
                             hgrow = Priority.NEVER
                         }
@@ -608,6 +613,7 @@ class MainView : View() {
                         TicketCheckProvider.CheckResult.Type.ERROR -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.UNPAID -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.PRODUCT -> MainStyleSheet.cardHeaderError
+                        TicketCheckProvider.CheckResult.Type.CANCELED -> MainStyleSheet.cardHeaderError
                         null -> MainStyleSheet.cardHeaderError
                     })
 
@@ -618,6 +624,7 @@ class MainView : View() {
                         TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> messages["state_questions"]
                         TicketCheckProvider.CheckResult.Type.ERROR -> messages["state_error"]
                         TicketCheckProvider.CheckResult.Type.UNPAID -> messages["state_unpaid"]
+                        TicketCheckProvider.CheckResult.Type.CANCELED -> messages["state_canceled"]
                         TicketCheckProvider.CheckResult.Type.PRODUCT -> messages["state_product"]
                         null -> messages["state_unknown"]
                     }
