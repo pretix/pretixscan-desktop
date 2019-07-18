@@ -85,7 +85,7 @@ class MainStyleSheet : Stylesheet() {
         resultHolder {
             minWidth = 680.px
             maxWidth = 680.px
-            minHeight = 200.px
+            minHeight = 100.px
             padding = box(10.px, 0.px, 0.px, 0.px)
         }
 
