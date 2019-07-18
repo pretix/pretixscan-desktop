@@ -86,9 +86,11 @@ class SelectEventView : View() {
             spacing = 10.px
         }
 
+        label(messages["select_event"])
         hbox {
+            useMaxHeight = true
             addClass(MainStyleSheet.card)
-            addClass(MainStyleSheet.resultHolder)
+            addClass(MainStyleSheet.selectHolder)
             hboxConstraints { hGrow = Priority.ALWAYS }
             stackpane {
                 hboxConstraints { hGrow = Priority.ALWAYS }

@@ -75,9 +75,10 @@ class SelectCheckInListView : View() {
             spacing = 10.px
         }
 
+        label(messages["select_list"])
         hbox {
             addClass(MainStyleSheet.card)
-            addClass(MainStyleSheet.resultHolder)
+            addClass(MainStyleSheet.selectHolder)
             hboxConstraints { hGrow = Priority.ALWAYS }
             stackpane {
                 hboxConstraints { hGrow = Priority.ALWAYS }

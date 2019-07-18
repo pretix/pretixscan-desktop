@@ -30,6 +30,7 @@ class MainStyleSheet : Stylesheet() {
         val card by cssclass()
         val cardBody by cssclass()
         val resultHolder by cssclass()
+        val selectHolder by cssclass()
         val cardHeaderValid by cssclass()
         val cardHeaderRepeat by cssclass()
         val cardHeaderError by cssclass()
@@ -80,6 +81,13 @@ class MainStyleSheet : Stylesheet() {
             minWidth = 680.px
             maxWidth = 680.px
             fontFamily = "Roboto"
+        }
+
+        selectHolder {
+            minWidth = 680.px
+            maxWidth = 680.px
+            minHeight = 400.px
+            padding = box(10.px, 0.px, 0.px, 0.px)
         }
 
         resultHolder {
