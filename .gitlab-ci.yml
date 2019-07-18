@@ -1,3 +1,5 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: "recursive"
 package:
     before_script:
         - wget https://download2.gluonhq.com/openjfx/11.0.2/openjfx-11.0.2_linux-x64_bin-jmods.zip
@@ -10,5 +12,6 @@ package:
     tags:
         - java
     artifacts:
+        expire_in: 14 days
         paths:
             - pretixscan/packaging/build/bundle/
