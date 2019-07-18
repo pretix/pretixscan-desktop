@@ -5,7 +5,7 @@ package:
         - unzip jdk.packager-linux.zip
     script:
         - cd pretixscan
-        - ./gradlew clean createBundle -PjavafxJmodsPath=../javafx-jmods-11.0.2/ -PjavaPackagerPath=../
+        - ./gradlew clean createBundle -PjavafxJmodsPath=../../javafx-jmods-11.0.2/ -PjavaPackagerPath=../../
     tags:
         - java
     artifacts:
