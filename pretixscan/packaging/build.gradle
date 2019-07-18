@@ -21,7 +21,7 @@ ext {
     } else if (operatingSystem.isWindows()) {
         appIcon = file('icons/windows/pretixSCAN.ico')
         bundlerScript = file('build_package.bat')
-        generatedInnoSetupFile = file("${buildDir}/resources/main/pretixscan.iss")
+        generatedNSISFile = file("${buildDir}/resources/main/windows.nsi")
         windowsExecutable = file("${bundlePath}/pretixSCAN/pretixSCAN.exe")
         bundleContent = file("${bundlePath}/pretixSCAN/*")
         // Locations for the DLL workaround (see https://github.com/Santulator/Santulator/issues/5)
@@ -41,7 +41,7 @@ task recreateIconMacApp(type: Exec) {
 
 task recreateIconWindowsApp(type: Exec) {
     description 'Regenerate the Windows application icon'
-    commandLine 'sh', file('windows-icon.sh'), file('icons/icon.png'), file('icons/mac'), 'pretixSCAN'
+    commandLine 'sh', file('windows-icon.sh'), file('icons/icon.png'), file('icons/windows'), 'pretixSCAN'
 }
 
 task recreateIcons(dependsOn: [recreateIconMacApp, recreateIconWindowsApp]) {
@@ -151,7 +151,7 @@ if (operatingSystem.isWindows()) {
         }
     }
 
-    task completeInnoSetup(dependsOn: processResources) {
+    task completeNSISSetup(dependsOn: processResources) {
         doLast {
             copy {
                 from 'icons/windows'
@@ -163,9 +163,9 @@ if (operatingSystem.isWindows()) {
                 from windowsDllVCRUNTIME140
                 into "${bundlePath}/pretixSCAN"
             }
-            println("Inno Setup file: ${generatedInnoSetupFile}")
+            println("Inno Setup file: ${generatedNSISFile}")
         }
     }
 
-    createBundle.finalizedBy completeInnoSetup
+    createBundle.finalizedBy completeNSISSetup
 }

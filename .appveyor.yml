@@ -5,6 +5,10 @@ install:
   - choco install openjdk --version 11.0.2.01
   - SET JAVA_HOME=C:\Program Files\OpenJDK\jdk-11.0.2
   - SET PATH=C:\Program Files\OpenJDK\jdk-11.0.2\bin;%PATH%
+  - curl -o jdk.packager-windows.zip http://download2.gluonhq.com/jpackager/11/jdk.packager-windows.zip
+  - 7z e jdk.packager-windows.zip
+  - mv jpackager.exe %JAVA_HOME%\bin
+  - mv jdk.packager.jar %JAVA_HOME%\jmods
 
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
@@ -13,11 +17,12 @@ cache:
 test_script:
   - cd pretixscan
   - gradlew --no-daemon -version
-  - gradlew --no-daemon --stacktrace clean check test build
+  - gradlew --no-daemon --stacktrace clean createBundle
+  - tree
   - mkdir dist
   - '"C:\Program Files (x86)\NSIS\makensis.exe" windows.nsi'
 
 artifacts:
-  - path: pretixscan\dist\pretixscan.exe
+  - path: pretixscan\dist\pretixSCAN.exe
     name: Installer
 

@@ -1,16 +1,16 @@
 !include "MUI2.nsh"
 
  Name "pretixSCAN"
- OutFile "dist/pretixscan.exe"
+ OutFile "dist/pretixSCAN.exe"
 
- InstallDir "$PROGRAMFILES64\pretixscan"
+ InstallDir "$PROGRAMFILES64\pretixSCAN"
 
- InstallDirRegKey HKCU "Software\pretixscan" ""
+ InstallDirRegKey HKCU "Software\pretixSCAN" ""
 
  RequestExecutionLevel admin
 
  !define MUI_ABORTWARNING
- !define MUI_ICON "..\img\icon_on_shape.ico"
+ !define MUI_ICON "packaging\icons\windows\pretixSCAN.ico"
  !define MUI_WELCOMEFINISHPAGE_BITMAP "..\img\installer.bmp"
  !define MUI_UNWELCOMEFINISHPAGE_BITMAP "..\img\installer.bmp"
 
@@ -29,29 +29,29 @@
 
  !insertmacro MUI_LANGUAGE "English"
 
- Section "pretixscan" SecBase
+ Section "pretixSCAN" SecBase
    SetOutPath "$INSTDIR"
    CreateDirectory "$INSTDIR"
 
    File /r "build\launch4j\*"
    File /r /x deb.tmp "jre"
 
-   CreateDirectory "$SMPROGRAMS\pretixscan"
-   CreateShortCut "$SMPROGRAMS\pretixscan\pretixsSCAN.lnk" "$INSTDIR\pretixscan.exe"
-   CreateShortCut "$SMPROGRAMS\pretixscan\Uninstall.lnk" "$INSTDIR\uninstall.exe"
+   CreateDirectory "$SMPROGRAMS\pretixSCAN"
+   CreateShortCut "$SMPROGRAMS\pretixSCAN\pretixSCAN.lnk" "$INSTDIR\pretixSCAN.exe"
+   CreateShortCut "$SMPROGRAMS\pretixSCAN\Uninstall.lnk" "$INSTDIR\uninstall.exe"
 
    ;Store installation folder
-   WriteRegStr HKCU "Software\pretixscan" "" $INSTDIR
+   WriteRegStr HKCU "Software\pretixSCAN" "" $INSTDIR
 
    ;Create uninstaller
-   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\pretixscan" "DisplayName" "pretixSCAN"
-   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\pretixscan" "UninstallString" "$INSTDIR\uninstall.exe"
+   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\pretixSCAN" "DisplayName" "pretixSCAN"
+   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\pretixSCAN" "UninstallString" "$INSTDIR\uninstall.exe"
 
    WriteUninstaller "$INSTDIR\uninstall.exe"
  SectionEnd
 
  Section "Desktop Shortcut"
-    CreateShortCut "$DESKTOP\pretixSCAN.lnk" "$INSTDIR\pretixscan.exe" ""
+    CreateShortCut "$DESKTOP\pretixSCAN.lnk" "$INSTDIR\pretixSCAN.exe" ""
  SectionEnd
 
  ;Language strings
@@ -66,18 +66,16 @@
    Delete "$INSTDIR\*.jar"
    Delete "$INSTDIR\*.exe"
    RMDIR  /r "$INSTDIR\icons"
-   RMDIR  /r "$INSTDIR\pretixscan"
-   RMDIR  /r "$INSTDIR\lib"
-   RMDIR  /r "$INSTDIR\jre"
+   RMDIR  /r "$INSTDIR\pretixSCAN"
 
-   Delete "$SMPROGRAMS\pretixscan\pretixSCAN.lnk"
-   Delete "$SMPROGRAMS\pretixscan\Uninstall.lnk"
-   RMDIR "$SMPROGRAMS\pretixscan"
+   Delete "$SMPROGRAMS\pretixSCAN\pretixSCAN.lnk"
+   Delete "$SMPROGRAMS\pretixSCAN\Uninstall.lnk"
+   RMDIR "$SMPROGRAMS\pretixSCAN"
    Delete "$DESKTOP\pretixSCAN.lnk"
 
-   RMDir "$INSTDIR"
+   RMDir /r "$INSTDIR"
 
-   DeleteRegKey /ifempty HKCU "Software\pretixscan"
-   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\pretixscan"
-   DeleteRegKey HKCR "pretixscan"
+   DeleteRegKey /ifempty HKCU "Software\pretixSCAN"
+   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\pretixSCAN"
+   DeleteRegKey HKCR "pretixSCAN"
  SectionEnd
