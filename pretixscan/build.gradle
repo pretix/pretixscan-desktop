@@ -11,12 +11,6 @@ ext {
 repositories {
     jcenter()
     mavenCentral()
-    maven {
-        url "https://plugins.gradle.org/m2/"
-    }
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
-    }
 }
 
 buildscript {
@@ -48,6 +42,17 @@ subprojects {
     apply plugin: 'kotlin'
 
     sourceCompatibility = 1.8
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
+    }
 
     compileKotlin {
         sourceCompatibility = JavaVersion.VERSION_1_8
