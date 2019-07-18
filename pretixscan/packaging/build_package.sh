@@ -23,8 +23,7 @@ ${PACKAGER} \
   --name pretixSCAN \
   --main-jar ${JAR} \
   --version ${VERSION} \
-  --jvm-args '--add-opens javafx.base/com.sun.javafx.reflect=ALL-UNNAMED --add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED'
-  --file-associations ${FILE_ASSOCIATIONS} \
+  --jvm-args '--add-opens javafx.base/com.sun.javafx.reflect=ALL-UNNAMED --add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED' \
   --icon $APP_ICON \
   $EXTRA_BUNDLER_ARGUMENTS \
   --class eu.pretix.pretixscan.desktop.PretixScanMain

@@ -15,7 +15,10 @@
    version="1.1"
    id="svg948"
    inkscape:version="0.92.4 5da689c313, 2019-01-14"
-   sodipodi:docname="icon.svg">
+   sodipodi:docname="icon.svg"
+   inkscape:export-filename="/home/raphael/proj/pretixdesk/img/icon.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <defs
      id="defs942" />
   <sodipodi:namedview
@@ -36,9 +39,9 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:window-width="1916"
-     inkscape:window-height="969"
+     inkscape:window-height="951"
      inkscape:window-x="0"
-     inkscape:window-y="90"
+     inkscape:window-y="108"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata945">

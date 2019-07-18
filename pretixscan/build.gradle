@@ -1,6 +1,6 @@
 group 'eu.pretix.pretixscan'
-version = '0.3.3'
-version version
+version = project.properties['version']
+project.version version
 
 import org.gradle.internal.os.OperatingSystem
 
