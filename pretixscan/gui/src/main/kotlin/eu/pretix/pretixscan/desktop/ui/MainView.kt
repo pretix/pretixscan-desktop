@@ -217,10 +217,14 @@ class MainView : View() {
 
         hbox {
             style {
-                paddingBottom = 20.0
+                paddingBottom = 10.0
                 alignment = Pos.CENTER
             }
-            imageview(Image(PretixScanMain::class.java.getResourceAsStream("logo.png")))
+            imageview(Image(PretixScanMain::class.java.getResourceAsStream("logo.png"))) {
+                fitHeight = 100.0
+                fitWidth = 500.0
+                isPreserveRatio = true
+            }
         }
 
         this += searchField
