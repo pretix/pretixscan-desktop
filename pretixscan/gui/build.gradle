@@ -1,0 +1,107 @@
+/*
+ * Open Source Software published under the Apache Licence, Version 2.0.
+ */
+import org.apache.tools.ant.filters.*
+
+apply plugin: 'application'
+apply plugin: 'org.openjfx.javafxplugin'
+
+mainClassName = "eu.pretix.pretixscan.desktop.PretixScanMain"
+
+applicationName = "pretixSCAN"
+
+ext.buildTimestamp = new Date().format('yyyy-MM-dd HH:mm:ss')
+
+processResources {
+    filesMatching('properties/*.properties') {
+        filter ReplaceTokens, tokens: [
+                'build.version'  : project.property("version"),
+                'build.timestamp': project.buildTimestamp
+        ]
+    }
+}
+
+jar {
+    from(buildDir) {
+        include 'build-info.properties'
+    }
+}
+
+def platform
+if (operatingSystem.isWindows()) {
+    platform = 'win'
+} else if (operatingSystem.isLinux()) {
+    platform = 'linux'
+} else if (operatingSystem.isMacOsX()) {
+    platform = 'mac'
+}
+
+configurations {
+    javafxCompile
+}
+
+javafx {
+    modules = [
+            'javafx.controls', 'javafx.fxml'
+    ]
+    version = '11.0.2'
+}
+
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+
+    implementation 'no.tornado:tornadofx:2.0.0-SNAPSHOT'
+    implementation 'org.xerial:sqlite-jdbc:3.20.1'
+    implementation 'net.harawata:appdirs:1.0.0'
+    implementation 'net.java.dev.jna:platform:3.5.2'
+    implementation 'joda-time:joda-time:2.9.9'
+    implementation "de.huxhorn.lilith:de.huxhorn.lilith.3rdparty.junique:1.0.4"
+    implementation 'com.github.kittinunf.fuel:fuel:2.1.0'
+    implementation 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2'
+    implementation 'com.jfoenix:jfoenix:9.0.9'
+    implementation 'org.apache.pdfbox:pdfbox:2.0.13'
+
+    implementation(project(':libpretixsync')) {
+        transitive = false
+    }
+    implementation(project(':libpretixprint')) {
+        transitive = false
+    }
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    javafxCompile "org.openjfx:javafx-base:11.0.2:${platform}"
+    javafxCompile "org.openjfx:javafx-graphics:11.0.2:${platform}"
+    javafxCompile "org.openjfx:javafx-controls:11.0.2:${platform}"
+    javafxCompile "org.openjfx:javafx-fxml:11.0.2:${platform}"
+
+    compileOnly configurations.javafxCompile
+}
+
+tasks.withType(JavaCompile) {
+    options.with {
+        compilerArgs += [
+                '--module-path', configurations.javafxCompile.asPath,
+                '--add-modules', 'javafx.controls'
+        ]
+    }
+}
+
+[run, test].each {
+    it.jvmArgs += [
+            '--module-path', configurations.javafxCompile.asPath,
+            '--add-modules', 'javafx.controls,javafx.fxml,javafx.graphics',
+            '--add-exports', 'javafx.base/com.sun.javafx.runtime=ALL-UNNAMED',
+            '--add-exports', 'javafx.graphics/com.sun.javafx.css=ALL-UNNAMED',
+            '--add-exports', 'javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED',
+            '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED',
+    ]
+}
+
+
+javafx {
+    modules = [
+            'javafx.controls', 'javafx.fxml', 'javafx.graphics'
+    ]
+    version = '11.0.2'
+}
