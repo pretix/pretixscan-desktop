@@ -100,9 +100,9 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
         stage.minWidth = 800.0
         super.start(stage)
 
-        val stylesheets = stage.scene.getStylesheets()
-        stylesheets.addAll(PretixScanMain::class.java.getResource("/css/jfoenix-fonts.css").toExternalForm(),
-                PretixScanMain::class.java.getResource("/css/jfoenix-design.css").toExternalForm())
+        val stylesheets = stage.scene.stylesheets
+        stylesheets.addAll(PretixScanMain::class.java.getResource("/com/jfoenix/assets/css/jfoenix-fonts.css").toExternalForm(),
+                PretixScanMain::class.java.getResource("/com/jfoenix/assets/css/jfoenix-design.css").toExternalForm())
     }
 
 
