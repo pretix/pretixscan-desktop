@@ -32,7 +32,7 @@ var re_alphanum = Pattern.compile("^[a-zA-Z0-9]+\$")
 
 class MainView : View() {
     private val controller: MainController by inject()
-    private var resultCards: List<VBox> = ArrayList()
+    private var resultCards = mutableListOf<VBox>()
     private var spinnerAnimation: Timeline? = null
     private var searchCardAnimation: Timeline? = null
     private var syncStatusTimeline: Timeline? = null
@@ -79,7 +79,7 @@ class MainView : View() {
                         }
                     }
                 } else {
-                    hideSearchResultCard()
+                    handleSearchInput("")
                 }
             }
         }
@@ -169,8 +169,10 @@ class MainView : View() {
     }
 
     private val searchResultCard = vbox {
+        addClass(eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet.resultHolder)
         opacity = 0.0
         isVisible = false
+        isManaged = false
         addClass(MainStyleSheet.card)
         vboxConstraints { vGrow = Priority.ALWAYS }
         style {
@@ -200,7 +202,6 @@ class MainView : View() {
         vbox {
             this += mainSpinner
         }
-        this += searchResultCard
     }
 
     private val contentBox = vbox {
@@ -223,6 +224,7 @@ class MainView : View() {
         }
 
         this += searchField
+        this += searchResultCard
         this += resultHolder
     }
 
@@ -424,7 +426,6 @@ class MainView : View() {
     }
 
     private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean = false) {
-        hideSearchResultCard()
         handleTicketInput(searchResult.secret, answers, ignore_pending)
     }
 
@@ -436,13 +437,13 @@ class MainView : View() {
             }
         }.setOnFinished {
             card.removeFromParent()
-            resultCards -= card
+            resultCards.remove(card)
         }
     }
 
     private fun showCard(card: VBox) {
         resultHolder += card
-        resultCards += card
+        resultCards.add(card)
 
         timeline {
             keyframe(MaterialDuration.ENTER) {
@@ -468,6 +469,7 @@ class MainView : View() {
             searchResultCard.translateY = 200.0
             searchResultCard.opacity = 0.0
             searchResultCard.isVisible = true
+            searchResultCard.isManaged = true
             searchCardAnimation = timeline {
                 keyframe(MaterialDuration.ENTER) {
                     keyvalue(searchResultCard.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
@@ -492,6 +494,7 @@ class MainView : View() {
             }
             searchCardAnimation?.setOnFinished {
                 searchResultCard.isVisible = false
+                searchResultCard.isManaged = false
             }
         }
     }
@@ -518,6 +521,10 @@ class MainView : View() {
         for (oldResultCard in resultCards) {
             removeCard(oldResultCard)
         }
+        if (value.isEmpty()) {
+            hideSearchResultCard()
+            return
+        }
 
         showSpinner()
 
@@ -542,7 +549,6 @@ class MainView : View() {
         for (oldResultCard in resultCards) {
             removeCard(oldResultCard)
         }
-        hideSearchResultCard()
         showSpinner()
 
         searchField.text = ""
@@ -551,7 +557,6 @@ class MainView : View() {
             resultData = controller.handleScanInput(value, answers, ignore_pending)
         } ui {
             hideSpinner()
-            hideSearchResultCard()
 
             val newCard = makeNewCard(resultData)
             showCard(newCard)
@@ -587,6 +592,7 @@ class MainView : View() {
     private fun handleInput(value: String) {
         // TODO: Support pretix instances with lower entropy levels
         if (value.matches(Regex("[a-z0-9]{32,}"))) {
+            hideSearchResultCard()
             handleTicketInput(value)
         } else {
             handleSearchInput(value)

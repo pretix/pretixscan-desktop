@@ -86,6 +86,7 @@ class MainStyleSheet : Stylesheet() {
             minWidth = 480.px
             maxWidth = 480.px
             minHeight = 200.px
+            padding = box(10.px, 0.px, 0.px, 0.px)
         }
 
         eventInfoList {
