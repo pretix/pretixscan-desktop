@@ -2,13 +2,12 @@ build: off
 
 install:
   - git submodule update --init
-  - choco install openjdk --version 11.0.2.01 --params "installdir=C:\\jdk11"
-  - SET JAVA_HOME=C:\jdk11
-  - SET PATH=C:\jdk11\bin;%PATH%
+  - choco install openjdk --version 11.0.2.01
+  - SET JAVA_HOME=C:\Program Files\OpenJDK
+  - SET PATH=C:\Program Files\OpenJDK\bin;%PATH%
 
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
-  - C:\jdk11 -> appveyor.yml
   - '%USERPROFILE%\.gradle -> appveyor.yml'
 
 test_script:
