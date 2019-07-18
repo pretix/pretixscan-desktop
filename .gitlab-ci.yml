@@ -2,6 +2,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: "recursive"
 package:
     before_script:
+        - apt update && apt -y install fakeroot
         - wget https://download2.gluonhq.com/openjfx/11.0.2/openjfx-11.0.2_linux-x64_bin-jmods.zip
         - unzip openjfx-11.0.2_linux-x64_bin-jmods.zip
         - wget https://download2.gluonhq.com/jpackager/11/jdk.packager-linux.zip

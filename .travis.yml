@@ -1,4 +1,8 @@
 language: java
+os:
+  - linux
+  - osx
+osx_image: xcode11
 dist: xenial
 jdk: openjdk11
 sudo: false
