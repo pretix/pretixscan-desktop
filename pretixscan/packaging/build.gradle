@@ -142,7 +142,7 @@ task createBundle(type: Exec, dependsOn: [copyDependencies, processResources, ch
 
 if (operatingSystem.isWindows()) {
     processResources {
-        filesMatching('pretixscan.iss') {
+        filesMatching('windows.nsi') {
             filter ReplaceTokens, tokens: [
                     'bundle.version'     : publishedVersion,
                     'executable.location': windowsExecutable.toString(),

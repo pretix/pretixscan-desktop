@@ -20,6 +20,6 @@ call "%JAVA_HOME%\bin\java.exe" ^
     --name "pretixSCAN" ^
     --main-jar "%JAR%" ^
     --version "%VERSION%" ^
-    --jvm-args "--add-opens javafx.base/com.sun.javafx.reflect=ALL-UNNAMED" ^
+    --jvm-args "--add-opens javafx.base/com.sun.javafx.reflect=ALL-UNNAMED --add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED -Dfile.encoding=UTF8" ^
     --icon "%APP_ICON%" ^
     --class "eu.pretix.pretixscan.desktop.PretixScanMain"

@@ -10,7 +10,7 @@ Contact:
 Email: support@pretix.eu
 Phone: +49 6221 3217750
 
-This app is free software and released without warranty under the terms of the GPL license version 3.
+This app is free software and released without warranty under the terms of the Apache License.
 Source code: https://github.com/pretix/pretixscan-desktop
 
 This app contains code from the following projects:
