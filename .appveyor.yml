@@ -3,8 +3,8 @@ build: off
 install:
   - git submodule update --init
   - choco install openjdk --version 11.0.2.01
-  - SET JAVA_HOME=C:\Program Files\OpenJDK
-  - SET PATH=C:\Program Files\OpenJDK\bin;%PATH%
+  - SET JAVA_HOME=C:\Program Files\OpenJDK\jdk-11
+  - SET PATH=C:\Program Files\OpenJDK\jdk-11\bin;%PATH%
 
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
