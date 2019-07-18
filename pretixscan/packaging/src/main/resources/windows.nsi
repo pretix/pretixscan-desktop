@@ -10,7 +10,7 @@
  RequestExecutionLevel admin
 
  !define MUI_ABORTWARNING
- !define MUI_ICON "..\..\bundle\pretixSCAN.ico"
+ !define MUI_ICON "..\..\bundle\pretixSCAN\pretixSCAN.ico"
  !define MUI_WELCOMEFINISHPAGE_BITMAP "..\..\..\..\..\img\installer.bmp"
  !define MUI_UNWELCOMEFINISHPAGE_BITMAP "..\..\..\..\..\img\installer.bmp"
 

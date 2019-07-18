@@ -18,7 +18,6 @@ ${PACKAGER} \
   --module-path ${MODULE_PATH} \
   --verbose \
   --echo-mode \
-  --license-file ../../../../LICENSE \
   --copyright "pretix.eu, Raphael Michel" \
   --vendor "pretix" \
   --linux-deb-maintainer "pretix team <support@pretix.eu>" \
