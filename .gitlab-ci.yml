@@ -7,6 +7,8 @@ package:
     script:
         - cd pretixscan
         - ./gradlew clean createBundle -PjavafxJmodsPath=../javafx-jmods-11.0.2/ -PjavaPackagerPath=../
+    tags:
+        - java
     artifacts:
         paths:
             - pretixscan/packaging/build/bundle/
