@@ -28,54 +28,12 @@ This project contains a submodule, so the first command you execute should be::
 
     git submodule update --init
 
-This project is built using Gradle. It requires a JDK in version 9 with JavaFX. As this is
-currently hard to achieve using OpenJDK, we advise using Oracle's Java distribution. You
-can then build the project using::
+This project is built using Gradle. It requires a JDK in version 11.
+You can then run the project using::
 
-    JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew build
+    JAVA_HOME=/usr/lib/jvm/java-11-jdk ./gradlew :gui:run
 
-You of course need to replace ``JAVA_HOME`` with the location of your Java 9 SDK.
-We recommend using IntelliJ IDEA as an development environment.
-To run the application from the command line, use::
-
-    JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew build
-
-To build a stand-alone JAR file for distributing::
-    
-    JAVA_HOME=/usr/lib/jvm/java-9-jdk ./gradlew fatJar
-
-The JAR file will be created at ``build/libs/pretixscan.jar``.
-
-Windows package
-^^^^^^^^^^^^^^^
-
-To build the windows executable, you can run::
-    
-    ./gradlew createExe
-
-To then create the installer, you will need to download the .tar.gz file of the
-`Java 9 JRE`_ and unpack it to a folder called ``jre`` within the source directory. You also need to 
-install `Nullsoft Install System`_. Then, you can create
-the installer with::
-
-    makensis windows.nsi
-
-Ubuntu/Debian package
-^^^^^^^^^^^^^^^^^^^^^
-
-To build the Ubuntu/Debian package, run ``./gradlew fatJar`` first and then execute::
-
-    ./packaging/build_deb.sh
-
-If you are on linux, but not on a debian-based distribution that lacks the ``dpkg`` command,
-a docker image will be downloaded and executed to get the debian toolchain. There is a similar
-command ``build_deb_repo.sh`` that you probably won't need, except if you are myself reading
-this in a couple of years.
-
-Arch Linux package
-^^^^^^^^^^^^^^^^^^
-
-The `pretixscan-git` AUR package always automatically builds from the latest git revision.
+To create packages, see PACKAGES.md.
 
 FAQ
 ---
@@ -119,7 +77,7 @@ in place that applies to all project contributions, including issues, pull reque
 
 License
 -------
-The code in this repository is published under the terms of the GPLv3 License. 
+The code in this repository is published under the terms of the Apache License. 
 See the LICENSE file for the complete license text.
 
 This project is maintained by Raphael Michel <mail@raphaelmichel.de>. See the
@@ -131,7 +89,6 @@ go to `pretix.eu`_ or contact Raphael directly.
 
 .. _pretix: https://pretix.eu
 .. _pretix.eu: https://pretix.eu
-.. _Java 9 JRE: http://www.oracle.com/technetwork/java/javase/downloads/jre9-downloads-3848532.html
 .. _Code of Conduct: https://docs.pretix.eu/en/latest/development/contribution/codeofconduct.html
 .. _Nullsoft Install System: http://nsis.sourceforge.net/Download
 .. _Kotlin: https://kotlinlang.org/
