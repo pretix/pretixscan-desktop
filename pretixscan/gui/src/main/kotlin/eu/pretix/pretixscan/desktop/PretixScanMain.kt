@@ -32,7 +32,7 @@ import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
 
-val VERSION = "0.3.3"
+val VERSION = "1.0.0"
 val VERSION_CODE = 1
 val APP_ID = "eu.pretix.pretixscan.desktop"
 
