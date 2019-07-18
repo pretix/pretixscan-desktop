@@ -7,6 +7,8 @@ install:
   - SET PATH=C:\Program Files\OpenJDK\jdk-11.0.2\bin;%PATH%
   - curl -o jdk.packager-windows.zip http://download2.gluonhq.com/jpackager/11/jdk.packager-windows.zip
   - 7z e jdk.packager-windows.zip
+  - curl -o jmods.zip https://download2.gluonhq.com/openjfx/11.0.2/openjfx-11.0.2_windows-x64_bin-jmods.zip
+  - 7z x jmods.zip
   - mv jpackager.exe "%JAVA_HOME%\bin"
   - mv jdk.packager.jar "%JAVA_HOME%\jmods"
 
@@ -17,7 +19,7 @@ cache:
 test_script:
   - cd pretixscan
   - gradlew --no-daemon -version
-  - gradlew --no-daemon --stacktrace clean createBundle
+  - gradlew --no-daemon --stacktrace clean createBundle -PjavafxJmodsPath=../javafx-jmods-11.0.2/
   - tree
   - mkdir dist
   - '"C:\Program Files (x86)\NSIS\makensis.exe" windows.nsi'
