@@ -101,7 +101,7 @@ class MainView : View() {
                 label(it.secret.substring(0, 20) + "…")
                 hbox {
                     style {
-                        maxWidth = 430.px
+                        maxWidth = 630.px
                     }
 
                     var ticketname = it.ticket
@@ -121,7 +121,7 @@ class MainView : View() {
                         isWrapText = true
                         vgrow = Priority.ALWAYS
                         style {
-                            maxWidth = 330.px
+                            maxWidth = 530.px
                         }
                     }
                     spacer {}

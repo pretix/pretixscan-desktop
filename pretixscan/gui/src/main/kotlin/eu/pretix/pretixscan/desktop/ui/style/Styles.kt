@@ -77,21 +77,21 @@ class MainStyleSheet : Stylesheet() {
 
         mainSearchField {
             fontSize = 24.px
-            minWidth = 480.px
-            maxWidth = 480.px
+            minWidth = 680.px
+            maxWidth = 680.px
             fontFamily = "Roboto"
         }
 
         resultHolder {
-            minWidth = 480.px
-            maxWidth = 480.px
+            minWidth = 680.px
+            maxWidth = 680.px
             minHeight = 200.px
             padding = box(10.px, 0.px, 0.px, 0.px)
         }
 
         eventInfoList {
-            minWidth = 500.px
-            maxWidth = 500.px
+            minWidth = 700.px
+            maxWidth = 700.px
             minHeight = 250.px
             backgroundColor += c(STYLE_BACKGROUND_COLOR)
 
