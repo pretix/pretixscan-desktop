@@ -149,7 +149,7 @@ class MainView : View() {
                 }
                 hbox {
                     label(it.orderCode + "  ") { addClass(MainStyleSheet.searchItemOrderCode) }
-                    label(it.attendee_name ?: "") {
+                    label(if(it.attendee_name != "null") it.attendee_name ?: "" else "") {
                         addClass(MainStyleSheet.searchItemAttendeeName)
                         isWrapText = true
                     }
@@ -645,7 +645,7 @@ class MainView : View() {
                                 ticket += " – " + data.variation
                             }
                             hbox {
-                                label(data?.attendee_name ?: "") {
+                                label(if(data?.attendee_name != "null") data?.attendee_name ?: "" else "") {
                                     isWrapText = true
                                 }
                                 spacer {}
