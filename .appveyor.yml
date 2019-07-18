@@ -7,8 +7,8 @@ install:
   - SET PATH=C:\Program Files\OpenJDK\jdk-11.0.2\bin;%PATH%
   - curl -o jdk.packager-windows.zip http://download2.gluonhq.com/jpackager/11/jdk.packager-windows.zip
   - 7z e jdk.packager-windows.zip
-  - mv jpackager.exe %JAVA_HOME%\bin
-  - mv jdk.packager.jar %JAVA_HOME%\jmods
+  - mv jpackager.exe "%JAVA_HOME%\bin"
+  - mv jdk.packager.jar "%JAVA_HOME%\jmods"
 
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml

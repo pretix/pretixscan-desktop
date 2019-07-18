@@ -7,7 +7,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 ext {
     publishedVersion = project.version
     bundlerScript = file('build_package.sh')
-    santulatorLibraryPath = file("${buildDir}/libraries")
+    appLibraryPath = file("${buildDir}/libraries")
     mainJar = project(':gui').jar.outputs.files[0].name
     bundlePath = file("${buildDir}/bundle")
     extraBundlerArguments = []
@@ -120,7 +120,7 @@ task createBundle(type: Exec, dependsOn: [copyDependencies, processResources, ch
         commandLine 'cmd', '/c',
                 bundlerScript,
                 "${-> javafxJmodsPath}",
-                santulatorLibraryPath,
+                appLibraryPath,
                 bundlePath,
                 mainJar,
                 publishedVersion,
@@ -131,7 +131,7 @@ task createBundle(type: Exec, dependsOn: [copyDependencies, processResources, ch
                        "${-> file("${javaPackagerPath}/jpackager")}",
                        packageType,
                        "${-> file("${javafxJmodsPath}")}",
-                       santulatorLibraryPath,
+                       appLibraryPath,
                        bundlePath,
                        mainJar,
                        publishedVersion,
