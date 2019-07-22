@@ -7,7 +7,8 @@ import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
-import eu.pretix.libpretixsync.db.Models
+import eu.pretix.libpretixsync.Models
+import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.pretixscan.desktop.ui.MainView
 import eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet
 import io.requery.BlockingEntityStore
@@ -106,8 +107,6 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
     }
 
 
-
-
     fun data(): BlockingEntityStore<Persistable> {
         if (dataStore == null) {
             File(dataDir).mkdirs()
@@ -159,8 +158,10 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
 
     fun newCheckProvider(): TicketCheckProvider {
         val p: TicketCheckProvider
-        if (configStore.asyncModeEnabled) {
-            p = AsyncCheckProvider(configStore, data(), configStore.checkInListId)
+        if (configStore.proxyMode) {
+            p = ProxyCheckProvider(configStore, DefaultHttpClientFactory(), data(), configStore.checkInListId)
+        } else if (configStore.asyncModeEnabled) {
+            p = AsyncCheckProvider(configStore.eventSlug, data(), configStore.checkInListId)
         } else {
             p = OnlineCheckProvider(configStore, DefaultHttpClientFactory(), data(), configStore.checkInListId)
         }

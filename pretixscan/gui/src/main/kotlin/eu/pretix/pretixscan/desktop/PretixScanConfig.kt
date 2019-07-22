@@ -27,6 +27,7 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_ALLOW_SEARCH = "allow_search"
     private val PREFS_KEY_API_VERSION = "pretix_api_version"
     private val PREFS_KEY_ASYNC_MODE = "async"
+    private val PREFS_KEY_PROXY_MODE = "proxy"
     private val PREFS_KEY_LAST_SYNC = "last_sync"
     private val PREFS_KEY_LAST_FAILED_SYNC = "last_failed_sync"
     private val PREFS_KEY_LAST_FAILED_SYNC_MSG = "last_failed_sync_msg"
@@ -72,6 +73,13 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
         }
         prefs.flush()
     }
+
+    var proxyMode
+        get() = prefs.getBoolean(PREFS_KEY_PROXY_MODE, false)
+        set(value) {
+            prefs.putBoolean(PREFS_KEY_PROXY_MODE, value)
+            prefs.flush()
+        }
 
     var asyncModeEnabled
         get() = prefs.getBoolean(PREFS_KEY_ASYNC_MODE, false)

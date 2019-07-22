@@ -299,6 +299,7 @@ class MainView : View() {
                         jfxTogglebutton(messages["toolbar_toggle_async"]) {
                             toggleColor = c(STYLE_STATE_VALID_COLOR)
                             isSelected = !(app as PretixScanMain).configStore.asyncModeEnabled
+                            isDisable = (app as PretixScanMain).configStore.proxyMode
                             action {
                                 controller.toggleAsync(!isSelected)
                             }
