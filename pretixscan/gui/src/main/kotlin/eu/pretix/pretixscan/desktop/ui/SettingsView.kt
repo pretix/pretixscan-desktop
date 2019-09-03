@@ -154,42 +154,6 @@ class SettingsView : View() {
             addClass(MainStyleSheet.eventSettingsCard)
             vbox {
                 addClass(MainStyleSheet.cardBody)
-                hbox {
-                    label(messages["settings_reset_text"])
-                    spacer {}
-                    jfxButton(messages["settings_reset_button"].toUpperCase()) {
-                        action {
-                            if (controller.hasLocalChanges()) {
-                                val okButton: JFXButton = jfxButton(messages.getString("dialog_ok").toUpperCase())
-                                val cancelButton: JFXButton = jfxButton(messages.getString("dialog_cancel").toUpperCase())
-                                val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
-                                    setBody(label(messages.getString("settings_reset_warning")))
-                                    setActions(cancelButton, okButton)
-                                }
-                                cancelButton.action {
-                                    dialog.close()
-                                }
-                                okButton.action {
-                                    dialog.close()
-                                    controller.resetApp()
-                                    replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
-                                }
-                                dialog.show(root)
-                            } else {
-                                controller.resetApp()
-                                replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        vbox {
-            addClass(MainStyleSheet.card)
-            addClass(MainStyleSheet.eventSettingsCard)
-            vbox {
-                addClass(MainStyleSheet.cardBody)
                 style {
                     padding = box(0.px, 15.px)
                 }
@@ -244,6 +208,42 @@ class SettingsView : View() {
                     this += printersComboBox
                     printersComboBox.hboxConstraints {
                         hGrow = Priority.ALWAYS
+                    }
+                }
+            }
+        }
+
+        vbox {
+            addClass(MainStyleSheet.card)
+            addClass(MainStyleSheet.eventSettingsCard)
+            vbox {
+                addClass(MainStyleSheet.cardBody)
+                hbox {
+                    label(messages["settings_reset_text"])
+                    spacer {}
+                    jfxButton(messages["settings_reset_button"].toUpperCase()) {
+                        action {
+                            if (controller.hasLocalChanges()) {
+                                val okButton: JFXButton = jfxButton(messages.getString("dialog_ok").toUpperCase())
+                                val cancelButton: JFXButton = jfxButton(messages.getString("dialog_cancel").toUpperCase())
+                                val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
+                                    setBody(label(messages.getString("settings_reset_warning")))
+                                    setActions(cancelButton, okButton)
+                                }
+                                cancelButton.action {
+                                    dialog.close()
+                                }
+                                okButton.action {
+                                    dialog.close()
+                                    controller.resetApp()
+                                    replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+                                }
+                                dialog.show(root)
+                            } else {
+                                controller.resetApp()
+                                replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+                            }
+                        }
                     }
                 }
             }
