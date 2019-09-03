@@ -11,7 +11,7 @@ class SelectEventController : BaseController() {
                 (app as PretixScanMain).data(),
                 PretixApi.fromConfig(configStore),
                 configStore,
-                true
+                false
         )
         return em.getAvailableEvents()
     }
