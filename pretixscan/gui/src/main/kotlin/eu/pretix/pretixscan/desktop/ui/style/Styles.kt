@@ -233,12 +233,12 @@ class MainStyleSheet : Stylesheet() {
             textFill = c(STYLE_TEXT_COLOR_MUTED)
         }
         eventInfoItem {
-            minWidth = 460.px
-            maxWidth = 460.px
+            minWidth = 650.px
+            maxWidth = 650.px
         }
         eventInfoHeader {
-            minWidth = 460.px
-            maxWidth = 460.px
+            minWidth = 680.px
+            maxWidth = 680.px
             backgroundColor += c(STYLE_PRIMARY_DARK_COLOR)
             label {
                 textFill = c(STYLE_TOOLBAR_TEXT_COLOR)
@@ -250,13 +250,13 @@ class MainStyleSheet : Stylesheet() {
             minWidth = 60.px
         }
         eventSettingsCard {
-            minWidth = 460.px
-            maxWidth = 460.px
+            minWidth = 680.px
+            maxWidth = 680.px
         }
 
         setupScreen {
-            minWidth = 460.px
-            maxWidth = 460.px
+            minWidth = 680.px
+            maxWidth = 680.px
 
             label {
                 textFill = c(STYLE_TOOLBAR_TEXT_COLOR)
