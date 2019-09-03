@@ -54,6 +54,11 @@ class MainStyleSheet : Stylesheet() {
         val eventSettingsCard by cssclass()
         val setupScreen by cssclass()
         val questionsForm by cssclass()
+        val bgDefault by cssclass()
+        val bgInvalid by cssclass()
+        val bgValid by cssclass()
+        val bgRepeat by cssclass()
+        val bgAttention by cssclass()
     }
 
     init {
@@ -273,6 +278,22 @@ class MainStyleSheet : Stylesheet() {
             label {
                 endMargin = 5.px
             }
+        }
+
+        bgDefault {
+            backgroundColor += c(STYLE_BACKGROUND_COLOR, 1.0)
+        }
+        bgValid{
+            backgroundColor += c(STYLE_STATE_VALID_COLOR, 1.0)
+        }
+        bgInvalid {
+            backgroundColor += c(STYLE_STATE_ERROR_COLOR, 1.0)
+        }
+        bgRepeat {
+            backgroundColor += c(STYLE_STATE_REPEAT_COLOR, 1.0)
+        }
+        Companion.bgAttention {
+            backgroundColor += c(STYLE_ATTENTION_COLOR, 1.0)
         }
     }
 }

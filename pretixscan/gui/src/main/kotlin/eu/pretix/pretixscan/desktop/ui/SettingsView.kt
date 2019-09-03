@@ -137,6 +137,14 @@ class SettingsView : View() {
         }
     }
 
+    private val largecolorBtn = jfxTogglebutton() {
+        toggleColor = c(STYLE_STATE_VALID_COLOR)
+        isSelected = !(app as PretixScanMain).configStore.largeColor
+        action {
+            controller.toggleLargeColor(isSelected)
+        }
+    }
+
     private val contentBox = vbox {
         vboxConstraints { vGrow = Priority.ALWAYS }
         useMaxHeight = true
@@ -164,6 +172,25 @@ class SettingsView : View() {
                     label(messages["settings_sound"])
                     spacer {}
                     this += soundBtn
+                }
+            }
+        }
+
+        vbox {
+            addClass(MainStyleSheet.card)
+            addClass(MainStyleSheet.eventSettingsCard)
+            vbox {
+                addClass(MainStyleSheet.cardBody)
+                style {
+                    padding = box(0.px, 15.px)
+                }
+                hbox {
+                    style {
+                        alignment = Pos.CENTER
+                    }
+                    label(messages["settings_largecolor"])
+                    spacer {}
+                    this += largecolorBtn
                 }
             }
         }
@@ -332,6 +359,7 @@ class SettingsView : View() {
         }
         soundBtn.isSelected = (app as PretixScanMain).configStore.playSound
         badgesBtn.isSelected = (app as PretixScanMain).configStore.autoPrintBadges
+        largecolorBtn.isSelected = (app as PretixScanMain).configStore.largeColor
         currentWindow?.setOnCloseRequest {
             controller.close()
         }

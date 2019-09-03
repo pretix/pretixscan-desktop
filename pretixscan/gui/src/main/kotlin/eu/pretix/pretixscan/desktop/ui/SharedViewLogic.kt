@@ -31,6 +31,10 @@ open class BaseController : Controller() {
         return configStore.playSound
     }
 
+    fun largeColorEnabled(): Boolean {
+        return configStore.largeColor
+    }
+
     fun syncStatusText(): String {
         if ((app as PretixScanMain).syncLock.isLocked) {
             return messages.getString("sync_status_progress");

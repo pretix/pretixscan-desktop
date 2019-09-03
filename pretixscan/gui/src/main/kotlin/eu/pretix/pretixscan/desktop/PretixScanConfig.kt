@@ -24,6 +24,7 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
     private val PREFS_KEY_PLAY_SOUND = "play_sound"
+    private val PREFS_KEY_LARGE_COLOR = "large_color"
     private val PREFS_KEY_ALLOW_SEARCH = "allow_search"
     private val PREFS_KEY_API_VERSION = "pretix_api_version"
     private val PREFS_KEY_ASYNC_MODE = "async"
@@ -190,6 +191,13 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
         get() = prefs.getBoolean(PREFS_KEY_PLAY_SOUND, true)
         set (value) {
             prefs.putBoolean(PREFS_KEY_PLAY_SOUND, value)
+            prefs.flush()
+        }
+
+    var largeColor: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_LARGE_COLOR, false)
+        set (value) {
+            prefs.putBoolean(PREFS_KEY_LARGE_COLOR, value)
             prefs.flush()
         }
 

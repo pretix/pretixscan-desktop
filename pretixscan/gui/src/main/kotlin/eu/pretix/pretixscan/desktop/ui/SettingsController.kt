@@ -38,7 +38,11 @@ class SettingsController : BaseController() {
         return (app as PretixScanMain).data().count(QueuedCheckIn::class.java).get().value() > 0
     }
 
-    fun toggleSound(value: Boolean ) {
+    fun toggleLargeColor(value: Boolean) {
+        configStore.largeColor = value
+    }
+
+    fun toggleSound(value: Boolean) {
         configStore.playSound = value
     }
 

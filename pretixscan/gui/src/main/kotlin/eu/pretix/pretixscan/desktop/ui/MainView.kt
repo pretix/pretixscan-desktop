@@ -38,6 +38,7 @@ class MainView : View() {
     private var syncStatusTimeline: Timeline? = null
     private var syncTriggerTimeline: Timeline? = null
     private var startSearchTimeline: Timeline? = null
+    private var revertBackgroundTimeline: Timeline? = null
     private var lastSearchQuery: String? = null
 
     private val infoButton = jfxButton(messages["toolbar_info"]) {
@@ -149,7 +150,7 @@ class MainView : View() {
                 }
                 hbox {
                     label(it.orderCode + "  ") { addClass(MainStyleSheet.searchItemOrderCode) }
-                    label(if(it.attendee_name != "null") it.attendee_name ?: "" else "") {
+                    label(if (it.attendee_name != "null") it.attendee_name ?: "" else "") {
                         addClass(MainStyleSheet.searchItemAttendeeName)
                         isWrapText = true
                     }
@@ -209,10 +210,10 @@ class MainView : View() {
 
         style {
             alignment = Pos.CENTER
-            if (STYLE_BACKGROUND_IMAGE == null) {
-                backgroundColor += c(STYLE_BACKGROUND_COLOR)
-            }
             spacing = 20.px
+        }
+        if (STYLE_BACKGROUND_IMAGE == null) {
+            addClass(MainStyleSheet.bgDefault)
         }
 
         hbox {
@@ -240,93 +241,95 @@ class MainView : View() {
 
     private val eventNameLabel = label("Event name")
 
-    override val root: StackPane = stackpane {
-        vbox {
-            useMaxHeight = true
+    val rootBox = vbox {
+        useMaxHeight = true
 
+        style {
+            alignment = Pos.CENTER
+            if (STYLE_BACKGROUND_IMAGE != null) {
+                backgroundImage += URI(STYLE_BACKGROUND_IMAGE)
+            }
+            spacing = 20.px
+        }
+        if (STYLE_BACKGROUND_IMAGE == null) {
+            addClass(MainStyleSheet.bgDefault)
+        }
+
+        gridpane {
+            addClass(MainStyleSheet.toolBar)
             style {
-                alignment = Pos.CENTER
-                if (STYLE_BACKGROUND_IMAGE != null) {
-                    backgroundImage += URI(STYLE_BACKGROUND_IMAGE)
-                } else {
-                    backgroundColor += c(STYLE_BACKGROUND_COLOR)
-                }
-                spacing = 20.px
+                minWidth = 100.percent
             }
-
-            gridpane {
-                addClass(MainStyleSheet.toolBar)
-                style {
-                    minWidth = 100.percent
+            row {
+                hbox {
+                    gridpaneColumnConstraints { percentWidth = 66.66 }
+                    style {
+                        alignment = Pos.CENTER_LEFT
+                        paddingLeft = 10.0
+                    }
+                    this += eventNameLabel
                 }
-                row {
-                    hbox {
-                        gridpaneColumnConstraints { percentWidth = 66.66 }
-                        style {
-                            alignment = Pos.CENTER_LEFT
-                            paddingLeft = 10.0
-                        }
-                        this += eventNameLabel
+                hbox {
+                    gridpaneColumnConstraints { percentWidth = 33.33 }
+                    style {
+                        alignment = Pos.CENTER_RIGHT
                     }
-                    hbox {
-                        gridpaneColumnConstraints { percentWidth = 33.33 }
-                        style {
-                            alignment = Pos.CENTER_RIGHT
-                        }
-                        jfxButton(messages["toolbar_switch"]) {
-                            action {
-                                replaceWith(SelectEventView::class, MaterialSlide(ViewTransition.Direction.DOWN))
-                            }
-                        }
-                    }
-                }
-            }
-
-            spacer { }
-            this += contentBox
-            spacer { }
-            gridpane {
-                addClass(MainStyleSheet.toolBar)
-                style {
-                    minWidth = 100.percent
-                }
-                row {
-                    hbox {
-                        gridpaneColumnConstraints { percentWidth = 33.33 }
-                        style {
-                            alignment = Pos.CENTER_LEFT
-                        }
-                        jfxTogglebutton(messages["toolbar_toggle_async"]) {
-                            toggleColor = c(STYLE_STATE_VALID_COLOR)
-                            isSelected = !(app as PretixScanMain).configStore.asyncModeEnabled
-                            isDisable = (app as PretixScanMain).configStore.proxyMode
-                            action {
-                                controller.toggleAsync(!isSelected)
-                            }
-                        }
-                    }
-                    hbox {
-                        gridpaneColumnConstraints { percentWidth = 33.33 }
-                        style {
-                            alignment = Pos.CENTER
-                        }
-                        this += syncStatusLabel
-                    }
-                    hbox {
-                        gridpaneColumnConstraints { percentWidth = 33.33 }
-                        style {
-                            alignment = Pos.CENTER_RIGHT
-                        }
-                        this += infoButton
-                        jfxButton(messages["toolbar_settings"]) {
-                            action {
-                                replaceWith(SettingsView::class, MaterialSlide(ViewTransition.Direction.LEFT))
-                            }
+                    jfxButton(messages["toolbar_switch"]) {
+                        action {
+                            replaceWith(SelectEventView::class, MaterialSlide(ViewTransition.Direction.DOWN))
                         }
                     }
                 }
             }
         }
+
+        spacer { }
+        this += contentBox
+        spacer { }
+        gridpane {
+            addClass(MainStyleSheet.toolBar)
+            style {
+                minWidth = 100.percent
+            }
+            row {
+                hbox {
+                    gridpaneColumnConstraints { percentWidth = 33.33 }
+                    style {
+                        alignment = Pos.CENTER_LEFT
+                    }
+                    jfxTogglebutton(messages["toolbar_toggle_async"]) {
+                        toggleColor = c(STYLE_STATE_VALID_COLOR)
+                        isSelected = !(app as PretixScanMain).configStore.asyncModeEnabled
+                        isDisable = (app as PretixScanMain).configStore.proxyMode
+                        action {
+                            controller.toggleAsync(!isSelected)
+                        }
+                    }
+                }
+                hbox {
+                    gridpaneColumnConstraints { percentWidth = 33.33 }
+                    style {
+                        alignment = Pos.CENTER
+                    }
+                    this += syncStatusLabel
+                }
+                hbox {
+                    gridpaneColumnConstraints { percentWidth = 33.33 }
+                    style {
+                        alignment = Pos.CENTER_RIGHT
+                    }
+                    this += infoButton
+                    jfxButton(messages["toolbar_settings"]) {
+                        action {
+                            replaceWith(SettingsView::class, MaterialSlide(ViewTransition.Direction.LEFT))
+                        }
+                    }
+                }
+            }
+        }
+    }
+    override val root: StackPane = stackpane {
+        this += rootBox
     }
 
     private fun beep() {
@@ -550,6 +553,35 @@ class MainView : View() {
         }
     }
 
+    private fun revertBackground() {
+        contentBox.removeClass("bg-valid").removeClass("bg-invalid").removeClass("bg-repeat")
+        rootBox.removeClass("bg-valid").removeClass("bg-invalid").removeClass("bg-repeat")
+    }
+
+    private fun showFlash(t: TicketCheckProvider.CheckResult.Type, attention: Boolean) {
+        if (revertBackgroundTimeline != null) {
+            revertBackgroundTimeline!!.stop()
+        }
+        var c = when (t) {
+            TicketCheckProvider.CheckResult.Type.VALID -> MainStyleSheet.bgValid
+            TicketCheckProvider.CheckResult.Type.USED -> MainStyleSheet.bgRepeat
+            TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> MainStyleSheet.bgRepeat
+            else -> MainStyleSheet.bgInvalid
+        }
+        if (t == TicketCheckProvider.CheckResult.Type.VALID && attention) {
+            c = MainStyleSheet.bgAttention
+        }
+        contentBox.addClass(c)
+        rootBox.addClass(c)
+        startSearchTimeline = timeline {
+            keyframe(Duration.seconds(5.0)) {
+                setOnFinished {
+                    revertBackground()
+                }
+            }
+        }
+    }
+
     private fun handleTicketInput(value: String, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean = false) {
         for (oldResultCard in resultCards) {
             removeCard(oldResultCard)
@@ -565,6 +597,9 @@ class MainView : View() {
 
             val newCard = makeNewCard(resultData)
             showCard(newCard)
+            if (controller.largeColorEnabled() && resultData != null) {
+                showFlash(resultData!!.type, resultData!!.isRequireAttention)
+            }
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
                 beep()
                 if (resultData?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (app as PretixScanMain).configStore.autoPrintBadges) {
@@ -596,6 +631,7 @@ class MainView : View() {
 
     private fun handleInput(value: String) {
         // TODO: Support pretix instances with lower entropy levels
+        revertBackground()
         if (value.matches(Regex("[a-z0-9]{32,}"))) {
             hideSearchResultCard()
             handleTicketInput(value)
@@ -656,7 +692,7 @@ class MainView : View() {
                                 ticket += " – " + data.variation
                             }
                             hbox {
-                                label(if(data?.attendee_name != "null") data?.attendee_name ?: "" else "") {
+                                label(if (data?.attendee_name != "null") data?.attendee_name ?: "" else "") {
                                     isWrapText = true
                                 }
                                 spacer {}
@@ -691,7 +727,7 @@ class MainView : View() {
                                 data?.position != null
                                         && (app as PretixScanMain).configStore.badgePrinterName != null
                                         && (data.type == TicketCheckProvider.CheckResult.Type.VALID
-                                            || data.type == TicketCheckProvider.CheckResult.Type.USED)
+                                        || data.type == TicketCheckProvider.CheckResult.Type.USED)
                                         && getBadgeLayout(app as PretixScanMain, data.position) != null
                                 )
                         if (offer_print) {
