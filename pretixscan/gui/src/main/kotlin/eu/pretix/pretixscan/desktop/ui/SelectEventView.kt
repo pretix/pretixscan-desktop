@@ -37,7 +37,7 @@ class SelectEventView : View() {
                         textFill = c(STYLE_TEXT_COLOR_MUTED)
                     }
                 }
-                val formatter = SimpleDateFormat(messages.getString("date_format"))
+                val formatter = SimpleDateFormat(messages.getString("datetime_format"))
                 if (it.date_to != null) {
                     label(formatter.format(it.date_from.toLocalDate().toDate()) + " – " + formatter.format(it.date_to!!.toLocalDate().toDate()))
                 } else {
