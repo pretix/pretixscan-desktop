@@ -7,6 +7,7 @@ import eu.pretix.libpretixsync.db.QueuedCheckIn
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.desktop.DesktopFileStorage
 import eu.pretix.pretixscan.desktop.PretixScanMain
+import eu.pretix.pretixscan.desktop.VERSION
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxAdvancedProgressDialog
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxButton
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxDialog
@@ -121,7 +122,10 @@ open class BaseController : Controller() {
                     DesktopFileStorage(File((app as PretixScanMain).dataDir)),
                     upload_interval,
                     download_interval,
-                    false
+                    false,
+                    configStore.deviceKnownVersion,
+                    System.getProperty("os.name"), System.getProperty("os.version"),
+                    "pretixSCAN", VERSION
             )
             syncManager!!.sync(force, feedback)
         } finally {

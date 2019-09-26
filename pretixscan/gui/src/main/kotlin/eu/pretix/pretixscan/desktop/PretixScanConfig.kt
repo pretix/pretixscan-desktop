@@ -242,4 +242,12 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
             prefs.put(PREFS_KEY_PRINTER_BADGE_NAME, value)
             prefs.flush()
         }
+
+    override fun getDeviceKnownVersion(): Int {
+        return prefs.getInt(PREFS_KEY_DEVICE_KNOWN_VERSION, 0)
+    }
+
+    override fun setDeviceKnownVersion(value: Int) {
+        return prefs.putInt(PREFS_KEY_DEVICE_KNOWN_VERSION, value)
+    }
 }
