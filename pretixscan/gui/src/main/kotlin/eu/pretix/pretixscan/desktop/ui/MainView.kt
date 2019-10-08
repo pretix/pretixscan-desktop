@@ -554,8 +554,8 @@ class MainView : View() {
     }
 
     private fun revertBackground() {
-        contentBox.removeClass("bg-valid").removeClass("bg-invalid").removeClass("bg-repeat")
-        rootBox.removeClass("bg-valid").removeClass("bg-invalid").removeClass("bg-repeat")
+        contentBox.removeClass("bg-valid").removeClass("bg-invalid").removeClass("bg-repeat").removeClass("bg-attention")
+        rootBox.removeClass("bg-valid").removeClass("bg-invalid").removeClass("bg-repeat").removeClass("bg-attention")
     }
 
     private fun showFlash(t: TicketCheckProvider.CheckResult.Type, attention: Boolean) {
