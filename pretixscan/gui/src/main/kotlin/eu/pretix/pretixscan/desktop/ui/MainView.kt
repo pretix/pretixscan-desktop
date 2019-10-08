@@ -38,6 +38,7 @@ class MainView : View() {
     private var syncStatusTimeline: Timeline? = null
     private var syncTriggerTimeline: Timeline? = null
     private var startSearchTimeline: Timeline? = null
+    private var hideSearchTimeline: Timeline? = null
     private var revertBackgroundTimeline: Timeline? = null
     private var lastSearchQuery: String? = null
 
@@ -185,12 +186,14 @@ class MainView : View() {
 
         searchResultListView.setOnMouseClicked {
             if (it.clickCount == 2 && searchResultListView.selectionModel.selectedItem != null) {
+                renewSearchResultLifetime()
                 handleSearchResultSelected(searchResultListView.selectionModel.selectedItem)
                 it.consume()
             }
         }
         searchResultListView.setOnKeyReleased {
             if (it.code == KeyCode.ENTER && searchResultListView.selectionModel.selectedItem != null) {
+                renewSearchResultLifetime()
                 handleSearchResultSelected(searchResultListView.selectionModel.selectedItem)
                 it.consume()
             }
@@ -471,6 +474,17 @@ class MainView : View() {
         }
     }
 
+    private fun renewSearchResultLifetime() {
+        hideSearchTimeline?.stop()
+        hideSearchTimeline = timeline {
+            keyframe(Duration.seconds(30.0)) {
+                setOnFinished {
+                    hideSearchResultCard()
+                }
+            }
+        }
+    }
+
     private fun showSearchResultCard() {
         if (!searchResultCard.isVisible) {
             searchCardAnimation?.stop()
@@ -484,6 +498,7 @@ class MainView : View() {
                     keyvalue(searchResultCard.translateYProperty(), 0.0, MaterialInterpolator.ENTER)
                 }
             }
+            renewSearchResultLifetime()
         } else {
             searchResultCard.translateY = 0.0
             searchResultCard.opacity = 1.0
@@ -493,6 +508,7 @@ class MainView : View() {
     private fun hideSearchResultCard() {
         searchCardAnimation?.stop()
         startSearchTimeline?.stop()
+        hideSearchTimeline?.stop()
         if (searchResultCard.isVisible) {
             searchCardAnimation = timeline {
                 keyframe(MaterialDuration.EXIT) {
