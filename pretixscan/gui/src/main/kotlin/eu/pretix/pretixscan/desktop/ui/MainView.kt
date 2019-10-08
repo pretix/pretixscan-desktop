@@ -573,7 +573,7 @@ class MainView : View() {
         }
         contentBox.addClass(c)
         rootBox.addClass(c)
-        startSearchTimeline = timeline {
+        revertBackgroundTimeline = timeline {
             keyframe(Duration.seconds(5.0)) {
                 setOnFinished {
                     revertBackground()
