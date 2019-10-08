@@ -41,6 +41,7 @@ class MainView : View() {
     private var hideSearchTimeline: Timeline? = null
     private var revertBackgroundTimeline: Timeline? = null
     private var lastSearchQuery: String? = null
+    private var selectedSearchResult: TicketCheckProvider.SearchResult? = null
 
     private val infoButton = jfxButton(messages["toolbar_info"]) {
         action {
@@ -399,7 +400,12 @@ class MainView : View() {
         // Focus grabber
         currentStage?.addEventFilter(KeyEvent.KEY_PRESSED, {
             val fo = currentStage?.scene?.focusOwner
-            if (fo !is TextInputControl && fo !is ComboBoxBase<*> && re_alphanum.matcher(it.text).matches()) {
+            try {
+                if (fo !is TextInputControl && fo !is ComboBoxBase<*> && re_alphanum.matcher(it.text).matches()) {
+                    searchField.requestFocus()
+                }
+            } catch (e: NoClassDefFoundError) {
+                // No idea why, but we do not care
                 searchField.requestFocus()
             }
         })
@@ -437,6 +443,7 @@ class MainView : View() {
     }
 
     private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean = false) {
+        selectedSearchResult = searchResult
         handleTicketInput(searchResult.secret, answers, ignore_pending)
     }
 
@@ -616,6 +623,19 @@ class MainView : View() {
             if (controller.largeColorEnabled() && resultData != null) {
                 showFlash(resultData!!.type, resultData!!.isRequireAttention)
             }
+            if (selectedSearchResult != null && selectedSearchResult?.orderCode == resultData?.orderCode) {
+                if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID || resultData?.type == TicketCheckProvider.CheckResult.Type.USED) {
+                    val index = searchResultList.indexOf(selectedSearchResult)
+                    if (index >= 0) {
+                        searchResultList.remove(selectedSearchResult)
+                        selectedSearchResult = TicketCheckProvider.SearchResult(selectedSearchResult)
+                        selectedSearchResult?.isRedeemed = true
+                        searchResultList.add(index, selectedSearchResult)
+                        searchResultListView.selectionModel.select(selectedSearchResult)
+                        searchResultListView.refresh()
+                    }
+                }
+            }
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
                 beep()
                 if (resultData?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (app as PretixScanMain).configStore.autoPrintBadges) {
@@ -650,6 +670,7 @@ class MainView : View() {
         revertBackground()
         if (value.matches(Regex("[a-z0-9]{32,}"))) {
             hideSearchResultCard()
+            selectedSearchResult = null
             handleTicketInput(value)
         } else {
             handleSearchInput(value)
