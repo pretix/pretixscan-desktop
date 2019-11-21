@@ -13,8 +13,8 @@ import javafx.scene.input.KeyCode
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.text.FontWeight
+import org.joda.time.format.DateTimeFormat
 import tornadofx.*
-import java.text.SimpleDateFormat
 
 
 class SelectEventView : View() {
@@ -37,11 +37,11 @@ class SelectEventView : View() {
                         textFill = c(STYLE_TEXT_COLOR_MUTED)
                     }
                 }
-                val formatter = SimpleDateFormat(messages.getString("datetime_format"))
+                val formatter = DateTimeFormat.forPattern(messages.getString("datetime_format"))
                 if (it.date_to != null) {
-                    label(formatter.format(it.date_from.toLocalDate().toDate()) + " – " + formatter.format(it.date_to!!.toLocalDate().toDate()))
+                    label(formatter.print(it.date_from.toLocalDateTime()) + " – " + formatter.print(it.date_to!!.toLocalDateTime()))
                 } else {
-                    label(formatter.format(it.date_from.toLocalDate().toDate()))
+                    label(formatter.print(it.date_from.toLocalDateTime()))
                 }
             }
         }
