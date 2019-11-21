@@ -3,13 +3,13 @@ variables:
 package:
     before_script:
         - apt update && apt -y install fakeroot
-        - wget https://download2.gluonhq.com/openjfx/11.0.2/openjfx-11.0.2_linux-x64_bin-jmods.zip
-        - unzip openjfx-11.0.2_linux-x64_bin-jmods.zip
-        - wget https://download2.gluonhq.com/jpackager/11/jdk.packager-linux.zip
+        - wget https://download2.gluonhq.com/openjfx/13.0.1/openjfx-13.0.1_linux-x64_bin-jmods.zip
+        - unzip openjfx-13.0.1_linux-x64_bin-jmods.zip
+        - wget https://download2.gluonhq.com/jpackager/13/jdk.packager-linux.zip
         - unzip jdk.packager-linux.zip
     script:
         - cd pretixscan
-        - ./gradlew clean createBundle -PjavafxJmodsPath=../../javafx-jmods-11.0.2/ -PjavaPackagerPath=../../
+        - ./gradlew clean createBundle -PjavafxJmodsPath=../../javafx-jmods-13.0.1/ -PjavaPackagerPath=../../
     tags:
         - java
     artifacts:
