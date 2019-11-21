@@ -70,10 +70,10 @@ dependencies {
     }
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
-    javafxCompile "org.openjfx:javafx-base:11.0.2:${platform}"
-    javafxCompile "org.openjfx:javafx-graphics:11.0.2:${platform}"
-    javafxCompile "org.openjfx:javafx-controls:11.0.2:${platform}"
-    javafxCompile "org.openjfx:javafx-fxml:11.0.2:${platform}"
+    javafxCompile "org.openjfx:javafx-base:13.0.1:${platform}"
+    javafxCompile "org.openjfx:javafx-graphics:13.0.1:${platform}"
+    javafxCompile "org.openjfx:javafx-controls:13.0.1:${platform}"
+    javafxCompile "org.openjfx:javafx-fxml:13.0.1:${platform}"
 
     compileOnly configurations.javafxCompile
 }
