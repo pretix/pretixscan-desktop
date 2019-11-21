@@ -121,6 +121,21 @@ class SettingsView : View() {
         }
     }
 
+    private val printOrientationComboBox = jfxCombobox<String> {
+        useMaxWidth = true
+        items = FXCollections.observableList(mutableListOf("Auto", "Landscape", "Portrait"))
+        for (item in items) {
+            if (item == controller.getPrintOrientation()) {
+                selectionModel.select(item)
+                break
+            }
+        }
+
+        valueProperty().onChange {
+            controller.setPrintOrientation(it!!)
+        }
+    }
+
     private val badgesBtn = jfxTogglebutton() {
         toggleColor = c(STYLE_STATE_VALID_COLOR)
         isSelected = !(app as PretixScanMain).configStore.autoPrintBadges
@@ -201,7 +216,7 @@ class SettingsView : View() {
             vbox {
                 addClass(MainStyleSheet.cardBody)
                 style {
-                    padding = box(0.px, 15.px)
+                    padding = box(15.px, 15.px)
                 }
                 hbox {
                     style {
@@ -210,17 +225,6 @@ class SettingsView : View() {
                     label(messages["settings_autoprint_badges"])
                     spacer {}
                     this += badgesBtn
-                }
-            }
-        }
-
-        vbox {
-            addClass(MainStyleSheet.card)
-            addClass(MainStyleSheet.eventSettingsCard)
-            vbox {
-                addClass(MainStyleSheet.cardBody)
-                style {
-                    padding = box(15.px, 15.px)
                 }
                 hbox {
                     style {
@@ -234,6 +238,21 @@ class SettingsView : View() {
                     spacer {}
                     this += printersComboBox
                     printersComboBox.hboxConstraints {
+                        hGrow = Priority.ALWAYS
+                    }
+                }
+                hbox {
+                    style {
+                        alignment = Pos.CENTER
+                    }
+                    label(messages["settings_printers_orientation"]) {
+                        hboxConstraints {
+                            hGrow = Priority.ALWAYS
+                        }
+                    }
+                    spacer {}
+                    this += printOrientationComboBox
+                    printOrientationComboBox.hboxConstraints {
                         hGrow = Priority.ALWAYS
                     }
                 }

@@ -20,6 +20,7 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_CHECKINLIST_ID = "pretix_api_checkin_list_id"
     private val PREFS_KEY_CHECKINLIST_NAME = "pretix_api_checkin_list_name"
     private val PREFS_KEY_PRINTER_BADGE_NAME = "printer_badge_name"
+    private val PREFS_KEY_PRINTER_BADGE_ORIENTATION = "printer_badge_orientation"
     private val PREFS_KEY_AUTO_PRINT_BADGES = "auto_print_badges"
     private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
@@ -240,6 +241,13 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
         get() = prefs.get(PREFS_KEY_PRINTER_BADGE_NAME, null)
         set (value) {
             prefs.put(PREFS_KEY_PRINTER_BADGE_NAME, value)
+            prefs.flush()
+        }
+
+    var badgePrinterOrientation: String
+        get() = prefs.get(PREFS_KEY_PRINTER_BADGE_ORIENTATION, "Auto")
+        set (value) {
+            prefs.put(PREFS_KEY_PRINTER_BADGE_ORIENTATION, value)
             prefs.flush()
         }
 

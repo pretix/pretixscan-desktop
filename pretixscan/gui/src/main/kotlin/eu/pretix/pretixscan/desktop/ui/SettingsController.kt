@@ -7,7 +7,6 @@ import javax.print.PrintService
 import javax.print.PrintServiceLookup
 
 
-
 class SettingsController : BaseController() {
 
     fun resetApp() {
@@ -48,6 +47,14 @@ class SettingsController : BaseController() {
 
     fun toggleAutoPrintBadges(value: Boolean) {
         configStore.autoPrintBadges = value
+    }
+
+    fun getPrintOrientation(): String? {
+        return configStore.badgePrinterOrientation
+    }
+
+    fun setPrintOrientation(o: String) {
+        configStore.badgePrinterOrientation = o
     }
 
     fun getCurrentPrinterName(): String? {

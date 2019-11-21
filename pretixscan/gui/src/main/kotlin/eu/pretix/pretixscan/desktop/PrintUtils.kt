@@ -76,10 +76,20 @@ fun printBadge(application: PretixScanMain, position: JSONObject) {
     for (printService in printServices) {
         if (printService.name.trim().equals(application.configStore.badgePrinterName)) {
             val job = PrinterJob.getPrinterJob()
-            job.setPageable(PDFPageable(document, Orientation.AUTO, false, 0f))
+            var o = Orientation.PORTRAIT
+            if (application.configStore.badgePrinterOrientation == "Landscape") {
+                o = Orientation.LANDSCAPE
+            } else if (application.configStore.badgePrinterOrientation == "Auto") {
+                o = Orientation.AUTO
+            }
+            job.setPageable(PDFPageable(document, o, false, 0f))
             job.printService = printService
             val attributes = HashPrintRequestAttributeSet()
-            attributes.add(OrientationRequested.PORTRAIT)
+            if (application.configStore.badgePrinterOrientation == "Landscape") {
+                attributes.add(OrientationRequested.LANDSCAPE)
+            } else {
+                attributes.add(OrientationRequested.PORTRAIT)
+            }
             job.print(attributes)
             break
         }
