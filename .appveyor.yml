@@ -11,6 +11,11 @@ install:
   - 7z x jmods.zip
   - mv jpackager.exe "%JAVA_HOME%\bin"
   - mv jdk.packager.jar "%JAVA_HOME%\jmods"
+  - curl -o mvn.zip https://www-us.apache.org/dist/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.zip
+  - 7z x mvn.zip
+  - cd pretixscan\tornadofx-repo
+  - ..\..\apache-maven-3.6.2\bin\mvn package
+  - cd ..\..
 
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml

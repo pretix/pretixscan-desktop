@@ -5,3 +5,6 @@
 [submodule "pretixscan/libpretixprint-repo"]
 	path = pretixscan/libpretixprint-repo
 	url = https://github.com/pretix/libpretixprint.git
+[submodule "pretixscan/tornadofx-repo"]
+	path = pretixscan/tornadofx-repo
+	url = https://github.com/edvin/tornadofx.git
