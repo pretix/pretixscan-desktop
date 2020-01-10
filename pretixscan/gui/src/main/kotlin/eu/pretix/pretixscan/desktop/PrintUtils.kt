@@ -27,7 +27,7 @@ fun getDefaultBadgeLayout(): BadgeLayout {
     return tl
 }
 
-fun getBadgeLayout(application: PretixScanMain, position: JSONObject): BadgeLayout? {
+fun getBadgeLayout(application: PretixScanMain, position: JSONObject, eventSlug: String): BadgeLayout? {
     val itemid = position.getLong("item")
 
     val litem = application.data().select(BadgeLayoutItem::class.java)
@@ -48,22 +48,24 @@ fun getBadgeLayout(application: PretixScanMain, position: JSONObject): BadgeLayo
     if (item.getBadge_layout_id() != null) {
         return application.data().select(BadgeLayout::class.java)
                 .where(BadgeLayout.SERVER_ID.eq(item.getBadge_layout_id()))
+                .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
                 .get().firstOrNull() ?: getDefaultBadgeLayout()
     } else {
         return application.data().select(BadgeLayout::class.java)
                 .where(BadgeLayout.IS_DEFAULT.eq(true))
+                .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
                 .get().firstOrNull() ?: getDefaultBadgeLayout()
     }
 }
 
-fun printBadge(application: PretixScanMain, position: JSONObject) {
+fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: String) {
     val pdffile = File(application.cacheDir, "print.pdf")
     if (!pdffile.parentFile.exists()) {
         pdffile.parentFile.mkdirs();
     }
     val fs = DesktopFileStorage(File(application.dataDir))
 
-    val layout = getBadgeLayout(application, position) ?: return
+    val layout = getBadgeLayout(application, position, eventSlug) ?: return
     if (layout.getBackground_filename() != null) {
         fs.getFile(layout.getBackground_filename()).inputStream().use {
             Renderer(layout.json.getJSONArray("layout"), position, it, application).writePDF(pdffile)

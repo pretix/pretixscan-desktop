@@ -640,7 +640,7 @@ class MainView : View() {
                 beep()
                 if (resultData?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (app as PretixScanMain).configStore.autoPrintBadges) {
                     runAsync {
-                        printBadge(app as PretixScanMain, resultData!!.position!!)
+                        printBadge(app as PretixScanMain, resultData!!.position!!, (app as PretixScanMain).configStore.eventSlug!!)
                     }
                 }
             }
@@ -765,7 +765,7 @@ class MainView : View() {
                                         && (app as PretixScanMain).configStore.badgePrinterName != null
                                         && (data.type == TicketCheckProvider.CheckResult.Type.VALID
                                         || data.type == TicketCheckProvider.CheckResult.Type.USED)
-                                        && getBadgeLayout(app as PretixScanMain, data.position) != null
+                                        && getBadgeLayout(app as PretixScanMain, data.position, (app as PretixScanMain).configStore.eventSlug!!) != null
                                 )
                         if (offer_print) {
                             jfxButton(messages["button_reprint_badge"]) {
@@ -777,7 +777,7 @@ class MainView : View() {
                                 }
                                 setOnMouseClicked {
                                     runAsync {
-                                        printBadge(app as PretixScanMain, data!!.position)
+                                        printBadge(app as PretixScanMain, data!!.position, (app as PretixScanMain).configStore.eventSlug!!)
                                     }
                                 }
                             }
