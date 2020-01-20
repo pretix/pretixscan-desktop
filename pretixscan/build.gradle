@@ -66,16 +66,16 @@ subprojects {
         implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
         // libpretixsync
-        implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-        implementation 'io.requery:requery:1.6.0'
-        implementation 'io.requery:requery-kotlin:1.6.0'
-        implementation 'joda-time:joda-time:2.9.9'
+        compile 'com.squareup.okhttp3:okhttp:4.3.0'
+        compile 'io.requery:requery:1.6.0'
+        compile 'io.requery:requery-kotlin:1.6.0'
+        compile 'joda-time:joda-time:2.9.9'
         implementation 'org.json:json:20090211'
         implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.0'
         annotationProcessor 'javax.annotation:jsr250-api:1.0'
         annotationProcessor 'io.requery:requery-processor:1.6.0'
-        implementation "com.fasterxml.jackson.core:jackson-databind:2.9.9"
-        implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9"
+        implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
+        implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1'
 
         // libpretixprint
         implementation 'com.github.librepdf:openpdf:1.0.5'
