@@ -1,6 +1,11 @@
 package eu.pretix.pretixscan.desktop.ui
 
+import eu.pretix.libpretixsync.api.DeviceAccessRevokedException
 import eu.pretix.libpretixsync.check.CheckException
+import eu.pretix.libpretixsync.db.CheckIn
+import eu.pretix.libpretixsync.db.Order
+import eu.pretix.libpretixsync.db.OrderPosition
+import eu.pretix.libpretixsync.db.ResourceLastModified
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.ui.helpers.*
@@ -196,6 +201,11 @@ class SelectEventView : View() {
         runAsync {
             try {
                 events = controller.fetchEvents()
+            } catch (e: DeviceAccessRevokedException) {
+                SettingsController().resetApp()
+                ui {
+                    replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+                }
             } catch (e: CheckException) {
             }
 
