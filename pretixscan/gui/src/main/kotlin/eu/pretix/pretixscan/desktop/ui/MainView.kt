@@ -2,6 +2,7 @@ package eu.pretix.pretixscan.desktop.ui
 
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
+import com.jfoenix.controls.JFXToggleButton
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.getBadgeLayout
@@ -245,6 +246,7 @@ class MainView : View() {
 
     private val eventNameLabel = label("Event name")
 
+    var toggleExit: JFXToggleButton? = null
     val rootBox = vbox {
         useMaxHeight = true
 
@@ -278,6 +280,22 @@ class MainView : View() {
                     style {
                         alignment = Pos.CENTER_RIGHT
                     }
+                    val conf = (app as PretixScanMain).configStore
+                    toggleExit = jfxTogglebutton(if(conf.scanType == "exit") messages["toolbar_toggle_exit"] else messages["toolbar_toggle_entry"]) {
+                        toggleColor = c(STYLE_STATE_VALID_COLOR)
+                        isSelected = conf.scanType == "exit"
+                        isDisable = conf.knownPretixVersion < 30090001000
+                        action {
+                            if (conf.scanType == "exit") {
+                                conf.scanType = "entry"
+                            } else {
+                                conf.scanType = "exit"
+                            }
+                            toggleExit?.isSelected = conf.scanType == "exit"
+                            toggleExit?.text = if(conf.scanType == "exit") messages["toolbar_toggle_exit"] else messages["toolbar_toggle_entry"]
+                        }
+                    }
+                    this += toggleExit!!
                     jfxButton(messages["toolbar_switch"]) {
                         action {
                             replaceWith(SelectEventView::class, MaterialSlide(ViewTransition.Direction.DOWN))
@@ -614,7 +632,12 @@ class MainView : View() {
         searchField.text = ""
         var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
-            resultData = controller.handleScanInput(value, answers, ignore_pending, TicketCheckProvider.CheckInType.ENTRY)
+            resultData = controller.handleScanInput(
+                    value,
+                    answers,
+                    ignore_pending,
+                    TicketCheckProvider.CheckInType.valueOf((app as PretixScanMain).configStore.scanType.toUpperCase())
+            )
         } ui {
             hideSpinner()
 
@@ -638,9 +661,11 @@ class MainView : View() {
             }
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
                 beep()
-                if (resultData?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (app as PretixScanMain).configStore.autoPrintBadges) {
-                    runAsync {
-                        printBadge(app as PretixScanMain, resultData!!.position!!, (app as PretixScanMain).configStore.eventSlug!!)
+                if (resultData?.scanType != TicketCheckProvider.CheckInType.EXIT) {
+                    if (resultData?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (app as PretixScanMain).configStore.autoPrintBadges) {
+                        runAsync {
+                            printBadge(app as PretixScanMain, resultData!!.position!!, (app as PretixScanMain).configStore.eventSlug!!)
+                        }
                     }
                 }
             }
@@ -704,7 +729,13 @@ class MainView : View() {
 
                     val headline = when (data?.type) {
                         TicketCheckProvider.CheckResult.Type.INVALID -> messages["state_invalid"]
-                        TicketCheckProvider.CheckResult.Type.VALID -> messages["state_valid"]
+                        TicketCheckProvider.CheckResult.Type.VALID -> {
+                            if (data?.scanType == TicketCheckProvider.CheckInType.EXIT) {
+                                messages["state_valid_exit"]
+                            } else {
+                                messages["state_valid"]
+                            }
+                        }
                         TicketCheckProvider.CheckResult.Type.USED -> messages["state_used"]
                         TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> messages["state_questions"]
                         TicketCheckProvider.CheckResult.Type.ERROR -> messages["state_error"]
