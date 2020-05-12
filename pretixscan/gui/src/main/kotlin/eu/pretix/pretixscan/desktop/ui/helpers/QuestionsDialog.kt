@@ -91,7 +91,7 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
         if (ra.question.type == QuestionType.M) {
             var selected: List<String> = ArrayList()
             if (!ra.currentValue.isNullOrBlank()) {
-                selected = ra.currentValue.split(",")
+                selected = ra.currentValue!!.split(",")
             }
             val cbl = ArrayList<Any>()
             for (opt in ra.question.options) {

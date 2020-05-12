@@ -35,7 +35,7 @@ class StatusView : View() {
                 vbox {
                     addClass(MainStyleSheet.cardBody)
                     hbox {
-                        label(it.name) {
+                        label(it.name ?: "") {
                             addClass(MainStyleSheet.eventInfoItemHeader)
                             isWrapText = true
                         }
@@ -45,9 +45,9 @@ class StatusView : View() {
                             addClass(MainStyleSheet.eventInfoItemNumber)
                         }
                     }
-                    for (variation in it.variations) {
+                    for (variation in it.variations!!) {
                         hbox {
-                            label(variation.name) {
+                            label(variation.name ?: "") {
                                 addClass(MainStyleSheet.eventInfoItemBody)
                                 isWrapText = true
                             }
@@ -114,7 +114,7 @@ class StatusView : View() {
             vbox {
                 addClass(MainStyleSheet.cardBody)
                 hbox {
-                    label(data.eventName) { addClass(MainStyleSheet.eventInfoItemHeader) }
+                    label(data.eventName ?: "") { addClass(MainStyleSheet.eventInfoItemHeader) }
                     spacer {}
                     label(data.alreadyScanned.toString() + "/" + data.totalTickets.toString()) {
                         addClass(MainStyleSheet.eventInfoItemHeader)
@@ -270,7 +270,7 @@ class StatusView : View() {
         } ui {
             eventInfoList.clear()
             if (statusData != null) {
-                eventInfoList.addAll(statusData!!.items)
+                eventInfoList.addAll(statusData!!.items!!)
                 refreshHeaderCard(statusData!!)
             }
             hideSpinner()

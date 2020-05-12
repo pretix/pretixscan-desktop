@@ -161,7 +161,7 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
         if (configStore.proxyMode) {
             p = ProxyCheckProvider(configStore, DefaultHttpClientFactory(), data(), configStore.checkInListId)
         } else if (configStore.asyncModeEnabled) {
-            p = AsyncCheckProvider(configStore.eventSlug, data(), configStore.checkInListId)
+            p = AsyncCheckProvider(configStore.eventSlug!!, data(), configStore.checkInListId)
         } else {
             p = OnlineCheckProvider(configStore, DefaultHttpClientFactory(), data(), configStore.checkInListId)
         }
