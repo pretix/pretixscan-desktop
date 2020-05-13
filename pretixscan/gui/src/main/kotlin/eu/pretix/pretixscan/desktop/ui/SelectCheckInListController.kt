@@ -9,7 +9,7 @@ class SelectCheckInListController : BaseController() {
         var lists = (app as PretixScanMain).data().select(CheckInList::class.java)
                 .where(CheckInList.EVENT_SLUG.eq(configStore.eventSlug))
         if (configStore.subEventId != null && configStore.subEventId!! > 0) {
-            lists = lists.and(CheckInList.SUBEVENT_ID.eq(configStore.subEventId))
+            lists = lists.and(CheckInList.SUBEVENT_ID.eq(configStore.subEventId).or(CheckInList.SUBEVENT_ID.eq(0L)))
         }
         return lists.get().toList();
     }

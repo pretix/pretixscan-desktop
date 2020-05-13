@@ -20,11 +20,11 @@ class MainController : BaseController() {
         return (app as PretixScanMain).provider.search(value, 1)
     }
 
-    fun handleScanInput(value: String, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean=false): TicketCheckProvider.CheckResult? {
+    fun handleScanInput(value: String, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean=false, type: TicketCheckProvider.CheckInType): TicketCheckProvider.CheckResult? {
         if (answers != null) {
-            return (app as PretixScanMain).provider.check(value, answers, ignore_pending, true)
+            return (app as PretixScanMain).provider.check(value, answers, ignore_pending, true, type)
         } else {
-            return (app as PretixScanMain).provider.check(value, ArrayList<TicketCheckProvider.Answer>(), ignore_pending, true)
+            return (app as PretixScanMain).provider.check(value, ArrayList<TicketCheckProvider.Answer>(), ignore_pending, true, type)
         }
     }
 

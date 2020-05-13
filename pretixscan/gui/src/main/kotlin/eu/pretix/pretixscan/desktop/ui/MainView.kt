@@ -2,6 +2,7 @@ package eu.pretix.pretixscan.desktop.ui
 
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
+import com.jfoenix.controls.JFXToggleButton
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.getBadgeLayout
@@ -101,7 +102,7 @@ class MainView : View() {
         cellCache {
             vbox {
 
-                label(it.secret.substring(0, 20) + "…")
+                label(it.secret!!.substring(0, 20) + "…")
                 hbox {
                     style {
                         maxWidth = 630.px
@@ -119,7 +120,7 @@ class MainView : View() {
                         }
                     }
 
-                    label(ticketname) {
+                    label(ticketname ?: "") {
                         addClass(MainStyleSheet.searchItemProduct)
                         isWrapText = true
                         vgrow = Priority.ALWAYS
@@ -245,6 +246,7 @@ class MainView : View() {
 
     private val eventNameLabel = label("Event name")
 
+    var toggleExit: JFXToggleButton? = null
     val rootBox = vbox {
         useMaxHeight = true
 
@@ -278,6 +280,22 @@ class MainView : View() {
                     style {
                         alignment = Pos.CENTER_RIGHT
                     }
+                    val conf = (app as PretixScanMain).configStore
+                    toggleExit = jfxTogglebutton(if(conf.scanType == "exit") messages["toolbar_toggle_exit"] else messages["toolbar_toggle_entry"]) {
+                        toggleColor = c(STYLE_STATE_VALID_COLOR)
+                        isSelected = conf.scanType == "exit"
+                        isDisable = conf.knownPretixVersion < 30090001000
+                        action {
+                            if (conf.scanType == "exit") {
+                                conf.scanType = "entry"
+                            } else {
+                                conf.scanType = "exit"
+                            }
+                            toggleExit?.isSelected = conf.scanType == "exit"
+                            toggleExit?.text = if(conf.scanType == "exit") messages["toolbar_toggle_exit"] else messages["toolbar_toggle_entry"]
+                        }
+                    }
+                    this += toggleExit!!
                     jfxButton(messages["toolbar_switch"]) {
                         action {
                             replaceWith(SelectEventView::class, MaterialSlide(ViewTransition.Direction.DOWN))
@@ -444,7 +462,7 @@ class MainView : View() {
 
     private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean = false) {
         selectedSearchResult = searchResult
-        handleTicketInput(searchResult.secret, answers, ignore_pending)
+        handleTicketInput(searchResult.secret!!, answers, ignore_pending)
     }
 
     private fun removeCard(card: VBox) {
@@ -614,21 +632,26 @@ class MainView : View() {
         searchField.text = ""
         var resultData: TicketCheckProvider.CheckResult? = null
         runAsync {
-            resultData = controller.handleScanInput(value, answers, ignore_pending)
+            resultData = controller.handleScanInput(
+                    value,
+                    answers,
+                    ignore_pending,
+                    TicketCheckProvider.CheckInType.valueOf((app as PretixScanMain).configStore.scanType.toUpperCase())
+            )
         } ui {
             hideSpinner()
 
             val newCard = makeNewCard(resultData)
             showCard(newCard)
             if (controller.largeColorEnabled() && resultData != null) {
-                showFlash(resultData!!.type, resultData!!.isRequireAttention)
+                showFlash(resultData!!.type!!, resultData!!.isRequireAttention)
             }
             if (selectedSearchResult != null && selectedSearchResult?.orderCode == resultData?.orderCode) {
                 if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID || resultData?.type == TicketCheckProvider.CheckResult.Type.USED) {
                     val index = searchResultList.indexOf(selectedSearchResult)
                     if (index >= 0) {
                         searchResultList.remove(selectedSearchResult)
-                        selectedSearchResult = TicketCheckProvider.SearchResult(selectedSearchResult)
+                        selectedSearchResult = TicketCheckProvider.SearchResult(selectedSearchResult!!)
                         selectedSearchResult?.isRedeemed = true
                         searchResultList.add(index, selectedSearchResult)
                         searchResultListView.selectionModel.select(selectedSearchResult)
@@ -638,15 +661,17 @@ class MainView : View() {
             }
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
                 beep()
-                if (resultData?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (app as PretixScanMain).configStore.autoPrintBadges) {
-                    runAsync {
-                        printBadge(app as PretixScanMain, resultData!!.position!!, (app as PretixScanMain).configStore.eventSlug!!)
+                if (resultData?.scanType != TicketCheckProvider.CheckInType.EXIT) {
+                    if (resultData?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (app as PretixScanMain).configStore.autoPrintBadges) {
+                        runAsync {
+                            printBadge(app as PretixScanMain, resultData!!.position!!, (app as PretixScanMain).configStore.eventSlug!!)
+                        }
                     }
                 }
             }
 
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
-                val dialog = questionsDialog(resultData!!.requiredAnswers) { a ->
+                val dialog = questionsDialog(resultData!!.requiredAnswers!!) { a ->
                     handleTicketInput(value, a, ignore_pending)
                 }
                 dialog.show(root)
@@ -698,18 +723,26 @@ class MainView : View() {
                         TicketCheckProvider.CheckResult.Type.UNPAID -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.PRODUCT -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.CANCELED -> MainStyleSheet.cardHeaderError
+                        TicketCheckProvider.CheckResult.Type.RULES -> MainStyleSheet.cardHeaderError
                         null -> MainStyleSheet.cardHeaderError
                     })
 
                     val headline = when (data?.type) {
                         TicketCheckProvider.CheckResult.Type.INVALID -> messages["state_invalid"]
-                        TicketCheckProvider.CheckResult.Type.VALID -> messages["state_valid"]
+                        TicketCheckProvider.CheckResult.Type.VALID -> {
+                            if (data?.scanType == TicketCheckProvider.CheckInType.EXIT) {
+                                messages["state_valid_exit"]
+                            } else {
+                                messages["state_valid"]
+                            }
+                        }
                         TicketCheckProvider.CheckResult.Type.USED -> messages["state_used"]
                         TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> messages["state_questions"]
                         TicketCheckProvider.CheckResult.Type.ERROR -> messages["state_error"]
                         TicketCheckProvider.CheckResult.Type.UNPAID -> messages["state_unpaid"]
                         TicketCheckProvider.CheckResult.Type.CANCELED -> messages["state_canceled"]
                         TicketCheckProvider.CheckResult.Type.PRODUCT -> messages["state_product"]
+                        TicketCheckProvider.CheckResult.Type.RULES -> messages["state_rules"]
                         null -> messages["state_unknown"]
                     }
 
@@ -741,10 +774,10 @@ class MainView : View() {
                                 }
                             }
                             if (data?.position != null) {
-                                val t = data?.position.getJSONObject("pdf_data").getString("addons").replace("<br/>", ", ")
-                                if (t.isNotEmpty()) {
+                                val t = data?.position?.getJSONObject("pdf_data")?.getString("addons")?.replace("<br/>", ", ")
+                                if (t?.isNotEmpty() == true) {
                                     hbox {
-                                        label("+ " + t) {
+                                        label("+ $t") {
                                             isWrapText = true
                                         }
                                     }
@@ -765,7 +798,7 @@ class MainView : View() {
                                         && (app as PretixScanMain).configStore.badgePrinterName != null
                                         && (data.type == TicketCheckProvider.CheckResult.Type.VALID
                                         || data.type == TicketCheckProvider.CheckResult.Type.USED)
-                                        && getBadgeLayout(app as PretixScanMain, data.position, (app as PretixScanMain).configStore.eventSlug!!) != null
+                                        && getBadgeLayout(app as PretixScanMain, data.position!!, (app as PretixScanMain).configStore.eventSlug!!) != null
                                 )
                         if (offer_print) {
                             jfxButton(messages["button_reprint_badge"]) {
@@ -777,14 +810,14 @@ class MainView : View() {
                                 }
                                 setOnMouseClicked {
                                     runAsync {
-                                        printBadge(app as PretixScanMain, data!!.position, (app as PretixScanMain).configStore.eventSlug!!)
+                                        printBadge(app as PretixScanMain, data!!.position!!, (app as PretixScanMain).configStore.eventSlug!!)
                                     }
                                 }
                             }
                         }
                     }
                 }
-                if (data?.isRequireAttention() ?: false) {
+                if (data?.isRequireAttention ?: false) {
                     val attbox = vbox {
                         addClass(MainStyleSheet.cardFooterAttention)
                         addClass(MainStyleSheet.cardBody)

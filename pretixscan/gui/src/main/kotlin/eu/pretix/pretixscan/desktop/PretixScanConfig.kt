@@ -24,6 +24,8 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_AUTO_PRINT_BADGES = "auto_print_badges"
     private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
+    private val PREFS_KEY_SCAN_TYPE = "scan_type"
+    private val PREFS_KEY_PRETIX_KNOWN_VERSION = "known_pretix_version"
     private val PREFS_KEY_PLAY_SOUND = "play_sound"
     private val PREFS_KEY_LARGE_COLOR = "large_color"
     private val PREFS_KEY_ALLOW_SEARCH = "allow_search"
@@ -251,11 +253,26 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
             prefs.flush()
         }
 
+    var scanType: String
+        get() = prefs.get(PREFS_KEY_SCAN_TYPE, "entry")
+        set (value) {
+            prefs.put(PREFS_KEY_SCAN_TYPE, value)
+            prefs.flush()
+        }
+
     override fun getDeviceKnownVersion(): Int {
         return prefs.getInt(PREFS_KEY_DEVICE_KNOWN_VERSION, 0)
     }
 
     override fun setDeviceKnownVersion(value: Int) {
         return prefs.putInt(PREFS_KEY_DEVICE_KNOWN_VERSION, value)
+    }
+
+    override fun setKnownPretixVersion(value: Long) {
+        return prefs.putLong(PREFS_KEY_PRETIX_KNOWN_VERSION, value)
+    }
+
+    override fun getKnownPretixVersion(): Long {
+        return prefs.getLong(PREFS_KEY_PRETIX_KNOWN_VERSION, 0)
     }
 }

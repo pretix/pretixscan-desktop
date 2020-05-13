@@ -215,6 +215,10 @@ class SelectEventView : View() {
                 eventList.addAll(events)
             }
             hideSpinner()
+            var last = eventList.findLast { it.date_from.isBeforeNow }
+            if (last != null) {
+                eventListView.scrollTo(eventList.indexOf(last))
+            }
         }
     }
 
