@@ -38,6 +38,7 @@ The app contains the following fonts:
 * Vollkorn, FRiTZe, SIL Open Font License
 * Oswald, Vermon Adams, SIL Open Font License
 * Titillium, Accademia di Belle Arti Urbino, SIL Open Font License
+* Poppins, Indian Type Foundry, SIL Open Font License
 
 
 GPL

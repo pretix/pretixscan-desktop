@@ -153,6 +153,7 @@ class Renderer(private val layout: JSONArray, private val position: JSONObject, 
             registerFontFamily(application, "Roboto Condensed", "fonts/RobotoCondensed-%s-webfont.ttf")
             registerFontFamily(application, "Titillium", "fonts/titillium-%s-webfont.ttf")
             registerFontFamily(application, "DejaVu Sans", "fonts/DejaVuSans-%s-webfont.ttf")
+            registerFontFamily(application, "Poppins", "fonts/Poppins-%s-webfont.ttf")
         }
 
         fun storeFont(application: PretixScanMain, path: String): String {
