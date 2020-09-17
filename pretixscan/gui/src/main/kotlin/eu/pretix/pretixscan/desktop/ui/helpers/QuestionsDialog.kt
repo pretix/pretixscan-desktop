@@ -5,6 +5,7 @@ import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.AbstractQuestion
 import eu.pretix.libpretixsync.db.Question
+import eu.pretix.libpretixsync.db.QuestionLike
 import eu.pretix.libpretixsync.db.QuestionOption
 import eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet
 import javafx.collections.FXCollections
@@ -182,7 +183,7 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
                 }
                 try {
                     ra.question.clean_answer(answerstring, ra.question.options)
-                } catch (e: AbstractQuestion.ValidationException) {
+                } catch (e: QuestionLike.ValidationException) {
                     if (view is Node) {
                         view.addDecorator(SimpleMessageDecorator(messages["field_invalid"], ValidationSeverity.Warning))
                     } else if (view is DateTimeFieldCombo) {

@@ -123,6 +123,7 @@ open class BaseController : Controller() {
                     upload_interval,
                     download_interval,
                     false,
+                    configStore.badgePrinterName != null,
                     configStore.deviceKnownVersion,
                     System.getProperty("os.name"), System.getProperty("os.version"),
                     "pretixSCAN", VERSION

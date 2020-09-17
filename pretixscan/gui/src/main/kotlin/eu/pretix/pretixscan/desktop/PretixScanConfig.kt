@@ -36,6 +36,7 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_LAST_FAILED_SYNC = "last_failed_sync"
     private val PREFS_KEY_LAST_FAILED_SYNC_MSG = "last_failed_sync_msg"
     private val PREFS_KEY_LAST_DOWNLOAD = "last_download"
+    private val PREFS_KEY_LAST_CLEANUP = "last_cleanup"
     private val PREFS_KEY_LAST_STATUS_DATA = "last_status_data"
     private val PREFS_KEY_LAST_UPDATE_CHECK = "last_update_check_"
     private val PREFS_KEY_UPDATE_CHECK_NEWER_VERSION = "update_check_newer_version_"
@@ -47,6 +48,7 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
         prefs.put(PREFS_KEY_ORGANIZER_SLUG, orga_slug)
         prefs.putInt(PREFS_KEY_DEVICE_KNOWN_VERSION, sent_version)
         prefs.remove(PREFS_KEY_LAST_DOWNLOAD)
+        prefs.remove(PREFS_KEY_LAST_CLEANUP)
         prefs.remove(PREFS_KEY_LAST_SYNC)
         prefs.remove(PREFS_KEY_LAST_FAILED_SYNC)
         prefs.remove(PREFS_KEY_LAST_STATUS_DATA)
@@ -110,6 +112,14 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
 
     override fun getApiKey(): String {
         return prefs.get(PREFS_KEY_API_KEY, "")
+    }
+    override fun getLastCleanup(): Long {
+        return prefs.getLong(PREFS_KEY_LAST_CLEANUP, 0)
+    }
+
+    override fun setLastCleanup(`val`: Long) {
+        prefs.putLong(PREFS_KEY_LAST_CLEANUP, `val`)
+        prefs.flush()
     }
 
     override fun getLastDownload(): Long {
