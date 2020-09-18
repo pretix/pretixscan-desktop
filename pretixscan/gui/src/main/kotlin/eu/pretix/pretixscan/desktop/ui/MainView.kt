@@ -274,6 +274,11 @@ class MainView : View() {
                         paddingLeft = 10.0
                     }
                     this += eventNameLabel
+                    jfxButton(messages["toolbar_switch"]) {
+                        action {
+                            replaceWith(SelectEventView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+                        }
+                    }
                 }
                 hbox {
                     gridpaneColumnConstraints { percentWidth = 33.33 }
@@ -296,11 +301,6 @@ class MainView : View() {
                         }
                     }
                     this += toggleExit!!
-                    jfxButton(messages["toolbar_switch"]) {
-                        action {
-                            replaceWith(SelectEventView::class, MaterialSlide(ViewTransition.Direction.DOWN))
-                        }
-                    }
                 }
             }
         }
