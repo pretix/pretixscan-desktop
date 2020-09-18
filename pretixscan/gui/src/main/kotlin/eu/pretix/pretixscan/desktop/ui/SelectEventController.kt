@@ -3,13 +3,14 @@ package eu.pretix.pretixscan.desktop.ui
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.setup.EventManager
 import eu.pretix.libpretixsync.setup.RemoteEvent
+import eu.pretix.pretixscan.desktop.OkHttpClientFactory
 import eu.pretix.pretixscan.desktop.PretixScanMain
 
 class SelectEventController : BaseController() {
     fun fetchEvents(): List<RemoteEvent> {
         val em = EventManager(
                 (app as PretixScanMain).data(),
-                PretixApi.fromConfig(configStore),
+                PretixApi.fromConfig(configStore, OkHttpClientFactory()),
                 configStore,
                 false
         )

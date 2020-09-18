@@ -139,7 +139,7 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
 
     fun api(): PretixApi {
         if (apiClient == null) {
-            apiClient = PretixApi.fromConfig(configStore, DefaultHttpClientFactory());
+            apiClient = PretixApi.fromConfig(configStore, OkHttpClientFactory());
         }
         return apiClient!!
     }
@@ -159,14 +159,14 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
     fun newCheckProvider(): TicketCheckProvider {
         val p: TicketCheckProvider
         if (configStore.proxyMode) {
-            p = ProxyCheckProvider(configStore, DefaultHttpClientFactory(), data(), configStore.checkInListId)
+            p = ProxyCheckProvider(configStore, OkHttpClientFactory(), data(), configStore.checkInListId)
         } else if (configStore.asyncModeEnabled) {
             p = AsyncCheckProvider(configStore.eventSlug!!, data(), configStore.checkInListId)
         } else {
-            p = OnlineCheckProvider(configStore, DefaultHttpClientFactory(), data(), configStore.checkInListId)
+            p = OnlineCheckProvider(configStore, OkHttpClientFactory(), data(), configStore.checkInListId)
         }
         p.setSentry(DummySentryImplementation())
-        apiClient = PretixApi.fromConfig(configStore, DefaultHttpClientFactory());
+        apiClient = PretixApi.fromConfig(configStore, OkHttpClientFactory());
         return p
     }
 }

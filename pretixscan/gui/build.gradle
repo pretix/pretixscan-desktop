@@ -61,6 +61,7 @@ dependencies {
     implementation 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2'
     implementation 'com.jfoenix:jfoenix:9.0.9'
     implementation 'org.apache.pdfbox:pdfbox:2.0.13'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.66'
 
     implementation(project(':libpretixsync')) {
         transitive = false
