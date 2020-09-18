@@ -52,7 +52,7 @@ class SelectEventView : View() {
         }
         cellFormat {
         }
-        placeholder = label(messages["no_events"])
+        placeholder = label("")
     }
 
     private fun showSpinner() {
@@ -62,6 +62,7 @@ class SelectEventView : View() {
                 keyvalue(mainSpinner.opacityProperty(), 1.0, MaterialInterpolator.ENTER)
             }
         }
+        eventListView.placeholder.text("")
     }
 
     private fun hideSpinner() {
@@ -71,6 +72,7 @@ class SelectEventView : View() {
                 keyvalue(mainSpinner.opacityProperty(), 0.0, MaterialInterpolator.EXIT)
             }
         }
+        eventListView.placeholder.text(messages["no_events"])
     }
 
     private val mainSpinner = jfxSpinner {

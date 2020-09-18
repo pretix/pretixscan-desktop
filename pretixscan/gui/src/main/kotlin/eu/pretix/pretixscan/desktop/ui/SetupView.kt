@@ -195,7 +195,7 @@ class SetupView : View() {
                     SetupResultState.ERR_SERVERERROR -> messages["setup_error_server"]
                     SetupResultState.ERR_BADREQUEST -> it.message
                     SetupResultState.ERR_BADRESPONSE -> messages["setup_error_response"]
-                    else -> ""
+                    else -> it.state.toString()
                 }
                 error(message)
             }
