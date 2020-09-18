@@ -157,7 +157,7 @@ class SelectCheckInListView : View() {
                         }
                         jfxButton(messages["toolbar_refresh"]) {
                             action {
-                                loadLists(true)
+                                loadLists()
                             }
                         }
                     }
@@ -172,7 +172,7 @@ class SelectCheckInListView : View() {
             replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
         }
         listListView.hide()
-        loadLists(true)
+        loadLists()
 
         currentWindow?.setOnCloseRequest {
             controller.close()
@@ -181,11 +181,11 @@ class SelectCheckInListView : View() {
 
 
 
-    fun loadLists(force: Boolean) {
+    fun loadLists() {
         showSpinner()
         var lists = emptyList<CheckInList>()
         runAsync {
-            controller.triggerSync(force, SyncManager.ProgressFeedback { statusText.text = it })
+            controller.triggerMinimalDownload(SyncManager.ProgressFeedback { statusText.text = it })
             lists = controller.getAllLists()
         } ui {
             listList.clear()

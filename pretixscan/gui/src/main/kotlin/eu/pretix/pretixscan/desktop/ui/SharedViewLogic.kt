@@ -96,6 +96,44 @@ open class BaseController : Controller() {
         System.exit(0)
     }
 
+    fun triggerMinimalDownload(feedback: SyncManager.ProgressFeedback? = null) {
+        if (!(app as PretixScanMain).syncLock.tryLock()) {
+            // A sync is already running – let's not sync, but instead just block until the
+            // sync is done and then continue :)
+            (app as PretixScanMain).syncLock.lock()
+            (app as PretixScanMain).syncLock.unlock()
+            return
+        }
+        try {
+            initSyncManager()
+            syncManager!!.syncMinimalEventSet(feedback)
+        } finally {
+            (app as PretixScanMain).syncLock.unlock()
+        }
+    }
+
+    fun initSyncManager() {
+        val upload_interval: Long = 1000
+        var download_interval: Long = 30000
+        if (!configStore.asyncModeEnabled) {
+            download_interval = 120000
+        }
+        syncManager = SyncManager(
+                configStore,
+                (app as PretixScanMain).api(),
+                DummySentryImplementation(),
+                (app as PretixScanMain).data(),
+                DesktopFileStorage(File((app as PretixScanMain).dataDir)),
+                upload_interval,
+                download_interval,
+                false,
+                configStore.badgePrinterName != null,
+                configStore.deviceKnownVersion,
+                System.getProperty("os.name"), System.getProperty("os.version"),
+                "pretixSCAN", VERSION
+        )
+    }
+
     fun triggerSync(force: Boolean = false, feedback: SyncManager.ProgressFeedback? = null) {
         if (!(app as PretixScanMain).syncLock.tryLock()) {
             if (force) {
@@ -108,26 +146,7 @@ open class BaseController : Controller() {
             return
         }
         try {
-            val upload_interval: Long = 1000
-            var download_interval: Long = 30000
-            if (!configStore.asyncModeEnabled) {
-                download_interval = 120000
-            }
-
-            syncManager = SyncManager(
-                    configStore,
-                    (app as PretixScanMain).api(),
-                    DummySentryImplementation(),
-                    (app as PretixScanMain).data(),
-                    DesktopFileStorage(File((app as PretixScanMain).dataDir)),
-                    upload_interval,
-                    download_interval,
-                    false,
-                    configStore.badgePrinterName != null,
-                    configStore.deviceKnownVersion,
-                    System.getProperty("os.name"), System.getProperty("os.version"),
-                    "pretixSCAN", VERSION
-            )
+            initSyncManager()
             syncManager!!.sync(force, feedback)
         } finally {
             (app as PretixScanMain).syncLock.unlock()
