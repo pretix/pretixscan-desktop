@@ -354,13 +354,13 @@ class MainView : View() {
         this += rootBox
     }
 
-    private fun beep() {
+    private fun beep(sound: String) {
         if (!controller.soundEnabled()) {
             return
         }
         try {
             val clip = AudioSystem.getClip()
-            val inputStream = AudioSystem.getAudioInputStream(PretixScanMain::class.java.getResourceAsStream("beep.wav"))
+            val inputStream = AudioSystem.getAudioInputStream(PretixScanMain::class.java.getResourceAsStream(sound + ".wav"))
             clip.open(inputStream)
             clip.start()
         } catch (e: Exception) {
@@ -660,7 +660,10 @@ class MainView : View() {
                 }
             }
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
-                beep()
+                beep(when {
+                    resultData?.scanType == TicketCheckProvider.CheckInType.EXIT -> "exit"
+                    else -> "enter"
+                })
                 if (resultData?.scanType != TicketCheckProvider.CheckInType.EXIT) {
                     if (resultData?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (app as PretixScanMain).configStore.autoPrintBadges) {
                         runAsync {
@@ -668,20 +671,18 @@ class MainView : View() {
                         }
                     }
                 }
-            }
-
-            if (resultData?.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
+            } else if (resultData?.type == TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED) {
                 val dialog = questionsDialog(resultData!!.requiredAnswers!!) { a ->
                     handleTicketInput(value, a, ignore_pending)
                 }
                 dialog.show(root)
-            }
-
-            if (resultData?.type == TicketCheckProvider.CheckResult.Type.UNPAID && resultData?.isCheckinAllowed == true) {
+            } else if (resultData?.type == TicketCheckProvider.CheckResult.Type.UNPAID && resultData?.isCheckinAllowed == true) {
                 val dialog = unpaidOrderDialog { new_ignore_pending ->
                     handleTicketInput(value, answers, new_ignore_pending)
                 }
                 dialog.show(root)
+            } else {
+                beep("error")
             }
 
             runAsync {
