@@ -124,6 +124,19 @@ class StatusView : View() {
                         }
                     }
                 }
+                if (data.currentlyInside != null) {
+                    hbox {
+                        label(messages["currently_inside"]) { addClass(MainStyleSheet.eventInfoItemHeader) }
+                        spacer {}
+                        label(data.currentlyInside.toString()) {
+                            addClass(MainStyleSheet.eventInfoItemHeader)
+                            addClass(MainStyleSheet.eventInfoItemNumber)
+                            style {
+                                minWidth = 60.px
+                            }
+                        }
+                    }
+                }
             }
         }
         headerCardHolder.add(headerCard!!)
