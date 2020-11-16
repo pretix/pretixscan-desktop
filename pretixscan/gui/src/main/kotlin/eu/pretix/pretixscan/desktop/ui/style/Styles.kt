@@ -54,6 +54,7 @@ class MainStyleSheet : Stylesheet() {
         val eventSettingsCard by cssclass()
         val setupScreen by cssclass()
         val questionsForm by cssclass()
+        val logoHolder by cssclass()
         val bgDefault by cssclass()
         val bgInvalid by cssclass()
         val bgValid by cssclass()
@@ -100,6 +101,11 @@ class MainStyleSheet : Stylesheet() {
             maxWidth = 680.px
             minHeight = 100.px
             padding = box(10.px, 0.px, 0.px, 0.px)
+        }
+
+        logoHolder {
+            minWidth = 680.px
+            maxWidth = 680.px
         }
 
         eventInfoList {

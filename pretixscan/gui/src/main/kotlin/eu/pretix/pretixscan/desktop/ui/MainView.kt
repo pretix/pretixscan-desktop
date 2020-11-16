@@ -4,6 +4,9 @@ import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import com.jfoenix.controls.JFXToggleButton
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.libpretixsync.db.CheckInList
+import eu.pretix.libpretixsync.db.Event
+import eu.pretix.libpretixsync.db.SubEvent
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.getBadgeLayout
 import eu.pretix.pretixscan.desktop.printBadge
@@ -202,6 +205,10 @@ class MainView : View() {
         }
     }
 
+    private val confdetailLabel = label() {
+        isWrapText = true
+    }
+
     private val resultHolder = stackpane {
         addClass(eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet.resultHolder)
 
@@ -226,11 +233,14 @@ class MainView : View() {
                 paddingBottom = 10.0
                 alignment = Pos.CENTER
             }
+            addClass(eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet.logoHolder)
             imageview(Image(PretixScanMain::class.java.getResourceAsStream("logo.png"))) {
                 fitHeight = 100.0
                 fitWidth = 500.0
                 isPreserveRatio = true
             }
+            spacer {}
+            this += confdetailLabel
         }
 
         this += searchField
@@ -384,6 +394,45 @@ class MainView : View() {
         currentWindow?.setOnCloseRequest {
             controller.close()
         }
+
+        var confdetails = ""
+        if (!conf.eventSlug.isNullOrBlank()) {
+            val event = (app as PretixScanMain).data().select(Event::class.java)
+                    .where(Event.SLUG.eq(conf.eventSlug))
+                    .get().firstOrNull()
+            if (event != null) {
+                confdetails += MessageFormat.format(messages["debug_info_event"], event.name)
+                if (conf.subEventId != null && conf.subEventId!! > 0) {
+                    val subevent = (app as PretixScanMain).data().select(SubEvent::class.java)
+                            .where(SubEvent.SERVER_ID.eq(conf.subEventId))
+                            .get().firstOrNull()
+                    if (subevent != null) {
+                        confdetails += "\n"
+                        val df = SimpleDateFormat(messages["short_datetime_format"])
+                        confdetails += MessageFormat.format(messages["debug_info_subevent"], subevent.name, df.format(subevent.date_from))
+                    }
+                }
+
+                if (conf.checkInListId > 0) {
+                    val cl = (app as PretixScanMain).data().select(CheckInList::class.java)
+                            .where(CheckInList.SERVER_ID.eq(conf.checkInListId))
+                            .get().firstOrNull()
+                    if (cl != null) {
+                        confdetails += "\n"
+                        confdetails += MessageFormat.format(messages["debug_info_list"], cl.name)
+                    }
+                }
+
+                if (!conf.deviceKnownGateName.isBlank()) {
+                    confdetails += "\n"
+                    confdetails += MessageFormat.format(messages["debug_info_gate"], conf.deviceKnownGateName)
+                }
+            }
+            confdetails += "\n"
+            confdetails += MessageFormat.format(messages["debug_info_device"], conf.deviceKnownName)
+        }
+        confdetailLabel.text = confdetails
+
     }
 
     init {
