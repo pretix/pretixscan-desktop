@@ -8,6 +8,7 @@ import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.desktop.DesktopFileStorage
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.VERSION
+import eu.pretix.pretixscan.desktop.VERSION_CODE
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxAdvancedProgressDialog
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxButton
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxDialog
@@ -126,11 +127,13 @@ open class BaseController : Controller() {
                 DesktopFileStorage(File((app as PretixScanMain).dataDir)),
                 upload_interval,
                 download_interval,
-                false,
+                if (configStore.syncOrders) SyncManager.Profile.PRETIXSCAN else SyncManager.Profile.PRETIXSCAN_ONLINE,
                 configStore.badgePrinterName != null,
-                configStore.deviceKnownVersion,
-                System.getProperty("os.name"), System.getProperty("os.version"),
-                "pretixSCAN", VERSION
+                VERSION_CODE,
+                System.getProperty("os.name"),
+                System.getProperty("os.version"),
+                "pretixSCAN",
+                VERSION
         )
     }
 
@@ -147,7 +150,7 @@ open class BaseController : Controller() {
         }
         try {
             initSyncManager()
-            syncManager!!.sync(force, feedback)
+            syncManager!!.sync(force, configStore.checkInListId, feedback)
         } finally {
             (app as PretixScanMain).syncLock.unlock()
         }

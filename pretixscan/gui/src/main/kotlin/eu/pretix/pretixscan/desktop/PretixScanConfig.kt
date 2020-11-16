@@ -7,7 +7,6 @@ import java.util.prefs.Preferences
 
 
 class PretixScanConfig(private var data_dir: String) : ConfigStore {
-
     private val prefs = Preferences.userNodeForPackage(PretixScanConfig::class.java)
 
     private val PREFS_KEY_API_URL = "pretix_api_url"
@@ -22,11 +21,15 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_PRINTER_BADGE_NAME = "printer_badge_name"
     private val PREFS_KEY_PRINTER_BADGE_ORIENTATION = "printer_badge_orientation"
     private val PREFS_KEY_AUTO_PRINT_BADGES = "auto_print_badges"
+    private val PREFS_KEY_SYNC_ORDERS = "sync_orders"
     private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
     private val PREFS_KEY_SCAN_TYPE = "scan_type"
     private val PREFS_KEY_PRETIX_KNOWN_VERSION = "known_pretix_version"
+    private val PREFS_KEY_KNOWN_DEVICE_NAME = "known_device_name"
+    private val PREFS_KEY_KNOWN_GATE_NAME = "known_gate_name"
     private val PREFS_KEY_PLAY_SOUND = "play_sound"
+    private val PREFS_KEY_AUTO_SWITCH = "auto_switch"
     private val PREFS_KEY_LARGE_COLOR = "large_color"
     private val PREFS_KEY_ALLOW_SEARCH = "allow_search"
     private val PREFS_KEY_API_VERSION = "pretix_api_version"
@@ -270,6 +273,13 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
             prefs.flush()
         }
 
+    var syncOrders: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_SYNC_ORDERS, true)
+        set (value) {
+            prefs.putBoolean(PREFS_KEY_SYNC_ORDERS, value)
+            prefs.flush()
+        }
+
     override fun getDeviceKnownVersion(): Int {
         return prefs.getInt(PREFS_KEY_DEVICE_KNOWN_VERSION, 0)
     }
@@ -284,5 +294,25 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
 
     override fun getKnownPretixVersion(): Long {
         return prefs.getLong(PREFS_KEY_PRETIX_KNOWN_VERSION, 0)
+    }
+
+    override fun getDeviceKnownName(): String {
+        return prefs.get(PREFS_KEY_KNOWN_DEVICE_NAME, "")
+    }
+
+    override fun setDeviceKnownName(value: String?) {
+        prefs.put(PREFS_KEY_KNOWN_DEVICE_NAME, value ?: "")
+    }
+
+    override fun getDeviceKnownGateName(): String {
+        return prefs.get(PREFS_KEY_KNOWN_GATE_NAME, "")
+    }
+
+    override fun setDeviceKnownGateName(value: String?) {
+        return prefs.put(PREFS_KEY_KNOWN_GATE_NAME, value ?: "")
+    }
+
+    override fun getAutoSwitchRequested(): Boolean {
+        return prefs.getBoolean(PREFS_KEY_AUTO_SWITCH, false)
     }
 }

@@ -726,6 +726,7 @@ class MainView : View() {
                         TicketCheckProvider.CheckResult.Type.PRODUCT -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.CANCELED -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.RULES -> MainStyleSheet.cardHeaderError
+                        TicketCheckProvider.CheckResult.Type.REVOKED -> MainStyleSheet.cardHeaderError
                         null -> MainStyleSheet.cardHeaderError
                     })
 
@@ -745,6 +746,7 @@ class MainView : View() {
                         TicketCheckProvider.CheckResult.Type.CANCELED -> messages["state_canceled"]
                         TicketCheckProvider.CheckResult.Type.PRODUCT -> messages["state_product"]
                         TicketCheckProvider.CheckResult.Type.RULES -> messages["state_rules"]
+                        TicketCheckProvider.CheckResult.Type.REVOKED -> messages["state_revoked"]
                         null -> messages["state_unknown"]
                     }
 
@@ -773,6 +775,13 @@ class MainView : View() {
                             hbox {
                                 label(ticket) {
                                     isWrapText = true
+                                }
+                            }
+                            if (data?.seat != null) {
+                                hbox {
+                                    label (data?.seat!!) {
+                                        isWrapText = true
+                                    }
                                 }
                             }
                             if (data?.position != null) {
