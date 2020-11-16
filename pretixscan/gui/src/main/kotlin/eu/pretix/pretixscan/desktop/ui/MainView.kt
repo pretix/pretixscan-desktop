@@ -331,11 +331,13 @@ class MainView : View() {
                         alignment = Pos.CENTER_LEFT
                     }
                     jfxTogglebutton(messages["toolbar_toggle_async"]) {
+                        val conf = (app as PretixScanMain).configStore
                         toggleColor = c(STYLE_STATE_VALID_COLOR)
-                        isSelected = !(app as PretixScanMain).configStore.asyncModeEnabled
-                        isDisable = (app as PretixScanMain).configStore.proxyMode
+                        isSelected = !conf.asyncModeEnabled
+                        isDisable = conf.proxyMode
                         action {
                             controller.toggleAsync(!isSelected)
+                            infoButton.isVisible = !(!conf.syncOrders && conf.asyncModeEnabled)
                         }
                     }
                 }
@@ -433,6 +435,7 @@ class MainView : View() {
         }
         confdetailLabel.text = confdetails
 
+        infoButton.isVisible = !(!conf.syncOrders && conf.asyncModeEnabled)
     }
 
     init {
