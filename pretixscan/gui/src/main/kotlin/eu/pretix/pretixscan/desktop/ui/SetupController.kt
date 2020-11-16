@@ -33,6 +33,9 @@ class SetupController : BaseController() {
             val init = setupm.initialize(url, token)
             configStore.setDeviceConfig(init.url, init.api_token, init.organizer, init.device_id, init.unique_serial, VERSION_CODE)
             configStore.proxyMode = token.startsWith("proxy=")
+            if (init.security_profile == "pretixscan_online_kiosk") {
+                configStore.syncOrders = false
+            }
             (app as PretixScanMain).reloadCheckProvider()
             return SetupResult(SetupResultState.OK, "")
         } catch (e: SSLException) {

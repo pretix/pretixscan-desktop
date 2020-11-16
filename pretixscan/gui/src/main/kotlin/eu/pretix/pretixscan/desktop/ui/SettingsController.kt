@@ -45,6 +45,10 @@ class SettingsController : BaseController() {
         configStore.playSound = value
     }
 
+    fun toggleSyncOrders(value: Boolean) {
+        configStore.syncOrders = value
+    }
+
     fun toggleAutoPrintBadges(value: Boolean) {
         configStore.autoPrintBadges = value
     }

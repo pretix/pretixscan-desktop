@@ -144,6 +144,14 @@ class SettingsView : View() {
         }
     }
 
+    private val syncOrdersBtn = jfxTogglebutton() {
+        toggleColor = c(STYLE_STATE_VALID_COLOR)
+        isSelected = !(app as PretixScanMain).configStore.syncOrders
+        action {
+            controller.toggleSyncOrders(isSelected)
+        }
+    }
+
     private val soundBtn = jfxTogglebutton() {
         toggleColor = c(STYLE_STATE_VALID_COLOR)
         isSelected = !(app as PretixScanMain).configStore.playSound
@@ -188,6 +196,14 @@ class SettingsView : View() {
                     spacer {}
                     this += soundBtn
                 }
+                hbox {
+                    style {
+                        alignment = Pos.CENTER
+                    }
+                    label(messages["settings_largecolor"])
+                    spacer {}
+                    this += largecolorBtn
+                }
             }
         }
 
@@ -203,9 +219,9 @@ class SettingsView : View() {
                     style {
                         alignment = Pos.CENTER
                     }
-                    label(messages["settings_largecolor"])
+                    label(messages["settings_sync_orders"])
                     spacer {}
-                    this += largecolorBtn
+                    this += syncOrdersBtn
                 }
             }
         }
@@ -377,6 +393,7 @@ class SettingsView : View() {
             replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
         }
         soundBtn.isSelected = (app as PretixScanMain).configStore.playSound
+        syncOrdersBtn.isSelected = (app as PretixScanMain).configStore.syncOrders
         badgesBtn.isSelected = (app as PretixScanMain).configStore.autoPrintBadges
         largecolorBtn.isSelected = (app as PretixScanMain).configStore.largeColor
         currentWindow?.setOnCloseRequest {
