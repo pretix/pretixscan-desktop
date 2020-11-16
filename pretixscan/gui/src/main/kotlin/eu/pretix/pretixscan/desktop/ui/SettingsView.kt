@@ -144,6 +144,14 @@ class SettingsView : View() {
         }
     }
 
+    private val autoSwitchBtn = jfxTogglebutton() {
+        toggleColor = c(STYLE_STATE_VALID_COLOR)
+        isSelected = !(app as PretixScanMain).configStore.autoSwitchRequested
+        action {
+            controller.toggleAutoSwitch(isSelected)
+        }
+    }
+
     private val syncOrdersBtn = jfxTogglebutton() {
         toggleColor = c(STYLE_STATE_VALID_COLOR)
         isSelected = !(app as PretixScanMain).configStore.syncOrders
@@ -222,6 +230,14 @@ class SettingsView : View() {
                     label(messages["settings_sync_orders"])
                     spacer {}
                     this += syncOrdersBtn
+                }
+                hbox {
+                    style {
+                        alignment = Pos.CENTER
+                    }
+                    label(messages["settings_auto_switch"])
+                    spacer {}
+                    this += autoSwitchBtn
                 }
             }
         }
@@ -396,6 +412,7 @@ class SettingsView : View() {
         syncOrdersBtn.isSelected = (app as PretixScanMain).configStore.syncOrders
         badgesBtn.isSelected = (app as PretixScanMain).configStore.autoPrintBadges
         largecolorBtn.isSelected = (app as PretixScanMain).configStore.largeColor
+        autoSwitchBtn.isSelected = (app as PretixScanMain).configStore.autoSwitchRequested
         currentWindow?.setOnCloseRequest {
             controller.close()
         }

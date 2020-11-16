@@ -315,4 +315,8 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     override fun getAutoSwitchRequested(): Boolean {
         return prefs.getBoolean(PREFS_KEY_AUTO_SWITCH, false)
     }
+
+    fun setAutoSwitchRequested(value: Boolean) {
+        return prefs.putBoolean(PREFS_KEY_AUTO_SWITCH, value)
+    }
 }

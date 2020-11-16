@@ -137,7 +137,7 @@ open class BaseController : Controller() {
         )
     }
 
-    fun triggerSync(force: Boolean = false, feedback: SyncManager.ProgressFeedback? = null) {
+    fun triggerSync(eh: ((SyncManager.EventSwitchRequested) -> Unit), force: Boolean = false, feedback: SyncManager.ProgressFeedback? = null) {
         if (!(app as PretixScanMain).syncLock.tryLock()) {
             if (force) {
                 // A sync is already running – let's not sync, but instead just block until the
@@ -151,6 +151,8 @@ open class BaseController : Controller() {
         try {
             initSyncManager()
             syncManager!!.sync(force, configStore.checkInListId, feedback)
+        } catch (e: SyncManager.EventSwitchRequested) {
+            eh(e)
         } finally {
             (app as PretixScanMain).syncLock.unlock()
         }
@@ -181,7 +183,7 @@ fun View.foregroundSync(controller: BaseController, root: StackPane) {
     progressDialog.show(root)
     runAsync {
         try {
-            controller.triggerSync(true, SyncManager.ProgressFeedback { current_action ->
+            controller.triggerSync({}, true, SyncManager.ProgressFeedback { current_action ->
                 runLater {
                     progressDialog.messageLabel?.text = current_action
                 }

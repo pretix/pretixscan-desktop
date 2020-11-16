@@ -49,6 +49,10 @@ class SettingsController : BaseController() {
         configStore.syncOrders = value
     }
 
+    fun toggleAutoSwitch(value: Boolean) {
+        configStore.autoSwitchRequested = value
+    }
+
     fun toggleAutoPrintBadges(value: Boolean) {
         configStore.autoPrintBadges = value
     }

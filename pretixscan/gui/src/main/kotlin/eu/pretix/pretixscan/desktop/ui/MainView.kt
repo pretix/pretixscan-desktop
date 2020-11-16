@@ -462,7 +462,18 @@ class MainView : View() {
             keyframe(Duration.seconds(10.0)) {
                 setOnFinished {
                     runAsync {
-                        controller.triggerSync()
+                        controller.triggerSync(eh = { e ->
+                            ui {
+                                val conf = (app as PretixScanMain).configStore
+                                conf.eventSlug = e.eventSlug
+                                conf.subEventId = e.subeventId
+                                conf.eventName = e.eventName
+                                conf.checkInListId = e.checkinlistId
+                                (app as PretixScanMain).reloadCheckProvider()
+                                onDock()
+                                foregroundSync(controller, root)
+                            }
+                        })
                     }
                 }
             }
@@ -739,7 +750,7 @@ class MainView : View() {
             }
 
             runAsync {
-                controller.triggerSync()
+                controller.triggerSync({})
             }
         }
     }
