@@ -97,7 +97,7 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
 
         stage.icons += Image(PretixScanMain::class.java.getResourceAsStream("icon.png"))
         stage.isMaximized = true
-        stage.minHeight = 600.0
+        stage.minHeight = 680.0
         stage.minWidth = 800.0
         super.start(stage)
 
