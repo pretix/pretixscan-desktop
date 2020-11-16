@@ -695,7 +695,7 @@ class MainView : View() {
     private fun handleInput(value: String) {
         // TODO: Support pretix instances with lower entropy levels
         revertBackground()
-        if (value.matches(Regex("[a-z0-9]{32,}"))) {
+        if (value.matches(Regex("[a-zA-Z0-9=+/]{12,}"))) {
             hideSearchResultCard()
             selectedSearchResult = null
             handleTicketInput(value)
