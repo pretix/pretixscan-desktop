@@ -2,6 +2,7 @@ package eu.pretix.pretixscan.desktop.ui
 
 import com.github.kittinunf.fuel.httpPost
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.VERSION
 import org.json.JSONObject
@@ -20,11 +21,11 @@ class MainController : BaseController() {
         return (app as PretixScanMain).provider.search(value, 1)
     }
 
-    fun handleScanInput(value: String, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean=false, type: TicketCheckProvider.CheckInType): TicketCheckProvider.CheckResult? {
+    fun handleScanInput(value: String, answers: List<Answer>? = null, ignore_pending: Boolean=false, type: TicketCheckProvider.CheckInType): TicketCheckProvider.CheckResult? {
         if (answers != null) {
             return (app as PretixScanMain).provider.check(value, answers, ignore_pending, true, type)
         } else {
-            return (app as PretixScanMain).provider.check(value, ArrayList<TicketCheckProvider.Answer>(), ignore_pending, true, type)
+            return (app as PretixScanMain).provider.check(value, ArrayList<Answer>(), ignore_pending, true, type)
         }
     }
 

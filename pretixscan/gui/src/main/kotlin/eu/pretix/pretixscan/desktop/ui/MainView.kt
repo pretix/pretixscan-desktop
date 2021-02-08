@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import com.jfoenix.controls.JFXToggleButton
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.CheckInList
 import eu.pretix.libpretixsync.db.Event
 import eu.pretix.libpretixsync.db.SubEvent
@@ -524,7 +525,7 @@ class MainView : View() {
         }
     }
 
-    private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean = false) {
+    private fun handleSearchResultSelected(searchResult: TicketCheckProvider.SearchResult, answers: List<Answer>? = null, ignore_pending: Boolean = false) {
         selectedSearchResult = searchResult
         handleTicketInput(searchResult.secret!!, answers, ignore_pending)
     }
@@ -687,7 +688,7 @@ class MainView : View() {
         }
     }
 
-    private fun handleTicketInput(value: String, answers: List<TicketCheckProvider.Answer>? = null, ignore_pending: Boolean = false) {
+    private fun handleTicketInput(value: String, answers: List<Answer>? = null, ignore_pending: Boolean = false) {
         for (oldResultCard in resultCards) {
             removeCard(oldResultCard)
         }

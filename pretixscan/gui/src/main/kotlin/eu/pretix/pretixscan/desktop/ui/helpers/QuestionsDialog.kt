@@ -3,10 +3,7 @@ package eu.pretix.pretixscan.desktop.ui.helpers
 import com.jfoenix.controls.*
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.libpretixsync.db.AbstractQuestion
-import eu.pretix.libpretixsync.db.Question
-import eu.pretix.libpretixsync.db.QuestionLike
-import eu.pretix.libpretixsync.db.QuestionOption
+import eu.pretix.libpretixsync.db.*
 import eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet
 import javafx.collections.FXCollections
 import javafx.event.EventTarget
@@ -39,7 +36,7 @@ fun TextInputControl.stripNonTime() = textProperty().mutateOnChange {
     it?.replace(Regex("[^0-9.:]"), "")
 }
 
-fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.RequiredAnswer>, retry: ((List<TicketCheckProvider.Answer>) -> Unit)? = null): JFXDialog {
+fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.RequiredAnswer>, retry: ((List<Answer>) -> Unit)? = null): JFXDialog {
     val content = JFXDialogLayout()
 
     val fview = vbox {
@@ -135,7 +132,7 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
         dialog.close()
     }
     okButton.action {
-        val answers = ArrayList<TicketCheckProvider.Answer>()
+        val answers = ArrayList<Answer>()
         var has_errors = false
 
         for (ra in requiredAnswers) {
@@ -162,7 +159,7 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
                 }
                 has_errors = true
             } else if (empty) {
-                answers.add(TicketCheckProvider.Answer(ra.question, ""))
+                answers.add(Answer(ra.question, ""))
             } else {
                 val answerstring = when (ra.question.type) {
                     QuestionType.B -> if ((view as CheckBox).isSelected) "True" else ""
@@ -191,7 +188,7 @@ fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.Requir
                     }
                     has_errors = true
                 }
-                answers.add(TicketCheckProvider.Answer(ra.question, answerstring))
+                answers.add(Answer(ra.question, answerstring))
             }
         }
 

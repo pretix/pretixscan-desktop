@@ -163,7 +163,7 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
         } else if (configStore.asyncModeEnabled) {
             p = AsyncCheckProvider(configStore.eventSlug!!, data(), configStore.checkInListId)
         } else {
-            p = OnlineCheckProvider(configStore, OkHttpClientFactory(), data(), configStore.checkInListId)
+            p = OnlineCheckProvider(configStore, OkHttpClientFactory(), data(), DesktopFileStorage(File(dataDir)), configStore.checkInListId)
         }
         p.setSentry(DummySentryImplementation())
         apiClient = PretixApi.fromConfig(configStore, OkHttpClientFactory());

@@ -7,6 +7,9 @@ import eu.pretix.libpretixsync.db.BadgeLayout
 import eu.pretix.libpretixsync.db.Item
 import eu.pretix.libpretixprint.templating.Layout
 import eu.pretix.libpretixsync.db.BadgeLayoutItem
+import eu.pretix.libpretixsync.db.CachedPdfImage
+import io.requery.BlockingEntityStore
+import io.requery.Persistable
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.Orientation
 import org.apache.pdfbox.printing.PDFPageable
@@ -99,7 +102,7 @@ fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: Str
 }
 
 
-class OrderPositionContentProvider(private val op: JSONObject) : ContentProvider {
+class OrderPositionContentProvider(private val application: PretixScanMain, private val op: JSONObject) : ContentProvider {
     override fun getTextContent(content: String?, text: String?): String {
         if (content == "other") {
             return text ?: ""
@@ -108,6 +111,12 @@ class OrderPositionContentProvider(private val op: JSONObject) : ContentProvider
         } else {
             return "???"
         }
+    }
+
+    override fun getImageContent(content: String): InputStream? {
+        val file = application.data().select(CachedPdfImage::class.java).where(CachedPdfImage.ORDERPOSITION_ID.eq(op.getLong("id"))).and(CachedPdfImage.KEY.eq(content)).get().firstOrNull() ?: return null
+
+        return DesktopFileStorage(File(application.dataDir)).getFile("pdfimage_${file.getEtag()}.bin").inputStream()
     }
 
     override fun getBarcodeContent(content: String?): String {
@@ -123,7 +132,7 @@ class OrderPositionContentProvider(private val op: JSONObject) : ContentProvider
 class Renderer(private val layout: JSONArray, private val position: JSONObject, private val background: InputStream?, private val application: PretixScanMain) {
     fun writePDF(outFile: File) {
         val posList = emptyList<ContentProvider>().toMutableList()
-        posList.add(OrderPositionContentProvider(position))
+        posList.add(OrderPositionContentProvider(application, position))
         try {
             val l = Layout(
                     layout,
