@@ -66,7 +66,7 @@ open class BaseController : Controller() {
             return MessageFormat.format(
                     messages.getString("sync_status_ago"),
                     formatter.print(period)
-            );
+            )
         }
     }
 
@@ -124,7 +124,7 @@ open class BaseController : Controller() {
                 (app as PretixScanMain).api(),
                 DummySentryImplementation(),
                 (app as PretixScanMain).data(),
-                DesktopFileStorage(File((app as PretixScanMain).dataDir)),
+                DesktopFileStorage(File(PretixScanMain.dataDir)),
                 upload_interval,
                 download_interval,
                 if (configStore.syncOrders) SyncManager.Profile.PRETIXSCAN else SyncManager.Profile.PRETIXSCAN_ONLINE,

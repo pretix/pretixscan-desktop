@@ -62,11 +62,11 @@ fun getBadgeLayout(application: PretixScanMain, position: JSONObject, eventSlug:
 }
 
 fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: String) {
-    val pdffile = File(application.cacheDir, "print.pdf")
+    val pdffile = File(PretixScanMain.cacheDir, "print.pdf")
     if (!pdffile.parentFile.exists()) {
         pdffile.parentFile.mkdirs();
     }
-    val fs = DesktopFileStorage(File(application.dataDir))
+    val fs = DesktopFileStorage(File(PretixScanMain.dataDir))
 
     val layout = getBadgeLayout(application, position, eventSlug) ?: return
     if (layout.getBackground_filename() != null) {
@@ -116,7 +116,7 @@ class OrderPositionContentProvider(private val application: PretixScanMain, priv
     override fun getImageContent(content: String): InputStream? {
         val file = application.data().select(CachedPdfImage::class.java).where(CachedPdfImage.ORDERPOSITION_ID.eq(op.getLong("id"))).and(CachedPdfImage.KEY.eq(content)).get().firstOrNull() ?: return null
 
-        return DesktopFileStorage(File(application.dataDir)).getFile("pdfimage_${file.getEtag()}.bin").inputStream()
+        return DesktopFileStorage(File(PretixScanMain.dataDir)).getFile("pdfimage_${file.getEtag()}.bin").inputStream()
     }
 
     override fun getBarcodeContent(content: String?): String {
@@ -166,7 +166,7 @@ class Renderer(private val layout: JSONArray, private val position: JSONObject, 
         }
 
         fun storeFont(application: PretixScanMain, path: String): String {
-            val file = File(application.dataDir, path)
+            val file = File(PretixScanMain.dataDir, path)
             if (!file.parentFile.exists()) {
                 file.parentFile.mkdirs()
             }

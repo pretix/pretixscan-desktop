@@ -39,10 +39,14 @@ val APP_ID = "eu.pretix.pretixscan.desktop"
 
 class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
     private var dataStore: BlockingEntityStore<Persistable>? = null
-    private val appDirs = AppDirsFactory.getInstance()!!
-    // Keep version argument at 1, we do not want new folders for every new version for now.
-    val dataDir = appDirs.getUserDataDir("pretixscan", "1", "pretix")
-    val cacheDir = appDirs.getUserCacheDir("pretixscan", "1", "pretix")
+
+    companion object {
+        // Keep version argument at 1, we do not want new folders for every new version for now.
+        private val appDirs = AppDirsFactory.getInstance()!!
+        val dataDir = appDirs.getUserDataDir("pretixscan", "1", "pretix")
+        val cacheDir = appDirs.getUserCacheDir("pretixscan", "1", "pretix")
+    }
+
     val configStore = PretixScanConfig(dataDir)
     private var apiClient: PretixApi? = null
     var stage: Stage? = null

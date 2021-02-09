@@ -42,7 +42,7 @@ configurations {
 
 javafx {
     modules = [
-            'javafx.controls', 'javafx.fxml'
+            'javafx.controls', 'javafx.fxml', 'javafx.swing'
     ]
     version = '11.0.2'
 }
@@ -62,6 +62,7 @@ dependencies {
     implementation 'com.jfoenix:jfoenix:9.0.9'
     implementation 'org.apache.pdfbox:pdfbox:2.0.13'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.66'
+    implementation 'com.github.sarxos:webcam-capture:0.3.12'
 
     implementation(project(':libpretixsync')) {
         transitive = false
@@ -75,6 +76,7 @@ dependencies {
     javafxCompile "org.openjfx:javafx-graphics:11.0.2:${platform}"
     javafxCompile "org.openjfx:javafx-controls:11.0.2:${platform}"
     javafxCompile "org.openjfx:javafx-fxml:11.0.2:${platform}"
+    javafxCompile "org.openjfx:javafx-swing:11.0.2:${platform}"
 
     compileOnly configurations.javafxCompile
 }
@@ -91,7 +93,7 @@ tasks.withType(JavaCompile) {
 [run, test].each {
     it.jvmArgs += [
             '--module-path', configurations.javafxCompile.asPath,
-            '--add-modules', 'javafx.controls,javafx.fxml,javafx.graphics',
+            '--add-modules', 'javafx.controls,javafx.fxml,javafx.graphics,javafx.swing',
             '--add-exports', 'javafx.base/com.sun.javafx.runtime=ALL-UNNAMED',
             '--add-exports', 'javafx.graphics/com.sun.javafx.css=ALL-UNNAMED',
             '--add-exports', 'javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED',
@@ -102,7 +104,7 @@ tasks.withType(JavaCompile) {
 
 javafx {
     modules = [
-            'javafx.controls', 'javafx.fxml', 'javafx.graphics'
+            'javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.swing'
     ]
     version = '11.0.2'
 }
