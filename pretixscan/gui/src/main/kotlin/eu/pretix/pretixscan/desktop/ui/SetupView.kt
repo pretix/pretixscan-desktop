@@ -34,28 +34,28 @@ class SetupView : View() {
                 try {
                     val jd = JSONObject(mI.text.trim())
                     if (jd.has("version")) {
-                        error(messages["setup_error_legacy_qr_code"])
+                        error(messages.getString("setup_error_legacy_qr_code"))
                         mI.text = ""
                         return@setOnKeyReleased
                     }
                     if (!jd.has("handshake_version")) {
-                        error(messages["setup_error_invalid_qr_code"])
+                        error(messages.getString("setup_error_invalid_qr_code"))
                         mI.text = ""
                         return@setOnKeyReleased
                     }
                     if (jd.getInt("handshake_version") > 1) {
-                        error(messages["setup_error_version_too_high"])
+                        error(messages.getString("setup_error_version_too_high"))
                         mI.text = ""
                         return@setOnKeyReleased
                     }
                     if (!jd.has("url") || !jd.has("token")) {
-                        error(messages["setup_error_invalid_qr_code"])
+                        error(messages.getString("setup_error_invalid_qr_code"))
                         mI.text = ""
                         return@setOnKeyReleased
                     }
                     handleConfiguration(jd.getString("url"), jd.getString("token"))
                 } catch (e: JSONException) {
-                    error(messages["setup_error_invalid_qr_code"])
+                    error(messages.getString("setup_error_invalid_qr_code"))
                     mI.text = ""
                     return@setOnKeyReleased
                 }
@@ -193,7 +193,7 @@ class SetupView : View() {
                     SetupResultState.ERR_SSL -> messages["setup_error_ssl"]
                     SetupResultState.ERR_IO -> messages["setup_error_io"]
                     SetupResultState.ERR_SERVERERROR -> messages["setup_error_server"]
-                    SetupResultState.ERR_BADREQUEST -> it.message
+                    SetupResultState.ERR_BADREQUEST -> if (it.message.isNullOrBlank()) messages["setup_error_badrequest"] else it.message
                     SetupResultState.ERR_BADRESPONSE -> messages["setup_error_response"]
                     else -> it.state.toString()
                 }

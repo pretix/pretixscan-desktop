@@ -148,6 +148,10 @@ open class BaseController : Controller() {
             }
             return
         }
+        if (configStore.eventSlug == null || configStore.checkInListId == 0L) {
+            // not yet set up
+            return
+        }
         try {
             initSyncManager()
             syncManager!!.sync(force, configStore.checkInListId, feedback)

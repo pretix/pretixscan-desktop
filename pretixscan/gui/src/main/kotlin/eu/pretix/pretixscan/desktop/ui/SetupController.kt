@@ -45,7 +45,7 @@ class SetupController : BaseController() {
         } catch (e: SetupServerErrorException) {
             return SetupResult(SetupResultState.ERR_SERVERERROR, "")
         } catch (e: SetupBadRequestException) {
-            return SetupResult(SetupResultState.ERR_BADREQUEST, "")
+            return SetupResult(SetupResultState.ERR_BADREQUEST, e.message ?: "")
         } catch (e: SetupBadResponseException) {
             return SetupResult(SetupResultState.ERR_BADRESPONSE, "")
         }

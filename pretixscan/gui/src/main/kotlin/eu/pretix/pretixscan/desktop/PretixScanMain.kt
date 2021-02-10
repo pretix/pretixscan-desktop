@@ -151,17 +151,19 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
     val provider: TicketCheckProvider
         get() {
             if (_provider == null) {
-                reloadCheckProvider();
+                reloadCheckProvider()
             }
             return _provider!!
         }
 
     fun reloadCheckProvider() {
-        _provider = newCheckProvider();
+        _provider = newCheckProvider()
     }
 
-    fun newCheckProvider(): TicketCheckProvider {
+    fun newCheckProvider(): TicketCheckProvider? {
         val p: TicketCheckProvider
+        if (configStore.eventSlug == null)
+            return null
         if (configStore.proxyMode) {
             p = ProxyCheckProvider(configStore, OkHttpClientFactory(), data(), configStore.checkInListId)
         } else if (configStore.asyncModeEnabled) {

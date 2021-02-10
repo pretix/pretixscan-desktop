@@ -18,6 +18,10 @@ class MainController : BaseController() {
     }
 
     fun handleSearchInput(value: String): List<TicketCheckProvider.SearchResult>? {
+        if (configStore.eventSlug == null || configStore.checkInListId == 0L) {
+            // not yet set up
+            return null
+        }
         return (app as PretixScanMain).provider.search(value, 1)
     }
 
