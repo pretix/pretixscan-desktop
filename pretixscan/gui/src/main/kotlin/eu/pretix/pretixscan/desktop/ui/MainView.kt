@@ -298,7 +298,7 @@ class MainView : View() {
                     }
                     label(messages["toolbar_toggle_entry"])
                     val conf = (app as PretixScanMain).configStore
-                    toggleExit = jfxTogglebutton(if(conf.scanType == "exit") messages["toolbar_toggle_exit"] else messages["toolbar_toggle_entry"]) {
+                    toggleExit = jfxTogglebutton(messages["toolbar_toggle_exit"]) {
                         toggleColor = c(STYLE_STATE_VALID_COLOR)
                         isSelected = conf.scanType == "exit"
                         isDisable = conf.knownPretixVersion < 30090001000
@@ -309,7 +309,6 @@ class MainView : View() {
                                 conf.scanType = "exit"
                             }
                             toggleExit?.isSelected = conf.scanType == "exit"
-                            toggleExit?.text = messages["toolbar_toggle_exit"]
                         }
                     }
                     this += toggleExit!!
