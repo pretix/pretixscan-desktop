@@ -857,6 +857,9 @@ class MainView : View() {
                                     }
                                 }
                             }
+                            if (!data?.reasonExplanation.isNullOrBlank()) {
+                                label(data?.reasonExplanation!!)
+                            }
                             if (data?.firstScanned != null) {
                                 val df = SimpleDateFormat(messages.getString("short_datetime_format"))
                                 label(
