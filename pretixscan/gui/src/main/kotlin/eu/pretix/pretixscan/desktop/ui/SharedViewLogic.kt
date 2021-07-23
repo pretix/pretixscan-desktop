@@ -132,8 +132,9 @@ open class BaseController : Controller() {
                 VERSION_CODE,
                 System.getProperty("os.name"),
                 System.getProperty("os.version"),
-                "pretixSCAN",
-                VERSION
+                "pretixSCAN Desktop",
+                VERSION,
+                null
         )
     }
 

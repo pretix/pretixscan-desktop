@@ -5,6 +5,7 @@ import eu.pretix.pretixscan.desktop.PretixScanMain
 import javax.print.DocFlavor
 import javax.print.PrintService
 import javax.print.PrintServiceLookup
+import javax.print.attribute.standard.QueuedJobCount
 
 
 class SettingsController : BaseController() {
@@ -12,10 +13,13 @@ class SettingsController : BaseController() {
     fun resetApp() {
         configStore.resetEventConfig()
         (app as PretixScanMain).data().delete(QueuedCheckIn::class.java).get()
+        (app as PretixScanMain).data().delete(QueuedCall::class.java).get()
+        (app as PretixScanMain).data().delete(QueuedOrder::class.java).get()
         (app as PretixScanMain).data().delete(BadgeLayout::class.java).get()
         (app as PretixScanMain).data().delete(CheckInList_Item::class.java).get()
         (app as PretixScanMain).data().delete(CheckInList::class.java).get()
         (app as PretixScanMain).data().delete(Closing::class.java).get()
+        (app as PretixScanMain).data().delete(Cashier::class.java).get()
         (app as PretixScanMain).data().delete(Event::class.java).get()
         (app as PretixScanMain).data().delete(Question_Item::class.java).get()
         (app as PretixScanMain).data().delete(Question_Item::class.java).get()
@@ -27,7 +31,7 @@ class SettingsController : BaseController() {
         (app as PretixScanMain).data().delete(Quota::class.java).get()
         (app as PretixScanMain).data().delete(Receipt::class.java).get()
         (app as PretixScanMain).data().delete(ReceiptLine::class.java).get()
-        (app as PretixScanMain).data().delete(ResourceLastModified::class.java).get()
+        (app as PretixScanMain).data().delete(ResourceSyncStatus::class.java).get()
         (app as PretixScanMain).data().delete(SubEvent::class.java).get()
         (app as PretixScanMain).data().delete(TaxRule::class.java).get()
         (app as PretixScanMain).data().delete(TicketLayout::class.java).get()
