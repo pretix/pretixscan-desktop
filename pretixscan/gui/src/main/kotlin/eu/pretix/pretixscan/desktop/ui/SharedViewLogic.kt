@@ -75,7 +75,12 @@ open class BaseController : Controller() {
         lastSync.timeInMillis = configStore.lastSync
         val lastSyncFailed = Calendar.getInstance()
         lastSyncFailed.timeInMillis = configStore.lastFailedSync
-        val cnt = (app as PretixScanMain).data().count(QueuedCheckIn::class.java).get().value()
+        val cnt = try {
+            (app as PretixScanMain).data().count(QueuedCheckIn::class.java).get().value().toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "?"
+        }
 
         val formatter = SimpleDateFormat(messages.getString("datetime_format"))
 
