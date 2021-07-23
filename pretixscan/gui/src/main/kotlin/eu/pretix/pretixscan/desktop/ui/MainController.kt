@@ -7,6 +7,7 @@ import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.VERSION
 import io.requery.sql.StatementExecutionException
 import org.json.JSONObject
+import java.lang.RuntimeException
 import java.util.*
 import kotlin.collections.List
 
@@ -23,18 +24,16 @@ class MainController : BaseController() {
             // not yet set up
             return null
         }
-        return (app as PretixScanMain).provider.search(value, 1)
+        return withRetry {
+            return@withRetry (app as PretixScanMain).provider.search(value, 1)
+        }
     }
 
-    fun handleScanInput(value: String, answers: List<Answer>? = null, ignore_pending: Boolean=false, type: TicketCheckProvider.CheckInType): TicketCheckProvider.CheckResult? {
+    private fun<T> withRetry(f: () -> T): T {
         var exc: java.lang.Exception? = null
         for (retryCount in 0 .. 10) {
             try {
-                if (answers != null) {
-                    return (app as PretixScanMain).provider.check(value, answers, ignore_pending, true, type)
-                } else {
-                    return (app as PretixScanMain).provider.check(value, ArrayList<Answer>(), ignore_pending, true, type)
-                }
+                return f()
             } catch (e: StatementExecutionException) {
                 if (e.cause?.message?.contains("SQLITE_BUSY") == true) {
                     exc = e
@@ -47,7 +46,17 @@ class MainController : BaseController() {
         if (exc != null) {
             throw exc
         }
-        return null
+        throw RuntimeException("Impossible retry state reached")
+    }
+
+    fun handleScanInput(value: String, answers: List<Answer>? = null, ignore_pending: Boolean=false, type: TicketCheckProvider.CheckInType): TicketCheckProvider.CheckResult? {
+        return withRetry {
+            if (answers != null) {
+                return@withRetry (app as PretixScanMain).provider.check(value, answers, ignore_pending, true, type)
+            } else {
+                return@withRetry (app as PretixScanMain).provider.check(value, ArrayList<Answer>(), ignore_pending, true, type)
+            }
+        }
     }
 
     fun updateCheck() {
