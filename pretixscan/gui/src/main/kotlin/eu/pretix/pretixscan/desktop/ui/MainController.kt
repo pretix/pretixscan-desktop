@@ -5,7 +5,9 @@ import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.VERSION
+import io.requery.sql.StatementExecutionException
 import org.json.JSONObject
+import java.lang.RuntimeException
 import java.util.*
 import kotlin.collections.List
 
@@ -22,14 +24,38 @@ class MainController : BaseController() {
             // not yet set up
             return null
         }
-        return (app as PretixScanMain).provider.search(value, 1)
+        return withRetry {
+            return@withRetry (app as PretixScanMain).provider.search(value, 1)
+        }
+    }
+
+    private fun<T> withRetry(f: () -> T): T {
+        var exc: java.lang.Exception? = null
+        for (retryCount in 0 .. 10) {
+            try {
+                return f()
+            } catch (e: StatementExecutionException) {
+                if (e.cause?.message?.contains("SQLITE_BUSY") == true) {
+                    exc = e
+                    Thread.sleep(1000)
+                } else {
+                    throw e
+                }
+            }
+        }
+        if (exc != null) {
+            throw exc
+        }
+        throw RuntimeException("Impossible retry state reached")
     }
 
     fun handleScanInput(value: String, answers: List<Answer>? = null, ignore_pending: Boolean=false, type: TicketCheckProvider.CheckInType): TicketCheckProvider.CheckResult? {
-        if (answers != null) {
-            return (app as PretixScanMain).provider.check(value, answers, ignore_pending, true, type)
-        } else {
-            return (app as PretixScanMain).provider.check(value, ArrayList<Answer>(), ignore_pending, true, type)
+        return withRetry {
+            if (answers != null) {
+                return@withRetry (app as PretixScanMain).provider.check(value, answers, ignore_pending, true, type)
+            } else {
+                return@withRetry (app as PretixScanMain).provider.check(value, ArrayList<Answer>(), ignore_pending, true, type)
+            }
         }
     }
 

@@ -5,7 +5,6 @@ import eu.pretix.libpretixsync.check.CheckException
 import eu.pretix.libpretixsync.db.CheckIn
 import eu.pretix.libpretixsync.db.Order
 import eu.pretix.libpretixsync.db.OrderPosition
-import eu.pretix.libpretixsync.db.ResourceLastModified
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.ui.helpers.*
