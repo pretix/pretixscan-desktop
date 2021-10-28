@@ -1,5 +1,8 @@
 variables:
   GIT_SUBMODULE_STRATEGY: "recursive"
+default:
+  image: 
+      name: openjdk:11-bullseye
 package:
     before_script:
         - apt update && apt -y install fakeroot maven
