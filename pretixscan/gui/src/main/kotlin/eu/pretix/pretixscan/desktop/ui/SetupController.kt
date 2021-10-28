@@ -39,14 +39,19 @@ class SetupController : BaseController() {
             (app as PretixScanMain).reloadCheckProvider()
             return SetupResult(SetupResultState.OK, "")
         } catch (e: SSLException) {
+            e.printStackTrace()
             return SetupResult(SetupResultState.ERR_SSL, "")
         } catch (e: IOException) {
+            e.printStackTrace()
             return SetupResult(SetupResultState.ERR_IO, "")
         } catch (e: SetupServerErrorException) {
+            e.printStackTrace()
             return SetupResult(SetupResultState.ERR_SERVERERROR, "")
         } catch (e: SetupBadRequestException) {
+            e.printStackTrace()
             return SetupResult(SetupResultState.ERR_BADREQUEST, e.message ?: "")
         } catch (e: SetupBadResponseException) {
+            e.printStackTrace()
             return SetupResult(SetupResultState.ERR_BADRESPONSE, "")
         }
     }
