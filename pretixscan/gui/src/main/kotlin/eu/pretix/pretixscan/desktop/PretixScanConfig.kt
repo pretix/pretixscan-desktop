@@ -169,6 +169,10 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
         return prefs.get(PREFS_KEY_EVENT_SLUG, null)
     }
 
+    override fun getSyncCycleId(): String {
+        return "0"
+    }
+
     override fun getSubEventId(): Long? {
         val l = prefs.getLong(PREFS_KEY_SUBEVENT_ID, 0L)
         if (l == 0L) {
