@@ -847,8 +847,8 @@ class MainView : View() {
                                     }
                                 }
                             }
-                            if (data?.position != null) {
-                                val t = data?.position?.getJSONObject("pdf_data")?.getString("addons")?.replace("<br/>", ", ")
+                            if (data?.position != null && data?.position?.has("pdf_data") == true) {
+                                val t = data?.position?.optJSONObject("pdf_data")?.optString("addons")?.replace("<br/>", ", ")
                                 if (t?.isNotEmpty() == true) {
                                     hbox {
                                         label("+ $t") {
