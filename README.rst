@@ -29,8 +29,11 @@ This project contains a submodule, so the first command you execute should be::
     git submodule update --init
 
 This project is built using Gradle. It requires a JDK in version 11.
-You can then run the project using::
+You can then build and run the project using::
 
+    cd pretixscan/tornadofx-repo
+    JAVA_HOME=/usr/lib/jvm/java-11-jdk mvn -DskipTests package
+    cd ..
     JAVA_HOME=/usr/lib/jvm/java-11-jdk ./gradlew :gui:run
 
 To create packages, see PACKAGES.md.
