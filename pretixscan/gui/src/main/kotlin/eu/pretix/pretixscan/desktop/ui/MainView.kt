@@ -26,6 +26,7 @@ import javafx.scene.layout.VBox
 import javafx.util.Duration
 import tornadofx.*
 import java.awt.Desktop
+import java.lang.Integer.min
 import java.net.URI
 import java.text.MessageFormat
 import java.text.SimpleDateFormat
@@ -106,7 +107,7 @@ class MainView : View() {
         cellCache {
             vbox {
 
-                label(it.secret!!.substring(0, 20) + "…")
+                label(it.secret!!.substring(0, min(it.secret!!.length, 20)) + "…")
                 hbox {
                     style {
                         maxWidth = 630.px
