@@ -1,8 +1,7 @@
 pretixSCAN is developed by:
 
-rami.io Software development
-Raphael Michel
-Markgräfler Straße 16
+rami.io GmbH
+Berthold-Mogel-Str. 1
 69126 Heidelberg
 Germany
 
