@@ -66,7 +66,7 @@ subprojects {
         implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
         // libpretixsync
-        compile 'com.squareup.okhttp3:okhttp:4.9.1'
+        compile 'com.squareup.okhttp3:okhttp:4.9.3'
         compile 'io.requery:requery:1.6.0'
         compile 'io.requery:requery-kotlin:1.6.0'
         compile 'joda-time:joda-time:2.10.10'
@@ -74,8 +74,8 @@ subprojects {
         implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.0'
         annotationProcessor 'javax.annotation:jsr250-api:1.0'
         annotationProcessor 'io.requery:requery-processor:1.6.0'
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
-        implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5'
+        implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+        implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0'
         implementation 'net.i2p.crypto:eddsa:0.3.0'
         implementation 'com.google.protobuf:protobuf-lite:3.0.1'
 

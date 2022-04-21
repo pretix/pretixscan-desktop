@@ -18,6 +18,7 @@ import javafx.stage.Stage
 import org.joda.time.Period
 import org.joda.time.format.PeriodFormatter
 import org.joda.time.format.PeriodFormatterBuilder
+import org.json.JSONObject
 import tornadofx.*
 import java.io.File
 import java.text.MessageFormat
@@ -135,6 +136,7 @@ open class BaseController : Controller() {
                 if (configStore.syncOrders) SyncManager.Profile.PRETIXSCAN else SyncManager.Profile.PRETIXSCAN_ONLINE,
                 configStore.badgePrinterName != null,
                 VERSION_CODE,
+                JSONObject(),
                 System.getProperty("os.name"),
                 System.getProperty("os.version"),
                 "pretixSCAN Desktop",

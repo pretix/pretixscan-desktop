@@ -2,6 +2,7 @@ package eu.pretix.pretixscan.desktop
 
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
+import org.json.JSONObject
 import java.io.File
 import java.util.prefs.Preferences
 
@@ -24,6 +25,7 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_SYNC_ORDERS = "sync_orders"
     private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
+    private val PREFS_KEY_DEVICE_KNOWN_INFO = "known_info"
     private val PREFS_KEY_SCAN_TYPE = "scan_type"
     private val PREFS_KEY_PRETIX_KNOWN_VERSION = "known_pretix_version"
     private val PREFS_KEY_KNOWN_DEVICE_NAME = "known_device_name"
@@ -289,7 +291,17 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     }
 
     override fun setDeviceKnownVersion(value: Int) {
-        return prefs.putInt(PREFS_KEY_DEVICE_KNOWN_VERSION, value)
+        prefs.putInt(PREFS_KEY_DEVICE_KNOWN_VERSION, value)
+        prefs.flush()
+    }
+
+    override fun getDeviceKnownInfo(): JSONObject {
+        return JSONObject(prefs.get(PREFS_KEY_DEVICE_KNOWN_INFO, "{}") ?: "{}")
+    }
+
+    override fun setDeviceKnownInfo(value: JSONObject?) {
+        prefs.put(PREFS_KEY_DEVICE_KNOWN_INFO, value?.toString() ?: "{}")
+        prefs.flush()
     }
 
     override fun setKnownPretixVersion(value: Long) {
