@@ -38,7 +38,7 @@ The app contains the following fonts:
 * Oswald, Vermon Adams, SIL Open Font License
 * Titillium, Accademia di Belle Arti Urbino, SIL Open Font License
 * Poppins, Indian Type Foundry, SIL Open Font License
-
+* Space Mono, Colophon Foundry, SIL Open Font License
 
 GPL
 Please see https://www.gnu.org/licenses/gpl-3.0

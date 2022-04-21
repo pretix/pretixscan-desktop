@@ -197,8 +197,12 @@ class Renderer(private val layout: JSONArray, private val position: JSONObject, 
             registerFontFamily(application, "Webfont", "fonts/oswald-%s-webfont.ttf")
             registerFontFamily(application, "Roboto Condensed", "fonts/RobotoCondensed-%s-webfont.ttf")
             registerFontFamily(application, "Titillium", "fonts/titillium-%s-webfont.ttf")
+            registerFontFamily(application, "Titillium Upright", "fonts/titillium-%s-webfont.ttf", "RegularUpright", "BoldUpright", "BoldUpright", "RegularUpright")
+            registerFontFamily(application, "Titillium Semibold Upright", "fonts/titillium-%s-webfont.ttf", "SemiboldUpright", "BoldUpright", "BoldUpright", "SemiboldUpright")
             registerFontFamily(application, "DejaVu Sans", "fonts/DejaVuSans-%s-webfont.ttf")
             registerFontFamily(application, "Poppins", "fonts/Poppins-%s-webfont.ttf")
+            registerFontFamily(application, "Space Mono", "fonts/Space-Mono-%s.ttf")
+
         }
 
         fun storeFont(application: PretixScanMain, path: String): String {
@@ -220,23 +224,23 @@ class Renderer(private val layout: JSONArray, private val position: JSONObject, 
             return file.absolutePath
         }
 
-        fun registerFontFamily(application: PretixScanMain, name: String, pattern: String) {
+        fun registerFontFamily(application: PretixScanMain, name: String, pattern: String, regularName: String = "Regular", boldName: String = "Bold", boldItalicName: String = "BoldItalic", italicName: String = "Italic") {
             FontRegistry.getInstance().add(
                     name,
                     FontSpecification.Style.REGULAR,
-                    storeFont(application, String.format(pattern, "Regular")))
+                    storeFont(application, String.format(pattern, regularName)))
             FontRegistry.getInstance().add(
                     name,
                     FontSpecification.Style.BOLDITALIC,
-                    storeFont(application, String.format(pattern, "BoldItalic")))
+                    storeFont(application, String.format(pattern, boldItalicName)))
             FontRegistry.getInstance().add(
                     name,
                     FontSpecification.Style.BOLD,
-                    storeFont(application, String.format(pattern, "Bold")))
+                    storeFont(application, String.format(pattern, boldName)))
             FontRegistry.getInstance().add(
                     name,
                     FontSpecification.Style.ITALIC,
-                    storeFont(application, String.format(pattern, "Italic")))
+                    storeFont(application, String.format(pattern, italicName)))
         }
     }
 }
