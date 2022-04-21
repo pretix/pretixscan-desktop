@@ -175,4 +175,8 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
         apiClient = PretixApi.fromConfig(configStore, OkHttpClientFactory());
         return p
     }
+
+    init {
+        Thread.setDefaultUncaughtExceptionHandler(ErrorHandler())
+    }
 }
