@@ -132,7 +132,7 @@ class OrderPositionContentProvider(private val application: PretixScanMain, priv
     }
 
     private fun interpolate(str: String): String {
-        return str.replace(Regex("\\{([a-zA-Z0-9_]+)\\}")) { match ->
+        return str.replace(Regex("\\{([a-zA-Z0-9_:]+)\\}")) { match ->
             getTextContent(match.groups[1]!!.value, null, null)
         }
     }
