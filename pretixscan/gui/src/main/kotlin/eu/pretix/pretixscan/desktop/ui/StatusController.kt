@@ -5,6 +5,6 @@ import eu.pretix.pretixscan.desktop.PretixScanMain
 
 class StatusController : BaseController() {
     fun retrieveInfo(): TicketCheckProvider.StatusResult {
-        return (app as PretixScanMain).provider.status()!!
+        return (app as PretixScanMain).provider.status(configStore.eventSlug!!, configStore.checkInListId)!!
     }
 }
