@@ -25,7 +25,7 @@ class MainController : BaseController() {
             return null
         }
         return withRetry {
-            return@withRetry (app as PretixScanMain).provider.search(value, 1)
+            return@withRetry (app as PretixScanMain).provider.search(mapOf(configStore.eventSlug!! to configStore.checkInListId), value, 1)
         }
     }
 
@@ -52,9 +52,9 @@ class MainController : BaseController() {
     fun handleScanInput(value: String, answers: List<Answer>? = null, ignore_pending: Boolean=false, type: TicketCheckProvider.CheckInType): TicketCheckProvider.CheckResult? {
         return withRetry {
             if (answers != null) {
-                return@withRetry (app as PretixScanMain).provider.check(value, answers, ignore_pending, true, type)
+                return@withRetry (app as PretixScanMain).provider.check(mapOf(configStore.eventSlug!! to configStore.checkInListId), value, answers, ignore_pending, true, type)
             } else {
-                return@withRetry (app as PretixScanMain).provider.check(value, ArrayList<Answer>(), ignore_pending, true, type)
+                return@withRetry (app as PretixScanMain).provider.check(mapOf(configStore.eventSlug!! to configStore.checkInListId), value, ArrayList<Answer>(), ignore_pending, true, type)
             }
         }
     }

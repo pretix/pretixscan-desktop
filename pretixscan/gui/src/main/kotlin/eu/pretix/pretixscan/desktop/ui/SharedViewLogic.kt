@@ -162,7 +162,7 @@ open class BaseController : Controller() {
         }
         try {
             initSyncManager()
-            syncManager!!.sync(force, configStore.checkInListId, feedback)
+            syncManager!!.sync(force, feedback)
         } catch (e: SyncManager.EventSwitchRequested) {
             eh(e)
         } finally {

@@ -118,6 +118,7 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     override fun getApiKey(): String {
         return prefs.get(PREFS_KEY_API_KEY, "")
     }
+
     override fun getLastCleanup(): Long {
         return prefs.getLong(PREFS_KEY_LAST_CLEANUP, 0)
     }
@@ -167,34 +168,48 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
         return prefs.get(PREFS_KEY_ORGANIZER_SLUG, "")
     }
 
-    override fun getEventSlug(): String? {
-        return prefs.get(PREFS_KEY_EVENT_SLUG, null)
-    }
+    var eventSlug: String?
+        get() = prefs.get(PREFS_KEY_EVENT_SLUG, null)
+        set(value) {
+            prefs.put(PREFS_KEY_EVENT_SLUG, value)
+            prefs.flush()
+        }
 
     override fun getSyncCycleId(): String {
         return "0"
     }
 
-    override fun getSubEventId(): Long? {
-        val l = prefs.getLong(PREFS_KEY_SUBEVENT_ID, 0L)
-        if (l == 0L) {
-            return null
-        }
-        return l
+    override fun getSynchronizedEvents(): List<String> {
+        val e = eventSlug
+        if (e != null) return listOf(e)
+        return emptyList()
     }
+
+    override fun getSelectedSubeventForEvent(event: String): Long? {
+        val se = subEventId ?: return null
+        if (se < 1) return null
+        return se
+    }
+
+    override fun getSelectedCheckinListForEvent(event: String?): Long? {
+        return checkInListId
+    }
+
+    var subEventId: Long?
+        get() {
+            val l = prefs.getLong(PREFS_KEY_SUBEVENT_ID, 0L)
+            if (l == 0L) {
+                return null
+            }
+            return l
+        }
+        set(value) {
+            prefs.putLong(PREFS_KEY_SUBEVENT_ID, value ?: 0L)
+            prefs.flush()
+        }
 
     fun setOrganizerSlug(value: String) {
         prefs.put(PREFS_KEY_ORGANIZER_SLUG, value)
-        prefs.flush()
-    }
-
-    fun setEventSlug(value: String?) {
-        prefs.put(PREFS_KEY_EVENT_SLUG, value)
-        prefs.flush()
-    }
-
-    fun setSubEventId(value: Long?) {
-        prefs.putLong(PREFS_KEY_SUBEVENT_ID, value ?: 0L)
         prefs.flush()
     }
 
@@ -204,21 +219,21 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
 
     var eventName: String?
         get() = prefs.get(PREFS_KEY_EVENT_NAME, null)
-        set (value) {
+        set(value) {
             prefs.put(PREFS_KEY_EVENT_NAME, value)
             prefs.flush()
         }
 
     var playSound: Boolean
         get() = prefs.getBoolean(PREFS_KEY_PLAY_SOUND, true)
-        set (value) {
+        set(value) {
             prefs.putBoolean(PREFS_KEY_PLAY_SOUND, value)
             prefs.flush()
         }
 
     var largeColor: Boolean
         get() = prefs.getBoolean(PREFS_KEY_LARGE_COLOR, false)
-        set (value) {
+        set(value) {
             prefs.putBoolean(PREFS_KEY_LARGE_COLOR, value)
             prefs.flush()
         }
@@ -246,42 +261,42 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
 
     var updateCheckNewerVersion: String
         get() = prefs.get(PREFS_KEY_UPDATE_CHECK_NEWER_VERSION + VERSION, "")
-        set (value) {
+        set(value) {
             prefs.put(PREFS_KEY_UPDATE_CHECK_NEWER_VERSION + VERSION, value)
             prefs.flush()
         }
 
     var autoPrintBadges: Boolean
         get() = prefs.getBoolean(PREFS_KEY_AUTO_PRINT_BADGES, false)
-        set (value) {
+        set(value) {
             prefs.putBoolean(PREFS_KEY_AUTO_PRINT_BADGES, value)
             prefs.flush()
         }
 
     var badgePrinterName: String?
         get() = prefs.get(PREFS_KEY_PRINTER_BADGE_NAME, null)
-        set (value) {
+        set(value) {
             prefs.put(PREFS_KEY_PRINTER_BADGE_NAME, value)
             prefs.flush()
         }
 
     var badgePrinterOrientation: String
         get() = prefs.get(PREFS_KEY_PRINTER_BADGE_ORIENTATION, "Auto")
-        set (value) {
+        set(value) {
             prefs.put(PREFS_KEY_PRINTER_BADGE_ORIENTATION, value)
             prefs.flush()
         }
 
     var scanType: String
         get() = prefs.get(PREFS_KEY_SCAN_TYPE, "entry")
-        set (value) {
+        set(value) {
             prefs.put(PREFS_KEY_SCAN_TYPE, value)
             prefs.flush()
         }
 
     var syncOrders: Boolean
         get() = prefs.getBoolean(PREFS_KEY_SYNC_ORDERS, true)
-        set (value) {
+        set(value) {
             prefs.putBoolean(PREFS_KEY_SYNC_ORDERS, value)
             prefs.flush()
         }
