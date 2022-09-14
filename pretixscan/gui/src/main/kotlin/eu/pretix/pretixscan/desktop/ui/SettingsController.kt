@@ -11,30 +11,8 @@ import javax.print.attribute.standard.QueuedJobCount
 class SettingsController : BaseController() {
 
     fun resetApp() {
+        (app as PretixScanMain).deleteDatabase()
         configStore.resetEventConfig()
-        (app as PretixScanMain).data().delete(QueuedCheckIn::class.java).get()
-        (app as PretixScanMain).data().delete(QueuedCall::class.java).get()
-        (app as PretixScanMain).data().delete(QueuedOrder::class.java).get()
-        (app as PretixScanMain).data().delete(BadgeLayout::class.java).get()
-        (app as PretixScanMain).data().delete(CheckInList_Item::class.java).get()
-        (app as PretixScanMain).data().delete(CheckInList::class.java).get()
-        (app as PretixScanMain).data().delete(Closing::class.java).get()
-        (app as PretixScanMain).data().delete(Cashier::class.java).get()
-        (app as PretixScanMain).data().delete(Event::class.java).get()
-        (app as PretixScanMain).data().delete(Question_Item::class.java).get()
-        (app as PretixScanMain).data().delete(Question_Item::class.java).get()
-        (app as PretixScanMain).data().delete(Item::class.java).get()
-        (app as PretixScanMain).data().delete(ItemCategory::class.java).get()
-        (app as PretixScanMain).data().delete(Order::class.java).get()
-        (app as PretixScanMain).data().delete(OrderPosition::class.java).get()
-        (app as PretixScanMain).data().delete(Question::class.java).get()
-        (app as PretixScanMain).data().delete(Quota::class.java).get()
-        (app as PretixScanMain).data().delete(Receipt::class.java).get()
-        (app as PretixScanMain).data().delete(ReceiptLine::class.java).get()
-        (app as PretixScanMain).data().delete(ResourceSyncStatus::class.java).get()
-        (app as PretixScanMain).data().delete(SubEvent::class.java).get()
-        (app as PretixScanMain).data().delete(TaxRule::class.java).get()
-        (app as PretixScanMain).data().delete(TicketLayout::class.java).get()
     }
 
     fun hasLocalChanges(): Boolean {

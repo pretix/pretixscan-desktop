@@ -110,6 +110,14 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
                 PretixScanMain::class.java.getResource("/com/jfoenix/assets/css/jfoenix-design.css").toExternalForm())
     }
 
+    fun deleteDatabase() {
+        dataStore?.close()
+        val dbFile = File(dataDir + "/data.sqlite")
+        if (dbFile.exists()) {
+            dbFile.delete()
+        }
+        dataStore = null
+    }
 
     fun data(): BlockingEntityStore<Persistable> {
         if (dataStore == null) {
