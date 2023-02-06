@@ -45,6 +45,7 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_LAST_STATUS_DATA = "last_status_data"
     private val PREFS_KEY_LAST_UPDATE_CHECK = "last_update_check_"
     private val PREFS_KEY_UPDATE_CHECK_NEWER_VERSION = "update_check_newer_version_"
+    private val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
 
     fun setDeviceConfig(url: String, key: String, orga_slug: String, device_id: Long, serial: String, sent_version: Int) {
         prefs.put(PREFS_KEY_API_URL, url)
@@ -349,5 +350,14 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
 
     fun setAutoSwitchRequested(value: Boolean) {
         return prefs.putBoolean(PREFS_KEY_AUTO_SWITCH, value)
+    }
+
+    override fun getKnownLiveEventSlugs(): Set<String> {
+        return prefs.get(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, "").split(",").filter { it.isNotEmpty() }.toSet()
+    }
+
+    override fun setKnownLiveEventSlugs(slugs: Set<String>) {
+        prefs.put(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, slugs.joinToString(","))
+        prefs.flush()
     }
 }
