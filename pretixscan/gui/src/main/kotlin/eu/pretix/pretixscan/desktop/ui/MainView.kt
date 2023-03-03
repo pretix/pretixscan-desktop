@@ -727,7 +727,11 @@ class MainView : View() {
             if (resultData?.type == TicketCheckProvider.CheckResult.Type.VALID) {
                 beep(when {
                     resultData?.scanType == TicketCheckProvider.CheckInType.EXIT -> "exit"
-                    else -> "enter"
+                    else -> if (resultData?.isRequireAttention == true) {
+                        "attention"
+                    } else {
+                        "enter"
+                    }
                 })
                 if (resultData?.scanType != TicketCheckProvider.CheckInType.EXIT) {
                     if (resultData?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (app as PretixScanMain).configStore.autoPrintBadges) {
