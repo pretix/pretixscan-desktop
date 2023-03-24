@@ -3,28 +3,31 @@ package eu.pretix.pretixscan.desktop
 import eu.pretix.libpretixprint.templating.ContentProvider
 import eu.pretix.libpretixprint.templating.FontRegistry
 import eu.pretix.libpretixprint.templating.FontSpecification
-import eu.pretix.libpretixsync.db.BadgeLayout
-import eu.pretix.libpretixsync.db.Item
 import eu.pretix.libpretixprint.templating.Layout
+import eu.pretix.libpretixsync.db.BadgeLayout
 import eu.pretix.libpretixsync.db.BadgeLayoutItem
 import eu.pretix.libpretixsync.db.CachedPdfImage
-import io.requery.BlockingEntityStore
-import io.requery.Persistable
+import eu.pretix.libpretixsync.db.Item
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.Orientation
-import org.apache.pdfbox.printing.PDFPageable
 import org.apache.pdfbox.printing.PDFPrintable
 import org.apache.pdfbox.printing.Scaling
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.awt.print.Book
+import java.awt.print.PageFormat
 import java.awt.print.PrinterJob
 import java.io.File
 import java.io.InputStream
 import java.util.*
 import javax.print.PrintServiceLookup
 import javax.print.attribute.HashPrintRequestAttributeSet
+import javax.print.attribute.Size2DSyntax
+import javax.print.attribute.standard.MediaSize
 import javax.print.attribute.standard.OrientationRequested
+import kotlin.math.max
+import kotlin.math.min
 
 
 fun getDefaultBadgeLayout(): BadgeLayout {
@@ -67,6 +70,7 @@ fun getBadgeLayout(application: PretixScanMain, position: JSONObject, eventSlug:
     }
 }
 
+private const val POINTS_PER_MM = 1 / (10 * 2.54f) * 72
 fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: String) {
     val pdffile = File(PretixScanMain.cacheDir, "print.pdf")
     if (!pdffile.parentFile.exists()) {
@@ -93,16 +97,42 @@ fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: Str
             } else if (application.configStore.badgePrinterOrientation == "Auto") {
                 o = Orientation.AUTO
             }
-            job.setPrintable(PDFPrintable(document, Scaling.SCALE_TO_FIT))
             // job.setPageable(PDFPageable(document, o, false, 0f))
             job.printService = printService
             val attributes = HashPrintRequestAttributeSet()
-            if (application.configStore.badgePrinterOrientation == "Landscape") {
+            /*if (application.configStore.badgePrinterOrientation == "Landscape") {
                 attributes.add(OrientationRequested.LANDSCAPE)
             } else {
                 attributes.add(OrientationRequested.PORTRAIT)
+            }*/
+            val rect = document.getPage(0).mediaBox
+            val x = kotlin.math.abs(rect.upperRightX - rect.lowerLeftX) / POINTS_PER_MM
+            val y = kotlin.math.abs(rect.lowerLeftY - rect.upperRightY) / POINTS_PER_MM
+
+            //attributes.add(MediaSize(min(x, y), max(x, y), Size2DSyntax.MM))
+            if (x > y) {
+                attributes.add(OrientationRequested.LANDSCAPE)
             }
-            job.print(attributes)
+
+            if (job.printDialog(attributes)) {
+                val widthPoints = kotlin.math.abs(rect.upperRightX - rect.lowerLeftX)
+                val heightPoints = kotlin.math.abs(rect.lowerLeftY - rect.upperRightY)
+
+                val pf: PageFormat = job.defaultPage()
+                val paper = pf.paper
+                paper.setSize(widthPoints.toDouble(), heightPoints.toDouble())
+                paper.setImageableArea(0.0, 0.0, widthPoints.toDouble(), heightPoints.toDouble())
+
+                pf.paper = paper
+                job.validatePage(pf)
+
+                val book = Book()
+                book.append(PDFPrintable(document, Scaling.SCALE_TO_FIT), pf)
+                job.setPageable(book)
+
+
+                job.print(attributes)
+            }
             break
         }
     }
