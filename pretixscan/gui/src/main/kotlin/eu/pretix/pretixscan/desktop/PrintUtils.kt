@@ -13,6 +13,8 @@ import io.requery.Persistable
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.Orientation
 import org.apache.pdfbox.printing.PDFPageable
+import org.apache.pdfbox.printing.PDFPrintable
+import org.apache.pdfbox.printing.Scaling
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -83,7 +85,7 @@ fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: Str
     val document = PDDocument.load(pdffile)
     val printServices = PrintServiceLookup.lookupPrintServices(null, null)
     for (printService in printServices) {
-        if (printService.name.trim().equals(application.configStore.badgePrinterName)) {
+        if (printService.name.trim() == application.configStore.badgePrinterName) {
             val job = PrinterJob.getPrinterJob()
             var o = Orientation.PORTRAIT
             if (application.configStore.badgePrinterOrientation == "Landscape") {
@@ -91,7 +93,8 @@ fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: Str
             } else if (application.configStore.badgePrinterOrientation == "Auto") {
                 o = Orientation.AUTO
             }
-            job.setPageable(PDFPageable(document, o, false, 0f))
+            job.setPrintable(PDFPrintable(document, Scaling.SCALE_TO_FIT))
+            // job.setPageable(PDFPageable(document, o, false, 0f))
             job.printService = printService
             val attributes = HashPrintRequestAttributeSet()
             if (application.configStore.badgePrinterOrientation == "Landscape") {
