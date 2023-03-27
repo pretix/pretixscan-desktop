@@ -3,26 +3,32 @@ package eu.pretix.pretixscan.desktop
 import eu.pretix.libpretixprint.templating.ContentProvider
 import eu.pretix.libpretixprint.templating.FontRegistry
 import eu.pretix.libpretixprint.templating.FontSpecification
-import eu.pretix.libpretixsync.db.BadgeLayout
-import eu.pretix.libpretixsync.db.Item
 import eu.pretix.libpretixprint.templating.Layout
+import eu.pretix.libpretixsync.db.BadgeLayout
 import eu.pretix.libpretixsync.db.BadgeLayoutItem
 import eu.pretix.libpretixsync.db.CachedPdfImage
-import io.requery.BlockingEntityStore
-import io.requery.Persistable
+import eu.pretix.libpretixsync.db.Item
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.Orientation
 import org.apache.pdfbox.printing.PDFPageable
+import org.apache.pdfbox.printing.PDFPrintable
+import org.apache.pdfbox.printing.Scaling
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.awt.print.Book
+import java.awt.print.PageFormat
 import java.awt.print.PrinterJob
 import java.io.File
 import java.io.InputStream
 import java.util.*
 import javax.print.PrintServiceLookup
 import javax.print.attribute.HashPrintRequestAttributeSet
+import javax.print.attribute.Size2DSyntax
+import javax.print.attribute.standard.MediaSize
 import javax.print.attribute.standard.OrientationRequested
+import kotlin.math.max
+import kotlin.math.min
 
 
 fun getDefaultBadgeLayout(): BadgeLayout {
@@ -83,21 +89,50 @@ fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: Str
     val document = PDDocument.load(pdffile)
     val printServices = PrintServiceLookup.lookupPrintServices(null, null)
     for (printService in printServices) {
-        if (printService.name.trim().equals(application.configStore.badgePrinterName)) {
+        if (printService.name.trim() == application.configStore.badgePrinterName) {
             val job = PrinterJob.getPrinterJob()
-            var o = Orientation.PORTRAIT
-            if (application.configStore.badgePrinterOrientation == "Landscape") {
-                o = Orientation.LANDSCAPE
-            } else if (application.configStore.badgePrinterOrientation == "Auto") {
-                o = Orientation.AUTO
-            }
-            job.setPageable(PDFPageable(document, o, false, 0f))
             job.printService = printService
+
             val attributes = HashPrintRequestAttributeSet()
-            if (application.configStore.badgePrinterOrientation == "Landscape") {
-                attributes.add(OrientationRequested.LANDSCAPE)
+
+            if (application.configStore.badgePrinterOrientation == "Auto") {
+                // New behavior
+                val book = Book()
+                for (p in document.pages) {
+                    val rect = document.getPage(0).mediaBox
+                    val widthPoints = kotlin.math.abs(rect.upperRightX - rect.lowerLeftX)
+                    val heightPoints = kotlin.math.abs(rect.lowerLeftY - rect.upperRightY)
+
+                    if (widthPoints > heightPoints) {
+                        attributes.add(OrientationRequested.LANDSCAPE)
+                    } else {
+                        attributes.add(OrientationRequested.PORTRAIT)
+                    }
+
+                    val pf = job.defaultPage().clone() as PageFormat
+                    val paper = pf.paper
+                    paper.setSize(widthPoints.toDouble(), heightPoints.toDouble())
+                    paper.setImageableArea(0.0, 0.0, widthPoints.toDouble(), heightPoints.toDouble())
+                    pf.paper = paper
+                    job.validatePage(pf)
+
+                    book.append(PDFPrintable(document, Scaling.SCALE_TO_FIT), pf)
+                }
+                job.setPageable(book)
             } else {
-                attributes.add(OrientationRequested.PORTRAIT)
+                // Keep old behavior
+                var o = Orientation.PORTRAIT
+                if (application.configStore.badgePrinterOrientation == "Landscape") {
+                    o = Orientation.LANDSCAPE
+                } else if (application.configStore.badgePrinterOrientation == "Auto") {
+                    o = Orientation.AUTO
+                }
+                job.setPageable(PDFPageable(document, o, false, 0f))
+                if (application.configStore.badgePrinterOrientation == "Landscape") {
+                    attributes.add(OrientationRequested.LANDSCAPE)
+                } else {
+                    attributes.add(OrientationRequested.PORTRAIT)
+                }
             }
             job.print(attributes)
             break
