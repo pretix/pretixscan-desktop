@@ -52,9 +52,9 @@ class MainController : BaseController() {
     fun handleScanInput(value: String, answers: List<Answer>? = null, ignore_pending: Boolean=false, type: TicketCheckProvider.CheckInType): TicketCheckProvider.CheckResult? {
         return withRetry {
             if (answers != null) {
-                return@withRetry (app as PretixScanMain).provider.check(mapOf(configStore.eventSlug!! to configStore.checkInListId), value, answers, ignore_pending, true, type)
+                return@withRetry (app as PretixScanMain).provider.check(mapOf(configStore.eventSlug!! to configStore.checkInListId), value, "barcode", answers, ignore_pending, true, type)
             } else {
-                return@withRetry (app as PretixScanMain).provider.check(mapOf(configStore.eventSlug!! to configStore.checkInListId), value, ArrayList<Answer>(), ignore_pending, true, type)
+                return@withRetry (app as PretixScanMain).provider.check(mapOf(configStore.eventSlug!! to configStore.checkInListId), value, "barcode", ArrayList<Answer>(), ignore_pending, true, type)
             }
         }
     }
