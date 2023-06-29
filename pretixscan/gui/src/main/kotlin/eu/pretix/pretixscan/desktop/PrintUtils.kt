@@ -226,6 +226,7 @@ class Renderer(private val layout: JSONArray, private val position: JSONObject, 
         fun registerFonts(application: PretixScanMain) {
             registerFontFamily(application, "Open Sans", "fonts/OpenSans-%s.ttf")
             registerFontFamily(application, "Noto Sans", "fonts/NotoSans-%s-webfont.ttf")
+            registerFontFamily(application, "Noto Sans Japanese", "fonts/noto-sans-jp-v52-cyrillic_japanese_latin_latin-ext_vietnamese-%s.ttf", "regular", "700", "700", "regular")
             registerFontFamily(application, "Roboto", "fonts/Roboto-%s.ttf")
             registerFontFamily(application, "Droid Serif", "fonts/DroidSerif-%s-webfont.ttf")
             registerFontFamily(application, "Fira Sans", "fonts/firasans-%s-webfont.ttf")
