@@ -143,6 +143,16 @@ class SelectCheckInListView : View() {
                         style {
                             alignment = Pos.CENTER_LEFT
                         }
+                        jfxButton(messages["settings_reset_button"].toUpperCase()) {
+                            action {
+                                runAsync {
+                                    SettingsController().resetApp()
+                                    ui {
+                                        replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+                                    }
+                                }
+                            }
+                        }
                     }
                     hbox {
                         gridpaneColumnConstraints { percentWidth = 33.33 }
@@ -154,6 +164,9 @@ class SelectCheckInListView : View() {
                         gridpaneColumnConstraints { percentWidth = 33.33 }
                         style {
                             alignment = Pos.CENTER_RIGHT
+                        }
+                        vbox {
+                            hgrow = Priority.ALWAYS
                         }
                         jfxButton(messages["toolbar_refresh"]) {
                             action {

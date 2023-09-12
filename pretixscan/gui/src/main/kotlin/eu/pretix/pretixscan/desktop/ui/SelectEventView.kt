@@ -161,6 +161,17 @@ class SelectEventView : View() {
                                     replaceWith(MainView::class, MaterialSlide(ViewTransition.Direction.RIGHT))
                                 }
                             }
+                        } else {
+                            jfxButton(messages["settings_reset_button"].toUpperCase()) {
+                                action {
+                                    runAsync {
+                                        SettingsController().resetApp()
+                                        ui {
+                                            replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                     hbox {
