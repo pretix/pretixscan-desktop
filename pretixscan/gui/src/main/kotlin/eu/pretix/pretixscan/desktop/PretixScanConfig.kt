@@ -30,6 +30,7 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
     private val PREFS_KEY_PRETIX_KNOWN_VERSION = "known_pretix_version"
     private val PREFS_KEY_KNOWN_DEVICE_NAME = "known_device_name"
     private val PREFS_KEY_KNOWN_GATE_NAME = "known_gate_name"
+    private val PREFS_KEY_KNOWN_GATE_ID = "known_gate_id"
     private val PREFS_KEY_PLAY_SOUND = "play_sound"
     private val PREFS_KEY_AUTO_SWITCH = "auto_switch"
     private val PREFS_KEY_LARGE_COLOR = "large_color"
@@ -79,6 +80,8 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
         prefs.remove(PREFS_KEY_EVENT_SLUG)
         prefs.remove(PREFS_KEY_EVENT_NAME)
         prefs.remove(PREFS_KEY_CHECKINLIST_ID)
+        prefs.remove(PREFS_KEY_KNOWN_GATE_NAME)
+        prefs.remove(PREFS_KEY_KNOWN_GATE_ID)
         val f = File(data_dir, PREFS_KEY_LAST_STATUS_DATA + ".json")
         if (f.exists()) {
             f.delete()
@@ -342,6 +345,14 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
 
     override fun setDeviceKnownGateName(value: String?) {
         return prefs.put(PREFS_KEY_KNOWN_GATE_NAME, value ?: "")
+    }
+
+    override fun getDeviceKnownGateID(): Long {
+        return prefs.getLong(PREFS_KEY_KNOWN_GATE_ID, 0L)
+    }
+
+    override fun setDeviceKnownGateID(value: Long?) {
+        return prefs.putLong(PREFS_KEY_KNOWN_GATE_ID, value ?: 0)
     }
 
     override fun getAutoSwitchRequested(): Boolean {

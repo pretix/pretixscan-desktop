@@ -431,7 +431,7 @@ class QuestionsDialog(val requiredAnswers: List<TicketCheckProvider.RequiredAnsw
                         else -> (view as TextInputControl).text
                     }
                     try {
-                        ra.question.clean_answer(answerstring, ra.question.options)
+                        ra.question.clean_answer(answerstring, ra.question.options, false)
                     } catch (e: QuestionLike.ValidationException) {
                         if (view is Node) {
                             view.addDecorator(SimpleMessageDecorator(messages["field_invalid"], ValidationSeverity.Warning))

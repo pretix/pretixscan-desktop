@@ -139,8 +139,11 @@ open class BaseController : Controller() {
                 JSONObject(),
                 System.getProperty("os.name"),
                 System.getProperty("os.version"),
+                System.getProperty("os.name"),
+                System.getProperty("os.version"),
                 "pretixSCAN Desktop",
                 VERSION,
+                null,
                 null
         )
     }

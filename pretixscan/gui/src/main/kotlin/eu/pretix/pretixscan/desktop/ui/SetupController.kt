@@ -26,6 +26,7 @@ class SetupController : BaseController() {
     fun configure(url: String, token: String): SetupResult {
         val setupm = SetupManager(
                 System.getProperty("os.name"), System.getProperty("os.version"),
+                System.getProperty("os.name"), System.getProperty("os.version"),
                 "pretixSCAN", VERSION,
                 OkHttpClientFactory()
         )
@@ -33,6 +34,10 @@ class SetupController : BaseController() {
             val init = setupm.initialize(url, token)
             configStore.setDeviceConfig(init.url, init.api_token, init.organizer, init.device_id, init.unique_serial, VERSION_CODE)
             configStore.proxyMode = token.startsWith("proxy=")
+            if (init.gate_name != null) {
+                configStore.deviceKnownGateName = init.gate_name!!
+                configStore.deviceKnownGateID = init.gate_id!!
+            }
             if (init.security_profile == "pretixscan_online_kiosk") {
                 configStore.syncOrders = false
             }
