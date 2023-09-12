@@ -397,8 +397,13 @@ class MainView : View() {
         currentWindow?.setOnCloseRequest {
             controller.close()
         }
+        confdetailLabel.text = getConfDetails()
+        infoButton.isVisible = !(!conf.syncOrders && conf.asyncModeEnabled)
+    }
 
+    fun getConfDetails(): String {
         var confdetails = ""
+        val conf = (app as PretixScanMain).configStore
         if (!conf.eventSlug.isNullOrBlank()) {
             val event = (app as PretixScanMain).data().select(Event::class.java)
                     .where(Event.SLUG.eq(conf.eventSlug))
@@ -434,9 +439,7 @@ class MainView : View() {
             confdetails += "\n"
             confdetails += MessageFormat.format(messages["debug_info_device"], conf.deviceKnownName)
         }
-        confdetailLabel.text = confdetails
-
-        infoButton.isVisible = !(!conf.syncOrders && conf.asyncModeEnabled)
+        return confdetails
     }
 
     init {
@@ -448,10 +451,13 @@ class MainView : View() {
             keyframe(Duration.seconds(.5)) {
                 setOnFinished {
                     var text = "?"
+                    var confDetails = "?"
                     runAsync {
                         text = controller.syncStatusText()
+                        confDetails = getConfDetails()
                     } ui {
                         syncStatusLabel.text = text
+                        confdetailLabel.text = confDetails
                     }
                 }
             }
