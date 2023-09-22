@@ -225,6 +225,8 @@ class Renderer(private val layout: JSONArray, private val position: JSONObject, 
     companion object {
         fun registerFonts(application: PretixScanMain) {
             registerFontFamily(application, "Open Sans", "fonts/OpenSans-%s.ttf")
+            registerFontFamily(application, "Almarai", "fonts/almarai-v5-arabic-%s.ttf", "regular", "800", "800", "regular")
+            registerFontFamily(application, "Baloo Bhaijaan", "fonts/baloo-bhaijaan-v6-latin-ext_vietnamese_latin_arabic-%s.ttf", "regular", "regular", "regular", "regular")
             registerFontFamily(application, "Noto Sans", "fonts/NotoSans-%s-webfont.ttf")
             registerFontFamily(application, "Noto Sans Japanese", "fonts/noto-sans-jp-v52-cyrillic_japanese_latin_latin-ext_vietnamese-%s.ttf", "regular", "700", "700", "regular")
             registerFontFamily(application, "Roboto", "fonts/Roboto-%s.ttf")
@@ -233,14 +235,16 @@ class Renderer(private val layout: JSONArray, private val position: JSONObject, 
             registerFontFamily(application, "Lato", "fonts/Lato-%s.ttf")
             registerFontFamily(application, "Vollkorn", "fonts/Vollkorn-%s.ttf")
             registerFontFamily(application, "Montserrat", "fonts/montserrat-%s-webfont.ttf")
-            registerFontFamily(application, "Webfont", "fonts/oswald-%s-webfont.ttf")
+            registerFontFamily(application, "Oswald", "fonts/oswald-%s-webfont.ttf")
             registerFontFamily(application, "Roboto Condensed", "fonts/RobotoCondensed-%s-webfont.ttf")
+            registerFontFamily(application, "Tajawal", "fonts/tajawal-v3-latin_arabic-%s.ttf", "regular", "700", "700", "regular")
             registerFontFamily(application, "Titillium", "fonts/titillium-%s-webfont.ttf")
             registerFontFamily(application, "Titillium Upright", "fonts/titillium-%s-webfont.ttf", "RegularUpright", "BoldUpright", "BoldUpright", "RegularUpright")
             registerFontFamily(application, "Titillium Semibold Upright", "fonts/titillium-%s-webfont.ttf", "SemiboldUpright", "BoldUpright", "BoldUpright", "SemiboldUpright")
             registerFontFamily(application, "DejaVu Sans", "fonts/DejaVuSans-%s-webfont.ttf")
             registerFontFamily(application, "Poppins", "fonts/Poppins-%s-webfont.ttf")
             registerFontFamily(application, "Space Mono", "fonts/Space-Mono-%s.ttf")
+            registerFontFamily(application, "Ubuntu", "fonts/ubuntu-v15-latin-ext_latin-%s.ttf", "regular", "700", "700italic", "italic")
 
         }
 
