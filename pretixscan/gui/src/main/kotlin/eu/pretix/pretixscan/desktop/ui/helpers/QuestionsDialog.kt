@@ -254,7 +254,7 @@ class PhotoDialog (val success: ((File) -> Unit)) : JFXDialog(null, null, JFXDia
 }
 
 
-class QuestionsDialog(val requiredAnswers: List<TicketCheckProvider.RequiredAnswer>, val retry: ((List<Answer>) -> Unit)?) : JFXDialog(null, null, JFXDialog.DialogTransition.BOTTOM, true) {
+class QuestionsDialog(val requiredAnswers: List<TicketCheckProvider.QuestionAnswer>, val retry: ((List<Answer>) -> Unit)?) : JFXDialog(null, null, JFXDialog.DialogTransition.BOTTOM, true) {
     val content = JFXDialogLayout()
     val fviews = HashMap<Question, Any>()
 
@@ -453,7 +453,7 @@ class QuestionsDialog(val requiredAnswers: List<TicketCheckProvider.RequiredAnsw
 }
 
 
-fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.RequiredAnswer>, retry: ((List<Answer>) -> Unit)? = null): JFXDialog {
+fun EventTarget.questionsDialog(requiredAnswers: List<TicketCheckProvider.QuestionAnswer>, retry: ((List<Answer>) -> Unit)? = null): JFXDialog {
     val dialog = QuestionsDialog(requiredAnswers, retry)
     dialog.overlayCloseProperty().set(false)
     return dialog

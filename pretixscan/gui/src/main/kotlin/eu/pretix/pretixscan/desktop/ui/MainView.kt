@@ -802,6 +802,7 @@ class MainView : View() {
                         TicketCheckProvider.CheckResult.Type.RULES -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.REVOKED -> MainStyleSheet.cardHeaderError
+                        TicketCheckProvider.CheckResult.Type.UNAPPROVED -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.BLOCKED -> MainStyleSheet.cardHeaderError
                         TicketCheckProvider.CheckResult.Type.INVALID_TIME -> MainStyleSheet.cardHeaderError
                         null -> MainStyleSheet.cardHeaderError
@@ -827,6 +828,7 @@ class MainView : View() {
                         TicketCheckProvider.CheckResult.Type.RULES -> messages["state_rules"]
                         TicketCheckProvider.CheckResult.Type.AMBIGUOUS -> messages["state_ambiguous"]
                         TicketCheckProvider.CheckResult.Type.REVOKED -> messages["state_revoked"]
+                        TicketCheckProvider.CheckResult.Type.UNAPPROVED -> messages["state_unapproved"]
                         null -> messages["state_unknown"]
                     }
 
