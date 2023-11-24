@@ -23,10 +23,12 @@ import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
+import javafx.scene.text.Font
 import javafx.util.Duration
 import tornadofx.*
 import java.awt.Desktop
 import java.lang.Integer.min
+import java.lang.StringBuilder
 import java.net.URI
 import java.text.MessageFormat
 import java.text.SimpleDateFormat
@@ -62,7 +64,7 @@ class MainView : View() {
 
         setOnKeyReleased {
             startSearchTimeline?.stop()
-            if (it.code == KeyCode.ENTER) {
+            if (it.code == KeyCode.ENTER || it.code == KeyCode.TAB) {
                 if (sF.text == "" && searchResultCard.isVisible && searchResultListView.selectionModel.selectedIndex >= 0) {
                     handleSearchResultSelected(searchResultListView.selectionModel.selectedItem)
                 } else {
