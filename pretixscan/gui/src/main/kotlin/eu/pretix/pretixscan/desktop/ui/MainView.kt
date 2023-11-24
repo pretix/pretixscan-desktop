@@ -810,7 +810,7 @@ class MainView : View() {
                         null -> MainStyleSheet.cardHeaderError
                     })
 
-                    val headline = when (data?.type) {
+                    val resultText = when (data?.type) {
                         TicketCheckProvider.CheckResult.Type.INVALID -> messages["state_invalid"]
                         TicketCheckProvider.CheckResult.Type.VALID -> {
                             if (data?.scanType == TicketCheckProvider.CheckInType.EXIT) {
@@ -834,71 +834,47 @@ class MainView : View() {
                         null -> messages["state_unknown"]
                     }
 
-                    label(headline) {
+                    text(resultText) {
                         addClass(MainStyleSheet.cardHeaderLabel)
                     }
-                }
-                if (data?.type != TicketCheckProvider.CheckResult.Type.INVALID) {
-                    vbox {
-                        addClass(MainStyleSheet.cardBody)
-
-                        if (data?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
-                            label(data.message ?: "?")
-                        } else {
-                            var ticket = data?.ticket ?: ""
-                            if (data?.variation != null && data.variation != "null") {
-                                ticket += " – " + data.variation
-                            }
-                            hbox {
-                                label(if (data?.attendee_name != "null") data?.attendee_name ?: "" else "") {
-                                    isWrapText = true
-                                }
-                                spacer {}
-                                label(data?.orderCode ?: "")
-                            }
-                            hbox {
-                                label(ticket) {
-                                    isWrapText = true
-                                }
-                            }
-                            if (data?.seat != null) {
-                                hbox {
-                                    label (data?.seat!!) {
-                                        isWrapText = true
-                                    }
-                                }
-                            }
-                            if (data?.position != null && data?.position?.has("pdf_data") == true) {
-                                val t = data?.position?.optJSONObject("pdf_data")?.optString("addons")?.replace("<br/>", ", ")
-                                if (t?.isNotEmpty() == true) {
-                                    hbox {
-                                        label("+ $t") {
-                                            isWrapText = true
-                                        }
-                                    }
-                                }
-                            }
-                            if (!data?.reasonExplanation.isNullOrBlank()) {
-                                label(data?.reasonExplanation!!)
-                            }
-                            if (data?.firstScanned != null) {
-                                val df = SimpleDateFormat(messages.getString("short_datetime_format"))
-                                label(
-                                        MessageFormat.format(
-                                                messages.getString("first_scanned"),
-                                                df.format(data.firstScanned)
-                                        )
-                                )
-                            }
+                    if (data?.ticket?.isNotEmpty() == true) {
+                        var ticket = data.ticket ?: ""
+                        if (data.variation != null && data.variation != "null") {
+                            ticket += " – " + data.variation
                         }
-                        val offer_print = (
-                                data?.position != null
-                                        && (app as PretixScanMain).configStore.badgePrinterName != null
-                                        && (data.type == TicketCheckProvider.CheckResult.Type.VALID
-                                        || data.type == TicketCheckProvider.CheckResult.Type.USED)
-                                        && getBadgeLayout(app as PretixScanMain, data.position!!, (app as PretixScanMain).configStore.eventSlug!!) != null
+                        label(ticket) {
+                            addClass(MainStyleSheet.cardHeaderProduct)
+                            isWrapText = true
+                        }
+                    }
+                    if (!data?.reasonExplanation.isNullOrBlank()) {
+                        label(data?.reasonExplanation!!) {
+                            addClass(MainStyleSheet.cardHeaderInfo)
+                            isWrapText = true
+                        }
+                    }
+                    if (data?.firstScanned != null) {
+                        val df = SimpleDateFormat(messages.getString("short_datetime_format"))
+                        label(
+                                MessageFormat.format(
+                                        messages.getString("first_scanned"),
+                                        df.format(data.firstScanned)
                                 )
-                        if (offer_print) {
+                        ) {
+                            addClass(MainStyleSheet.cardHeaderInfo)
+                        }
+                    }
+                    val offer_print = (
+                            data?.position != null
+                                    && (app as PretixScanMain).configStore.badgePrinterName != null
+                                    && (data.type == TicketCheckProvider.CheckResult.Type.VALID
+                                    || data.type == TicketCheckProvider.CheckResult.Type.USED)
+                                    && getBadgeLayout(app as PretixScanMain, data.position!!, (app as PretixScanMain).configStore.eventSlug!!) != null
+                            )
+                    if (offer_print) {
+                        hbox {
+                            alignment = Pos.CENTER_RIGHT
+                            paddingTop = 5
                             jfxButton(messages["button_reprint_badge"]) {
                                 style {
                                     buttonType = JFXButton.ButtonType.RAISED
@@ -917,7 +893,7 @@ class MainView : View() {
                 }
                 if (data?.isRequireAttention ?: false) {
                     val attbox = vbox {
-                        addClass(MainStyleSheet.cardFooterAttention)
+                        addClass(MainStyleSheet.cardBodyAttention)
                         addClass(MainStyleSheet.cardBody)
                         label(messages["special_ticket"])
                     }
@@ -925,16 +901,87 @@ class MainView : View() {
                         cycleCount = 10
                         keyframe(Duration.seconds(0.2)) {
                             setOnFinished {
-                                attbox.removeClass(MainStyleSheet.cardFooterAttention)
-                                attbox.addClass(MainStyleSheet.cardFooterAttentionBlink)
+                                attbox.removeClass(MainStyleSheet.cardBodyAttention)
+                                attbox.addClass(MainStyleSheet.cardBodyAttentionBlink)
                             }
                         }
                         keyframe(Duration.seconds(0.4)) {
                             setOnFinished {
-                                attbox.removeClass(MainStyleSheet.cardFooterAttentionBlink)
-                                attbox.addClass(MainStyleSheet.cardFooterAttention)
+                                attbox.removeClass(MainStyleSheet.cardBodyAttentionBlink)
+                                attbox.addClass(MainStyleSheet.cardBodyAttention)
                             }
                         }
+                    }
+                }
+                if (data?.type != TicketCheckProvider.CheckResult.Type.INVALID) {
+                    var bodyBoxUsed = false
+                    val bodyBox = vbox {
+                        addClass(MainStyleSheet.cardBody)
+
+                        if (data?.type == TicketCheckProvider.CheckResult.Type.ERROR) {
+                            label(data.message ?: "?")
+                            bodyBoxUsed = true
+                        } else {
+                            if (data?.orderCodeAndPositionId() != null) {
+                                bodyBoxUsed = true
+                            }
+                            hbox {
+                                label(if (data?.attendee_name != "null") data?.attendee_name ?: "" else "") {
+                                    isWrapText = true
+                                }
+                                spacer {}
+                                label(data?.orderCodeAndPositionId() ?: "")
+                            }
+                            if (data?.scanType != TicketCheckProvider.CheckInType.EXIT && data?.seat != null) {
+                                hbox {
+                                    label (data.seat!!) {
+                                        isWrapText = true
+                                    }
+                                }
+                            }
+                            if (data?.position != null && data?.position?.has("pdf_data") == true) {
+                                val t = data?.position?.optJSONObject("pdf_data")?.optString("addons")?.replace("<br/>", ", ")
+                                if (t?.isNotEmpty() == true) {
+                                    hbox {
+                                        label("+ $t") {
+                                            isWrapText = true
+                                        }
+                                    }
+                                }
+                            }
+                            if (data?.scanType != TicketCheckProvider.CheckInType.EXIT && !data?.shownAnswers.isNullOrEmpty()) {
+                                val qanda = StringBuilder()
+
+                                data?.shownAnswers?.forEachIndexed { index, questionAnswer ->
+                                    qanda.append(questionAnswer.question.question + ":")
+                                    qanda.append(" ")
+                                    qanda.append(questionAnswer.currentValue)
+                                    if (index != data.shownAnswers!!.lastIndex) {
+                                        qanda.append("\n")
+                                    }
+                                }
+                                if (qanda.isNotEmpty()) {
+                                    hbox {
+                                        label(qanda.toString()) {
+                                            isWrapText = true
+                                        }
+                                    }
+                                }
+                            }
+                            if (data?.scanType != TicketCheckProvider.CheckInType.EXIT && !data?.checkinTexts.isNullOrEmpty()) {
+                                val texts = data?.checkinTexts?.filterNot { it.isBlank() }?.joinToString("\n")?.trim()
+                                if (!texts.isNullOrEmpty()) {
+                                    hbox {
+                                        label(texts) {
+                                            isWrapText = true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (bodyBoxUsed) {
+                        this += bodyBox
                     }
                 }
             }

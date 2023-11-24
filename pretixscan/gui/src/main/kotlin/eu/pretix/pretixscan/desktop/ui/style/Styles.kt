@@ -18,7 +18,7 @@ val STYLE_STATE_ERROR_COLOR = "#d9534f"
 val STYLE_STATE_TEXT_COLOR = "#FFFFFF"
 val STYLE_PRIMARY_DARK_COLOR = "#3b1c4a"
 val STYLE_TOOLBAR_TEXT_COLOR = "#ffffff"
-val STYLE_ATTENTION_COLOR = "#3B1C4A"
+val STYLE_ATTENTION_COLOR = "#5F9CD4"
 val STYLE_ATTENTION_ALTERNATE_COLOR = "#ffee58"
 val STYLE_TEXT_COLOR_MUTED = "#909090"
 val STYLE_BACKGROUND_IMAGE: String? = null
@@ -36,8 +36,11 @@ class MainStyleSheet : Stylesheet() {
         val cardHeaderError by cssclass()
         val cardHeaderErrorNoMessage by cssclass()
         val cardHeaderLabel by cssclass()
-        val cardFooterAttention by cssclass()
-        val cardFooterAttentionBlink by cssclass()
+        val cardHeaderProduct by cssclass()
+        val cardHeaderInfo by cssclass()
+        val cardBodyAttention by cssclass()
+        val cardBodyAttentionBlink by cssclass()
+        val cardFooter by cssclass()
         val searchItemProduct by cssclass()
         val searchItemOrderCode by cssclass()
         val searchItemAttendeeName by cssclass()
@@ -129,7 +132,18 @@ class MainStyleSheet : Stylesheet() {
 
         cardHeaderLabel {
             textFill = c(STYLE_STATE_TEXT_COLOR)
+            fill = c(STYLE_STATE_TEXT_COLOR)
             fontSize = 24.px
+        }
+
+        cardHeaderProduct {
+            textFill = c(STYLE_STATE_TEXT_COLOR)
+            fontSize = 18.px
+        }
+
+        cardHeaderInfo {
+            textFill = c(STYLE_STATE_TEXT_COLOR)
+            fontSize = 14.px
         }
 
         select("JFXListView") {
@@ -158,21 +172,23 @@ class MainStyleSheet : Stylesheet() {
             backgroundRadius += box(4.px, 4.px, 0.px, 0.px)
             alignment = Pos.CENTER
         }
-        cardFooterAttention {
+        cardBodyAttention {
             backgroundColor += c(STYLE_ATTENTION_COLOR)
-            backgroundRadius += box(0.px, 0.px, 4.px, 4.px)
             alignment = Pos.CENTER
             label {
                 textFill = c("#ffffff")
             }
         }
-        cardFooterAttentionBlink {
+        cardBodyAttentionBlink {
             backgroundColor += c(STYLE_ATTENTION_ALTERNATE_COLOR)
             backgroundRadius += box(0.px, 0.px, 4.px, 4.px)
             alignment = Pos.CENTER
             label {
                 textFill = c(STYLE_ATTENTION_COLOR)
             }
+        }
+        cardFooter {
+            backgroundRadius += box(0.px, 0.px, 4.px, 4.px)
         }
 
         cardBody {
