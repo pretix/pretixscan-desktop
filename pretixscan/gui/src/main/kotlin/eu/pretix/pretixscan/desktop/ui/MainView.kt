@@ -563,7 +563,7 @@ class MainView : View() {
         }
 
         timeline {
-            keyframe(Duration.seconds(15.0)) {
+            keyframe(Duration.seconds(30.0)) {
                 setOnFinished {
                     removeCard(card)
                 }
