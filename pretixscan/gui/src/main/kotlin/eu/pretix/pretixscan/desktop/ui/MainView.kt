@@ -751,6 +751,7 @@ class MainView : View() {
                     handleTicketInput(value, a, ignore_pending)
                 }
                 dialog.show(root)
+                beep("attention")
             } else if (resultData?.type == TicketCheckProvider.CheckResult.Type.UNPAID && resultData?.isCheckinAllowed == true) {
                 val dialog = unpaidOrderDialog { new_ignore_pending ->
                     handleTicketInput(value, answers, new_ignore_pending)
