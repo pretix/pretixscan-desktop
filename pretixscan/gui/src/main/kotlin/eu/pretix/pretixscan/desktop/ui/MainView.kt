@@ -319,7 +319,6 @@ class MainView : View() {
             }
         }
 
-        spacer { }
         this += contentBox
         spacer { }
         gridpane {
