@@ -769,9 +769,9 @@ class MainView : View() {
     }
 
     private fun handleInput(value: String) {
-        // TODO: Support pretix instances with lower entropy levels
+        // TODO: Support pretix instances with other barcode types
         revertBackground()
-        if (value.matches(Regex("[a-zA-Z0-9=+/]{12,}"))) {
+        if (value.matches(Regex("[a-zA-Z0-9=+/]{5,}"))) {
             hideSearchResultCard()
             selectedSearchResult = null
             handleTicketInput(value)
