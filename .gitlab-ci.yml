@@ -1,3 +1,7 @@
+default:
+  image: 
+    name: 11-bullseye
+    entrypoint: [""]
 variables:
   GIT_SUBMODULE_STRATEGY: "recursive"
 package:
