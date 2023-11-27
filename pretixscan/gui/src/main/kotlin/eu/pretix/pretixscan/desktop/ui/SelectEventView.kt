@@ -164,12 +164,7 @@ class SelectEventView : View() {
                         } else {
                             jfxButton(messages["settings_reset_button"].toUpperCase()) {
                                 action {
-                                    runAsync {
-                                        SettingsController().resetApp()
-                                        ui {
-                                            replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
-                                        }
-                                    }
+                                    _resetDialog()
                                 }
                             }
                         }
@@ -194,6 +189,10 @@ class SelectEventView : View() {
                 }
             }
         }
+    }
+
+    fun _resetDialog() {
+        resetDialog(root, controller)
     }
 
     override fun onDock() {

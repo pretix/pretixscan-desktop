@@ -9,6 +9,7 @@ import eu.pretix.pretixscan.desktop.DesktopFileStorage
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.VERSION
 import eu.pretix.pretixscan.desktop.VERSION_CODE
+import eu.pretix.pretixscan.desktop.ui.helpers.MaterialSlide
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxAdvancedProgressDialog
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxButton
 import eu.pretix.pretixscan.desktop.ui.helpers.jfxDialog
@@ -40,7 +41,7 @@ open class BaseController : Controller() {
 
     fun syncStatusText(): String {
         if ((app as PretixScanMain).syncLock.isLocked) {
-            return messages.getString("sync_status_progress");
+            return messages.getString("sync_status_progress")
         } else if (configStore.lastDownload == 0L) {
             return messages.getString("sync_status_no")
         } else {
@@ -172,6 +173,15 @@ open class BaseController : Controller() {
             (app as PretixScanMain).syncLock.unlock()
         }
     }
+
+    fun resetApp() {
+        (app as PretixScanMain).deleteDatabase()
+        configStore.resetEventConfig()
+    }
+
+    fun hasLocalChanges(): Boolean {
+        return (app as PretixScanMain).data().count(QueuedCheckIn::class.java).get().value() > 0
+    }
 }
 
 
@@ -236,4 +246,22 @@ fun View.forceFocus(root: StackPane) {
         primaryStage.isIconified = true
         primaryStage.isIconified = false
     })
+}
+
+fun View.resetDialog(root: StackPane, controller: BaseController) {
+    val okButton: JFXButton = jfxButton(messages.getString("settings_reset_confirm_ok").toUpperCase())
+    val cancelButton: JFXButton = jfxButton(messages.getString("dialog_cancel").toUpperCase())
+    val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
+        setBody(label(messages.getString(if (controller.hasLocalChanges()) "settings_reset_warning" else "settings_reset_confirm")))
+        setActions(cancelButton, okButton)
+    }
+    cancelButton.action {
+        dialog.close()
+    }
+    okButton.action {
+        dialog.close()
+        controller.resetApp()
+        replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
+    }
+    dialog.show(root)
 }

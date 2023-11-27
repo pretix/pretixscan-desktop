@@ -301,26 +301,7 @@ class SettingsView : View() {
                     spacer {}
                     jfxButton(messages["settings_reset_button"].toUpperCase()) {
                         action {
-                            if (controller.hasLocalChanges()) {
-                                val okButton: JFXButton = jfxButton(messages.getString("dialog_ok").toUpperCase())
-                                val cancelButton: JFXButton = jfxButton(messages.getString("dialog_cancel").toUpperCase())
-                                val dialog = jfxDialog(transitionType = JFXDialog.DialogTransition.BOTTOM) {
-                                    setBody(label(messages.getString("settings_reset_warning")))
-                                    setActions(cancelButton, okButton)
-                                }
-                                cancelButton.action {
-                                    dialog.close()
-                                }
-                                okButton.action {
-                                    dialog.close()
-                                    controller.resetApp()
-                                    replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
-                                }
-                                dialog.show(root)
-                            } else {
-                                controller.resetApp()
-                                replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
-                            }
+                            resetDialog(root, controller)
                         }
                     }
                 }

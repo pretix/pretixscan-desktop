@@ -145,12 +145,7 @@ class SelectCheckInListView : View() {
                         }
                         jfxButton(messages["settings_reset_button"].toUpperCase()) {
                             action {
-                                runAsync {
-                                    SettingsController().resetApp()
-                                    ui {
-                                        replaceWith(SetupView::class, MaterialSlide(ViewTransition.Direction.DOWN))
-                                    }
-                                }
+                                _resetDialog()
                             }
                         }
                     }
@@ -192,7 +187,9 @@ class SelectCheckInListView : View() {
         }
     }
 
-
+    fun _resetDialog() {
+        resetDialog(root, controller)
+    }
 
     fun loadLists() {
         showSpinner()

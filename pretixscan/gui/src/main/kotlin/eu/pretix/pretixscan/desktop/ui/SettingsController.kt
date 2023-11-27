@@ -10,15 +10,6 @@ import javax.print.attribute.standard.QueuedJobCount
 
 class SettingsController : BaseController() {
 
-    fun resetApp() {
-        (app as PretixScanMain).deleteDatabase()
-        configStore.resetEventConfig()
-    }
-
-    fun hasLocalChanges(): Boolean {
-        return (app as PretixScanMain).data().count(QueuedCheckIn::class.java).get().value() > 0
-    }
-
     fun toggleLargeColor(value: Boolean) {
         configStore.largeColor = value
     }
