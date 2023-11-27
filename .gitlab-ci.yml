@@ -18,7 +18,7 @@ package:
         - cd pretixscan
         - ./gradlew clean createBundle -PjavafxJmodsPath=../../javafx-jmods-11.0.2/ -PjavaPackagerPath=../../
     tags:
-        - java
+        - docker
     artifacts:
         expire_in: 14 days
         paths:
