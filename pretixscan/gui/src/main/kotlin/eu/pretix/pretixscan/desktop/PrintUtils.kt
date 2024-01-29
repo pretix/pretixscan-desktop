@@ -229,6 +229,9 @@ class Renderer(private val layout: JSONArray, private val position: JSONObject, 
             registerFontFamily(application, "Baloo Bhaijaan", "fonts/baloo-bhaijaan-v6-latin-ext_vietnamese_latin_arabic-%s.ttf", "regular", "regular", "regular", "regular")
             registerFontFamily(application, "Noto Sans", "fonts/NotoSans-%s-webfont.ttf")
             registerFontFamily(application, "Noto Sans Japanese", "fonts/noto-sans-jp-v52-cyrillic_japanese_latin_latin-ext_vietnamese-%s.ttf", "regular", "700", "700", "regular")
+            registerFontFamily(application, "Noto Sans Traditional Chinese", "fonts/noto-sans-tc-v35-chinese-traditional_cyrillic_latin_latin-ext_vietnamese-%s.ttf", "regular", "700", "700", "regular")
+            registerFontFamily(application, "Noto Sans Simplified Chinese", "fonts/noto-sans-sc-v36-chinese-simplified_cyrillic_latin_latin-ext_vietnamese-%s.ttf", "regular", "700", "700", "regular")
+
             registerFontFamily(application, "Roboto", "fonts/Roboto-%s.ttf")
             registerFontFamily(application, "Droid Serif", "fonts/DroidSerif-%s-webfont.ttf")
             registerFontFamily(application, "Fira Sans", "fonts/firasans-%s-webfont.ttf")
