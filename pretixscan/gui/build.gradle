@@ -5,6 +5,7 @@ import org.apache.tools.ant.filters.*
 
 apply plugin: 'application'
 apply plugin: 'org.openjfx.javafxplugin'
+apply from: '../libpretixsync-repo/libpretixsync/versions.gradle'
 
 mainClassName = "eu.pretix.pretixscan.desktop.PretixScanMain"
 
@@ -52,10 +53,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
     implementation fileTree(dir: '../tornadofx-repo/target', include: ['*.jar'])
-    implementation 'org.xerial:sqlite-jdbc:3.36.0.1'
+    implementation "org.xerial:sqlite-jdbc:$sqlite_jdbc_version"
     implementation 'net.harawata:appdirs:1.2.1'
     implementation 'net.java.dev.jna:platform:3.5.2'
-    implementation 'joda-time:joda-time:2.10.10'
+    implementation "joda-time:joda-time:$joda_version"
     implementation "de.huxhorn.lilith:de.huxhorn.lilith.3rdparty.junique:1.0.4"
     implementation 'com.github.kittinunf.fuel:fuel:2.1.0'
     implementation 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2'
