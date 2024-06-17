@@ -1,3 +1,24 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.17"
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    }
+}
+plugins {
+    id 'application'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.23' apply false
+    id 'org.jetbrains.kotlin.kapt' version '1.9.23' apply false
+}
+
 group 'eu.pretix.pretixscan'
 version = project.properties['version']
 project.version version
@@ -13,28 +34,6 @@ repositories {
     jcenter()
     mavenCentral()
 }
-
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
-        classpath "net.ltgt.gradle:gradle-apt-plugin:0.17"
-        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
-        classpath 'org.openjfx:javafx-plugin:0.0.7'
-    }
-}
-
-apply plugin: 'base'
-apply plugin: 'kotlin'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'net.ltgt.apt-idea'
 
 subprojects {
     apply plugin: 'java'

@@ -3,8 +3,10 @@
  */
 import org.apache.tools.ant.filters.*
 
-apply plugin: 'application'
-apply plugin: 'org.openjfx.javafxplugin'
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
 apply from: '../libpretixsync-repo/libpretixsync/versions.gradle'
 
 mainClassName = "eu.pretix.pretixscan.desktop.PretixScanMain"
@@ -71,15 +73,15 @@ dependencies {
     implementation(project(':libpretixprint')) {
         transitive = false
     }
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
 
-    javafxCompile "org.openjfx:javafx-base:11.0.2:${platform}"
-    javafxCompile "org.openjfx:javafx-graphics:11.0.2:${platform}"
-    javafxCompile "org.openjfx:javafx-controls:11.0.2:${platform}"
-    javafxCompile "org.openjfx:javafx-fxml:11.0.2:${platform}"
-    javafxCompile "org.openjfx:javafx-swing:11.0.2:${platform}"
+    implementation "org.openjfx:javafx-base:11.0.2:${platform}"
+    implementation "org.openjfx:javafx-graphics:11.0.2:${platform}"
+    implementation "org.openjfx:javafx-controls:11.0.2:${platform}"
+    implementation "org.openjfx:javafx-fxml:11.0.2:${platform}"
+    implementation "org.openjfx:javafx-swing:11.0.2:${platform}"
 
-    compileOnly configurations.javafxCompile
+    //compileOnly configurations.javafxCompile
 }
 
 tasks.withType(JavaCompile) {
@@ -107,5 +109,6 @@ javafx {
     modules = [
             'javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.swing'
     ]
+    configurations = [ 'implementation', 'testImplementation' ]
     version = '11.0.2'
 }
