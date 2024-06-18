@@ -6,17 +6,14 @@ variables:
   GIT_SUBMODULE_STRATEGY: "recursive"
 package:
     before_script:
-        - apt update && apt -y install fakeroot maven
-        - wget https://download2.gluonhq.com/openjfx/11.0.2/openjfx-11.0.2_linux-x64_bin-jmods.zip
-        - unzip openjfx-11.0.2_linux-x64_bin-jmods.zip
+        - apt update && apt -y install fakeroot
+        - wget https://download2.gluonhq.com/openjfx/17.0.11/openjfx-17.0.11_linux-x64_bin-jmods.zip
+        - unzip openjfx-17.0.11_linux-x64_bin-jmods.zip
         - wget https://download2.gluonhq.com/jpackager/11/jdk.packager-linux.zip
         - unzip jdk.packager-linux.zip
-        - cd pretixscan/tornadofx-repo
-        - mvn -DskipTests package
-        - cd ../..
     script:
         - cd pretixscan
-        - ./gradlew clean createBundle -PjavafxJmodsPath=../../javafx-jmods-11.0.2/ -PjavaPackagerPath=../../
+        - ./gradlew clean createBundle -PjavafxJmodsPath=../../javafx-jmods-17.0.11/ -PjavaPackagerPath=../../
     artifacts:
         expire_in: 14 days
         paths:

@@ -34,6 +34,11 @@ ext {
     }
 }
 
+
+configurations {
+    bundle
+}
+
 task recreateIconMacApp(type: Exec) {
     description 'Regenerate the Mac application icon'
     commandLine 'sh', file('mac-icon.sh'), file('icons/icon.png'), file('icons/mac'), 'pretixSCAN'
@@ -48,12 +53,8 @@ task recreateIcons(dependsOn: [recreateIconMacApp, recreateIconWindowsApp]) {
     description 'Regenerate all the application bundle icons'
 }
 
-dependencies {
-    implementation project(':gui')
-}
-
 task copyDependencies(type: Copy) {
-    //from configurations.runtime
+    from configurations.bundle
     into "${buildDir}/libraries"
 }
 
@@ -114,7 +115,7 @@ task checkBundlingEnvironment {
     }
 }
 
-task createBundle(type: Exec, dependsOn: [copyDependencies, processResources, checkBundlingEnvironment]) {
+task createBundle(type: Exec, dependsOn: [configurations.bundle, copyDependencies, processResources, checkBundlingEnvironment]) {
     description 'Build the installable bundle'
     if (operatingSystem.isWindows()) {
         commandLine 'cmd', '/c',
@@ -168,4 +169,8 @@ if (operatingSystem.isWindows()) {
     }
 
     createBundle.finalizedBy completeNSISSetup
+}
+
+dependencies {
+    bundle project(path: ':gui', configuration: "guiJar")
 }
