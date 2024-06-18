@@ -12,7 +12,6 @@ plugins {
     id 'application'
     id 'org.jetbrains.kotlin.jvm' version '1.9.23' apply false
     id 'org.jetbrains.kotlin.kapt' version '1.9.23' apply false
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group 'eu.pretix.pretixscan'

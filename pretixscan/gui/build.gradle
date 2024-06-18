@@ -10,6 +10,7 @@ plugins {
     id 'net.nemerosa.versioning' version '2.8.2'
     id 'org.beryx.jlink' version '2.26.0'
     id 'org.gradlex.extra-java-module-info' version '1.8'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 apply from: '../libpretixsync-repo/libpretixsync/versions.gradle'
 
@@ -45,10 +46,12 @@ jar {
     from(buildDir) {
         include 'build-info.properties'
     }
+
+
 }
 
 application {
-    mainClass = mainClassName
+    mainClass = "eu.pretix.pretixscan.desktop.PretixScanMain"
     applicationName = "pretixSCAN"
     applicationDefaultJvmArgs = [
             '--add-modules', 'javafx.controls,javafx.fxml,javafx.graphics,javafx.swing',
