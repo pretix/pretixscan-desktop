@@ -1,9 +1,22 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
+
 rootProject.name = 'pretixscan'
 
 include ':libpretixsync'
 project(':libpretixsync').projectDir = new File('libpretixsync-repo/libpretixsync')
 include ':libpretixprint'
 project(':libpretixprint').projectDir = new File('libpretixprint-repo/libpretixprint')
+include ':tornadofx'
+project(':tornadofx').projectDir = new File('tornadofx-repo')
 
 include ':gui'
 include ':packaging'

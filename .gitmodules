@@ -7,4 +7,4 @@
 	url = https://github.com/pretix/libpretixprint.git
 [submodule "pretixscan/tornadofx-repo"]
 	path = pretixscan/tornadofx-repo
-	url = https://github.com/edvin/tornadofx.git
+	url = https://github.com/pretix-unofficial/tornadofx.git

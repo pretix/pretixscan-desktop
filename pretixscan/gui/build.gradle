@@ -1,19 +1,36 @@
 /*
  * Open Source Software published under the Apache Licence, Version 2.0.
  */
-import org.apache.tools.ant.filters.*
+import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'application'
+    id "kotlin"
     id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'net.nemerosa.versioning' version '2.8.2'
+    id 'org.beryx.jlink' version '3.0.1'
+    id 'org.gradlex.extra-java-module-info' version '1.8'
 }
 apply from: '../libpretixsync-repo/libpretixsync/versions.gradle'
 
 mainClassName = "eu.pretix.pretixscan.desktop.PretixScanMain"
 
-applicationName = "pretixSCAN"
-
 ext.buildTimestamp = new Date().format('yyyy-MM-dd HH:mm:ss')
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
+extraJavaModuleInfo {
+    failOnMissingModuleInfo.set(false)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 
 processResources {
     filesMatching('properties/*.properties') {
@@ -28,6 +45,35 @@ jar {
     from(buildDir) {
         include 'build-info.properties'
     }
+}
+
+application {
+    mainClass = mainClassName
+    applicationName = "pretixSCAN"
+    applicationDefaultJvmArgs = [
+            '--add-modules', 'javafx.controls,javafx.fxml,javafx.graphics,javafx.swing',
+            '--add-exports', 'javafx.base/com.sun.javafx.runtime=ALL-UNNAMED',
+            '--add-exports', 'javafx.graphics/com.sun.javafx.css=ALL-UNNAMED',
+            '--add-exports', 'javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED',
+            '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED',
+            "--add-exports", "javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+            "--add-exports", "javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+            "--add-exports", "javafx.controls/javafx.scene.control.skin=ALL-UNNAMED",
+            "--add-exports", "javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED",
+            "--add-exports", "javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED",
+            "--add-exports", "javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED",
+            "--add-exports", "javafx.base/com.sun.javafx.binding=ALL-UNNAMED",
+            "--add-exports", "javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED",
+            "--add-exports", "javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED",
+            "--add-opens", "javafx.controls/javafx.scene.control.skin=ALL-UNNAMED",
+            "--add-opens", "javafx.graphics/javafx.scene=ALL-UNNAMED",
+            "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
+            "--add-opens", "javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+            "--add-opens", "java.base/java.util=ALL-UNNAMED",
+            "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
+            "--add-opens", "java.base/java.text=ALL-UNNAMED",
+            "--add-opens", "java.desktop/java.awt.font=ALL-UNNAMED",
+    ]
 }
 
 def platform
@@ -45,22 +91,23 @@ configurations {
 
 javafx {
     modules = [
-            'javafx.controls', 'javafx.fxml', 'javafx.swing'
+            'javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.swing'
     ]
-    version = '11.0.2'
+    configurations = [ 'implementation', 'testImplementation' ]
+    version = '17.0.11'
 }
 
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
-    implementation fileTree(dir: '../tornadofx-repo/target', include: ['*.jar'])
+    implementation(project(':tornadofx'))
     implementation "org.xerial:sqlite-jdbc:$sqlite_jdbc_version"
     implementation 'net.harawata:appdirs:1.2.1'
     implementation 'net.java.dev.jna:platform:3.5.2'
     implementation "joda-time:joda-time:$joda_version"
     implementation "de.huxhorn.lilith:de.huxhorn.lilith.3rdparty.junique:1.0.4"
-    implementation 'com.github.kittinunf.fuel:fuel:2.1.0'
+    implementation 'com.github.kittinunf.fuel:fuel:2.3.1'
     implementation 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2'
     implementation 'com.jfoenix:jfoenix:9.0.9'
     implementation 'org.apache.pdfbox:pdfbox:2.0.13'
@@ -75,40 +122,18 @@ dependencies {
     }
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 
-    implementation "org.openjfx:javafx-base:11.0.2:${platform}"
-    implementation "org.openjfx:javafx-graphics:11.0.2:${platform}"
-    implementation "org.openjfx:javafx-controls:11.0.2:${platform}"
-    implementation "org.openjfx:javafx-fxml:11.0.2:${platform}"
-    implementation "org.openjfx:javafx-swing:11.0.2:${platform}"
-
-    //compileOnly configurations.javafxCompile
+    implementation "org.openjfx:javafx-base:17.0.11:${platform}"
+    implementation "org.openjfx:javafx-graphics:17.0.11:${platform}"
+    implementation "org.openjfx:javafx-controls:17.0.11:${platform}"
+    implementation "org.openjfx:javafx-fxml:17.0.11:${platform}"
+    implementation "org.openjfx:javafx-swing:17.0.11:${platform}"
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.with {
         compilerArgs += [
                 '--module-path', configurations.javafxCompile.asPath,
                 '--add-modules', 'javafx.controls'
         ]
     }
-}
-
-[run, test].each {
-    it.jvmArgs += [
-            '--module-path', configurations.javafxCompile.asPath,
-            '--add-modules', 'javafx.controls,javafx.fxml,javafx.graphics,javafx.swing',
-            '--add-exports', 'javafx.base/com.sun.javafx.runtime=ALL-UNNAMED',
-            '--add-exports', 'javafx.graphics/com.sun.javafx.css=ALL-UNNAMED',
-            '--add-exports', 'javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED',
-            '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED',
-    ]
-}
-
-
-javafx {
-    modules = [
-            'javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.swing'
-    ]
-    configurations = [ 'implementation', 'testImplementation' ]
-    version = '11.0.2'
 }

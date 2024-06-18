@@ -44,7 +44,7 @@ fun EventTarget.jfxTextfield(property: ObservableValue<Number>, op: (JFXTextFiel
     op.invoke(this)
 }
 
-fun EventTarget.jfxPasswordfield(value: String? = null, op: (PasswordField.() -> Unit) = {}) = opcr(this, JFXPasswordField().apply { if (value != null) text = value }, op)
+fun EventTarget.jfxPasswordfield(value: String? = null, op: (JFXPasswordField.() -> Unit) = {}) = opcr(this, JFXPasswordField().apply { if (value != null) text = value }, op)
 fun EventTarget.jfxPasswordfield(property: ObservableValue<String>, op: (JFXPasswordField.() -> Unit) = {}) = jfxPasswordfield().apply {
     bind(property)
     op.invoke(this)

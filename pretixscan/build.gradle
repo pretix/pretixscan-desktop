@@ -1,22 +1,18 @@
 buildscript {
     repositories {
-        jcenter()
+        gradlePluginPortal()
         mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
-        classpath "net.ltgt.gradle:gradle-apt-plugin:0.17"
+        // shorter plugin syntax is not yet ready - https://github.com/FibreFoX/javafx-gradle-plugin/issues/69
         classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
     }
 }
 plugins {
     id 'application'
     id 'org.jetbrains.kotlin.jvm' version '1.9.23' apply false
     id 'org.jetbrains.kotlin.kapt' version '1.9.23' apply false
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group 'eu.pretix.pretixscan'
@@ -31,7 +27,6 @@ ext {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
@@ -39,29 +34,17 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'kotlin'
 
-    sourceCompatibility = 1.8
+    sourceCompatibility = JavaVersion.VERSION_11
 
     repositories {
-        jcenter()
         mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-        }
     }
 
     compileKotlin {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-
-        kotlinOptions {
-            jvmTarget = "1.8"
-            apiVersion = "1.5"
-            languageVersion = "1.5"
-        }
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
+
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
