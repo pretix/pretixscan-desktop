@@ -8,7 +8,7 @@ package:
     before_script:
         - apt update && apt -y install fakeroot
         - wget https://download2.gluonhq.com/openjfx/17.0.11/openjfx-17.0.11_linux-x64_bin-jmods.zip
-        - unzip openjfx-11.0.2_linux-x64_bin-jmods.zip
+        - unzip openjfx-17.0.11_linux-x64_bin-jmods.zip
         - wget https://download2.gluonhq.com/jpackager/11/jdk.packager-linux.zip
         - unzip jdk.packager-linux.zip
     script:
