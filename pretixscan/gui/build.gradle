@@ -8,7 +8,7 @@ plugins {
     id "kotlin"
     id 'org.openjfx.javafxplugin' version '0.1.0'
     id 'net.nemerosa.versioning' version '2.8.2'
-    id 'org.beryx.jlink' version '3.0.1'
+    id 'org.beryx.jlink' version '2.26.0'
     id 'org.gradlex.extra-java-module-info' version '1.8'
 }
 apply from: '../libpretixsync-repo/libpretixsync/versions.gradle'
@@ -87,6 +87,16 @@ if (operatingSystem.isWindows()) {
 
 configurations {
     javafxCompile
+
+    guiJar {
+        canBeConsumed = true
+        canBeResolved = false
+        extendsFrom implementation, runtimeOnly
+    }
+}
+
+artifacts {
+    guiJar(jar)
 }
 
 javafx {
