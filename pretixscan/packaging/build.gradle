@@ -49,11 +49,11 @@ task recreateIcons(dependsOn: [recreateIconMacApp, recreateIconWindowsApp]) {
 }
 
 dependencies {
-    compile project(':gui')
+    implementation project(':gui')
 }
 
 task copyDependencies(type: Copy) {
-    from configurations.runtime
+    //from configurations.runtime
     into "${buildDir}/libraries"
 }
 
