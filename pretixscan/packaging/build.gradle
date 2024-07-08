@@ -8,7 +8,7 @@ ext {
     publishedVersion = project.version
     bundlerScript = file('build_package.sh')
     appLibraryPath = file("${buildDir}/libraries")
-    mainJar = project(':gui').jar.outputs.files[0].name
+    mainJar = project(':composeApp').jar.outputs.files[0].name
     bundlePath = file("${buildDir}/bundle")
     extraBundlerArguments = []
     if (operatingSystem.isMacOsX()) {
