@@ -37,8 +37,15 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "eu.pretix.pretixscan.desktop"
+            packageName = "pretixSCAN"
             packageVersion = version
+            vendor = "rami.io GmbH"
+            copyright = "pretix.eu, Raphael Michel"
+            licenseFile.set(project.rootProject.file("LICENSE"))
+            // run `./gradlew suggestModules` to determine list of modules
+            modules("java.instrument", "java.sql.rowset", "jdk.unsupported")
+            // if distribution size is not important, we can also:
+            // alternatively: includeAllModules = true
         }
     }
 }
