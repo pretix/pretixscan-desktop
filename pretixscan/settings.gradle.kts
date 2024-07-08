@@ -39,4 +39,4 @@ include(":libpretixprint")
 project(":libpretixprint").projectDir = file("libpretixprint-repo/libpretixprint")
 
 include(":composeApp")
-include(":packaging")
+//include(":packaging")
