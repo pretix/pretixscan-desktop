@@ -31,6 +31,10 @@ kotlin {
             implementation(project(":libpretixsync"))
             implementation(project(":libpretixprint"))
         }
+
+        all {
+            languageSettings.optIn("org.koin.core.annotation.KoinExperimentalAPI")
+        }
     }
 }
 

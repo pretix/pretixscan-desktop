@@ -8,7 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import screen.WelcomeScreen
+import screen.setup.SetupScreen
+import screen.welcome.WelcomeScreen
 
 @Composable
 fun Navigation(
@@ -26,6 +27,9 @@ fun Navigation(
     ) {
         composable(route = Route.Welcome.route) {
             WelcomeScreen(navHostController = navHostController)
+        }
+        composable(route = Route.Setup.route) {
+            SetupScreen(navHostController = navHostController)
         }
     }
 }
