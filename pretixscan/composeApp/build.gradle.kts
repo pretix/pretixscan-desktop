@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    id("kotlin-kapt")
 }
 
 kotlin {
@@ -21,13 +22,20 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.androidx.lifecycle.compose)
             implementation(libs.androidx.navigation)
+//            implementation(libs.runtime)
             api(libs.koin)
             api(libs.koin.compose)
             api(libs.koin.compose.viewmodel)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+//            implementation(libs.jvm.driver)
+            implementation(libs.sqlite)
+            implementation(libs.appdirs)
+            compileOnly(libs.requery)
+            compileOnly(libs.requery.processor)
             implementation(project(":libpretixsync"))
             implementation(project(":libpretixprint"))
         }
@@ -59,3 +67,11 @@ compose.desktop {
         }
     }
 }
+
+//sqldelight {
+//    databases {
+//        create("AppDatabase") {
+//            packageName.set("eu.pretix.desktop.cache")
+//        }
+//    }
+//}
