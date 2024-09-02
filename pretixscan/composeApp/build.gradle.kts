@@ -67,11 +67,3 @@ compose.desktop {
         }
     }
 }
-
-//sqldelight {
-//    databases {
-//        create("AppDatabase") {
-//            packageName.set("eu.pretix.desktop.cache")
-//        }
-//    }
-//}
