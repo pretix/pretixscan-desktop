@@ -7,7 +7,9 @@
     <string name="progress_syncing">Synchronizing with server…</string>
     <string name="progress_processing">Processing…</string>
     <string name="progress_registering">Registering device with server…</string>
-    <string name="error_access_revoked">Device access has been revoked, you need to register the device with the server again.</string>
+    <string name="error_access_revoked">Device access has been revoked, you need to register the device with the server
+        again.
+    </string>
     <string name="error_unknown_exception">An unknown error has occurred</string>
     <string name="error_not_synchronized">Your device has not been properly synchronized with the server</string>
     <string name="action_label_ok">OK</string>
@@ -17,7 +19,8 @@
     <string name="action_label_scantype_exit">Switch to exit scanning</string>
     <string name="action_multievent_enable">Expert mode (select multiple events)</string>
     <string name="action_multievent_disable">Disable expert mode</string>
-    <string name="action_multievent_disable_error">Expert mode cannot be disabled if multiple events are selected.</string>
+    <string name="action_multievent_disable_error">Expert mode cannot be disabled if multiple events are selected.
+    </string>
     <string name="scantype_entry">Entry</string>
     <string name="scantype_exit">Exit</string>
     <string name="scantype_entry_kiosk">Scan your ticket to check in</string>
@@ -39,9 +42,13 @@
     <string name="operation_select_checkinlist">Select Check-in list</string>
     <string name="settings_label_auto_sync">Automatic Synchronization</string>
     <string name="settings_label_orders_sync">Download orders</string>
-    <string name="settings_summary_orders_sync">Without this option, pretixSCAN will not download order data and not be able to scan offline tickets with pretix\'s default settings.</string>
+    <string name="settings_summary_orders_sync">Without this option, pretixSCAN will not download order data and not be
+        able to scan offline tickets with pretix\'s default settings.
+    </string>
     <string name="settings_label_auto_switch">Automatic event selection</string>
-    <string name="settings_summary_auto_switch">With this option, pretixSCAN will ask the server during synchronization if the server suggests switching the app to a different event and check-in list and then switches automatically.</string>
+    <string name="settings_summary_auto_switch">With this option, pretixSCAN will ask the server during synchronization
+        if the server suggests switching the app to a different event and check-in list and then switches automatically.
+    </string>
     <plurals name="sync_status_time_minutes">
         <item quantity="one">synchronized %d minute ago</item>
         <item quantity="other">synchronized %d minutes ago</item>
@@ -69,10 +76,18 @@
     <string name="first_scanned">First scanned: %s</string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
-    <string name="tutorial_setup">To get started, create a new device in the "Devices" section of your organizer account in the pretix backend. You will be then presented with a configuration QR code to scan.</string>
-    <string name="setup_error_legacy_qr_code">The QR code you scanned is for an old predecessor of this app. Please go to the "Devices" section in your pretix organizer account and create a new device there.</string>
-    <string name="setup_error_invalid_qr_code">The QR code you scanned is not a valid configuration code. Please make sure you created the code in the "Devices" section of a pretix organizer account.</string>
-    <string name="setup_error_version_too_high">The QR code you scanned is from a newer version of pretix than this app has been built for. Please check if you can get an update for this app!</string>
+    <string name="tutorial_setup">To get started, create a new device in the "Devices" section of your organizer account
+        in the pretix backend. You will be then presented with a configuration QR code to scan.
+    </string>
+    <string name="setup_error_legacy_qr_code">The QR code you scanned is for an old predecessor of this app. Please go
+        to the "Devices" section in your pretix organizer account and create a new device there.
+    </string>
+    <string name="setup_error_invalid_qr_code">The QR code you scanned is not a valid configuration code. Please make
+        sure you created the code in the "Devices" section of a pretix organizer account.
+    </string>
+    <string name="setup_error_version_too_high">The QR code you scanned is from a newer version of pretix than this app
+        has been built for. Please check if you can get an update for this app!
+    </string>
     <string name="setup_progress">Initializing device…</string>
     <string name="setup_error_request">Request rejected by server. Please double-check your input.</string>
     <string name="setup_error_io">Connection error while trying to reach the server.</string>
@@ -80,9 +95,15 @@
     <string name="setup_error_server">Server error while trying to register the device.</string>
     <string name="setup_error_response">The server returned an invalid response.</string>
     <string name="setup_error_failed">The initial connection test failed.</string>
-    <string name="setup_error_permissions">pretixSCAN does not work properly without granting those permissions. Please restart the app.</string>
-    <string name="welcome_text">pretixSCAN is a event entry app that you can use to validate tickets that you sold through pretix.</string>
-    <string name="welcome_disclaimer1">I understand that personal data of attendees of my connected events will be stored on this device and I will secure the device properly.</string>
+    <string name="setup_error_permissions">pretixSCAN does not work properly without granting those permissions. Please
+        restart the app.
+    </string>
+    <string name="welcome_text">pretixSCAN is a event entry app that you can use to validate tickets that you sold
+        through pretix.
+    </string>
+    <string name="welcome_disclaimer1">I understand that personal data of attendees of my connected events will be
+        stored on this device and I will secure the device properly.
+    </string>
     <string name="cont">CONTINUE</string>
     <string name="hint_url">URL</string>
     <string name="hint_token">Token</string>
@@ -95,7 +116,11 @@
     <string name="settings_label_device_camera">Use device camera</string>
     <string name="settings_label_scan_offline">Offline scanning</string>
     <string name="settings_label_auto_offline">Automatically turn offline mode on and off</string>
-    <string name="settings_label_auto_offline_help">If you select one of the times below, the app will automatically switch to an offline scan whenever an online scan takes longer than selected. Additionally, the app will fully switch to offline mode after multiple scans failed or took longer than selected. Once a connection has proven stable again, the app will switch back.</string>
+    <string name="settings_label_auto_offline_help">If you select one of the times below, the app will automatically
+        switch to an offline scan whenever an online scan takes longer than selected. Additionally, the app will fully
+        switch to offline mode after multiple scans failed or took longer than selected. Once a connection has proven
+        stable again, the app will switch back.
+    </string>
     <string-array name="settings_valuelabels_auto_offline">
         <item>Manual mode (off)</item>
         <item>1 second or errors</item>
@@ -107,16 +132,23 @@
         <item>20 seconds or errors</item>
         <item>Only errors or connection loss</item>
     </string-array>
-    <string name="settings_summary_scan_offline">When scanning offline, your device will verify all input with its internal database instead with the server and synchronize its database with the server occasionally. This is more reliable, but allows a ticket to be scanned twice if you scan with multiple devices.</string>
+    <string name="settings_summary_scan_offline">When scanning offline, your device will verify all input with its
+        internal database instead with the server and synchronize its database with the server occasionally. This is
+        more reliable, but allows a ticket to be scanned twice if you scan with multiple devices.
+    </string>
     <string name="settings_label_sounds">Play sounds</string>
     <string name="settings_label_hide_names">Hide names and other personal information</string>
-    <string name="settings_label_hide_names_summary">Does not affect search, useful e.g. in combination with kiosk mode</string>
+    <string name="settings_label_hide_names_summary">Does not affect search, useful e.g. in combination with kiosk
+        mode
+    </string>
     <string name="settings_label_badges">Badges</string>
     <string name="preference_badges_twice">Print every badge twice</string>
     <string name="settings_label_details">Details</string>
     <string name="pref_unpaid_ask">Ask before checking in unpaid tickets</string>
     <string name="pref_ignore_questions">Do not ask questions during check-in</string>
-    <string name="pref_unpaid_ask_summary">When the check-in list is set to include pending orders, this setting controls whether you will be asked before they are being checked in.</string>
+    <string name="pref_unpaid_ask_summary">When the check-in list is set to include pending orders, this setting
+        controls whether you will be asked before they are being checked in.
+    </string>
     <string name="question_validation_error">Some of your input could not be validated.</string>
     <string name="question_input_required">This field is required.</string>
     <string name="question_input_invalid">This input is not valid.</string>
@@ -143,11 +175,15 @@
     <string name="scan_result_canceled">Order canceled</string>
     <string name="error_sync_in_background">A synchronization is already running in the background.</string>
     <string name="dialog_unpaid_title">Unpaid order</string>
-    <string name="dialog_unpaid_text">This ticket belongs to an order that has not yet been paid. Do you still want to check it in? This will not mark the order as paid.</string>
+    <string name="dialog_unpaid_text">This ticket belongs to an order that has not yet been paid. Do you still want to
+        check it in? This will not mark the order as paid.
+    </string>
     <string name="dialog_unpaid_retry">Check in anyways</string>
     <string name="preference_badgeprint_enable">Enable badge printing</string>
     <string name="preference_autobadgeprint_enable">Print badges automatically after successful scan</string>
-    <string name="preference_badgeprint_install_pretixprint">Printing badges requires the separate pretixPRINT app. Do you want to install it?</string>
+    <string name="preference_badgeprint_install_pretixprint">Printing badges requires the separate pretixPRINT app. Do
+        you want to install it?
+    </string>
     <string name="already_scanned">already scanned</string>
     <string name="total_tickets_sold">total tickets sold</string>
     <string name="ticket_attention">Attention, special ticket!</string>
@@ -157,14 +193,22 @@
     <string name="settings_label_datawedge">Install DataWedge profile</string>
     <string name="settings_label_version">Version</string>
     <string name="settings_label_troubleshooting">Troubleshooting</string>
-    <string name="force_full_resync_help">This will not delete any of your local data, but it will force the next synchronization of every event to be a full synchronization, i.e. downloading all data again instead of only changed data.</string>
+    <string name="force_full_resync_help">This will not delete any of your local data, but it will force the next
+        synchronization of every event to be a full synchronization, i.e. downloading all data again instead of only
+        changed data.
+    </string>
     <string name="full_delete">Delete all local data and reset device</string>
-    <string name="full_delete_confirm">Do you really want to reset the device? You will need to pair it with the online system again.</string>
+    <string name="full_delete_confirm">Do you really want to reset the device? You will need to pair it with the online
+        system again.
+    </string>
     <string name="label_shop_active">Active</string>
     <string name="label_shop_inactive">Shop deactivated</string>
     <string name="settings_label_search_disable">Disable search</string>
     <string name="settings_label_kioskmode">Kiosk mode</string>
-    <string name="settings_summary_kioskmode">Kiosk mode hides menus that are not supposed to be used in a self-service installation. Kiosk mode does not prevent users from exiting the app through system features. To access settings, you need to scan a QR code with your PIN.</string>
+    <string name="settings_summary_kioskmode">Kiosk mode hides menus that are not supposed to be used in a self-service
+        installation. Kiosk mode does not prevent users from exiting the app through system features. To access
+        settings, you need to scan a QR code with your PIN.
+    </string>
     <string name="pin_protection">PIN protection</string>
     <string name="pin_protection_pin">Set PIN</string>
     <string name="pin_protection_enable">Enable PIN protection</string>
@@ -174,11 +218,16 @@
     <string name="pin_protection_switch_mode">Protect mode switch</string>
     <string name="pin_protection_enter">Enter PIN</string>
     <string name="currently_inside">currently attending</string>
-    <string name="error_no_available_events">No current or future event could be found. Please check the dates and access rights of your events.</string>
+    <string name="error_no_available_events">No current or future event could be found. Please check the dates and
+        access rights of your events.
+    </string>
     <string name="event_select_calendar">Show calendar</string>
     <string name="connect_instruction_heading">Here's how to connect to your pretix account</string>
-    <string name="connect_instruction_step1">Log in to pretix and open the "Devices" page of your organizer account</string>
+    <string name="connect_instruction_step1">Log in to pretix and open the "Devices" page of your organizer account
+    </string>
     <string name="connect_instruction_step2">Click "Connect a new device" and select a set of events</string>
-    <string name="connect_instruction_step3">Copy over the system address and token and press return. Alternatively, scan the QR code content into the first field.</string>
+    <string name="connect_instruction_step3">Copy over the system address and token and press return. Alternatively,
+        scan the QR code content into the first field.
+    </string>
     <string name="connect_check_token">Connect device</string>
 </resources>

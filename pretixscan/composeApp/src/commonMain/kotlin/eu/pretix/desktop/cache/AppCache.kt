@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 
 class AppCache(cacheFactory: LocalCacheFactory) {
     private val dataStore = cacheFactory.createDataSource()
-    private val cacheDispatcher = Dispatchers.IO;
+    private val cacheDispatcher = Dispatchers.IO
 
     /// Returns the number of events in the database.
     suspend fun eventsCount(): Int {

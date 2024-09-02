@@ -11,11 +11,11 @@ Retrieves the path to the legacy database file.
 
 @return A string representing the absolute path to the legacy database file.
  */
-internal fun getLegacyDatabasePath(): String {
-    val dataDir = getUserDataFolder()
-    val dbFile = File("$dataDir/data.sqlite")
-    return dbFile.absolutePath
-}
+//internal fun getLegacyDatabasePath(): String {
+//    val dataDir = getUserDataFolder()
+//    val dbFile = File("$dataDir/data.sqlite")
+//    return dbFile.absolutePath
+//}
 
 internal fun getDatabasePath(): File {
     val dataDir = getUserDataFolder()
