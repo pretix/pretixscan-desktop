@@ -6,6 +6,7 @@ import screen.screenModules
 
 fun KoinApplication.initModules() {
     modules(platformModules)
-    modules(screenModules)
     modules(cacheModules)
+    modules(pretixModules)
+    modules(screenModules)
 }

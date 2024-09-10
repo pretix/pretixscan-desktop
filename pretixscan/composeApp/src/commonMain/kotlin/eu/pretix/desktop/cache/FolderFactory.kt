@@ -24,3 +24,10 @@ internal fun getDatabasePath(): File {
     val dbFile = File("$dataDir/db.sqlite")
     return dbFile
 }
+
+internal fun getUserDataDir(): File {
+    val dataDir = getUserDataFolder()
+    // make sure the path exists so we can later create files in it
+    File(dataDir).mkdirs()
+    return File(dataDir)
+}

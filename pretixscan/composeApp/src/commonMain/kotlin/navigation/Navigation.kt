@@ -8,6 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import eu.pretix.desktop.cache.AppConfig
+import org.koin.compose.koinInject
+import screen.main.MainScreen
 import screen.setup.SetupScreen
 import screen.welcome.WelcomeScreen
 
@@ -16,9 +19,14 @@ fun Navigation(
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
+    // determine the starting screen based on whether the app is configured or not
+    val appConfig = koinInject<AppConfig>()
+    val startDestination: String = if (appConfig.isConfigured) Route.Main.route else Route.Welcome.route
+
+    // setup navigation graph
     NavHost(
         navController = navHostController,
-        startDestination = Route.Welcome.route,
+        startDestination = startDestination,
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() },
         popEnterTransition = { fadeIn() },
@@ -30,6 +38,9 @@ fun Navigation(
         }
         composable(route = Route.Setup.route) {
             SetupScreen(navHostController = navHostController)
+        }
+        composable(route = Route.Main.route) {
+            MainScreen(navHostController = navHostController)
         }
     }
 }

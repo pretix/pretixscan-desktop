@@ -24,14 +24,13 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.lifecycle.compose)
             implementation(libs.androidx.navigation)
-//            implementation(libs.runtime)
+            implementation(libs.org.json)
             api(libs.koin)
             api(libs.koin.compose)
             api(libs.koin.compose.viewmodel)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-//            implementation(libs.jvm.driver)
             implementation(libs.sqlite)
             implementation(libs.appdirs)
             compileOnly(libs.requery)

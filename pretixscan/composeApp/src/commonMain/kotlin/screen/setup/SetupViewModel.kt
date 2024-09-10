@@ -1,43 +1,55 @@
 package screen.setup
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import eu.pretix.desktop.cache.AppCache
+import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.Version
 import eu.pretix.libpretixsync.api.DefaultHttpClientFactory
 import eu.pretix.libpretixsync.setup.SetupManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class SetupViewModel(appCache: AppCache) : ViewModel() {
-    private val _text = MutableStateFlow("Not started")
-    val text: Flow<String> = _text
-
-    private val _deleteMe: MutableStateFlow<String> = MutableStateFlow("-")
-    val deleteMe: Flow<String> = _deleteMe
+class SetupViewModel(appCache: AppCache, private val setupManager: SetupManager, private val configStore: AppConfig) :
+    ViewModel() {
+    private val _uiState = MutableStateFlow<SetupUiState<String>>(SetupUiState.Start)
+    val uiState: StateFlow<SetupUiState<String>> = _uiState
 
     fun verifyToken(token: String, url: String) {
-        _text.update { "Connecting ..." }
-        val httpFactory = DefaultHttpClientFactory()
-        val manager = SetupManager(
-            "brand", "model", "os", "version", "brand", "version", httpFactory
-        )
-        try {
-            val result = manager.initialize(
-                url,
-                token
-            )
-            _text.update { "New device token: ${result.api_token}" }
-        } catch (e: Exception) {
-            _text.update { "Failed: ${e.localizedMessage}\n${e.stackTraceToString()}" }
-        }
-    }
+        run {
+            _uiState.update { SetupUiState.Loading }
 
-    init {
-        // Invoke the suspend function inside a coroutine
-        runBlocking {
-            val eventCount = appCache.eventsCount()
-            _deleteMe.value = "There are $eventCount events"
+            try {
+                val init = setupManager.initialize(
+                    url,
+                    token
+                )
+                configStore.setDeviceConfig(
+                    init.url,
+                    init.api_token,
+                    init.organizer,
+                    init.device_id,
+                    init.unique_serial,
+                    Version.versionCode
+                )
+                configStore.proxyMode = token.startsWith("proxy=")
+                if (init.gate_name != null) {
+                    configStore.deviceKnownGateName = init.gate_name!!
+                    configStore.deviceKnownGateID = init.gate_id!!
+                }
+                if (init.security_profile == "pretixscan_online_kiosk") {
+                    configStore.syncOrders = false
+                }
+
+                _uiState.update { SetupUiState.Success }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _uiState.update { SetupUiState.Error(e.message ?: "Unknown error") }
+            }
         }
     }
 }

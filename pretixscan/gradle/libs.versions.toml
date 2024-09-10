@@ -9,6 +9,7 @@ koin-compose = "1.2.0-Beta5"
 appdirs = "1.2.2"
 sqlite_jdbc_version = "3.46.1.0"
 requery = "1.6.0"
+org_json = "20240303"
 
 [libraries]
 #kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -26,6 +27,7 @@ appdirs = { module = "net.harawata:appdirs", version.ref = "appdirs" }
 sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite_jdbc_version" }
 requery = { module = "io.requery:requery", version.ref = "requery" }
 requery-processor = { module = "io.requery:requery-processor", version.ref = "requery" }
+org-json = { module = "org.json:json", version.ref = "org_json"}
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
