@@ -1,21 +1,14 @@
 package screen.main
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
+import screen.main.selectevent.SelectEventDialog
 
 @Composable
 @Preview
@@ -24,6 +17,21 @@ fun MainScreen(
     modifier: Modifier = Modifier,
 ) {
     val viewModel = koinViewModel<MainViewModel>()
+    val uiState by viewModel.uiState.collectAsState()
 
     Text("Main Screen")
+
+    when (uiState) {
+        MainUiState.SelectEvent -> {
+            SelectEventDialog(onDismissRequest = {
+
+            })
+        }
+
+        MainUiState.Start -> {
+            // nothing to do
+        }
+
+        MainUiState.SelectCheckInList -> TODO()
+    }
 }

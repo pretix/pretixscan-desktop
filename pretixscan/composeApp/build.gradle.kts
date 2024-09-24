@@ -25,6 +25,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.compose)
             implementation(libs.androidx.navigation)
             implementation(libs.org.json)
+            implementation(libs.joda.time)
             api(libs.koin)
             api(libs.koin.compose)
             api(libs.koin.compose.viewmodel)
