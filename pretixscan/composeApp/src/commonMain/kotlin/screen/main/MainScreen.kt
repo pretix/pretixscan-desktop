@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
 import screen.main.selectevent.SelectEventDialog
+import screen.main.selectlist.SelectCheckInListDialog
 
 @Composable
 @Preview
@@ -22,16 +23,20 @@ fun MainScreen(
     Text("Main Screen")
 
     when (uiState) {
-        MainUiState.SelectEvent -> {
-            SelectEventDialog(onDismissRequest = {
-
-            })
-        }
-
-        MainUiState.Start -> {
+        MainUiState.ReadyToScan -> {
             // nothing to do
         }
 
-        MainUiState.SelectCheckInList -> TODO()
+        MainUiState.SelectEvent -> {
+            SelectEventDialog(onSelectEvent = {
+                viewModel.selectEvent(it)
+            })
+        }
+
+        MainUiState.SelectCheckInList -> {
+            SelectCheckInListDialog(onSelectCheckInList = {
+                viewModel.selectCheckInList(it)
+            })
+        }
     }
 }

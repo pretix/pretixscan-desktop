@@ -1,4 +1,5 @@
-package screen.main.selectevent
+package screen.main.selectlist
+
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
@@ -13,20 +14,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import eu.pretix.libpretixsync.setup.RemoteEvent
+import eu.pretix.libpretixsync.db.CheckInList
 import org.jetbrains.compose.resources.stringResource
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.ok
-import pretixscan.composeapp.generated.resources.operation_select_event
+import pretixscan.composeapp.generated.resources.operation_select_checkinlist
 
 @Composable
 @Preview
-fun SelectEventDialog(
-    onSelectEvent: (RemoteEvent?) -> Unit
+fun SelectCheckInListDialog(
+    onSelectCheckInList: (CheckInList?) -> Unit
 ) {
-    var selectedEvent by remember { mutableStateOf<RemoteEvent?>(null) }
+    var selectedList by remember { mutableStateOf<CheckInList?>(null) }
 
-    Dialog(onDismissRequest = { onSelectEvent(null) }) {
+    Dialog(onDismissRequest = { onSelectCheckInList(null) }) {
         // Custom shape, background, and layout for the dialog
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -35,15 +36,15 @@ fun SelectEventDialog(
                 modifier = Modifier.padding(16.dp).fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(stringResource(Res.string.operation_select_event))
-                SelectEventList(
-                    selectedEvent = selectedEvent,
-                    onSelectEvent = { selectedEvent = it },
+                Text(stringResource(Res.string.operation_select_checkinlist))
+                SelectCheckInList(
+                    selectedCheckInList = selectedList,
+                    onSelectCheckInList = { selectedList = it },
                 )
                 Button(
-                    onClick = { onSelectEvent(selectedEvent) },
+                    onClick = { onSelectCheckInList(selectedList) },
                     modifier = Modifier.padding(top = 16.dp),
-                    enabled = selectedEvent != null,
+                    enabled = selectedList != null,
                 ) {
                     Text(stringResource(Res.string.ok))
                 }

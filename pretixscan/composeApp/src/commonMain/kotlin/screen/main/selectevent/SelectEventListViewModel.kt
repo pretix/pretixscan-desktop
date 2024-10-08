@@ -22,7 +22,6 @@ class SelectEventListViewModel(
 
 
     init {
-        log.info("Preparing event selection screen.")
         loadSelectableEvents()
     }
 
