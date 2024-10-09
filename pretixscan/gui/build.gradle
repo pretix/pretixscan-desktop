@@ -58,7 +58,7 @@ dependencies {
     implementation 'net.java.dev.jna:platform:3.5.2'
     implementation "joda-time:joda-time:$joda_version"
     implementation "de.huxhorn.lilith:de.huxhorn.lilith.3rdparty.junique:1.0.4"
-    implementation 'com.github.kittinunf.fuel:fuel:2.1.0'
+    implementation 'com.github.kittinunf.fuel:fuel:2.3.0'
     implementation 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2'
     implementation 'com.jfoenix:jfoenix:9.0.9'
     implementation 'org.apache.pdfbox:pdfbox:2.0.13'
