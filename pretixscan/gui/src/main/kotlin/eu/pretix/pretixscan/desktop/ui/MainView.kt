@@ -8,9 +8,7 @@ import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.CheckInList
 import eu.pretix.libpretixsync.db.Event
 import eu.pretix.libpretixsync.db.SubEvent
-import eu.pretix.pretixscan.desktop.PretixScanMain
-import eu.pretix.pretixscan.desktop.getBadgeLayout
-import eu.pretix.pretixscan.desktop.printBadge
+import eu.pretix.pretixscan.desktop.*
 import eu.pretix.pretixscan.desktop.ui.helpers.*
 import eu.pretix.pretixscan.desktop.ui.style.*
 import javafx.animation.Timeline
@@ -740,8 +738,18 @@ class MainView : View() {
                         "enter"
                     }
                 })
-                if (resultData?.scanType != TicketCheckProvider.CheckInType.EXIT) {
-                    if (resultData?.position != null && (app as PretixScanMain).configStore.badgePrinterName != null && (app as PretixScanMain).configStore.autoPrintBadges) {
+
+                val conf = (app as PretixScanMain).configStore
+                val isPrintable = (conf.badgePrinterName != null &&
+                        resultData?.scanType != TicketCheckProvider.CheckInType.EXIT &&
+                        resultData?.position != null &&
+                        getBadgeLayout(app as PretixScanMain, resultData!!.position!!, resultData!!.eventSlug!!) != null)
+
+                if (isPrintable) {
+                    val shouldAutoPrint = (conf.autoPrintBadges &&
+                            resultData!!.type == TicketCheckProvider.CheckResult.Type.VALID &&
+                            !isPreviouslyPrinted((app as PretixScanMain).data(), resultData!!.position!!))
+                    if (shouldAutoPrint) {
                         runAsync {
                             printBadge(app as PretixScanMain, resultData!!.position!!, (app as PretixScanMain).configStore.eventSlug!!)
                         }
@@ -864,14 +872,12 @@ class MainView : View() {
                             addClass(MainStyleSheet.cardHeaderInfo)
                         }
                     }
-                    val offer_print = (
-                            data?.position != null
-                                    && (app as PretixScanMain).configStore.badgePrinterName != null
-                                    && (data.type == TicketCheckProvider.CheckResult.Type.VALID
-                                    || data.type == TicketCheckProvider.CheckResult.Type.USED)
-                                    && getBadgeLayout(app as PretixScanMain, data.position!!, (app as PretixScanMain).configStore.eventSlug!!) != null
-                            )
-                    if (offer_print) {
+                    val conf = (app as PretixScanMain).configStore
+                    val isPrintable = (conf.badgePrinterName != null &&
+                            data!!.scanType != TicketCheckProvider.CheckInType.EXIT &&
+                            data.position != null &&
+                            getBadgeLayout(app as PretixScanMain, data.position!!, data.eventSlug!!) != null)
+                    if (isPrintable) {
                         hbox {
                             alignment = Pos.CENTER_RIGHT
                             paddingTop = 5
