@@ -4,10 +4,10 @@ import eu.pretix.libpretixprint.templating.ContentProvider
 import eu.pretix.libpretixprint.templating.FontRegistry
 import eu.pretix.libpretixprint.templating.FontSpecification
 import eu.pretix.libpretixprint.templating.Layout
-import eu.pretix.libpretixsync.db.BadgeLayout
-import eu.pretix.libpretixsync.db.BadgeLayoutItem
-import eu.pretix.libpretixsync.db.CachedPdfImage
-import eu.pretix.libpretixsync.db.Item
+import eu.pretix.libpretixsync.api.PretixApi
+import eu.pretix.libpretixsync.db.*
+import io.requery.BlockingEntityStore
+import io.requery.Persistable
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.Orientation
 import org.apache.pdfbox.printing.PDFPageable
@@ -21,14 +21,12 @@ import java.awt.print.PageFormat
 import java.awt.print.PrinterJob
 import java.io.File
 import java.io.InputStream
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.print.PrintServiceLookup
 import javax.print.attribute.HashPrintRequestAttributeSet
-import javax.print.attribute.Size2DSyntax
-import javax.print.attribute.standard.MediaSize
 import javax.print.attribute.standard.OrientationRequested
-import kotlin.math.max
-import kotlin.math.min
 
 
 fun getDefaultBadgeLayout(): BadgeLayout {
@@ -54,21 +52,10 @@ fun getBadgeLayout(application: PretixScanMain, position: JSONObject, eventSlug:
         }
     }
 
-    /* Legacy mechanism: Keep around until pretix 2.5 is end of life */
-    val item = application.data().select(Item::class.java)
-            .where(Item.SERVER_ID.eq(itemid_server))
-            .get().firstOrNull() ?: return getDefaultBadgeLayout()
-    if (item.getBadge_layout_id() != null) {
-        return application.data().select(BadgeLayout::class.java)
-                .where(BadgeLayout.SERVER_ID.eq(item.getBadge_layout_id()))
-                .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
-                .get().firstOrNull() ?: getDefaultBadgeLayout()
-    } else { // Also used for current pretix versions for obtaining the event's default badge layout
-        return application.data().select(BadgeLayout::class.java)
-                .where(BadgeLayout.IS_DEFAULT.eq(true))
-                .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
-                .get().firstOrNull() ?: getDefaultBadgeLayout()
-    }
+    return application.data().select(BadgeLayout::class.java)
+            .where(BadgeLayout.IS_DEFAULT.eq(true))
+            .and(BadgeLayout.EVENT_SLUG.eq(eventSlug))
+            .get().firstOrNull() ?: getDefaultBadgeLayout()
 }
 
 fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: String) {
@@ -135,6 +122,15 @@ fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: Str
                 }
             }
             job.print(attributes)
+
+            logSuccessfulPrint(
+                application.api(),
+                application.data(),
+                eventSlug,
+                position.getLong("id"),
+                "badge"
+            )
+
             break
         }
     }
@@ -289,4 +285,54 @@ class Renderer(private val layout: JSONArray, private val position: JSONObject, 
                     storeFont(application, String.format(pattern, italicName)))
         }
     }
+}
+
+
+fun isPreviouslyPrinted(data: BlockingEntityStore<Persistable>, position: JSONObject): Boolean {
+    if (position.has("print_logs")) {
+        val arr = position.getJSONArray("print_logs")
+        val arrlen = arr.length()
+        for (i in 0 until arrlen) {
+            val printlog = arr.getJSONObject(i)
+            if (!printlog.getBoolean("successful")) {
+                continue
+            }
+            if (printlog.optString("type", "?") == "badge") {
+                return true
+            }
+        }
+    }
+    if (data.count(QueuedCall::class.java)
+            .where(QueuedCall.URL.like("%orderpositions/" + position.getLong("id") + "/printlog/"))
+            .get().value() > 0
+    ) {
+        return true
+    }
+    return false
+}
+
+fun logSuccessfulPrint(
+    api: PretixApi,
+    data: BlockingEntityStore<Persistable>,
+    eventSlug: String,
+    positionId: Long,
+    type: String
+) {
+    val logbody = JSONObject()
+    logbody.put("source", "pretixSCAN")
+    logbody.put("type", type)
+    logbody.put("info", JSONObject())
+    val tz = TimeZone.getTimeZone("UTC")
+    val df: DateFormat = SimpleDateFormat(
+        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        Locale.ENGLISH
+    ) // Quoted "Z" to indicate UTC, no timezone offset
+    df.timeZone = tz
+    logbody.put("datetime", df.format(Date()))
+
+    val log = QueuedCall()
+    log.setBody(logbody.toString())
+    log.setIdempotency_key(NonceGenerator.nextNonce())
+    log.setUrl(api.eventResourceUrl(eventSlug, "orderpositions") + positionId + "/printlog/")
+    data.insert(log)
 }
