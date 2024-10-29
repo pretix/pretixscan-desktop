@@ -22,10 +22,10 @@ class SelectCheckInListViewModel(
 
 
     init {
-        loadSelectableEvents()
+        loadSelectableCheckInLists()
     }
 
-    private fun loadSelectableEvents() {
+    private fun loadSelectableCheckInLists() {
         run {
             _uiState.value = SelectCheckInListUiState.Loading
             try {

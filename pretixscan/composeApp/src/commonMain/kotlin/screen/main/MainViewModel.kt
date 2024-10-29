@@ -1,19 +1,21 @@
 package screen.main
 
 import androidx.lifecycle.ViewModel
-import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.desktop.cache.Version
-import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.CheckInList
 import eu.pretix.libpretixsync.setup.RemoteEvent
+import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import java.util.logging.Logger
 
 
-class MainViewModel(appCache: AppCache, val appConfig: AppConfig, ticketChecker: TicketCheckProvider) : ViewModel() {
+class MainViewModel(
+    private val appConfig: AppConfig,
+    private val syncManager: SyncManager
+) : ViewModel() {
     private val log = Logger.getLogger("MainViewModel")
 
     private val _uiState = MutableStateFlow<MainUiState<MainUiStateData>>(MainUiState.Loading)
@@ -56,7 +58,13 @@ class MainViewModel(appCache: AppCache, val appConfig: AppConfig, ticketChecker:
         appConfig.eventName = event.name
         appConfig.checkInListId = 0
 
+        minimalSyncForEvent()
+
         _uiState.update { MainUiState.SelectCheckInList }
+    }
+
+    private fun minimalSyncForEvent() {
+        syncManager.syncMinimalEventSet(appConfig.eventSlug, appConfig.subEventId ?: 0L, null)
     }
 
     fun selectCheckInList(list: CheckInList?) {

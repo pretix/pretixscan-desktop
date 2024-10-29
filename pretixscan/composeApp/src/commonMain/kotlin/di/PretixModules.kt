@@ -1,7 +1,9 @@
 package di
 
+import app.DesktopSentryImpl
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.libpretixsync.SentryInterface
 import eu.pretix.libpretixsync.api.HttpClientFactory
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
@@ -17,11 +19,14 @@ import org.koin.dsl.module
 val pretixModules: List<Module>
     get() = listOf(
         module {
-            factory {
+            factory<SentryInterface> {
+                DesktopSentryImpl()
+            }
+            factory<EventManager> {
                 val store = get<AppCache>().dataStore
                 EventManager(store, get<PretixApi>(), get<AppConfig>(), false)
             }
-            factory {
+            factory<PretixApi> {
                 val config = get<AppConfig>()
                 if (!config.isConfigured) {
                     throw UnsupportedOperationException("Invalid operation: PretixApi can only be used once the device has been initialised.")
