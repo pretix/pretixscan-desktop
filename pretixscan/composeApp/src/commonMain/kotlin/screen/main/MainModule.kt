@@ -6,6 +6,7 @@ import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.setup.EventManager
 import org.koin.dsl.module
 import screen.main.selectevent.SelectEventListViewModel
+import screen.main.selectlist.SelectCheckInListViewModel
 
 internal val mainModule
     get() = module {
@@ -14,5 +15,8 @@ internal val mainModule
         }
         factory {
             SelectEventListViewModel(get<AppCache>(), get<AppConfig>(), get<EventManager>())
+        }
+        factory {
+            SelectCheckInListViewModel(get<AppCache>(), get<AppConfig>())
         }
     }

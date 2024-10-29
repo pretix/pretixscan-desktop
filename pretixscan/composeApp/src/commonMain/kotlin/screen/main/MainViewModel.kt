@@ -16,16 +16,34 @@ import java.util.logging.Logger
 class MainViewModel(appCache: AppCache, val appConfig: AppConfig, ticketChecker: TicketCheckProvider) : ViewModel() {
     private val log = Logger.getLogger("MainViewModel")
 
-    private val _uiState = MutableStateFlow<MainUiState<String>>(MainUiState.ReadyToScan)
-    val uiState: StateFlow<MainUiState<String>> = _uiState
+    private val _uiState = MutableStateFlow<MainUiState<MainUiStateData>>(MainUiState.Loading)
+    val uiState: StateFlow<MainUiState<MainUiStateData>> = _uiState
 
     init {
         print("Welcome to app version ${Version.version}")
 
         if (appConfig.synchronizedEvents.isEmpty()) {
             log.info("No events configured, showing select event dialog")
-            _uiState.update { MainUiState.SelectEvent }
+            beginEventSelection()
+        } else if (appConfig.eventSelection.isEmpty()) {
+            log.info("Selected event, showing select event dialog")
+            beginEventSelection()
+        } else {
+            loadViewModel()
         }
+    }
+
+    private fun loadViewModel() {
+        val selection = appConfig.eventSelection.first()
+        _uiState.update {
+            MainUiState.Success(
+                MainUiStateData(eventSelection = selection)
+            )
+        }
+    }
+
+    fun beginEventSelection() {
+        _uiState.update { MainUiState.SelectEvent }
     }
 
     fun selectEvent(event: RemoteEvent?) {
@@ -50,4 +68,5 @@ class MainViewModel(appCache: AppCache, val appConfig: AppConfig, ticketChecker:
         appConfig.checkInListId = list.server_id
         appConfig.checkInListName = list.name
     }
+
 }

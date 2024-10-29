@@ -32,7 +32,7 @@ class SelectCheckInListViewModel(
                 val eventSlug = appConfig.eventSlug!!
                 val lists: List<CheckInList> = appCache.dataStore
                     .select(CheckInList::class.java)
-                    .where(CheckInList.EVENT_SLUG.eq(eventSlug))
+//                    .where(CheckInList.EVENT_SLUG.eq(eventSlug))
                     .get().toList()
 
                 log.info("Found ${lists.size} available lists for selection.")

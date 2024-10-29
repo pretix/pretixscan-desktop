@@ -2,10 +2,20 @@ package eu.pretix.desktop.cache
 
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
+import org.joda.time.DateTime
 import org.json.JSONObject
 import java.io.File
 import java.util.prefs.Preferences
 
+
+data class EventSelection(
+    val eventSlug: String,
+    val eventName: String,
+    val subEventId: Long?,
+    val checkInList: Long,
+    val dateFrom: DateTime?,
+    val dateTo: DateTime?,
+)
 
 class AppConfig(val dataDir: String) : ConfigStore {
     private val prefs = Preferences.userNodeForPackage(AppConfig::class.java)
@@ -112,6 +122,29 @@ class AppConfig(val dataDir: String) : ConfigStore {
         set(value) {
             prefs.putBoolean(PREFS_KEY_ASYNC_MODE, value)
             prefs.flush()
+        }
+
+    var eventSelection: List<EventSelection>
+        get() {
+            val slug = eventSlug
+            val name = eventName
+
+            if (slug == null || name == null) {
+                return emptyList()
+            }
+            return listOf(
+                EventSelection(
+                    slug,
+                    name,
+                    subEventId ?: -1,
+                    checkInListId,
+                    null,
+                    null
+                )
+            )
+        }
+        set(value) {
+            //TODO: not implemented yet
         }
 
     override fun isDebug(): Boolean {
