@@ -20,7 +20,7 @@ fun ErrorDialog(
     message: String,
     onDismiss: () -> Unit
 ) {
-    Dialog(onCloseRequest = onDismiss) {
+    Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
                 .padding(16.dp)

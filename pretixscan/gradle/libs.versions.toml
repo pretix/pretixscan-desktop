@@ -11,6 +11,8 @@ sqlite_jdbc_version = "3.46.1.0"
 requery = "1.6.0"
 org_json = "20240303"
 joda_time = "2.13.0"
+protobuf = "0.9.4"
+sqldelight = "2.0.2"
 
 [libraries]
 #kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -30,8 +32,11 @@ requery = { module = "io.requery:requery", version.ref = "requery" }
 requery-processor = { module = "io.requery:requery-processor", version.ref = "requery" }
 org-json = { module = "org.json:json", version.ref = "org_json"}
 joda-time = { module = "joda-time:joda-time", version.ref = "joda_time" }
+sqldelight-jvm = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
+app-cash-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

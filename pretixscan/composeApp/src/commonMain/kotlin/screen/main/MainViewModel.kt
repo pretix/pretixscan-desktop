@@ -3,7 +3,7 @@ package screen.main
 import androidx.lifecycle.ViewModel
 import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.desktop.cache.Version
-import eu.pretix.libpretixsync.db.CheckInList
+import eu.pretix.libpretixsync.sqldelight.CheckInList
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,8 +73,9 @@ class MainViewModel(
             return
         }
 
-        appConfig.checkInListId = list.server_id
-        appConfig.checkInListName = list.name
-    }
+        appConfig.checkInListId = list.server_id!!
+        appConfig.checkInListName = list.name!!
 
+        loadViewModel()
+    }
 }

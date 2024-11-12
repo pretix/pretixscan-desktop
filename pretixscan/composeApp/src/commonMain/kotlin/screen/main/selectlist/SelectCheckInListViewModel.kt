@@ -4,7 +4,7 @@ package screen.main.selectlist
 import androidx.lifecycle.ViewModel
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.AppConfig
-import eu.pretix.libpretixsync.db.CheckInList
+import eu.pretix.libpretixsync.sqldelight.CheckInList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -30,10 +30,7 @@ class SelectCheckInListViewModel(
             _uiState.value = SelectCheckInListUiState.Loading
             try {
                 val eventSlug = appConfig.eventSlug!!
-                val lists: List<CheckInList> = appCache.dataStore
-                    .select(CheckInList::class.java)
-//                    .where(CheckInList.EVENT_SLUG.eq(eventSlug))
-                    .get().toList()
+                val lists: List<CheckInList> = appCache.db.checkInListQueries.selectByEventSlug(eventSlug).executeAsList()
 
                 log.info("Found ${lists.size} available lists for selection.")
                 if (lists.isEmpty()) {

@@ -1,6 +1,6 @@
 package screen.main.selectlist
 
-import eu.pretix.libpretixsync.db.CheckInList
+import eu.pretix.libpretixsync.sqldelight.CheckInList
 
 sealed class SelectCheckInListUiState<out T> {
     data object Loading : SelectCheckInListUiState<Nothing>()

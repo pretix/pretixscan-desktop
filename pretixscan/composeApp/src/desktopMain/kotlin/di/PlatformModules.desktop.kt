@@ -46,7 +46,8 @@ actual val platformModules: List<Module>
                     get<AppConfig>(),
                     get<PretixApi>(),
                     get<SentryInterface>(),
-                    get<AppCache>().dataStore,
+                    get<AppCache>().data,
+                    get<AppCache>().db,
                     get<FileStorage>(),
                     uploadInterval,
                     downloadInterval,
@@ -60,6 +61,7 @@ actual val platformModules: List<Module>
                     System.getProperty("os.version"),
                     "pretixSCAN Desktop",
                     Version.version,
+                    null,
                     null,
                     null
                 )

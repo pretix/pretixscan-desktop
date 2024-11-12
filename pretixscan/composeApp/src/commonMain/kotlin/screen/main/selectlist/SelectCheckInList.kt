@@ -15,7 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import eu.pretix.libpretixsync.db.CheckInList
+import eu.pretix.libpretixsync.sqldelight.CheckInList
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.Res
@@ -68,7 +68,7 @@ fun SelectCheckInList(
                         )
 
                         Column {
-                            Text(item.name, fontWeight = FontWeight.Bold)
+                            Text(item.name ?: "", fontWeight = FontWeight.Bold)
                         }
                     }
                 }

@@ -1,6 +1,6 @@
 package eu.pretix.pretixscan.desktop.ui
 
-import eu.pretix.libpretixsync.db.CheckInList
+import eu.pretix.libpretixsync.sqldelight.CheckInList
 import eu.pretix.libpretixsync.sync.SyncManager
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.ui.helpers.*

@@ -23,7 +23,7 @@ val pretixModules: List<Module>
                 DesktopSentryImpl()
             }
             factory<EventManager> {
-                val store = get<AppCache>().dataStore
+                val store = get<AppCache>().data
                 EventManager(store, get<PretixApi>(), get<AppConfig>(), false)
             }
             factory<PretixApi> {
@@ -50,12 +50,12 @@ val pretixModules: List<Module>
                 if (config.proxyMode) {
                     ProxyCheckProvider(config, get<HttpClientFactory>())
                 } else if (config.asyncModeEnabled) {
-                    AsyncCheckProvider(config, appCache.dataStore)
+                    AsyncCheckProvider(config, appCache.db)
                 } else {
                     OnlineCheckProvider(
                         config,
                         get<HttpClientFactory>(),
-                        appCache.dataStore,
+                        appCache.db,
                         get<FileStorage>()
                     )
                 }

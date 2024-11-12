@@ -34,6 +34,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.sqlite)
             implementation(libs.appdirs)
+            implementation(libs.sqldelight.jvm)
             compileOnly(libs.requery)
             compileOnly(libs.requery.processor)
             implementation(project(":libpretixsync"))
