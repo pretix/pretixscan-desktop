@@ -2,7 +2,7 @@ package screen.setup
 
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -23,6 +23,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.*
 import screen.components.ErrorDialog
 import ui.CustomColor
+import ui.asColour
 import ui.parseColor
 
 @Composable
@@ -95,7 +96,7 @@ fun SetupScreen(
             horizontalArrangement = Arrangement.End
         ) {
             Button(
-                colors = ButtonDefaults.buttonColors(containerColor = Color(parseColor(CustomColor.BrandGreen.hex))),
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColour()),
                 onClick = {
                     viewModel.verifyToken(token = token, url = url)
                 },

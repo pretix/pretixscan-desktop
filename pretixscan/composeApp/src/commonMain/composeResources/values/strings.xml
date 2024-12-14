@@ -230,4 +230,6 @@
         scan the QR code content into the first field.
     </string>
     <string name="connect_check_token">Connect device</string>
+    <string name="searchfield_prompt">Ticket code or name…</string>
+    <string name="text_action_clear">Clear</string>
 </resources>

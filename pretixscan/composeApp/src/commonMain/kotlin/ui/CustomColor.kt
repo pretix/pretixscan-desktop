@@ -2,6 +2,7 @@ package ui
 
 import androidx.annotation.ColorInt
 import androidx.annotation.Size
+import androidx.compose.ui.graphics.Color
 
 // color resources from xml are not supported by compose
 // while a custom theme may be a solution, using hardcoded values as a workaround
@@ -10,6 +11,12 @@ sealed class CustomColor(val hex: String) {
     data object BrandDark : CustomColor("#281333")
     data object BrandLight : CustomColor("#3B1C4A")
     data object BrandGreen : CustomColor("#5CB85C")
+
+    data object BrandRed : CustomColor("#D36060")
+
+    data object BrandOrange: CustomColor("#FFB419")
+
+    data object White: CustomColor("#FFFFFF")
 }
 
 
@@ -24,4 +31,9 @@ fun parseColor(@Size(min = 1) colorString: String): Int {
         return color.toInt()
     }
     throw IllegalArgumentException("Unknown color")
+}
+
+
+fun CustomColor.asColour(): Color {
+    return Color(parseColor(hex))
 }

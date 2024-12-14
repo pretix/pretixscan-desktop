@@ -147,6 +147,10 @@ class AppConfig(val dataDir: String) : ConfigStore {
             //TODO: not implemented yet
         }
 
+    fun eventSelectionToMap(): Map<String, Long> {
+        return eventSelection.map { it.eventSlug to it.checkInList }.toMap()
+    }
+
     override fun isDebug(): Boolean {
         return false
     }

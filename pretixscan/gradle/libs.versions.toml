@@ -1,7 +1,7 @@
 [versions]
 compose-plugin = "1.7.0"
 #junit = "4.13.2"
-kotlin = "2.0.20"
+kotlin = "2.0.21"
 androidx-lifecycle = "2.8.3"
 androidx-navigation = "2.8.0-alpha10"
 koin = "4.0.0"
@@ -13,6 +13,7 @@ org_json = "20240303"
 joda_time = "2.13.0"
 protobuf = "0.9.4"
 sqldelight = "2.0.2"
+coroutines = "1.9.0"
 
 [libraries]
 #kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -21,6 +22,7 @@ sqldelight = "2.0.2"
 androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-desktop = { module = "androidx.lifecycle:lifecycle-viewmodel-desktop", version.ref = "androidx-lifecycle" }
 androidx-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
@@ -33,6 +35,9 @@ requery-processor = { module = "io.requery:requery-processor", version.ref = "re
 org-json = { module = "org.json:json", version.ref = "org_json"}
 joda-time = { module = "joda-time:joda-time", version.ref = "joda_time" }
 sqldelight-jvm = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "coroutines" }
+coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }

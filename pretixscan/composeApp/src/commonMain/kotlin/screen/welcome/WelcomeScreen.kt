@@ -19,6 +19,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import pretixscan.composeapp.generated.resources.*
 import ui.CustomColor
+import ui.asColour
 import ui.parseColor
 
 @Composable
@@ -55,7 +56,7 @@ fun WelcomeScreen(
             Image(
                 painter = painterResource(Res.drawable.logo_white),
                 contentDescription = "Pretix logo",
-                modifier = Modifier.background(Color(parseColor(CustomColor.BrandDark.hex)))
+                modifier = Modifier.background(CustomColor.BrandDark.asColour())
             )
         }
 
@@ -90,7 +91,7 @@ fun WelcomeScreen(
             horizontalArrangement = Arrangement.End
         ) {
             Button(
-                colors = ButtonDefaults.buttonColors(containerColor = Color(parseColor(CustomColor.BrandGreen.hex))),
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColour()),
                 enabled = acceptedTerms,
                 onClick = {
                     navHostController.navigate(route = Route.Setup.route)
