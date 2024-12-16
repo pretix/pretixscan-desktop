@@ -27,6 +27,7 @@ kotlin {
             implementation(libs.coroutines.core)
             implementation(libs.org.json)
             implementation(libs.joda.time)
+            implementation(libs.gadulka)
 
             api(libs.koin)
             api(libs.koin.compose)

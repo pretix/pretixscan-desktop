@@ -9,13 +9,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import eu.iamkonstantin.kotlin.gadulka.GadulkaPlayer
+import eu.pretix.libpretixsync.check.TicketCheckProvider
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.searchfield_prompt
 import screen.components.CustomSearchBar
 
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun MainTicketSearchView(modifier: Modifier = Modifier) {
     val viewModel = koinViewModel<MainTicketSearchViewModel>()
@@ -23,6 +28,7 @@ fun MainTicketSearchView(modifier: Modifier = Modifier) {
     val searchQuery by viewModel.searchText.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
     val searchSuggestions by viewModel.searchSuggestsions.collectAsStateWithLifecycle()
+    val player = koinInject<GadulkaPlayer>()
 
     Column(
         modifier = Modifier
@@ -52,7 +58,13 @@ fun MainTicketSearchView(modifier: Modifier = Modifier) {
                 }
             }
         } else {
-            SearcResultsView(searchSuggestions)
+            SearcResultsView(
+                searchSuggestions,
+                onSelectedSearchResult = {
+                    println("Playing beep...")
+                    player.play(Res.getUri("files/attention.m4a"))
+                }
+            )
         }
     }
 }

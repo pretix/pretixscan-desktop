@@ -1,6 +1,7 @@
 package screen.main.search
 
 import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,7 +23,8 @@ import ui.asColour
 
 @Composable
 fun SearcResultsView(
-    searchSuggestions: List<TicketCheckProvider.SearchResult>
+    searchSuggestions: List<TicketCheckProvider.SearchResult>,
+    onSelectedSearchResult: (TicketCheckProvider.SearchResult) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -32,10 +34,12 @@ fun SearcResultsView(
 
         LazyColumn(Modifier.fillMaxSize().padding(end = 12.dp), state) {
             items(searchSuggestions) { item ->
-
                 Column(
                     modifier = Modifier.defaultMinSize(minHeight = 64.dp)
-                        .bottomBorder(1.dp, MaterialTheme.colorScheme.outline),
+                        .bottomBorder(1.dp, MaterialTheme.colorScheme.outline)
+                        .clickable(onClickLabel = stringResource(Res.string.text_action_select), onClick = {
+                            onSelectedSearchResult(item)
+                        }),
                     horizontalAlignment = Alignment.Start,
                 ) {
                     Spacer(Modifier.height(8.dp))

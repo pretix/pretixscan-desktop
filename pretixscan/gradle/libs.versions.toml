@@ -14,6 +14,7 @@ joda_time = "2.13.0"
 protobuf = "0.9.4"
 sqldelight = "2.0.2"
 coroutines = "1.9.0"
+gadulka = "1.4.0"
 
 [libraries]
 #kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -38,6 +39,7 @@ sqldelight-jvm = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "coroutines" }
 coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
+gadulka = { module = "eu.iamkonstantin.kotlin:gadulka", version.ref = "gadulka" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
