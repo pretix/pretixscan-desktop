@@ -3,6 +3,7 @@ package eu.pretix.pretixscan.desktop.ui
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import eu.pretix.pretixscan.desktop.PretixScanMain
+import eu.pretix.pretixscan.desktop.VERSION
 import eu.pretix.pretixscan.desktop.readFromInputStream
 import eu.pretix.pretixscan.desktop.ui.helpers.*
 import eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet
@@ -100,6 +101,8 @@ class SettingsView : View() {
                 addClass(MainStyleSheet.cardBody)
                 hbox {
                     label(messages["settings_head"]) { addClass(MainStyleSheet.eventInfoItemHeader) }
+                    spacer {}
+                    label(VERSION)
                 }
             }
         }
