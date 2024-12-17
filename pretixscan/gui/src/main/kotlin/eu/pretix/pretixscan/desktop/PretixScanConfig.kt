@@ -278,9 +278,13 @@ class PretixScanConfig(private var data_dir: String) : ConfigStore {
         }
 
     var badgePrinterName: String?
-        get() = prefs.get(PREFS_KEY_PRINTER_BADGE_NAME, null)
+        get() {
+            val v = prefs.get(PREFS_KEY_PRINTER_BADGE_NAME, "")
+            if (v == "") return null
+            else return v
+        }
         set(value) {
-            prefs.put(PREFS_KEY_PRINTER_BADGE_NAME, value)
+            prefs.put(PREFS_KEY_PRINTER_BADGE_NAME, value ?: "")
             prefs.flush()
         }
 
