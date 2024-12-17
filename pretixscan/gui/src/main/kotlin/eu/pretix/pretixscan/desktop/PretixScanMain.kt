@@ -1,14 +1,13 @@
 package eu.pretix.pretixscan.desktop
 
 import eu.pretix.libpretixsync.DummySentryImplementation
-import eu.pretix.libpretixsync.api.DefaultHttpClientFactory
+import eu.pretix.libpretixsync.Models
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.AsyncCheckProvider
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
+import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Migrations
-import eu.pretix.libpretixsync.Models
-import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.pretixscan.desktop.ui.MainView
 import eu.pretix.pretixscan.desktop.ui.style.MainStyleSheet
 import io.requery.BlockingEntityStore
@@ -31,6 +30,8 @@ import tornadofx.*
 import java.io.File
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
+import java.util.logging.*
+import kotlin.reflect.jvm.jvmName
 
 
 val VERSION = "1.23.0"
@@ -39,12 +40,14 @@ val APP_ID = "eu.pretix.pretixscan.desktop"
 
 class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
     private var dataStore: BlockingEntityStore<Persistable>? = null
+    private val logger: Logger = Logger.getLogger(this::class.jvmName)
 
     companion object {
         // Keep version argument at 1, we do not want new folders for every new version for now.
         private val appDirs = AppDirsFactory.getInstance()!!
         val dataDir = appDirs.getUserDataDir("pretixscan", "1", "pretix")
         val cacheDir = appDirs.getUserCacheDir("pretixscan", "1", "pretix")
+        val logDir = appDirs.getUserLogDir("pretixscan", "1", "pretix")
     }
 
     val configStore = PretixScanConfig(dataDir)
@@ -74,7 +77,34 @@ class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
         get() = _messages.get()
         set(value) = _messages.set(value)
 
+    private fun setUpLogging() {
+        if (!File(logDir).isDirectory()) {
+            File(logDir).mkdirs()
+        }
+        val rootLogger: Logger = LogManager.getLogManager().getLogger("")
+        rootLogger.setLevel(Level.INFO)
+        val handler = FileHandler(logDir + "/main.%g.log")
+        handler.formatter = object : SimpleFormatter() {
+            private val format = "[%1\$tF %1\$tT] [%2$-7s] %3\$s %n"
+            override fun formatMessage(record: LogRecord): String {
+                return String.format(
+                    format,
+                    Date(record.millis),
+                    record.level.localizedName,
+                    record.message
+                )
+            }
+        }
+        rootLogger.addHandler(handler)
+        for (h in rootLogger.getHandlers()) {
+            h.setLevel(Level.INFO)
+        }
+    }
+
     override fun start(stage: Stage) {
+        setUpLogging()
+        logger.info("App is starting with version $VERSION")
+
         this.stage = stage
 
         Renderer.registerFonts(this)

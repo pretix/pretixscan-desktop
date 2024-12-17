@@ -24,10 +24,13 @@ import java.io.InputStream
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.logging.Logger
 import javax.print.PrintServiceLookup
 import javax.print.attribute.HashPrintRequestAttributeSet
 import javax.print.attribute.standard.OrientationRequested
+import kotlin.reflect.jvm.jvmName
 
+private val logger: Logger = Logger.getLogger("eu.pretix.pretixscan.desktop.PrintUtils")
 
 fun getDefaultBadgeLayout(): BadgeLayout {
     val tl = BadgeLayout()
@@ -73,6 +76,8 @@ fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: Str
     } else {
         Renderer(layout.json.getJSONArray("layout"), position, null, application).writePDF(pdffile)
     }
+
+    logger.info("Starting badge print")
     val document = PDDocument.load(pdffile)
     val printServices = PrintServiceLookup.lookupPrintServices(null, null)
     for (printService in printServices) {
@@ -121,6 +126,7 @@ fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: Str
                     attributes.add(OrientationRequested.PORTRAIT)
                 }
             }
+            logger.info("Printing badge on printer ${printService.name}")
             job.print(attributes)
 
             logSuccessfulPrint(
@@ -130,6 +136,7 @@ fun printBadge(application: PretixScanMain, position: JSONObject, eventSlug: Str
                 position.getLong("id"),
                 "badge"
             )
+            logger.info("Print done")
 
             break
         }
