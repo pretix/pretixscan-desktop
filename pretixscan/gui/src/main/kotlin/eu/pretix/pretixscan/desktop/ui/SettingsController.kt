@@ -1,14 +1,15 @@
 package eu.pretix.pretixscan.desktop.ui
 
-import eu.pretix.libpretixsync.db.*
-import eu.pretix.pretixscan.desktop.PretixScanMain
+import java.util.logging.Logger
+import java.lang.SecurityManager
 import javax.print.DocFlavor
 import javax.print.PrintService
 import javax.print.PrintServiceLookup
-import javax.print.attribute.standard.QueuedJobCount
+import kotlin.reflect.jvm.jvmName
 
 
 class SettingsController : BaseController() {
+    private val logger: Logger = Logger.getLogger(this::class.jvmName)
 
     fun toggleLargeColor(value: Boolean) {
         configStore.largeColor = value
@@ -51,6 +52,19 @@ class SettingsController : BaseController() {
     }
 
     fun getPrinters(): Array<PrintService> {
-        return PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.PAGEABLE, null)
+        logger.info("Looking up print services")
+        try {
+            System.getSecurityManager()?.checkPrintJobAccess()
+        } catch (e: SecurityException) {
+            logger.warning("SecurityException on checkPrintJobAccess: $e")
+        }
+
+        val services = PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.PAGEABLE, null)
+        logger.info("Found ${services.size} print services")
+
+        val otherServices1 = PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.PRINTABLE, null)
+        val otherServices2 = PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.RENDERABLE_IMAGE, null)
+        logger.info("Found ${otherServices1.size} print services which support PRINTABLE and ${otherServices2.size} which support RENDERABLE_IMAGE (ignored)")
+        return services
     }
 }
