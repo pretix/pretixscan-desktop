@@ -14,6 +14,8 @@ import eu.pretix.libpretixsync.setup.EventManager
 import eu.pretix.libpretixsync.sync.FileStorage
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import tickets.ConnectivityHelper
+import tickets.TicketCodeHandler
 
 
 val pretixModules: List<Module>
@@ -39,7 +41,7 @@ val pretixModules: List<Module>
                     httpFactory
                 )
             }
-            single<TicketCheckProvider> {
+            factory<TicketCheckProvider> {
                 val config = get<AppConfig>()
                 if (!config.isConfigured) {
                     throw UnsupportedOperationException("Invalid operation: TicketCheckProvider can only be used once the device has been initialised.")
@@ -59,6 +61,12 @@ val pretixModules: List<Module>
                         get<FileStorage>()
                     )
                 }
+            }
+            factory<TicketCodeHandler> {
+                TicketCodeHandler(get(), get(), get(), get(), get())
+            }
+            factory<ConnectivityHelper> {
+                ConnectivityHelper()
             }
         }
     )

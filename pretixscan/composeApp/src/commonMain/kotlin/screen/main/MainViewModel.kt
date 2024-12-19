@@ -22,7 +22,7 @@ class MainViewModel(
     val uiState: StateFlow<MainUiState<MainUiStateData>> = _uiState
 
     init {
-        print("Welcome to app version ${Version.version}")
+        println("Welcome to app version ${Version.version}. Current scan type is ${appConfig.scanType}.")
 
         if (appConfig.synchronizedEvents.isEmpty()) {
             log.info("No events configured, showing select event dialog")
