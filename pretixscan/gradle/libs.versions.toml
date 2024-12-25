@@ -1,11 +1,11 @@
 [versions]
-compose-plugin = "1.7.1"
+compose-plugin = "1.7.3"
 #junit = "4.13.2"
 kotlin = "2.0.21"
-androidx-lifecycle = "2.8.3"
-androidx-navigation = "2.8.0-alpha10"
-koin = "4.0.0"
-koin-compose = "4.0.0"
+androidx-lifecycle = "2.8.4"
+androidx-navigation = "2.8.0-alpha11"
+koin = "4.0.1"
+koin-compose = "4.0.1"
 appdirs = "1.2.2"
 sqlite_jdbc_version = "3.46.1.0"
 requery = "1.6.0"
@@ -13,8 +13,8 @@ org_json = "20240303"
 joda_time = "2.13.0"
 protobuf = "0.9.4"
 sqldelight = "2.0.2"
-coroutines = "1.9.0"
-gadulka = "1.4.2"
+coroutines = "1.10.1"
+gadulka = "1.4.3"
 
 [libraries]
 #kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
