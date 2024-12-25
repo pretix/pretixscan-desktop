@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import eu.pretix.desktop.cache.EventSelection
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import pretixscan.composeapp.generated.resources.Res
@@ -25,7 +26,7 @@ import ui.CustomColor
 import ui.asColour
 
 @Composable
-fun MainToolbar(modifier: Modifier = Modifier, viewModel: MainViewModel, uiState: MainUiState<MainUiStateData>) {
+fun MainToolbar(modifier: Modifier = Modifier, viewModel: MainViewModel, eventSelection: EventSelection) {
     Row(
         modifier = Modifier.fillMaxWidth()
             .background(CustomColor.BrandDark.asColour())
@@ -37,7 +38,7 @@ fun MainToolbar(modifier: Modifier = Modifier, viewModel: MainViewModel, uiState
             onClick = {
             viewModel.beginEventSelection()
         }) {
-            Text((uiState as MainUiState.Success<MainUiStateData>).data.eventSelection.eventName)
+            Text(eventSelection.eventName)
         }
         Spacer(Modifier.weight(1f))
     }

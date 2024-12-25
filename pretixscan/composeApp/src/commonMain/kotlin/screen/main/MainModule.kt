@@ -8,11 +8,12 @@ import org.koin.dsl.module
 import screen.main.search.MainTicketSearchViewModel
 import screen.main.selectevent.SelectEventListViewModel
 import screen.main.selectlist.SelectCheckInListViewModel
+import screen.main.tickets.TicketHandlingViewModel
 
 internal val mainModule
     get() = module {
         factory {
-            MainViewModel(get<AppConfig>(), get<SyncManager>())
+            MainViewModel(get(), get())
         }
         factory {
             SelectEventListViewModel(get<AppCache>(), get<AppConfig>(), get<EventManager>())
@@ -22,5 +23,8 @@ internal val mainModule
         }
         factory {
             MainTicketSearchViewModel(get(), get())
+        }
+        factory {
+            TicketHandlingViewModel(get())
         }
     }

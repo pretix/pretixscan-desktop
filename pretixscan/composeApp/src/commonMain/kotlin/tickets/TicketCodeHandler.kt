@@ -14,11 +14,11 @@ import pretixscan.composeapp.generated.resources.error_unknown_exception
 
 @OptIn(ExperimentalResourceApi::class)
 class TicketCodeHandler(
-    val conf: AppConfig,
-    val checkProvider: TicketCheckProvider,
-    val audioPlayer: GadulkaPlayer,
-    val logHandler: SentryInterface,
-    val connectivityHelper: ConnectivityHelper
+    private val conf: AppConfig,
+    private val checkProvider: TicketCheckProvider,
+    private val audioPlayer: GadulkaPlayer,
+    private val logHandler: SentryInterface,
+    private val connectivityHelper: ConnectivityHelper
 ) {
 
 

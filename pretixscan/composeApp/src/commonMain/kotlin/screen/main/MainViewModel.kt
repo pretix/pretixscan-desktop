@@ -3,8 +3,9 @@ package screen.main
 import androidx.lifecycle.ViewModel
 import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.desktop.cache.Version
-import eu.pretix.libpretixsync.sqldelight.CheckInList
+import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.setup.RemoteEvent
+import eu.pretix.libpretixsync.sqldelight.CheckInList
 import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +39,7 @@ class MainViewModel(
     private fun loadViewModel() {
         val selection = appConfig.eventSelection.first()
         _uiState.update {
-            MainUiState.Success(
+            MainUiState.ReadyToScan(
                 MainUiStateData(eventSelection = selection)
             )
         }
@@ -77,5 +78,23 @@ class MainViewModel(
         appConfig.checkInListName = list.name!!
 
         loadViewModel()
+    }
+
+    suspend fun onHandleSearchResult(searchResult: TicketCheckProvider.SearchResult) {
+        val currentState = _uiState.value
+        if (currentState is MainUiState.ReadyToScan) {
+            _uiState.update {
+                MainUiState.HandlingTicket(currentState.data.secret(searchResult.secret))
+            }
+        }
+    }
+
+    fun onHandleTicketHandlingDismissed() {
+        val currentState = _uiState.value
+        if (currentState is MainUiState.HandlingTicket) {
+            _uiState.update {
+                MainUiState.ReadyToScan(currentState.data.secret(null))
+            }
+        }
     }
 }
