@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.update
 import java.util.logging.Logger
 
 class SelectCheckInListViewModel(
-    val appCache: AppCache,
-    val appConfig: AppConfig,
+    private val appCache: AppCache,
+    private val appConfig: AppConfig,
 ) : ViewModel() {
     private val log = Logger.getLogger("SelectCheckInListViewModel")
 

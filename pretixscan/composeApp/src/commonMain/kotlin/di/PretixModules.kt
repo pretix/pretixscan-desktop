@@ -63,7 +63,7 @@ val pretixModules: List<Module>
                 }
             }
             factory<TicketCodeHandler> {
-                TicketCodeHandler(get(), get(), get(), get(), get())
+                TicketCodeHandler(get(), get(), get(), get(), get(), get())
             }
             factory<ConnectivityHelper> {
                 ConnectivityHelper()

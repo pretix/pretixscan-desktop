@@ -17,6 +17,8 @@ sealed class CustomColor(val hex: String) {
     data object BrandOrange: CustomColor("#FFB419")
 
     data object White: CustomColor("#FFFFFF")
+
+    data object BrandLightGray: CustomColor("#cccccc")
 }
 
 

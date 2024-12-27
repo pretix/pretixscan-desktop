@@ -61,6 +61,8 @@ class AppConfig(val dataDir: String) : ConfigStore {
     private val PREFS_KEY_UPDATE_CHECK_NEWER_VERSION = "update_check_newer_version_"
     private val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
 
+    private val PREFS_KEY_HIDE_NAMES = "pref_hide_names"
+
     fun setDeviceConfig(
         url: String,
         key: String,
@@ -84,6 +86,7 @@ class AppConfig(val dataDir: String) : ConfigStore {
         prefs.remove(PREFS_KEY_EVENT_SLUG)
         prefs.remove(PREFS_KEY_EVENT_NAME)
         prefs.remove(PREFS_KEY_CHECKINLIST_ID)
+        prefs.remove(PREFS_KEY_HIDE_NAMES)
         prefs.flush()
     }
 
@@ -103,6 +106,7 @@ class AppConfig(val dataDir: String) : ConfigStore {
         prefs.remove(PREFS_KEY_CHECKINLIST_ID)
         prefs.remove(PREFS_KEY_KNOWN_GATE_NAME)
         prefs.remove(PREFS_KEY_KNOWN_GATE_ID)
+        prefs.remove(PREFS_KEY_HIDE_NAMES)
         val f = File(dataDir, PREFS_KEY_LAST_STATUS_DATA + ".json")
         if (f.exists()) {
             f.delete()
@@ -280,6 +284,13 @@ class AppConfig(val dataDir: String) : ConfigStore {
         get() = prefs.getBoolean(PREFS_KEY_PLAY_SOUND, true)
         set(value) {
             prefs.putBoolean(PREFS_KEY_PLAY_SOUND, value)
+            prefs.flush()
+        }
+
+    var hideNames: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_HIDE_NAMES, true)
+        set(value) {
+            prefs.putBoolean(PREFS_KEY_HIDE_NAMES, value)
             prefs.flush()
         }
 
