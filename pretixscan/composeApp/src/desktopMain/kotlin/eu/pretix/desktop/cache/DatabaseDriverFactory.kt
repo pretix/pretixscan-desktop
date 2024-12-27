@@ -5,8 +5,8 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import eu.pretix.libpretixsync.Models
 import eu.pretix.libpretixsync.db.Migrations
 import eu.pretix.libpretixsync.sqldelight.AndroidUtilDateAdapter
-import eu.pretix.libpretixsync.sqldelight.SyncDatabase
 import eu.pretix.libpretixsync.sqldelight.BigDecimalAdapter
+import eu.pretix.libpretixsync.sqldelight.SyncDatabase
 import io.requery.Persistable
 import io.requery.cache.EntityCacheBuilder
 import io.requery.sql.ConfigurationBuilder

@@ -46,7 +46,6 @@ actual val platformModules: List<Module>
                     get<AppConfig>(),
                     get<PretixApi>(),
                     get<SentryInterface>(),
-                    get<AppCache>().data,
                     get<AppCache>().db,
                     get<FileStorage>(),
                     uploadInterval,
