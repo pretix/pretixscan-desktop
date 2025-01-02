@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -28,6 +29,7 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
 
     val viewModel = koinViewModel<TicketHandlingDialogViewModel>()
     val uiState by viewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(secret) {
         viewModel.handleTicket(secret)
@@ -64,7 +66,12 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                         Text(uiState.firstScanned ?: "")
                     }
                 }
-                ResultState.DIALOG -> TODO()
+                ResultState.DIALOG_UNPAID -> UnpaidDialogView(data = uiState, onCancel = onDismiss, onCheckInAnyway = {
+                    coroutineScope.launch {
+                        viewModel.handleTicket(secret, ignoreUnpaid = true)
+                    }
+                })
+                ResultState.DIALOG_QUESTIONS -> QuestionsDialogView(data = uiState)
                 ResultState.WARNING -> {Text(uiState.resultText ?: "")}
                 ResultState.SUCCESS -> {
                     Column(

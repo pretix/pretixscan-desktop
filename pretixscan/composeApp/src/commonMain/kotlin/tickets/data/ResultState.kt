@@ -10,7 +10,8 @@ enum class ResultState {
     EMPTY,
     LOADING,
     ERROR,
-    DIALOG,
+    DIALOG_UNPAID,
+    DIALOG_QUESTIONS,
     WARNING,
     SUCCESS,
     SUCCESS_EXIT
@@ -18,7 +19,7 @@ enum class ResultState {
 
 fun ResultState.colour(): Color {
     return when (this) {
-        ResultState.EMPTY, ResultState.DIALOG, ResultState.LOADING -> CustomColor.BrandLightGray.asColour()
+        ResultState.EMPTY, ResultState.DIALOG_UNPAID, ResultState.DIALOG_QUESTIONS, ResultState.LOADING -> CustomColor.BrandLightGray.asColour()
         ResultState.ERROR -> CustomColor.BrandRed.asColour()
         ResultState.WARNING -> CustomColor.BrandOrange.asColour()
         ResultState.SUCCESS, ResultState.SUCCESS_EXIT -> CustomColor.BrandGreen.asColour()

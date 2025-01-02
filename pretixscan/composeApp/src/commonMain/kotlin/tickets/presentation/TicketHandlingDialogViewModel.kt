@@ -19,12 +19,16 @@ class TicketHandlingDialogViewModel(
     val uiState = _uiState.asStateFlow()
 
 
-    suspend fun handleTicket(secret: String?) {
+    suspend fun handleTicket(secret: String?, ignoreUnpaid: Boolean = false) {
         log.info("Handling ticket $secret")
         _uiState.update {
             it.copy(resultState = ResultState.LOADING)
         }
-        val result = tickerCodeHandler.handleScanResult(secret)
+        val result = tickerCodeHandler.handleScanResult(
+            secret,
+            answers = null,
+            ignoreUnpaid = ignoreUnpaid
+        )
         _uiState.update {
             result
         }

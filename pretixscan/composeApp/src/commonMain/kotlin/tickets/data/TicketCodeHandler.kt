@@ -28,10 +28,8 @@ class TicketCodeHandler(
     private val connectivityHelper: ConnectivityHelper
 ) {
 
-    suspend fun handleScanResult(rawResult: String?): ResultStateData = handleScanResult(rawResult, null)
-
-    suspend fun handleScanResult(rawResult: String?, answers: List<Answer>?): ResultStateData {
-        val checkResult = handleScan(rawResult, answers)
+    suspend fun handleScanResult(rawResult: String?, answers: List<Answer>? = null, ignoreUnpaid: Boolean): ResultStateData {
+        val checkResult = handleScan(rawResult, answers, ignoreUnpaid)
 
         val scannedEvent = calculateScannedEvent(checkResult.eventSlug)
 
@@ -55,11 +53,11 @@ class TicketCodeHandler(
         return resultState
     }
 
-    suspend fun handleScan(raw_result: String?): TicketCheckProvider.CheckResult =
-        handleScan(raw_result, null)
+    suspend fun handleScan(rawResult: String?, ignoreUnpaid: Boolean): TicketCheckProvider.CheckResult =
+        handleScan(rawResult, null, ignoreUnpaid)
 
-    suspend fun handleScan(raw_result: String?, answers: List<Answer>?): TicketCheckProvider.CheckResult {
-        if (raw_result.isNullOrEmpty()) {
+    suspend fun handleScan(rawResult: String?, answers: List<Answer>?, ignoreUnpaid: Boolean): TicketCheckProvider.CheckResult {
+        if (rawResult.isNullOrEmpty()) {
             connectivityHelper.recordError()
             return TicketCheckProvider.CheckResult(
                 TicketCheckProvider.CheckResult.Type.INVALID,
@@ -78,8 +76,6 @@ class TicketCodeHandler(
 
         val sourceType = "barcode"
 
-        val ignoreUnpaid = false
-
         val withBadgeData = conf.autoPrintBadges
 
         val allowQuestions = true
@@ -89,7 +85,7 @@ class TicketCodeHandler(
         try {
             val checkResult = checkProvider.check(
                 conf.eventSelectionToMap(),
-                ticketid = raw_result,
+                ticketid = rawResult,
                 source_type = sourceType,
                 answers = answers,
                 ignore_unpaid = ignoreUnpaid,
@@ -201,16 +197,24 @@ fun TicketCheckProvider.CheckResult.resultState(): ResultState =
         TicketCheckProvider.CheckResult.Type.USED -> ResultState.WARNING
         null,
         TicketCheckProvider.CheckResult.Type.ERROR,
-        TicketCheckProvider.CheckResult.Type.UNPAID,
         TicketCheckProvider.CheckResult.Type.BLOCKED,
         TicketCheckProvider.CheckResult.Type.INVALID_TIME,
         TicketCheckProvider.CheckResult.Type.CANCELED,
         TicketCheckProvider.CheckResult.Type.PRODUCT,
         TicketCheckProvider.CheckResult.Type.RULES,
-        TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED,
         TicketCheckProvider.CheckResult.Type.AMBIGUOUS,
         TicketCheckProvider.CheckResult.Type.REVOKED,
         TicketCheckProvider.CheckResult.Type.UNAPPROVED -> ResultState.ERROR
+
+        TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ResultState.DIALOG_QUESTIONS
+
+        TicketCheckProvider.CheckResult.Type.UNPAID -> {
+            if (isCheckinAllowed) {
+                ResultState.DIALOG_UNPAID
+            } else {
+                ResultState.ERROR
+            }
+        }
     }
 
 fun TicketCheckProvider.CheckResult.ticketAndVariationName(): String? {
