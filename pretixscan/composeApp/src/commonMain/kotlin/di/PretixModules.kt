@@ -14,8 +14,6 @@ import eu.pretix.libpretixsync.setup.EventManager
 import eu.pretix.libpretixsync.sync.FileStorage
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import tickets.ConnectivityHelper
-import tickets.TicketCodeHandler
 
 
 val pretixModules: List<Module>
@@ -61,12 +59,6 @@ val pretixModules: List<Module>
                         get<FileStorage>()
                     )
                 }
-            }
-            factory<TicketCodeHandler> {
-                TicketCodeHandler(get(), get(), get(), get(), get(), get())
-            }
-            factory<ConnectivityHelper> {
-                ConnectivityHelper()
             }
         }
     )

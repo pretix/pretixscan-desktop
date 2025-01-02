@@ -1,12 +1,16 @@
 package di
 
 import eu.pretix.desktop.cache.di.cacheModules
+import main.mainModule
 import org.koin.core.KoinApplication
-import screen.screenModules
+import setup.setupModule
+import tickets.ticketsModule
 
 fun KoinApplication.initModules() {
     modules(platformModules)
     modules(cacheModules)
     modules(pretixModules)
-    modules(screenModules)
+    modules(ticketsModule)
+    modules(setupModule)
+    modules(mainModule)
 }
