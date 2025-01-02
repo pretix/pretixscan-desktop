@@ -30,6 +30,10 @@ fun CustomSearchBar(
 ) {
     val focusRequester = remember { FocusRequester() }
 
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     var text by remember {
         mutableStateOf(value)
     }
