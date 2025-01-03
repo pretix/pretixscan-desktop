@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -19,8 +18,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import pretixscan.composeapp.generated.resources.*
 import app.ui.CustomColor
-import app.ui.asColour
-import app.ui.parseColor
+import app.ui.asColor
 
 @Composable
 @Preview
@@ -56,7 +54,7 @@ fun WelcomeScreen(
             Image(
                 painter = painterResource(Res.drawable.logo_white),
                 contentDescription = "Pretix logo",
-                modifier = Modifier.background(CustomColor.BrandDark.asColour())
+                modifier = Modifier.background(CustomColor.BrandDark.asColor())
             )
         }
 
@@ -91,7 +89,7 @@ fun WelcomeScreen(
             horizontalArrangement = Arrangement.End
         ) {
             Button(
-                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColour()),
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColor()),
                 enabled = acceptedTerms,
                 onClick = {
                     navHostController.navigate(route = Route.Setup.route)

@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import app.ui.CustomColor
-import app.ui.asColour
+import app.ui.asColor
 
 enum class ResultState {
     EMPTY,
@@ -17,12 +17,12 @@ enum class ResultState {
     SUCCESS_EXIT
 }
 
-fun ResultState.colour(): Color {
+fun ResultState.color(): Color {
     return when (this) {
-        ResultState.EMPTY, ResultState.DIALOG_UNPAID, ResultState.DIALOG_QUESTIONS, ResultState.LOADING -> CustomColor.BrandLightGray.asColour()
-        ResultState.ERROR -> CustomColor.BrandRed.asColour()
-        ResultState.WARNING -> CustomColor.BrandOrange.asColour()
-        ResultState.SUCCESS, ResultState.SUCCESS_EXIT -> CustomColor.BrandGreen.asColour()
+        ResultState.EMPTY, ResultState.DIALOG_UNPAID, ResultState.DIALOG_QUESTIONS, ResultState.LOADING -> CustomColor.BrandLightGray.asColor()
+        ResultState.ERROR -> CustomColor.BrandRed.asColor()
+        ResultState.WARNING -> CustomColor.BrandOrange.asColor()
+        ResultState.SUCCESS, ResultState.SUCCESS_EXIT -> CustomColor.BrandGreen.asColor()
     }
 }
 

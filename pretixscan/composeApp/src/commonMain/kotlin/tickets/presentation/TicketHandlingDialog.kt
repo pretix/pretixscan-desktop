@@ -21,7 +21,7 @@ import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.ic_check_circle_white_24dp
 import pretixscan.composeapp.generated.resources.ic_error_white_24dp
 import tickets.data.ResultState
-import tickets.data.colour
+import tickets.data.color
 
 @Preview
 @Composable
@@ -56,7 +56,7 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                 }
                 ResultState.ERROR -> {
                     Column(
-                        modifier = Modifier.padding(16.dp).fillMaxWidth().background(uiState.resultState.colour()),
+                        modifier = Modifier.padding(16.dp).fillMaxWidth().background(uiState.resultState.color()),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Image(painter = painterResource(Res.drawable.ic_error_white_24dp), contentDescription = "")
@@ -75,7 +75,7 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                 ResultState.WARNING -> {Text(uiState.resultText ?: "")}
                 ResultState.SUCCESS -> {
                     Column(
-                        modifier = Modifier.padding(16.dp).fillMaxWidth().background(uiState.resultState.colour()),
+                        modifier = Modifier.padding(16.dp).fillMaxWidth().background(uiState.resultState.color()),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Image(painter = painterResource(Res.drawable.ic_check_circle_white_24dp), contentDescription = "")

@@ -21,7 +21,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.*
 import app.ui.CustomColor
-import app.ui.asColour
+import app.ui.asColor
 
 @Composable
 @Preview
@@ -93,7 +93,7 @@ fun SetupScreen(
             horizontalArrangement = Arrangement.End
         ) {
             Button(
-                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColour()),
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColor()),
                 onClick = {
                     viewModel.verifyToken(token = token, url = url)
                 },

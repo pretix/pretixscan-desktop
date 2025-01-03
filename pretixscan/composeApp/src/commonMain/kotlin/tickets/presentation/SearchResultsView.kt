@@ -22,7 +22,7 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import app.ui.CustomColor
-import app.ui.asColour
+import app.ui.asColor
 import app.ui.modifiers.bottomBorder
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import org.jetbrains.compose.resources.stringResource
@@ -94,7 +94,7 @@ fun RowItem(
             Spacer(
                 modifier = Modifier.weight(1f)
             )
-            Text(item.ticketStatus(), style = MaterialTheme.typography.bodyLarge, color = item.ticketStatusColour())
+            Text(item.ticketStatus(), style = MaterialTheme.typography.bodyLarge, color = item.ticketStatusColor())
         }
         Text(item.orderCode ?: "-", style = MaterialTheme.typography.bodyLarge)
         Spacer(Modifier.height(8.dp))
@@ -122,7 +122,7 @@ fun FocusableRowItem(
             MaterialTheme.colorScheme.secondary
     } else {
         // the cell is highlighted but not focused
-        CustomColor.White.asColour()
+        CustomColor.White.asColor()
     }
 
     // on changes to focus state, call onFocused
@@ -187,13 +187,13 @@ fun TicketCheckProvider.SearchResult.ticketName(): String {
 }
 
 
-fun TicketCheckProvider.SearchResult.ticketStatusColour(): Color {
+fun TicketCheckProvider.SearchResult.ticketStatusColor(): Color {
     if (this.isRedeemed) {
-        return CustomColor.BrandOrange.asColour()
+        return CustomColor.BrandOrange.asColor()
     }
 
     if (this.status == TicketCheckProvider.SearchResult.Status.PAID) {
-        return CustomColor.BrandGreen.asColour()
+        return CustomColor.BrandGreen.asColor()
     }
-    return CustomColor.BrandRed.asColour()
+    return CustomColor.BrandRed.asColor()
 }

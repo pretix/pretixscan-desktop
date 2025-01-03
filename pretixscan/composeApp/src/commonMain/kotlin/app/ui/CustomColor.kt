@@ -36,6 +36,6 @@ fun parseColor(@Size(min = 1) colorString: String): Int {
 }
 
 
-fun CustomColor.asColour(): Color {
+fun CustomColor.asColor(): Color {
     return Color(parseColor(hex))
 }

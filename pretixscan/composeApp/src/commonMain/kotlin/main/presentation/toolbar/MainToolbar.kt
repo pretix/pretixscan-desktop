@@ -21,13 +21,13 @@ import pretixscan.composeapp.generated.resources.app_name
 import pretixscan.composeapp.generated.resources.ic_logo
 import main.presentation.MainViewModel
 import app.ui.CustomColor
-import app.ui.asColour
+import app.ui.asColor
 
 @Composable
 fun MainToolbar(modifier: Modifier = Modifier, viewModel: MainViewModel, eventSelection: EventSelection) {
     Row(
         modifier = Modifier.fillMaxWidth()
-            .background(CustomColor.BrandDark.asColour())
+            .background(CustomColor.BrandDark.asColor())
             .padding(16.dp)
     ) {
         Logo()
@@ -52,7 +52,7 @@ fun Logo(modifier: Modifier = Modifier) {
         Text(
             stringResource(Res.string.app_name),
             style = MaterialTheme.typography.bodyLarge,
-            color = CustomColor.White.asColour()
+            color = CustomColor.White.asColor()
         )
     }
 }
