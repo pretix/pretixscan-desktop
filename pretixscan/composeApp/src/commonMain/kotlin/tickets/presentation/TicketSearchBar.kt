@@ -6,13 +6,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.Res
+import androidx.compose.ui.input.key.*
 import pretixscan.composeapp.generated.resources.searchfield_prompt
 
 
@@ -27,11 +34,8 @@ fun TicketSearchBar(
     val isSearching by viewModel.isSearching.collectAsState()
     val searchSuggestions by viewModel.searchSuggestsions.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-    ) {
-        Row(modifier = Modifier.padding(top = 16.dp)) {
+    Column {
+        Row(modifier = Modifier.padding(top = 16.dp).padding(horizontal = 16.dp)) {
             SearchTextField(
                 value = searchQuery,
                 hint = stringResource(Res.string.searchfield_prompt),
