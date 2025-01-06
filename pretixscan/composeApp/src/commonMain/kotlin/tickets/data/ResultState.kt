@@ -5,6 +5,7 @@ import androidx.compose.ui.text.AnnotatedString
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import app.ui.CustomColor
 import app.ui.asColor
+import eu.pretix.libpretixsync.models.Question
 
 enum class ResultState {
     EMPTY,
@@ -40,5 +41,7 @@ data class ResultStateData(
     val checkInTexts: String? = null,
     val eventName: String? = null,
     val attention: Boolean = false,
-    val scanType: TicketCheckProvider.CheckInType = TicketCheckProvider.CheckInType.ENTRY
+    val scanType: TicketCheckProvider.CheckInType = TicketCheckProvider.CheckInType.ENTRY,
+    val requiredQuestions: List<Question> = emptyList(),
+    val answers: Map<Question, String> = emptyMap()
 )

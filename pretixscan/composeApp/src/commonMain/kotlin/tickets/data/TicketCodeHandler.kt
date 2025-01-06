@@ -33,6 +33,21 @@ class TicketCodeHandler(
 
         val scannedEvent = calculateScannedEvent(checkResult.eventSlug)
 
+        val questions = checkResult.requiredAnswers?.map { it.question.toModel() } ?: emptyList()
+        for (q in questions) {
+            q.resolveDependency(questions)
+        }
+
+        // FIXME: There may be provided answers
+        val v = mutableMapOf<eu.pretix.libpretixsync.models.Question, String>()
+        checkResult.requiredAnswers?.forEach {
+            val answer = it.currentValue
+            if (!answer.isNullOrBlank()) {
+                v[it.question.toModel()] = answer
+            }
+        }
+        val questionValues = v.toMap()
+
         val resultState = ResultStateData(
             resultState = checkResult.resultState(),
             resultText = checkResult.message,
@@ -47,7 +62,9 @@ class TicketCodeHandler(
             eventName = scannedEvent?.name,
             attention = checkResult.isRequireAttention,
             scanType = checkResult.scanType,
-            firstScanned = checkResult.formattedFirstScanned()
+            firstScanned = checkResult.formattedFirstScanned(),
+            requiredQuestions = questions,
+            answers = questionValues
         )
 
         return resultState

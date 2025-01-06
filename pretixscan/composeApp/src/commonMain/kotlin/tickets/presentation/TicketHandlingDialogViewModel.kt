@@ -13,7 +13,7 @@ class TicketHandlingDialogViewModel(
     private val tickerCodeHandler: TicketCodeHandler
 ) : ViewModel() {
 
-    private val log = Logger.getLogger("TicketHandlingViewModel")
+    private val log = Logger.getLogger("tickets")
 
     private val _uiState = MutableStateFlow(ResultStateData(resultState = ResultState.EMPTY))
     val uiState = _uiState.asStateFlow()
