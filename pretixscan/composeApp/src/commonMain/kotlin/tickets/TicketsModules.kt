@@ -5,7 +5,6 @@ import org.koin.dsl.module
 import org.koin.dsl.onClose
 import tickets.data.ConnectivityHelper
 import tickets.data.TicketCodeHandler
-import tickets.presentation.QuestionsDialogView
 import tickets.presentation.QuestionsDialogViewModel
 import tickets.presentation.TicketHandlingDialogViewModel
 import tickets.presentation.TicketSearchBarViewModel

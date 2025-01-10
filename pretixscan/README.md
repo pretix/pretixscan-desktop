@@ -25,3 +25,8 @@ https://github.com/JetBrains/compose-multiplatform/tree/master/tutorials/Native_
 ```
 
 By default, packages are created under `pretixscan/composeApp/build/compose/binaries`.
+
+
+## Acknowledgements
+
+* Webcam support implementation was inspired by [akexorcist/backdrop](https://github.com/akexorcist/backdrop)

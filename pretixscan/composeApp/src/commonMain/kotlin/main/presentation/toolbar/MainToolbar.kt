@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +25,7 @@ import pretixscan.composeapp.generated.resources.ic_logo
 import main.presentation.MainViewModel
 import app.ui.CustomColor
 import app.ui.asColor
+import pretixscan.composeapp.generated.resources.operation_select_event
 
 @Composable
 fun MainToolbar(modifier: Modifier = Modifier, viewModel: MainViewModel, eventSelection: EventSelection) {
@@ -36,7 +40,14 @@ fun MainToolbar(modifier: Modifier = Modifier, viewModel: MainViewModel, eventSe
             onClick = {
             viewModel.beginEventSelection()
         }) {
-            Text(eventSelection.eventName)
+            Row {
+                Text(eventSelection.eventName)
+                Icon(
+                    Icons.Default.ArrowDropDown,
+                    contentDescription = stringResource(Res.string.operation_select_event),
+                    tint = CustomColor.White.asColor()
+                )
+            }
         }
         Spacer(Modifier.weight(1f))
     }

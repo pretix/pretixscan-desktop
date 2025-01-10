@@ -6,6 +6,7 @@ import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.models.Question
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import tickets.data.ResultStateData
 import java.util.logging.Logger
 
@@ -17,6 +18,9 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
 
     private val _showNames = MutableStateFlow(false)
     val showNames = _showNames.asStateFlow()
+
+    private val _modalQuestion = MutableStateFlow<QuestionFormField?>(null)
+    val modalQuestion = _modalQuestion.asStateFlow()
 
     fun buildQuestionsForm(data: ResultStateData) {
         log.info(
@@ -39,6 +43,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                 QuestionType.N,
                 QuestionType.S,
                 QuestionType.T,
+                QuestionType.F,
                 QuestionType.B -> {
                     QuestionFormField(it.serverId, it.question, startingAnswerValue(it, data.answers[it]), it.type)
                 }
@@ -50,11 +55,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                 QuestionType.M -> {
                     null
                 }
-
-                QuestionType.F -> {
-                    null
-                }
-
+                
                 QuestionType.D -> {
                     null
                 }
@@ -94,12 +95,26 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
             }
         }
     }
-
-
     fun validateAndContinue() {
         _form.value.forEach {
             log.info("question ${it.label}: ${it.value}")
         }
+    }
+
+    fun showModal(field: QuestionFormField) {
+        _modalQuestion.update { field }
+    }
+
+    fun dismissModal(answer: String?) {
+        val field = _modalQuestion.value
+        if (field == null) {
+            log.warning("Modal dismissed without a modal question")
+            return
+        }
+
+        _modalQuestion.update { null }
+
+        updateAnswer(field.id, answer)
     }
 
     private fun startingAnswerValue(question: Question, answer: String?): String? {

@@ -22,16 +22,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import eu.pretix.libpretixsync.check.QuestionType
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import pretixscan.composeapp.generated.resources.*
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.cancel
 import pretixscan.composeapp.generated.resources.cont
 import pretixscan.composeapp.generated.resources.yes
 import tickets.data.ResultStateData
+import webcam.presentation.WebCam
 import java.util.*
 
 @Preview
@@ -39,6 +43,8 @@ import java.util.*
 fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
     val viewModel = koinViewModel<QuestionsDialogViewModel>()
     val form by viewModel.form.collectAsState()
+
+    val modalQuestion by viewModel.modalQuestion.collectAsState()
 
     LaunchedEffect(data) {
         viewModel.buildQuestionsForm(data)
@@ -88,7 +94,8 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                         value = field.value ?: "",
                         onValueChange = { viewModel.updateAnswer(field.id, it) },
                         label = { Text(field.label) },
-                        singleLine = false
+                        singleLine = false,
+                        maxLines = 2
                     )
                 }
 
@@ -121,7 +128,13 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
 
                 QuestionType.C -> {}
                 QuestionType.M -> {}
-                QuestionType.F -> {}
+                QuestionType.F -> {
+                    Button(onClick = {
+                        viewModel.showModal(field)
+                    }) {
+                        Text(stringResource(Res.string.take_a_photo))
+                    }
+                }
                 QuestionType.D -> {}
                 QuestionType.H -> {}
                 QuestionType.W -> {}
@@ -130,8 +143,6 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                 QuestionType.EMAIL -> {}
             }
         }
-
-
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -151,6 +162,14 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
         }
     }
 
+    if (modalQuestion != null && modalQuestion?.fieldType == QuestionType.F) {
+        Dialog(onDismissRequest = { viewModel.dismissModal(null) },
+               properties = DialogProperties(
+                   usePlatformDefaultWidth = false // Ensures the dialog can be full-window size
+               ),) {
+            WebCam()
+        }
+    }
 }
 
 val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")

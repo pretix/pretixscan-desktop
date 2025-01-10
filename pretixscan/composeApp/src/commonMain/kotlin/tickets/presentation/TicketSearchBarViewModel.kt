@@ -15,7 +15,7 @@ class TicketSearchBarViewModel(
     private val appConfig: AppConfig
 ) : ViewModel() {
 
-    private val _searchText = MutableStateFlow("")
+    private val _searchText = MutableStateFlow("FXNSH")
     val searchText = _searchText.asStateFlow()
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()

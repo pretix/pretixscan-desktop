@@ -27,8 +27,12 @@ kotlin {
             implementation(libs.coroutines.core)
             implementation(libs.org.json)
             implementation(libs.joda.time)
+
+            // play short audio files
             implementation(libs.gadulka)
 
+            // webcam
+            implementation(libs.sarxos.webcam)
             api(libs.koin)
             api(libs.koin.compose)
             api(libs.koin.compose.viewmodel)
@@ -41,6 +45,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.desktop)
             implementation(libs.coroutines.jvm)
             implementation(libs.coroutines.swing)
+
+            implementation(libs.webcam.driver)
+
             compileOnly(libs.requery)
             compileOnly(libs.requery.processor)
             implementation(project(":libpretixsync"))

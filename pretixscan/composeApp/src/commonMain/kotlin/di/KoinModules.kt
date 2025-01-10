@@ -5,6 +5,7 @@ import main.mainModule
 import org.koin.core.KoinApplication
 import setup.setupModule
 import tickets.ticketsModule
+import webcam.webCamModule
 
 fun KoinApplication.initModules() {
     modules(platformModules)
@@ -13,4 +14,5 @@ fun KoinApplication.initModules() {
     modules(ticketsModule)
     modules(setupModule)
     modules(mainModule)
+    modules(webCamModule)
 }
