@@ -21,9 +21,12 @@ import app.ui.CustomColor
 import app.ui.asColor
 import kotlinx.coroutines.delay
 import main.presentation.toolbar.Logo
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import pretixscan.composeapp.generated.resources.*
 import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.ic_photo_camera_white_24
 import pretixscan.composeapp.generated.resources.none_camera
 import pretixscan.composeapp.generated.resources.select_camera
 import webcam.data.ImageData
@@ -31,7 +34,7 @@ import webcam.data.Video
 import webcam.data.WebCamViewModel
 
 @Composable
-fun WebCam() {
+fun WebCam(onPhotoTaken: (String?) -> Unit) {
     val viewModel = koinViewModel<WebCamViewModel>()
 
     val uiState by viewModel.uiState.collectAsState()
@@ -63,10 +66,30 @@ fun WebCam() {
                         ?.let { viewModel.selectVideo(it) }
                 }
             )
-            VideoSurface(
-                selectedVideo = selectedVideo,
-                availableImageData = availableImageData,
-            )
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+
+                VideoSurface(
+                    selectedVideo = selectedVideo,
+                    availableImageData = availableImageData,
+                )
+
+                Column {
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = {
+                        val path = viewModel.savePhoto()
+                        onPhotoTaken(path)
+                    }) {
+                        Image(
+                            painter = painterResource(Res.drawable.ic_photo_camera_white_24),
+                            contentDescription = stringResource(Res.string.take_a_photo)
+                        )
+                    }
+                }
+            }
+
         }
     }
 }
@@ -87,7 +110,7 @@ fun Toolbar(
         Logo()
         Spacer(Modifier.weight(1f))
 
-        AnimatedVisibility(visible = availableDeviceNames != null) {
+        if (availableDeviceNames != null) {
             Box(contentAlignment = Alignment.TopStart) {
                 Button(modifier = Modifier.padding(horizontal = 16.dp), onClick = { expanded = true }) {
                     Row {
@@ -104,7 +127,7 @@ fun Toolbar(
                     }
                 }
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    availableDeviceNames?.forEachIndexed { ix, name ->
+                    availableDeviceNames.forEachIndexed { _, name ->
                         DropdownMenuItem(
                             text = {
                                 if (name == "-") {

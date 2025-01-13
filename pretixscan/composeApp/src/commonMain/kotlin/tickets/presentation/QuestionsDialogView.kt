@@ -167,7 +167,9 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                properties = DialogProperties(
                    usePlatformDefaultWidth = false // Ensures the dialog can be full-window size
                ),) {
-            WebCam()
+            WebCam(onPhotoTaken = {
+                viewModel.dismissModal(it)
+            })
         }
     }
 }

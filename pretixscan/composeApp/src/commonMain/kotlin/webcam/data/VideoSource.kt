@@ -19,6 +19,8 @@ interface VideoSource {
     fun collectCurrentWebcam(): Flow<Webcam?>
 
     fun collectAvailableImageData(): StateFlow<ImageData?>
+
+    fun takeScreenshot(): BufferedImage?
 }
 
 sealed class VideoState {
@@ -38,6 +40,7 @@ data class ImageData(
 )
 
 class DefaultVideoSource : VideoSource {
+
     private var currentVideo: MutableStateFlow<Webcam?> = MutableStateFlow(null)
     private val videoEventFlow: MutableStateFlow<VideoState> = MutableStateFlow(VideoState.Closed)
     private val availableImageDataFlow: MutableStateFlow<ImageData?> = MutableStateFlow(null)
@@ -85,6 +88,12 @@ class DefaultVideoSource : VideoSource {
     override fun collectCurrentWebcam(): Flow<Webcam?> = currentVideo
 
     override fun collectAvailableImageData(): StateFlow<ImageData?> = availableImageDataFlow
+    override fun takeScreenshot(): BufferedImage? {
+        return currentVideo.value?.takeIf { it.isOpen }
+            ?.let {
+                return cropToAspectRatio(it.image, 3.0 / 4.0)
+            }
+    }
 
     private val webcamListener = object : WebcamListener {
         override fun webcamOpen(event: WebcamEvent) {
@@ -111,7 +120,7 @@ class DefaultVideoSource : VideoSource {
             }
             availableImageDataFlow.update {
                 ImageData(
-                    image = event.image,
+                    image = cropToAspectRatio(event.image, 3.0 / 4.0),
                     timestamp = System.currentTimeMillis(),
                     frameRate = currentVideo.value?.fps ?: 0.0
                 )
@@ -119,3 +128,15 @@ class DefaultVideoSource : VideoSource {
         }
     }
 }
+
+ fun cropToAspectRatio(
+            image: BufferedImage,
+            targetAspectRatio: Double
+        ): BufferedImage {
+            val width = image.width
+            val height = image.height
+
+            val cropHeight = height // not rotating the image
+            val cropWidth = (height * targetAspectRatio).toInt()
+            return image.getSubimage((width - cropWidth) / 2, 0, cropWidth, cropHeight)
+        }
