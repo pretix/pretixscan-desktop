@@ -31,7 +31,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
         )
 
         log.info(
-           "${
+            "${
                 data.requiredQuestions.map { it.serverId }.sorted()
             }"
         )
@@ -50,13 +50,26 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                 }
 
                 QuestionType.C -> {
-                    QuestionFormField(it.serverId, it.question, startingAnswerValue(it, data.answers[it]), it.type, it.options)
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        startingAnswerValue(it, data.answers[it]),
+                        it.type,
+                        it.options
+                    )
                 }
 
                 QuestionType.M -> {
-                    null
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        startingAnswerValue(it, data.answers[it]),
+                        it.type,
+                        it.options,
+                        it.dependencyValues
+                    )
                 }
-                
+
                 QuestionType.D -> {
                     null
                 }
@@ -86,21 +99,49 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
         _form.value = formFields
     }
 
-    fun updateAnswer(questionId: Long, answer: String?) {
+
+    fun updateChoiceAnswer(questionId: Long, value: String, checked: Boolean?) {
         _form.value = _form.value.map { field ->
-            if (field.id == questionId) {
-                log.info("Updating answer for $questionId (${field.fieldType}) to $answer")
-                // for files, pretixlibsync requires a "file:///" prefix
-                if (answer != null && field.fieldType == QuestionType.F) {
-                    field.copy(value = "file://${answer}")
-                } else {
-                    field.copy(value = answer)
+            if (field.id == questionId && field.fieldType == QuestionType.M) {
+                log.info("Updating choices for $questionId (${field.fieldType}) $value to checked = $checked")
+                when (checked) {
+                    true -> {
+                        val updatedValues = (field.values?.toList()?.toMutableList() ?: mutableListOf()).apply { if (value !in this) add(value) }
+                        field.copy(values = updatedValues)
+                    }
+                    null,
+                    false -> field.copy(values = field.values?.filter { it != value })
                 }
             } else {
                 field
             }
         }
     }
+
+    fun updateAnswer(questionId: Long, answer: String?) {
+        _form.value = _form.value.map { field ->
+            if (field.id == questionId) {
+                log.info("Updating answer for $questionId (${field.fieldType}) to $answer")
+
+                when (field.fieldType) {
+                    QuestionType.F -> {
+                        if (answer != null) {
+                            // for files, pretixlibsync requires a "file:///" prefix
+                            field.copy(value = "file://${answer}")
+                        } else {
+                            field.copy(value = answer)
+                        }
+                    }
+                    else -> {
+                        field.copy(value = answer)
+                    }
+                }
+            } else {
+                field
+            }
+        }
+    }
+
     fun validateAndContinue() {
         _form.value.forEach {
             log.info("question ${it.label}: ${it.value}")
@@ -141,5 +182,6 @@ data class QuestionFormField(
     val label: String,
     var value: String?,
     val fieldType: QuestionType,
-    val availableOptions: List<QuestionOption>? = null
+    val availableOptions: List<QuestionOption>? = null,
+    var values: List<String>? = null,
 )

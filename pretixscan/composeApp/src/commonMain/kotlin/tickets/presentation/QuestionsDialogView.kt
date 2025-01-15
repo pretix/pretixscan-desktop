@@ -97,23 +97,9 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                         Text(
                             field.label
                         )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                stringResource(Res.string.yes)
-                            )
-                            Checkbox(
-                                checked = "True" == field.value,
-                                onCheckedChange = { updatedChecked ->
-                                    if (updatedChecked) {
-                                        viewModel.updateAnswer(field.id, "True")
-                                    } else {
-                                        viewModel.updateAnswer(field.id, "False")
-                                    }
-                                }
-                            )
-                        }
+                        QuestionCheckbox(label = stringResource(Res.string.yes), checked = "True" == field.value, onSelect = {
+                            viewModel.updateAnswer(field.id, it)
+                        })
                     }
                 }
 
@@ -126,7 +112,20 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                         }
                     )
                 }
-                QuestionType.M -> {}
+                QuestionType.M -> {
+                    Column(
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            field.label
+                        )
+                        field.availableOptions?.forEach {option ->
+                            QuestionCheckbox(label = option.value, checked = field.values?.contains(option.value) ?: false, onSelect = {
+                                viewModel.updateChoiceAnswer(field.id, option.value, it == "True")
+                            })
+                        }
+                    }
+                }
                 QuestionType.F -> {
                     Button(onClick = {
                         viewModel.showModal(field)
