@@ -86,10 +86,15 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
     }
 
     fun updateAnswer(questionId: Long, answer: String?) {
-        log.info("Updating answer for $questionId to $answer")
         _form.value = _form.value.map { field ->
             if (field.id == questionId) {
-                field.copy(value = answer)
+                log.info("Updating answer for $questionId (${field.fieldType}) to $answer")
+                // for files, pretixlibsync requires a "file:///" prefix
+                if (answer != null && field.fieldType == QuestionType.F) {
+                    field.copy(value = "file://${answer}")
+                } else {
+                    field.copy(value = answer)
+                }
             } else {
                 field
             }

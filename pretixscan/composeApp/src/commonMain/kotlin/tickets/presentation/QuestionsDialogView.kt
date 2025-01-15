@@ -74,7 +74,11 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                 QuestionType.N -> {
                     TextField(
                         value = field.value ?: "",
-                        onValueChange = { viewModel.updateAnswer(field.id, it) },
+                        onValueChange = { newValue ->
+                            if (newValue.all { it.isDigit() }) {
+                                viewModel.updateAnswer(field.id, newValue)
+                            }
+                        },
                         label = { Text(field.label) },
                         singleLine = true
                     )
@@ -135,6 +139,7 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                         Text(stringResource(Res.string.take_a_photo))
                     }
                 }
+
                 QuestionType.D -> {}
                 QuestionType.H -> {}
                 QuestionType.W -> {}
@@ -163,10 +168,12 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
     }
 
     if (modalQuestion != null && modalQuestion?.fieldType == QuestionType.F) {
-        Dialog(onDismissRequest = { viewModel.dismissModal(null) },
-               properties = DialogProperties(
-                   usePlatformDefaultWidth = false // Ensures the dialog can be full-window size
-               ),) {
+        Dialog(
+            onDismissRequest = { viewModel.dismissModal(null) },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false // Ensures the dialog can be full-window size
+            ),
+        ) {
             WebCam(onPhotoTaken = {
                 viewModel.dismissModal(it)
             })

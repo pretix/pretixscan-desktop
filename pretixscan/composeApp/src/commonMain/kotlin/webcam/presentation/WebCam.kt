@@ -153,8 +153,7 @@ fun Toolbar(
                     }
                 }
             }
-        }
-        AnimatedVisibility(visible = availableDeviceNames == null) {
+        } else {
             DeviceListLoading()
         }
     }
