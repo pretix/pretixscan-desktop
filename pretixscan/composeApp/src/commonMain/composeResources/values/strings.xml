@@ -196,4 +196,5 @@
     <string name="take_a_photo">Take a photo</string>
     <string name="none_camera">No camera</string>
     <string name="select_camera">Select camera</string>
+    <string name="choose_option">Choose option</string>
 </resources>

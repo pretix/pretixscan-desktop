@@ -3,6 +3,7 @@ package tickets.presentation
 import androidx.lifecycle.ViewModel
 import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.libpretixsync.check.QuestionType
+import eu.pretix.libpretixsync.db.QuestionOption
 import eu.pretix.libpretixsync.models.Question
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,7 +50,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                 }
 
                 QuestionType.C -> {
-                    null
+                    QuestionFormField(it.serverId, it.question, startingAnswerValue(it, data.answers[it]), it.type, it.options)
                 }
 
                 QuestionType.M -> {
@@ -139,5 +140,6 @@ data class QuestionFormField(
     val id: Long,
     val label: String,
     var value: String?,
-    val fieldType: QuestionType
+    val fieldType: QuestionType,
+    val availableOptions: List<QuestionOption>? = null
 )

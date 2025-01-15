@@ -1,0 +1,59 @@
+package tickets.presentation
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import app.ui.CustomColor
+import app.ui.asColor
+import eu.pretix.libpretixsync.db.QuestionOption
+import org.jetbrains.compose.resources.stringResource
+import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.choose_option
+
+
+@Composable
+fun QuestionSpinner(modifier: Modifier = Modifier,
+                    selectedValue: String?,
+                    availeOptions: List<QuestionOption>,
+                    onSelect: (QuestionOption?) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(contentAlignment = Alignment.TopStart) {
+        TextButton(onClick = { expanded = true }) {
+            Row {
+                Text(selectedValue ?: stringResource(Res.string.choose_option),
+                     maxLines = 1,
+                     overflow = TextOverflow.Ellipsis,
+                     modifier = Modifier
+                         .weight(1f)
+                         .padding(end = 8.dp))
+                Icon(
+                    Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = CustomColor.BrandDark.asColor()
+                )
+            }
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            availeOptions.forEachIndexed { _, option ->
+                DropdownMenuItem(
+                    text = {
+                        Text(option.value)
+                    },
+                    onClick = {
+                        onSelect(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}

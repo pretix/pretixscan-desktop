@@ -39,7 +39,6 @@ fun WebCam(onPhotoTaken: (String?) -> Unit) {
 
     val uiState by viewModel.uiState.collectAsState()
     val availableImageData by viewModel.availableImageData.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
 
     val selectedVideo = uiState.selectedVideo
     val availableVideo = uiState.availableVideos
@@ -121,7 +120,7 @@ fun Toolbar(
                         }
                         Icon(
                             Icons.Default.ArrowDropDown,
-                            contentDescription = "Select camera",
+                            contentDescription = null,
                             tint = CustomColor.White.asColor()
                         )
                     }
