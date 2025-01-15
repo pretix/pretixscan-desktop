@@ -71,7 +71,13 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                 }
 
                 QuestionType.D -> {
-                    null
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        startingAnswerValue(it, data.answers[it]),
+                        it.type,
+                        dateConfig = DateConfig(minDate = it.valid_date_min, maxDate = it.valid_date_max)
+                    )
                 }
 
                 QuestionType.H -> {
@@ -184,4 +190,7 @@ data class QuestionFormField(
     val fieldType: QuestionType,
     val availableOptions: List<QuestionOption>? = null,
     var values: List<String>? = null,
+    var dateConfig: DateConfig? = null
 )
+
+data class DateConfig(val minDate: Long?, val maxDate: Long?)
