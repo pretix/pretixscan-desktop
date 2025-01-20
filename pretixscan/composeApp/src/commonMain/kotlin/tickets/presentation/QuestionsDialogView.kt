@@ -6,7 +6,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,7 +25,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.*
 import tickets.data.ResultStateData
 import webcam.presentation.WebCam
-import java.time.format.DateTimeFormatter
 
 
 @Preview
@@ -68,7 +69,7 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                                 if (newValue.all { it.isDigit() }) {
                                     viewModel.updateAnswer(field.id, newValue)
                                 }
-                                            },
+                            },
                             label = { Text(field.label) },
                             singleLine = true
                         )
@@ -84,19 +85,19 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                     }
 
                     QuestionType.T -> {
-//                        TextField(
-//                            value = field.value ?: "",
-//                            onValueChange = { viewModel.updateAnswer(field.id, it) },
-//                            label = { Text(field.label) },
-//                            singleLine = false,
-//                            maxLines = 2
-//                        )
-                        QuestionTimePicker(
-                            value = field.value,
-                            onUpdate = {
-                                viewModel.updateAnswer(field.id, it)
-                            }
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                field.label
+                            )
+                            QuestionTimePicker(
+                                value = field.value,
+                                onUpdate = {
+                                    viewModel.updateAnswer(field.id, it)
+                                }
+                            )
+                        }
                     }
 
                     QuestionType.B -> {
@@ -170,7 +171,24 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                     }
 
                     QuestionType.H -> {}
-                    QuestionType.W -> {}
+                    QuestionType.W -> {
+                        Column(
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                field.label
+                            )
+                            QuestionDateTimePicker(
+                                minDate = field.dateConfig?.minDate,
+                                maxDate = field.dateConfig?.maxDate,
+                                value = field.value,
+                                onUpdate = {
+                                    viewModel.updateAnswer(field.id, it)
+                                }
+                            )
+                        }
+                    }
+
                     QuestionType.CC -> {}
                     QuestionType.TEL -> {}
                     QuestionType.EMAIL -> {}

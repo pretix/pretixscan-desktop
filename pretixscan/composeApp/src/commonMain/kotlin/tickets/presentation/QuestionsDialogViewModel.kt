@@ -70,6 +70,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                     )
                 }
 
+                QuestionType.W,
                 QuestionType.D -> {
                     QuestionFormField(
                         it.serverId,
@@ -81,10 +82,6 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                 }
 
                 QuestionType.H -> {
-                    null
-                }
-
-                QuestionType.W -> {
                     null
                 }
 
