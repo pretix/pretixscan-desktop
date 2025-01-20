@@ -27,6 +27,7 @@ kotlin {
             implementation(libs.coroutines.core)
             implementation(libs.org.json)
             implementation(libs.joda.time)
+            implementation(libs.vanniktech.multiplatform.locale)
 
             // play short audio files
             implementation(libs.gadulka)

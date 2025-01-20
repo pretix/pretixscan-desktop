@@ -1,6 +1,8 @@
 package tickets.presentation
 
 import androidx.lifecycle.ViewModel
+import com.vanniktech.locale.Countries
+import com.vanniktech.locale.Country
 import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.QuestionOption
@@ -39,7 +41,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
         _showNames.value = !config.hideNames
         // FIXME: What is DOB?
 
-        val formFields = data.requiredQuestions.mapNotNull {
+        val formFields = data.requiredQuestions.mapNotNull { it ->
             when (it.type) {
                 QuestionType.N,
                 QuestionType.S,
@@ -55,7 +57,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
-                        it.options
+                        keyValueOptions = it.options?.map { option -> KeyValueOption(option.value, option.value) }
                     )
                 }
 
@@ -65,8 +67,8 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
-                        it.options,
-                        it.dependencyValues
+                        keyValueOptions = it.options?.map { option -> KeyValueOption(option.value, option.value) },
+                        values = it.dependencyValues
                     )
                 }
 
@@ -86,7 +88,13 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                 }
 
                 QuestionType.CC -> {
-                    null
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        startingAnswerValue(it, data.answers[it]),
+                        it.type,
+                        keyValueOptions = Country.entries.map { country ->  KeyValueOption(country.name, country.code) }
+                    )
                 }
 
                 QuestionType.TEL -> {
@@ -185,9 +193,12 @@ data class QuestionFormField(
     val label: String,
     var value: String?,
     val fieldType: QuestionType,
-    val availableOptions: List<QuestionOption>? = null,
+//    val availableOptions: List<QuestionOption>? = null,
     var values: List<String>? = null,
-    var dateConfig: DateConfig? = null
+    var dateConfig: DateConfig? = null,
+    val keyValueOptions: List<KeyValueOption>? = null
 )
 
 data class DateConfig(val minDate: Long?, val maxDate: Long?)
+  
+data class KeyValueOption(val key: String, val value: String)

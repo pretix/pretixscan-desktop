@@ -117,13 +117,20 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                     }
 
                     QuestionType.C -> {
-                        QuestionSpinner(
-                            selectedValue = field.value,
-                            availeOptions = field.availableOptions!!,
-                            onSelect = {
-                                viewModel.updateAnswer(field.id, it?.value)
-                            }
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                field.label
+                            )
+                            QuestionSpinner(
+                                selectedValue = field.value,
+                                availableOptions = field.keyValueOptions!!,
+                                onSelect = {
+                                    viewModel.updateAnswer(field.id, it?.value)
+                                }
+                            )
+                        }
                     }
 
                     QuestionType.M -> {
@@ -133,7 +140,7 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                             Text(
                                 field.label
                             )
-                            field.availableOptions?.forEach { option ->
+                            field.keyValueOptions?.forEach { option ->
                                 QuestionCheckbox(
                                     label = option.value,
                                     checked = field.values?.contains(option.value) ?: false,
@@ -189,7 +196,25 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                         }
                     }
 
-                    QuestionType.CC -> {}
+                    QuestionType.CC -> {
+                        Column(
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                field.label
+                            )
+
+                            QuestionSpinner(
+                                selectedValue = field.value,
+                                availableOptions = field.keyValueOptions!!,
+                                onSelect = {
+                                    viewModel.updateAnswer(field.id, it?.value)
+                                }
+                            )
+                        }
+
+                    }
+
                     QuestionType.TEL -> {}
                     QuestionType.EMAIL -> {}
                 }

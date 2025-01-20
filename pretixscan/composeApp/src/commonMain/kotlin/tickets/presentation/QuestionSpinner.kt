@@ -13,7 +13,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.ui.CustomColor
 import app.ui.asColor
-import eu.pretix.libpretixsync.db.QuestionOption
 import org.jetbrains.compose.resources.stringResource
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.choose_option
@@ -22,14 +21,21 @@ import pretixscan.composeapp.generated.resources.choose_option
 @Composable
 fun QuestionSpinner(modifier: Modifier = Modifier,
                     selectedValue: String?,
-                    availeOptions: List<QuestionOption>,
-                    onSelect: (QuestionOption?) -> Unit) {
+                    availableOptions: List<KeyValueOption>,
+                    onSelect: (KeyValueOption?) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
+
+    fun lookUpSelectedValue(value: String?): String? {
+        if (value != null) {
+            return availableOptions.firstOrNull { it.value == value }?.key
+        }
+        return null
+    }
 
     Box(contentAlignment = Alignment.TopStart) {
         TextButton(onClick = { expanded = true }) {
             Row {
-                Text(selectedValue ?: stringResource(Res.string.choose_option),
+                Text(lookUpSelectedValue(selectedValue) ?: stringResource(Res.string.choose_option),
                      maxLines = 1,
                      overflow = TextOverflow.Ellipsis,
                      modifier = Modifier
@@ -43,10 +49,10 @@ fun QuestionSpinner(modifier: Modifier = Modifier,
             }
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            availeOptions.forEachIndexed { _, option ->
+            availableOptions.forEachIndexed { _, option ->
                 DropdownMenuItem(
                     text = {
-                        Text(option.value)
+                        Text(option.key)
                     },
                     onClick = {
                         onSelect(option)
