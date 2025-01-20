@@ -84,12 +84,18 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                     }
 
                     QuestionType.T -> {
-                        TextField(
-                            value = field.value ?: "",
-                            onValueChange = { viewModel.updateAnswer(field.id, it) },
-                            label = { Text(field.label) },
-                            singleLine = false,
-                            maxLines = 2
+//                        TextField(
+//                            value = field.value ?: "",
+//                            onValueChange = { viewModel.updateAnswer(field.id, it) },
+//                            label = { Text(field.label) },
+//                            singleLine = false,
+//                            maxLines = 2
+//                        )
+                        QuestionTimePicker(
+                            value = field.value,
+                            onUpdate = {
+                                viewModel.updateAnswer(field.id, it)
+                            }
                         )
                     }
 
