@@ -47,6 +47,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                 QuestionType.S,
                 QuestionType.T,
                 QuestionType.F,
+                QuestionType.TEL,
                 QuestionType.B -> {
                     QuestionFormField(it.serverId, it.question, startingAnswerValue(it, data.answers[it]), it.type)
                 }
@@ -82,11 +83,6 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         dateConfig = DateConfig(minDate = it.valid_date_min, maxDate = it.valid_date_max)
                     )
                 }
-
-                QuestionType.H -> {
-                    null
-                }
-
                 QuestionType.CC -> {
                     QuestionFormField(
                         it.serverId,
@@ -97,10 +93,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                     )
                 }
 
-                QuestionType.TEL -> {
-                    null
-                }
-
+                QuestionType.H,
                 QuestionType.EMAIL -> {
                     null
                 }

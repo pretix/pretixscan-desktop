@@ -152,10 +152,17 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                     }
 
                     QuestionType.F -> {
-                        Button(onClick = {
-                            viewModel.showModal(field)
-                        }) {
-                            Text(stringResource(Res.string.take_a_photo))
+                        Column(
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                field.label
+                            )
+                            Button(onClick = {
+                                viewModel.showModal(field)
+                            }) {
+                                Text(stringResource(Res.string.take_a_photo))
+                            }
                         }
                     }
 
@@ -215,7 +222,22 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
 
                     }
 
-                    QuestionType.TEL -> {}
+                    QuestionType.TEL -> {
+                        Column(
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                field.label
+                            )
+
+                            QuestionPhoneNumber(
+                                selectedValue = field.value,
+                                onSelect = {
+                                    viewModel.updateAnswer(field.id, it)
+                                }
+                            )
+                        }
+                    }
                     QuestionType.EMAIL -> {}
                 }
             }

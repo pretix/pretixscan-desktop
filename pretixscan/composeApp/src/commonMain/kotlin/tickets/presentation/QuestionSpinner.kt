@@ -32,7 +32,7 @@ fun QuestionSpinner(modifier: Modifier = Modifier,
         return null
     }
 
-    Box(contentAlignment = Alignment.TopStart) {
+    Box(modifier = modifier, contentAlignment = Alignment.TopStart) {
         TextButton(onClick = { expanded = true }) {
             Row {
                 Text(lookUpSelectedValue(selectedValue) ?: stringResource(Res.string.choose_option),
