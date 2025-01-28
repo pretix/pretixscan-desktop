@@ -4,4 +4,6 @@ sealed class Route(val route: String) {
     data object Welcome : Route(route = "/welcome")
     data object Setup : Route(route = "/setup")
     data object Main : Route(route = "/main")
+
+    data object Settings : Route(route = "/settings")
 }

@@ -17,9 +17,9 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import app.ui.CustomColor
+import app.ui.Logo
 import app.ui.asColor
 import kotlinx.coroutines.delay
-import main.presentation.toolbar.Logo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel

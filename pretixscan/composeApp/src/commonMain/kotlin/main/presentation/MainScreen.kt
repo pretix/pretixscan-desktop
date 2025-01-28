@@ -11,6 +11,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import app.navigation.Route
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import tickets.presentation.TicketSearchBar
@@ -54,7 +55,10 @@ fun MainScreen(
             Column {
                 MainToolbar(
                     viewModel = viewModel,
-                    eventSelection = data.eventSelection
+                    eventSelection = data.eventSelection,
+                    onOpenSettings = {
+                        navHostController.navigate(route = Route.Settings.route)
+                    }
                 )
 
                 TicketSearchBar(onSelectedSearchResult = {

@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import eu.pretix.desktop.cache.AppConfig
 import org.koin.compose.koinInject
 import main.presentation.MainScreen
+import settings.presentation.SettingsScreen
 import setup.SetupScreen
 import welcome.WelcomeScreen
 
@@ -41,6 +42,9 @@ fun Navigation(
         }
         composable(route = Route.Main.route) {
             MainScreen(navHostController = navHostController)
+        }
+        composable(route = Route.Settings.route) {
+            SettingsScreen(navHostController = navHostController)
         }
     }
 }

@@ -10,25 +10,30 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.ui.CustomColor
+import app.ui.Logo
+import app.ui.asColor
 import eu.pretix.desktop.cache.EventSelection
+import main.presentation.MainViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import pretixscan.composeapp.generated.resources.Res
-import pretixscan.composeapp.generated.resources.app_name
-import pretixscan.composeapp.generated.resources.ic_logo
-import main.presentation.MainViewModel
-import app.ui.CustomColor
-import app.ui.asColor
+import pretixscan.composeapp.generated.resources.action_label_settings
+import pretixscan.composeapp.generated.resources.ic_settings_white_24dp
 import pretixscan.composeapp.generated.resources.operation_select_event
 
 @Composable
-fun MainToolbar(modifier: Modifier = Modifier, viewModel: MainViewModel, eventSelection: EventSelection) {
+fun MainToolbar(
+    modifier: Modifier = Modifier,
+    viewModel: MainViewModel,
+    eventSelection: EventSelection,
+    onOpenSettings: () -> Unit = {}
+) {
     Row(
         modifier = Modifier.fillMaxWidth()
             .background(CustomColor.BrandDark.asColor())
@@ -50,20 +55,12 @@ fun MainToolbar(modifier: Modifier = Modifier, viewModel: MainViewModel, eventSe
             }
         }
         Spacer(Modifier.weight(1f))
+        IconButton(onClick = onOpenSettings) {
+            Image(
+                painter = painterResource(Res.drawable.ic_settings_white_24dp),
+                contentDescription = stringResource(Res.string.action_label_settings)
+            )
+        }
     }
 }
 
-@Composable
-fun Logo(modifier: Modifier = Modifier) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Image(
-            painter = painterResource(Res.drawable.ic_logo),
-            contentDescription = "Pretix logo"
-        )
-        Text(
-            stringResource(Res.string.app_name),
-            style = MaterialTheme.typography.bodyLarge,
-            color = CustomColor.White.asColor()
-        )
-    }
-}
