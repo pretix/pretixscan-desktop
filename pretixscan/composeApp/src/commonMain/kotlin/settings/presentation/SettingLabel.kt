@@ -34,6 +34,7 @@ fun SettingLabel(
             if (!description.isNullOrBlank()) {
                 Text(
                     description,
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Light
                 )

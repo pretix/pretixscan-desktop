@@ -2,12 +2,12 @@ package tickets.presentation
 
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import app.ui.FieldSpinner
+import app.ui.KeyValueOption
 import com.vanniktech.locale.Country
 import java.util.*
 
@@ -27,7 +27,7 @@ fun QuestionPhoneNumber(
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        QuestionSpinner(
+        FieldSpinner(
             modifier = Modifier.weight(1f),
             selectedValue = country.code,
             availableOptions = Country.entries.map { country -> KeyValueOption("${country.emoji} ${country.name}", country.code) },

@@ -1,0 +1,11 @@
+package settings.data
+
+import app.ui.KeyValueOption
+
+data class ConfigurableSettings(
+    val version: String = "",
+    val printers: List<KeyValueOption> = emptyList(),
+    val badgePrinter: KeyValueOption? = null,
+    val badgeLayout: KeyValueOption? = null,
+    val layouts: List<KeyValueOption> = emptyList()
+)

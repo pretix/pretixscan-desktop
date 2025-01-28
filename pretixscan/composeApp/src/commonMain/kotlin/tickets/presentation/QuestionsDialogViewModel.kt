@@ -1,6 +1,7 @@
 package tickets.presentation
 
 import androidx.lifecycle.ViewModel
+import app.ui.KeyValueOption
 import com.vanniktech.locale.Countries
 import com.vanniktech.locale.Country
 import eu.pretix.desktop.cache.AppConfig
@@ -194,4 +195,3 @@ data class QuestionFormField(
 
 data class DateConfig(val minDate: Long?, val maxDate: Long?)
   
-data class KeyValueOption(val key: String, val value: String)

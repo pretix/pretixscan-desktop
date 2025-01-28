@@ -1,6 +1,7 @@
 package di
 
 import eu.pretix.desktop.cache.*
+import eu.pretix.desktop.printing.PrintingSystem
 import eu.pretix.libpretixsync.SentryInterface
 import eu.pretix.libpretixsync.api.DefaultHttpClientFactory
 import eu.pretix.libpretixsync.api.HttpClientFactory
@@ -11,6 +12,7 @@ import eu.pretix.libpretixsync.sync.SyncManager
 import org.json.JSONObject
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import settings.data.PrinterSource
 
 actual val platformModules: List<Module>
     get() = listOf(
@@ -69,6 +71,9 @@ actual val platformModules: List<Module>
         module {
             factory<FileStorage> {
                 DesktopFileStorage(getUserDataDir())
+            }
+            factory<PrinterSource> {
+                PrintingSystem()
             }
         }
     )

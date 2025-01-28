@@ -1,6 +1,7 @@
-package tickets.presentation
+package app.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -9,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.ui.CustomColor
@@ -16,13 +18,14 @@ import app.ui.asColor
 import org.jetbrains.compose.resources.stringResource
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.choose_option
+import app.ui.KeyValueOption
 
 
 @Composable
-fun QuestionSpinner(modifier: Modifier = Modifier,
-                    selectedValue: String?,
-                    availableOptions: List<KeyValueOption>,
-                    onSelect: (KeyValueOption?) -> Unit) {
+fun FieldSpinner(modifier: Modifier = Modifier,
+                 selectedValue: String?,
+                 availableOptions: List<KeyValueOption>,
+                 onSelect: (KeyValueOption?) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
 
     fun lookUpSelectedValue(value: String?): String? {
@@ -33,7 +36,12 @@ fun QuestionSpinner(modifier: Modifier = Modifier,
     }
 
     Box(modifier = modifier, contentAlignment = Alignment.TopStart) {
-        TextButton(onClick = { expanded = true }) {
+        TextButton(
+            onClick = { expanded = true },
+            enabled = availableOptions.isNotEmpty(),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            shape = RectangleShape
+        ) {
             Row {
                 Text(lookUpSelectedValue(selectedValue) ?: stringResource(Res.string.choose_option),
                      maxLines = 1,

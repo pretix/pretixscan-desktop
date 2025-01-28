@@ -9,17 +9,16 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import app.ui.CustomColor
+import app.ui.FieldSpinner
 import app.ui.asColor
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.*
@@ -30,9 +29,10 @@ fun SettingsScreen(
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     val viewModel = koinViewModel<SettingsViewModel>()
     val form by viewModel.form.collectAsState()
-
     val state = rememberLazyListState()
 
     LaunchedEffect(Unit) {
@@ -46,8 +46,6 @@ fun SettingsScreen(
 
 
         Box {
-
-
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(16.dp),
@@ -59,27 +57,71 @@ fun SettingsScreen(
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
+//                item {
+//                    Section(stringResource(Res.string.settings_label_verification)) {
+//                        Setting {
+//                            SettingCheckbox(
+//                                label = stringResource(Res.string.settings_label_scan_offline),
+//                                description = stringResource(Res.string.settings_summary_scan_offline),
+//                                checked = true,
+//                                onCheckedChange = {}
+//                            )
+//                        }
+//
+//                        Setting {
+//                            SettingCheckbox(
+//                                label = stringResource(Res.string.settings_label_scan_offline),
+//                                description = stringResource(Res.string.settings_summary_scan_offline),
+//                                checked = true,
+//                                onCheckedChange = {}
+//                            )
+//                        }
+//                    }
+//                }
+
                 item {
-                    Section(stringResource(Res.string.settings_label_verification)) {
+                    Section(stringResource(Res.string.settings_label_badges)) {
                         Setting {
-                            SettingCheckbox(
-                                label = stringResource(Res.string.settings_label_scan_offline),
-                                description = stringResource(Res.string.settings_summary_scan_offline),
-                                checked = true,
-                                onCheckedChange = {}
-                            )
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    stringResource(Res.string.settings_printers_badge)
+                                )
+                                FieldSpinner(
+                                    selectedValue = form.badgePrinter?.value,
+                                    availableOptions = form.printers,
+                                    onSelect = {
+                                        coroutineScope.launch {
+                                            viewModel.setBadgePrinter(it)
+                                        }
+                                    },
+                                )
+                            }
                         }
 
                         Setting {
-                            SettingCheckbox(
-                                label = stringResource(Res.string.settings_label_scan_offline),
-                                description = stringResource(Res.string.settings_summary_scan_offline),
-                                checked = true,
-                                onCheckedChange = {}
-                            )
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    stringResource(Res.string.settings_label_badge_layout)
+                                )
+                                FieldSpinner(
+                                    selectedValue = form.badgeLayout?.value,
+                                    availableOptions = form.layouts,
+                                    onSelect = {
+                                        coroutineScope.launch {
+                                            viewModel.setBadgePrinterLayout(it)
+                                        }
+                                    },
+                                )
+                            }
                         }
                     }
+                }
 
+                item {
                     Section(stringResource(Res.string.settings_label_about)) {
                         Setting {
                             SettingLabel(

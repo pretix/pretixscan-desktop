@@ -197,4 +197,9 @@
     <string name="none_camera">No camera</string>
     <string name="select_camera">Select camera</string>
     <string name="choose_option">Choose option</string>
+    <string name="settings_printers_badge">Badge printer</string>
+    <string name="settings_printer_layout_auto">Auto</string>
+    <string name="settings_printer_layout_landscape">Landscape</string>
+    <string name="settings_printer_layout_portrait">Portrait</string>
+    <string name="settings_label_badge_layout">Orientation</string>
 </resources>

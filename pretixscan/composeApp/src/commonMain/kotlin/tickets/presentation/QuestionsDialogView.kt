@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import app.ui.FieldSpinner
 import eu.pretix.libpretixsync.check.QuestionType
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -123,7 +124,7 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                             Text(
                                 field.label
                             )
-                            QuestionSpinner(
+                            FieldSpinner(
                                 selectedValue = field.value,
                                 availableOptions = field.keyValueOptions!!,
                                 onSelect = {
@@ -211,7 +212,7 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                                 field.label
                             )
 
-                            QuestionSpinner(
+                            FieldSpinner(
                                 selectedValue = field.value,
                                 availableOptions = field.keyValueOptions!!,
                                 onSelect = {
