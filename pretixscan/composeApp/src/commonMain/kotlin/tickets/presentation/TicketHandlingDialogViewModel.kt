@@ -1,6 +1,7 @@
 package tickets.presentation
 
 import androidx.lifecycle.ViewModel
+import eu.pretix.libpretixsync.db.Answer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -18,15 +19,18 @@ class TicketHandlingDialogViewModel(
     private val _uiState = MutableStateFlow(ResultStateData(resultState = ResultState.EMPTY))
     val uiState = _uiState.asStateFlow()
 
+    fun cancelQuestions() {
+        _uiState.value = ResultStateData(resultState = ResultState.EMPTY)
+    }
 
-    suspend fun handleTicket(secret: String?, ignoreUnpaid: Boolean = false) {
+    suspend fun handleTicket(secret: String?, answers: List<Answer>? = null, ignoreUnpaid: Boolean = false) {
         log.info("Handling ticket $secret")
         _uiState.update {
             it.copy(resultState = ResultState.LOADING)
         }
         val result = tickerCodeHandler.handleScanResult(
             secret,
-            answers = null,
+            answers = answers,
             ignoreUnpaid = ignoreUnpaid
         )
         _uiState.update {

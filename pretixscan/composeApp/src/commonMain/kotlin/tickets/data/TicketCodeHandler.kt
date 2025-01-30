@@ -110,7 +110,7 @@ class TicketCodeHandler(
                 scanType,
                 allowQuestions = allowQuestions
             )
-
+            
             println("Check result type: ${checkResult.type}")
 
             if (checkProvider is OnlineCheckProvider) {

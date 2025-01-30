@@ -71,7 +71,18 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                         viewModel.handleTicket(secret, ignoreUnpaid = true)
                     }
                 })
-                ResultState.DIALOG_QUESTIONS -> QuestionsDialogView(data = uiState)
+                ResultState.DIALOG_QUESTIONS -> QuestionsDialogView(
+                    data = uiState,
+                    onConfirm = { answers ->
+                        coroutineScope.launch {
+                            viewModel.handleTicket(secret, answers = answers, ignoreUnpaid = true)
+                        }
+                    },
+                    onCancel = {
+                        viewModel.cancelQuestions()
+                        onDismiss()
+                    }
+                )
                 ResultState.WARNING -> {Text(uiState.resultText ?: "")}
                 ResultState.SUCCESS -> {
                     Column(

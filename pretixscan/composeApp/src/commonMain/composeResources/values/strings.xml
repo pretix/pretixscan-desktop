@@ -194,6 +194,7 @@
     <string name="text_action_clear">Clear</string>
     <string name="text_action_select">Select</string>
     <string name="take_a_photo">Take a photo</string>
+    <string name="delete_photo">Delete photo</string>
     <string name="none_camera">No camera</string>
     <string name="select_camera">Select camera</string>
     <string name="choose_option">Choose option</string>

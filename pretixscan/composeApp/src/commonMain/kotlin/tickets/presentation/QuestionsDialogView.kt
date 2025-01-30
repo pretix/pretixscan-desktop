@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -23,6 +24,7 @@ import app.ui.CustomColor
 import app.ui.FieldSpinner
 import app.ui.asColor
 import eu.pretix.libpretixsync.check.QuestionType
+import eu.pretix.libpretixsync.db.Answer
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -33,7 +35,12 @@ import webcam.presentation.WebCam
 
 @Preview
 @Composable
-fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
+fun QuestionsDialogView(
+    modifier: Modifier = Modifier,
+    data: ResultStateData,
+    onConfirm: (List<Answer>) -> Unit,
+    onCancel: () -> Unit
+) {
     val viewModel = koinViewModel<QuestionsDialogViewModel>()
     val form by viewModel.form.collectAsState()
     val modalQuestion by viewModel.modalQuestion.collectAsState()
@@ -103,11 +110,11 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                                 Text(
                                     field.label
                                 )
-                                QuestionTimePicker(
-                                    value = field.value,
-                                    onUpdate = {
-                                        viewModel.updateAnswer(field.id, it)
-                                    }
+                                TextField(
+                                    value = field.value ?: "",
+                                    onValueChange = { viewModel.updateAnswer(field.id, it) },
+                                    label = { Text(field.label) },
+                                    maxLines = 2
                                 )
                             }
                         }
@@ -154,7 +161,7 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                                 )
                                 field.keyValueOptions?.forEach { option ->
                                     QuestionCheckbox(
-                                        label = option.value,
+                                        label = option.key,
                                         checked = field.values?.contains(option.value) ?: false,
                                         onSelect = {
                                             viewModel.updateChoiceAnswer(field.id, option.value, it == "True")
@@ -170,10 +177,35 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                                 Text(
                                     field.label
                                 )
-                                Button(onClick = {
-                                    viewModel.showModal(field)
-                                }) {
-                                    Text(stringResource(Res.string.take_a_photo))
+                                Row {
+                                    Column(
+                                        modifier = Modifier.weight(2f)
+                                            .padding(end = 16.dp)
+                                    ) {
+                                        Button(
+                                            onClick = {
+                                                viewModel.showModal(field)
+                                            }) {
+                                            Text(stringResource(Res.string.take_a_photo))
+                                        }
+                                        if (field.value != null) {
+                                            Button(
+                                                onClick = {
+                                                }) {
+                                                Icon(
+                                                    Icons.Filled.Delete,
+                                                    contentDescription = stringResource(Res.string.delete_photo)
+                                                )
+                                                Text(stringResource(Res.string.delete_photo))
+                                            }
+                                        }
+                                    }
+
+                                    if (field.value != null) {
+                                        Box(modifier = Modifier.weight(1f)) {
+                                            QuestionImagePreview(filePath = field.value!!)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -277,12 +309,16 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(onClick = {}) {
+                Button(onClick = onCancel) {
                     Text(stringResource(Res.string.cancel))
                 }
                 Spacer(modifier = Modifier.weight(1.0f))
                 Button(
-                    onClick = { viewModel.validateAndContinue() }
+                    onClick = {
+                        if (viewModel.validateForConfirm()) {
+                            onConfirm(viewModel.getCurrentAnswers(data))
+                        }
+                    }
                 ) {
                     Text(stringResource(Res.string.cont))
                 }
