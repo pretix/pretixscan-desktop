@@ -1,14 +1,15 @@
 package tickets.presentation
 
 import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import app.ui.CustomColor
 import app.ui.FieldSpinner
+import app.ui.asColor
 import eu.pretix.libpretixsync.check.QuestionType
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -43,12 +46,20 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
     Box {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(bottom = 72.dp),
             state = state
         ) {
             item {
-                Column(horizontalAlignment = Alignment.Start) {
-                    Row(verticalAlignment = Alignment.Top) {
+                Column(
+                    modifier = Modifier
+                        .background(CustomColor.BrandOrange.asColor()),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Row(
+                        modifier = Modifier.padding(PaddingValues(16.dp)),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.padding(end = 16.dp))
                         Text(data.ticketAndVariationName ?: "")
                         if (!data.attendeeName.isNullOrBlank()) {
                             Text(data.attendeeName)
@@ -61,201 +72,186 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                 }
             }
             items(form) { field ->
-
-                when (field.fieldType) {
-                    QuestionType.N -> {
-                        TextField(
-                            value = field.value ?: "",
-                            onValueChange = { newValue ->
-                                if (newValue.all { it.isDigit() }) {
-                                    viewModel.updateAnswer(field.id, newValue)
-                                }
-                            },
-                            label = { Text(field.label) },
-                            singleLine = true
-                        )
-                    }
-
-                    QuestionType.S -> {
-                        TextField(
-                            value = field.value ?: "",
-                            onValueChange = { viewModel.updateAnswer(field.id, it) },
-                            label = { Text(field.label) },
-                            singleLine = true
-                        )
-                    }
-
-                    QuestionType.T -> {
-                        Column(
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                field.label
-                            )
-                            QuestionTimePicker(
-                                value = field.value,
-                                onUpdate = {
-                                    viewModel.updateAnswer(field.id, it)
-                                }
+                Box(modifier = Modifier.padding(PaddingValues(16.dp))) {
+                    when (field.fieldType) {
+                        QuestionType.N -> {
+                            TextField(
+                                value = field.value ?: "",
+                                onValueChange = { newValue ->
+                                    if (newValue.all { it.isDigit() }) {
+                                        viewModel.updateAnswer(field.id, newValue)
+                                    }
+                                },
+                                label = { Text(field.label) },
+                                singleLine = true
                             )
                         }
-                    }
 
-                    QuestionType.B -> {
-                        Column(
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                field.label
-                            )
-                            QuestionCheckbox(
-                                label = stringResource(Res.string.yes),
-                                checked = "True" == field.value,
-                                onSelect = {
-                                    viewModel.updateAnswer(field.id, it)
-                                })
-                        }
-                    }
-
-                    QuestionType.C -> {
-                        Column(
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                field.label
-                            )
-                            FieldSpinner(
-                                selectedValue = field.value,
-                                availableOptions = field.keyValueOptions!!,
-                                onSelect = {
-                                    viewModel.updateAnswer(field.id, it?.value)
-                                }
+                        QuestionType.S -> {
+                            TextField(
+                                value = field.value ?: "",
+                                onValueChange = { viewModel.updateAnswer(field.id, it) },
+                                label = { Text(field.label) },
+                                singleLine = true
                             )
                         }
-                    }
 
-                    QuestionType.M -> {
-                        Column(
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                field.label
-                            )
-                            field.keyValueOptions?.forEach { option ->
+                        QuestionType.T -> {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    field.label
+                                )
+                                QuestionTimePicker(
+                                    value = field.value,
+                                    onUpdate = {
+                                        viewModel.updateAnswer(field.id, it)
+                                    }
+                                )
+                            }
+                        }
+
+                        QuestionType.B -> {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    field.label
+                                )
                                 QuestionCheckbox(
-                                    label = option.value,
-                                    checked = field.values?.contains(option.value) ?: false,
+                                    label = stringResource(Res.string.yes),
+                                    checked = "True" == field.value,
                                     onSelect = {
-                                        viewModel.updateChoiceAnswer(field.id, option.value, it == "True")
+                                        viewModel.updateAnswer(field.id, it)
                                     })
                             }
                         }
-                    }
 
-                    QuestionType.F -> {
-                        Column(
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                field.label
-                            )
-                            Button(onClick = {
-                                viewModel.showModal(field)
-                            }) {
-                                Text(stringResource(Res.string.take_a_photo))
+                        QuestionType.C -> {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    field.label
+                                )
+                                FieldSpinner(
+                                    selectedValue = field.value,
+                                    availableOptions = field.keyValueOptions!!,
+                                    onSelect = {
+                                        viewModel.updateAnswer(field.id, it?.value)
+                                    }
+                                )
                             }
                         }
-                    }
 
-                    QuestionType.D -> {
-                        Column(
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                field.label
-                            )
-                            QuestionDatepicker(
-                                minDate = field.dateConfig?.minDate,
-                                maxDate = field.dateConfig?.maxDate,
-                                value = field.value,
-                                onUpdate = {
-                                    viewModel.updateAnswer(field.id, it)
+                        QuestionType.M -> {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    field.label
+                                )
+                                field.keyValueOptions?.forEach { option ->
+                                    QuestionCheckbox(
+                                        label = option.value,
+                                        checked = field.values?.contains(option.value) ?: false,
+                                        onSelect = {
+                                            viewModel.updateChoiceAnswer(field.id, option.value, it == "True")
+                                        })
                                 }
-                            )
-                        }
-                    }
-
-                    QuestionType.H -> {}
-                    QuestionType.W -> {
-                        Column(
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                field.label
-                            )
-                            QuestionDateTimePicker(
-                                minDate = field.dateConfig?.minDate,
-                                maxDate = field.dateConfig?.maxDate,
-                                value = field.value,
-                                onUpdate = {
-                                    viewModel.updateAnswer(field.id, it)
-                                }
-                            )
-                        }
-                    }
-
-                    QuestionType.CC -> {
-                        Column(
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                field.label
-                            )
-
-                            FieldSpinner(
-                                selectedValue = field.value,
-                                availableOptions = field.keyValueOptions!!,
-                                onSelect = {
-                                    viewModel.updateAnswer(field.id, it?.value)
-                                }
-                            )
+                            }
                         }
 
-                    }
-
-                    QuestionType.TEL -> {
-                        Column(
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                field.label
-                            )
-
-                            QuestionPhoneNumber(
-                                selectedValue = field.value,
-                                onSelect = {
-                                    viewModel.updateAnswer(field.id, it)
+                        QuestionType.F -> {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    field.label
+                                )
+                                Button(onClick = {
+                                    viewModel.showModal(field)
+                                }) {
+                                    Text(stringResource(Res.string.take_a_photo))
                                 }
-                            )
+                            }
                         }
-                    }
-                    QuestionType.EMAIL -> {}
-                }
-            }
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(onClick = {}) {
-                        Text(stringResource(Res.string.cancel))
-                    }
-                    Spacer(modifier = Modifier.weight(1.0f))
-                    Button(
-                        onClick = { viewModel.validateAndContinue() }
-                    ) {
-                        Text(stringResource(Res.string.cont))
+
+                        QuestionType.D -> {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    field.label
+                                )
+                                QuestionDatepicker(
+                                    minDate = field.dateConfig?.minDate,
+                                    maxDate = field.dateConfig?.maxDate,
+                                    value = field.value,
+                                    onUpdate = {
+                                        viewModel.updateAnswer(field.id, it)
+                                    }
+                                )
+                            }
+                        }
+
+                        QuestionType.H -> {}
+                        QuestionType.W -> {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    field.label
+                                )
+                                QuestionDateTimePicker(
+                                    minDate = field.dateConfig?.minDate,
+                                    maxDate = field.dateConfig?.maxDate,
+                                    value = field.value,
+                                    onUpdate = {
+                                        viewModel.updateAnswer(field.id, it)
+                                    }
+                                )
+                            }
+                        }
+
+                        QuestionType.CC -> {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    field.label
+                                )
+
+                                FieldSpinner(
+                                    selectedValue = field.value,
+                                    availableOptions = field.keyValueOptions!!,
+                                    onSelect = {
+                                        viewModel.updateAnswer(field.id, it?.value)
+                                    }
+                                )
+                            }
+
+                        }
+
+                        QuestionType.TEL -> {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    field.label
+                                )
+
+                                QuestionPhoneNumber(
+                                    selectedValue = field.value,
+                                    onSelect = {
+                                        viewModel.updateAnswer(field.id, it)
+                                    }
+                                )
+                            }
+                        }
+
+                        QuestionType.EMAIL -> {}
                     }
                 }
             }
@@ -267,6 +263,31 @@ fun QuestionsDialogView(modifier: Modifier = Modifier, data: ResultStateData) {
                 scrollState = state
             )
         )
+
+        Surface(
+            modifier = Modifier
+                .align(Alignment.BottomCenter),
+            shadowElevation = 8.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(CustomColor.White.asColor())
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(onClick = {}) {
+                    Text(stringResource(Res.string.cancel))
+                }
+                Spacer(modifier = Modifier.weight(1.0f))
+                Button(
+                    onClick = { viewModel.validateAndContinue() }
+                ) {
+                    Text(stringResource(Res.string.cont))
+                }
+            }
+        }
     }
 
     if (modalQuestion != null && modalQuestion?.fieldType == QuestionType.F) {

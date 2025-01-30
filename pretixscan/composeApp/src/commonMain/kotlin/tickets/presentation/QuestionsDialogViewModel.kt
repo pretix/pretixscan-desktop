@@ -187,7 +187,6 @@ data class QuestionFormField(
     val label: String,
     var value: String?,
     val fieldType: QuestionType,
-//    val availableOptions: List<QuestionOption>? = null,
     var values: List<String>? = null,
     var dateConfig: DateConfig? = null,
     val keyValueOptions: List<KeyValueOption>? = null
