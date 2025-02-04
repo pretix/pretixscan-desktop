@@ -85,9 +85,7 @@ fun QuestionsDialogView(
                             TextField(
                                 value = field.value ?: "",
                                 onValueChange = { newValue ->
-                                    if (newValue.all { it.isDigit() }) {
-                                        viewModel.updateAnswer(field.id, newValue)
-                                    }
+                                    viewModel.updateAnswer(field.id, newValue)
                                 },
                                 label = { Text(field.label) },
                                 singleLine = true

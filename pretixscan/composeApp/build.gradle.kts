@@ -55,6 +55,10 @@ kotlin {
             implementation(project(":libpretixprint"))
         }
 
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+
         all {
             languageSettings.optIn("org.koin.core.annotation.KoinExperimentalAPI")
         }

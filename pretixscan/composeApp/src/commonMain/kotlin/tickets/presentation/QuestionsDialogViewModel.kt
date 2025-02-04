@@ -11,6 +11,7 @@ import eu.pretix.libpretixsync.models.Question
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import tickets.data.EmailValidator
 import tickets.data.ResultStateData
 import java.util.logging.Logger
 
@@ -26,6 +27,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
     private val _modalQuestion = MutableStateFlow<QuestionFormField?>(null)
     val modalQuestion = _modalQuestion.asStateFlow()
 
+    private val emailValidator = EmailValidator()
     fun getCurrentAnswers(data: ResultStateData): List<Answer> {
         val values = _form.value.toMutableList()
 
@@ -182,11 +184,20 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                             field.copy(value = answer)
                         }
                     }
-//
-//                    QuestionType.EMAIL -> {
-//
-//                    }
-
+                    QuestionType.N -> {
+                        if (answer != null && answer.all { it.isDigit() }) {
+                            field.copy(value = answer)
+                        } else {
+                            field
+                        }
+                    }
+                    QuestionType.EMAIL -> {
+                        if (answer != null && emailValidator.isValidEmail(answer)) {
+                            field.copy(value = answer)
+                        } else {
+                            field
+                        }
+                    }
                     else -> {
                         field.copy(value = answer)
                     }
