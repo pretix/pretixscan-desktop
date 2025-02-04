@@ -79,6 +79,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
         val formFields = data.requiredQuestions.mapNotNull { it ->
             when (it.type) {
                 QuestionType.N,
+                QuestionType.EMAIL,
                 QuestionType.S,
                 QuestionType.T,
                 QuestionType.F,
@@ -122,6 +123,14 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         dateConfig = DateConfig(minDate = it.valid_date_min, maxDate = it.valid_date_max)
                     )
                 }
+                QuestionType.H -> {
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        startingAnswerValue(it, data.answers[it]),
+                        it.type
+                    )
+                }
 
                 QuestionType.CC -> {
                     QuestionFormField(
@@ -131,11 +140,6 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         it.type,
                         keyValueOptions = Country.entries.map { country -> KeyValueOption(country.name, country.code) }
                     )
-                }
-
-                QuestionType.H,
-                QuestionType.EMAIL -> {
-                    null
                 }
             }
         }
@@ -178,6 +182,10 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                             field.copy(value = answer)
                         }
                     }
+//
+//                    QuestionType.EMAIL -> {
+//
+//                    }
 
                     else -> {
                         field.copy(value = answer)

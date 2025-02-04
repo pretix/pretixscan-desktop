@@ -94,6 +94,7 @@ fun QuestionsDialogView(
                             )
                         }
 
+                        QuestionType.EMAIL,
                         QuestionType.S -> {
                             TextField(
                                 value = field.value ?: "",
@@ -228,7 +229,22 @@ fun QuestionsDialogView(
                             }
                         }
 
-                        QuestionType.H -> {}
+                        QuestionType.H -> {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    field.label
+                                )
+                                QuestionTimePicker(
+                                    value = field.value,
+                                    onUpdate = {
+                                        viewModel.updateAnswer(field.id, it)
+                                    },
+                                    label = field.label
+                                )
+                            }
+                        }
                         QuestionType.W -> {
                             Column(
                                 horizontalAlignment = Alignment.Start
@@ -282,8 +298,6 @@ fun QuestionsDialogView(
                                 )
                             }
                         }
-
-                        QuestionType.EMAIL -> {}
                     }
                 }
             }
