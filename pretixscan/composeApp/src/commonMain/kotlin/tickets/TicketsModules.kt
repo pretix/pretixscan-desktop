@@ -12,7 +12,7 @@ import tickets.presentation.TicketSearchBarViewModel
 
 val ticketsModule = module {
     factory<TicketCodeHandler> {
-        TicketCodeHandler(get(), get(), get(), get(), get(), get())
+        TicketCodeHandler(get(), get(), get(), get(), get(), get(), get())
     }
     factory<ConnectivityHelper> {
         ConnectivityHelper()

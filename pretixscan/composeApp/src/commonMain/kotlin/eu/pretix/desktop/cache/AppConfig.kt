@@ -35,6 +35,8 @@ class AppConfig(val dataDir: String) : ConfigStore {
     private val PREFS_KEY_PRINTER_BADGE_NAME = "printer_badge_name"
     private val PREFS_KEY_PRINTER_BADGE_ORIENTATION = "printer_badge_orientation"
     private val PREFS_KEY_AUTO_PRINT_BADGES = "auto_print_badges"
+
+    private val PREFS_KEY_PRINTBADGES = "prefs_key_print_badges"
     private val PREFS_KEY_SYNC_ORDERS = "sync_orders"
     private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
@@ -333,6 +335,13 @@ class AppConfig(val dataDir: String) : ConfigStore {
         get() = prefs.getBoolean(PREFS_KEY_AUTO_PRINT_BADGES, false)
         set(value) {
             prefs.putBoolean(PREFS_KEY_AUTO_PRINT_BADGES, value)
+            prefs.flush()
+        }
+
+    var printBadges: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_PRINTBADGES, false)
+        set(value) {
+            prefs.putBoolean(PREFS_KEY_PRINTBADGES, value)
             prefs.flush()
         }
 

@@ -25,7 +25,8 @@ class TicketCodeHandler(
     private val checkProvider: TicketCheckProvider,
     private val audioPlayer: GadulkaPlayer,
     private val logHandler: SentryInterface,
-    private val connectivityHelper: ConnectivityHelper
+    private val connectivityHelper: ConnectivityHelper,
+    private val layoutFetcher: PrintLayoutFetcher
 ) {
 
     suspend fun handleScanResult(rawResult: String?, answers: List<Answer>? = null, ignoreUnpaid: Boolean): ResultStateData {
@@ -48,6 +49,10 @@ class TicketCodeHandler(
         }
         val questionValues = v.toMap()
 
+        val badgeLayout = layoutFetcher.getForItemAtEvent(checkResult.positionId, checkResult.eventSlug)
+        val canPrintBadge = conf.printBadges && checkResult.scanType != TicketCheckProvider.CheckInType.EXIT && checkResult.position != null && badgeLayout != null
+
+
         val resultState = ResultStateData(
             resultState = checkResult.resultState(),
             resultText = checkResult.message,
@@ -64,7 +69,9 @@ class TicketCodeHandler(
             scanType = checkResult.scanType,
             firstScanned = checkResult.formattedFirstScanned(),
             requiredQuestions = questions,
-            answers = questionValues
+            answers = questionValues,
+            isPrintable = canPrintBadge,
+            badgeLayout = badgeLayout
         )
 
         return resultState

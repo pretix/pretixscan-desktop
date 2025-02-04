@@ -14,6 +14,7 @@ import eu.pretix.libpretixsync.setup.EventManager
 import eu.pretix.libpretixsync.sync.FileStorage
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import tickets.data.PrintLayoutFetcher
 
 
 val pretixModules: List<Module>
@@ -59,6 +60,9 @@ val pretixModules: List<Module>
                         get<FileStorage>()
                     )
                 }
+            }
+            factory {
+                PrintLayoutFetcher(get())
             }
         }
     )

@@ -76,7 +76,7 @@ class MainViewModel(
 
         appConfig.checkInListId = list.server_id!!
         appConfig.checkInListName = list.name!!
-
+        
         loadViewModel()
     }
 

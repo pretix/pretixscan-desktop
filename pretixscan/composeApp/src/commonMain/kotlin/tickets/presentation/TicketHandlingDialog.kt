@@ -55,16 +55,7 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                     }
                 }
                 ResultState.ERROR -> {
-                    Column(
-                        modifier = Modifier.padding(16.dp).fillMaxWidth().background(uiState.resultState.color()),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Image(painter = painterResource(Res.drawable.ic_error_white_24dp), contentDescription = "")
-                        Text(uiState.resultText ?: "")
-                        Text(uiState.ticketAndVariationName ?: "")
-                        Text(uiState.reasonExplanation ?: "")
-                        Text(uiState.firstScanned ?: "")
-                    }
+                    TicketFailure(data = uiState)
                 }
                 ResultState.DIALOG_UNPAID -> UnpaidDialogView(data = uiState, onCancel = onDismiss, onCheckInAnyway = {
                     coroutineScope.launch {

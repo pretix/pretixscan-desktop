@@ -6,7 +6,7 @@ import eu.pretix.libpretixsync.check.TicketCheckProvider
 import app.ui.CustomColor
 import app.ui.asColor
 import eu.pretix.libpretixsync.models.Question
-
+import eu.pretix.libpretixsync.models.BadgeLayout
 enum class ResultState {
     EMPTY,
     LOADING,
@@ -43,5 +43,7 @@ data class ResultStateData(
     val attention: Boolean = false,
     val scanType: TicketCheckProvider.CheckInType = TicketCheckProvider.CheckInType.ENTRY,
     val requiredQuestions: List<Question> = emptyList(),
-    val answers: Map<Question, String> = emptyMap()
+    val answers: Map<Question, String> = emptyMap(),
+    val isPrintable: Boolean = false,
+    val badgeLayout: BadgeLayout? = null
 )

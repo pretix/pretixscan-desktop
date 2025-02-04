@@ -1,9 +1,9 @@
 package tickets.presentation
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,33 +18,22 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.first_scanned
-import pretixscan.composeapp.generated.resources.ic_check_circle_white_24dp
+import pretixscan.composeapp.generated.resources.ic_error_white_24dp
 import tickets.data.ResultStateData
 import tickets.data.color
 
 @Preview
 @Composable
-fun TicketSuccess(modifier: Modifier = Modifier, data: ResultStateData) {
-
+fun TicketFailure(modifier: Modifier = Modifier, data: ResultStateData) {
     Column(
         modifier = Modifier.background(data.resultState.color()),
     ) {
-        if (data.isPrintable) {
-            Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Button(onClick = {}) {
-                    Text("Print badge")
-                }
-            }
-        }
         Column(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(Res.drawable.ic_check_circle_white_24dp),
+                painter = painterResource(Res.drawable.ic_error_white_24dp),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.size(64.dp)
