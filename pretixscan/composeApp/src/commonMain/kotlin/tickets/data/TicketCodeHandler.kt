@@ -257,7 +257,7 @@ fun TicketCheckProvider.CheckResult.reasonExplanation(): String? {
 suspend fun TicketCheckProvider.CheckResult.formattedFirstScanned(): String? {
     if (firstScanned != null) {
         val df = SimpleDateFormat(getString(Res.string.short_datetime_format))
-        return getString(Res.string.first_scanned, df.format(firstScanned))
+        return df.format(firstScanned)
     }
     return null
 }

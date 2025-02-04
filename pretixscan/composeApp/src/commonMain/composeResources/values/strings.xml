@@ -66,7 +66,7 @@
     </plurals>
     <string name="sync_status_date_format">yyyy-MM-dd HH:mm:ss</string>
     <string name="short_datetime_format">MM/dd HH:mm</string>
-    <string name="first_scanned">First scanned: %s</string>
+    <string name="first_scanned">First scanned: </string>
     <string name="datetime_format">%1$tY-%1$tm-%1$td %1$tH:%1$tM</string>
     <string name="ok">OK</string>
     <string name="tutorial_setup">To get started, create a new device in the "Devices" section of your organizer account in the pretix backend. You will be then presented with a configuration QR code to scan.</string>

@@ -85,16 +85,7 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                 )
                 ResultState.WARNING -> {Text(uiState.resultText ?: "")}
                 ResultState.SUCCESS -> {
-                    Column(
-                        modifier = Modifier.padding(16.dp).fillMaxWidth().background(uiState.resultState.color()),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Image(painter = painterResource(Res.drawable.ic_check_circle_white_24dp), contentDescription = "")
-                        Text(uiState.resultText ?: "")
-                        Text(uiState.ticketAndVariationName ?: "")
-                        Text(uiState.reasonExplanation ?: "")
-                        Text(uiState.firstScanned ?: "")
-                    }
+                    TicketSuccess(data = uiState)
                 }
                 ResultState.SUCCESS_EXIT -> {Text(uiState.resultText ?: "")}
             }
