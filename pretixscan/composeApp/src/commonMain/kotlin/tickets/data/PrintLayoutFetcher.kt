@@ -24,7 +24,7 @@ class PrintLayoutFetcher(private val appCache: AppCache) {
             return null
         }
 
-        val localItem = appCache.db.itemQueries.selectByServerId(serverId).executeAsOneOrNull()
+        val localItem = appCache.db.itemQueries.selectById(serverId).executeAsOneOrNull()
         if (localItem == null) {
             log.info("Print layout not found: local item position not found for $serverId.")
             return null
@@ -39,8 +39,8 @@ class PrintLayoutFetcher(private val appCache: AppCache) {
                 log.info("Print layout not found: do not print badges for this product.")
                 return null
             }
-            // A non-default badge layout is set for this product
-            return appCache.db.badgeLayoutQueries.selectById(layoudId).executeAsOneOrNull()?.toModel()
+            log.info("A non-default badge layout is set for this product.")
+            return appCache.db.badgeLayoutQueries.selectById(layoudId).executeAsOne().toModel()
         }
 
         return appCache.db.badgeLayoutQueries.selectDefaultForEventSlug(slug).executeAsOneOrNull()?.toModel() ?:
