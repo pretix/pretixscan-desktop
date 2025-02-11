@@ -52,6 +52,14 @@ class JvmLocalCacheFactory : LocalCacheFactory {
         return dataStore
     }
 
+    override fun deleteDataSource() {
+        val dbFile = getDatabasePath()
+        if (dbFile.exists()) {
+            log.info("Deleting database at $dbFile")
+            dbFile.delete()
+        }
+    }
+
     private fun createDriver(url: String): SqlDriver {
         val driver: SqlDriver = JdbcSqliteDriver(
             url = url

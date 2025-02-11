@@ -3,20 +3,20 @@ package settings.presentation
 
 import androidx.lifecycle.ViewModel
 import app.ui.KeyValueOption
+import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.desktop.cache.Version
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import settings.data.PrinterSource
 import settings.data.ConfigurableSettings
-import java.util.logging.Logger
+import settings.data.PrinterSource
 
 
 class SettingsViewModel(
     private val appConfig: AppConfig,
-    private val printerSource: PrinterSource
+    private val printerSource: PrinterSource,
+    private val appCache: AppCache
 ) : ViewModel() {
-    private val log = Logger.getLogger("SettingsViewModel")
 
     private val _form = MutableStateFlow(ConfigurableSettings())
     val form = _form.asStateFlow()
@@ -51,5 +51,10 @@ class SettingsViewModel(
     suspend fun setPrintBadges(value: Boolean) {
         appConfig.printBadges = value
         loadSettings()
+    }
+
+    fun logout() {
+        appCache.reset()
+        appConfig.resetEventConfig()
     }
 }

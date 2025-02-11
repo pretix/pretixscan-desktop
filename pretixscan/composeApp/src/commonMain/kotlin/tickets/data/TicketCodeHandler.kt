@@ -52,7 +52,6 @@ class TicketCodeHandler(
         val badgeLayout = layoutFetcher.getForItemAtEvent(checkResult.positionId, checkResult.eventSlug)
         val canPrintBadge = conf.printBadges && checkResult.scanType != TicketCheckProvider.CheckInType.EXIT && checkResult.position != null && badgeLayout != null
 
-
         val resultState = ResultStateData(
             resultState = checkResult.resultState(),
             resultText = checkResult.message,
@@ -71,7 +70,8 @@ class TicketCodeHandler(
             requiredQuestions = questions,
             answers = questionValues,
             isPrintable = canPrintBadge,
-            badgeLayout = badgeLayout
+            badgeLayout = badgeLayout,
+            position = checkResult.position
         )
 
         return resultState

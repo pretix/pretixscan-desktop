@@ -18,8 +18,10 @@ gadulka = "1.4.3"
 webcam-capture = "0.3.12"
 webcam-driver = "1.2.0"
 multiplatform-locale = "0.9.0"
+pdfbox = "3.0.4"
 
 [libraries]
+apache-pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -42,6 +44,7 @@ sqldelight-jvm = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "coroutines" }
 coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 gadulka = { module = "eu.iamkonstantin.kotlin:gadulka", version.ref = "gadulka" }
 sarxos-webcam = { module = "com.github.sarxos:webcam-capture", version.ref = "webcam-capture" }
 webcam-driver = { module = "io.github.eduramiba:webcam-capture-driver-native", version.ref = "webcam-driver" }

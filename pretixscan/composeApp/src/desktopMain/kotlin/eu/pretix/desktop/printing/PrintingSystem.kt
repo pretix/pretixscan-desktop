@@ -3,14 +3,12 @@ package eu.pretix.desktop.printing
 import app.ui.KeyValueOption
 import org.jetbrains.compose.resources.getString
 import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.settings_printer_layout_auto
+import pretixscan.composeapp.generated.resources.settings_printer_layout_landscape
+import pretixscan.composeapp.generated.resources.settings_printer_layout_portrait
 import settings.data.PrinterSource
-import settings.data.SelectablePrintingSystem
 import javax.print.DocFlavor
 import javax.print.PrintServiceLookup
-import javax.print.attribute.standard.OrientationRequested
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.getString
-import pretixscan.composeapp.generated.resources.*
 
 class PrintingSystem : PrinterSource {
     override fun listPrinters(): List<KeyValueOption> {
@@ -22,6 +20,7 @@ class PrintingSystem : PrinterSource {
                 )
             }
     }
+
 
     override fun selectOption(name: String?): KeyValueOption? {
         if (name.isNullOrBlank()) {

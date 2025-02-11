@@ -19,12 +19,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.first_scanned
 import pretixscan.composeapp.generated.resources.ic_check_circle_white_24dp
+import pretixscan.composeapp.generated.resources.settings_label_print_badges
 import tickets.data.ResultStateData
 import tickets.data.color
 
 @Preview
 @Composable
-fun TicketSuccess(modifier: Modifier = Modifier, data: ResultStateData) {
+fun TicketSuccess(modifier: Modifier = Modifier, data: ResultStateData, onPrintBadges: () -> Unit) {
 
     Column(
         modifier = Modifier.background(data.resultState.color()),
@@ -34,8 +35,8 @@ fun TicketSuccess(modifier: Modifier = Modifier, data: ResultStateData) {
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Button(onClick = {}) {
-                    Text("Print badge")
+                Button(onClick = onPrintBadges) {
+                    Text(stringResource(Res.string.settings_label_print_badges))
                 }
             }
         }

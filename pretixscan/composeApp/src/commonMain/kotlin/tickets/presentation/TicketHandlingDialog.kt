@@ -1,8 +1,8 @@
 package tickets.presentation
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
@@ -14,14 +14,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import pretixscan.composeapp.generated.resources.Res
-import pretixscan.composeapp.generated.resources.ic_check_circle_white_24dp
-import pretixscan.composeapp.generated.resources.ic_error_white_24dp
 import tickets.data.ResultState
-import tickets.data.color
 
 @Preview
 @Composable
@@ -76,7 +71,14 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                 )
                 ResultState.WARNING -> {Text(uiState.resultText ?: "")}
                 ResultState.SUCCESS -> {
-                    TicketSuccess(data = uiState)
+                    TicketSuccess(
+                        data = uiState,
+                        onPrintBadges = {
+                            coroutineScope.launch {
+                                viewModel.printBadges()
+                            }
+                        }
+                    )
                 }
                 ResultState.SUCCESS_EXIT -> {Text(uiState.resultText ?: "")}
             }

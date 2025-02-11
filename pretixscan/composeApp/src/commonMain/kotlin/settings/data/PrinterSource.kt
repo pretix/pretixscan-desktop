@@ -13,7 +13,6 @@ interface PrinterSource {
      */
     fun selectOption(name: String?): KeyValueOption?
 
-
     suspend fun listPrinterOrientations(): List<KeyValueOption>
 
     suspend fun selectPrinterOrientation(value: String?): KeyValueOption?

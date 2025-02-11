@@ -2,11 +2,7 @@ package setup
 
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,12 +12,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import app.navigation.Route
+import app.ui.CustomColor
+import app.ui.asColor
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.*
-import app.ui.CustomColor
-import app.ui.asColor
 
 @Composable
 @Preview
@@ -39,6 +36,8 @@ fun SetupScreen(
     var url by remember { mutableStateOf("https://pretix.eu") }
     var token by remember { mutableStateOf("") }
     val focusRequester = FocusRequester()
+
+    var coroutineScope = rememberCoroutineScope()
 
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -95,7 +94,11 @@ fun SetupScreen(
             Button(
                 colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColor()),
                 onClick = {
-                    viewModel.verifyToken(token = token, url = url)
+                    val apiToken = token
+                    val apiUrl = url
+                    coroutineScope.launch {
+                        viewModel.verifyTokenAndSetup(token = apiToken, url = apiUrl)
+                    }
                 },
                 enabled = uiState != SetupUiState.Loading
             ) {
@@ -130,7 +133,11 @@ fun SetupScreen(
         if (showErrorDialog) {
             ErrorDialog(
                 message = errorMessage,
-                onDismiss = { showErrorDialog = false }
+                onDismiss = {
+                    errorMessage = ""
+                    showErrorDialog = false
+                    viewModel.dismissLoginError()
+                }
             )
         }
     }

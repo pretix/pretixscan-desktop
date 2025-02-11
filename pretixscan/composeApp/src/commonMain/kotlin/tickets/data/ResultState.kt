@@ -2,11 +2,13 @@ package tickets.data
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
-import eu.pretix.libpretixsync.check.TicketCheckProvider
 import app.ui.CustomColor
 import app.ui.asColor
-import eu.pretix.libpretixsync.models.Question
+import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.models.BadgeLayout
+import eu.pretix.libpretixsync.models.Question
+import org.json.JSONObject
+
 enum class ResultState {
     EMPTY,
     LOADING,
@@ -45,5 +47,6 @@ data class ResultStateData(
     val requiredQuestions: List<Question> = emptyList(),
     val answers: Map<Question, String> = emptyMap(),
     val isPrintable: Boolean = false,
-    val badgeLayout: BadgeLayout? = null
+    val badgeLayout: BadgeLayout? = null,
+    val position: JSONObject? = null
 )

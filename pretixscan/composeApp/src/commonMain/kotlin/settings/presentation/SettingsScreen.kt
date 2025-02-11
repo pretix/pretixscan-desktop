@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import app.navigation.Route
 import app.ui.CustomColor
 import app.ui.FieldSpinner
 import app.ui.asColor
@@ -145,6 +147,19 @@ fun SettingsScreen(
                                 label = stringResource(Res.string.settings_label_version),
                                 description = form.version
                             )
+                        }
+                    }
+                }
+
+                item {
+                    Section(stringResource(Res.string.full_delete)) {
+                        Setting {
+                            Button(onClick = {
+                                viewModel.logout()
+                                navHostController.navigate(Route.Welcome.route)
+                            }) {
+                                Text("Logout")
+                            }
                         }
                     }
                 }

@@ -1,7 +1,7 @@
 package di
 
 import eu.pretix.desktop.cache.*
-import eu.pretix.desktop.printing.PrintingSystem
+import eu.pretix.desktop.printing.*
 import eu.pretix.libpretixsync.SentryInterface
 import eu.pretix.libpretixsync.api.DefaultHttpClientFactory
 import eu.pretix.libpretixsync.api.HttpClientFactory
@@ -72,8 +72,20 @@ actual val platformModules: List<Module>
             factory<FileStorage> {
                 DesktopFileStorage(getUserDataDir())
             }
+            factory<DesktopFileStorage> {
+                get<FileStorage>() as DesktopFileStorage
+            }
             factory<PrinterSource> {
                 PrintingSystem()
+            }
+            factory<Renderer> {
+                Renderer(get(), get())
+            }
+            factory<FontRegistrar> {
+                FontRegistrar()
+            }
+            factory<BadgeFactory> {
+                DesktopBadgeFactory(get(), get(), get(), get(), get())
             }
         }
     )

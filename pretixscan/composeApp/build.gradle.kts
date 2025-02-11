@@ -48,6 +48,7 @@ kotlin {
             implementation(libs.coroutines.swing)
 
             implementation(libs.webcam.driver)
+            implementation(libs.apache.pdfbox)
 
             compileOnly(libs.requery)
             compileOnly(libs.requery.processor)
@@ -57,6 +58,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.coroutines.test)
         }
 
         all {

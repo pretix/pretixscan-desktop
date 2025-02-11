@@ -7,6 +7,6 @@ import settings.presentation.SettingsViewModel
 internal val settingsModule
     get() = module {
         factory {
-            SettingsViewModel(get(), get())
+            SettingsViewModel(get(), get(), get())
         }
     }

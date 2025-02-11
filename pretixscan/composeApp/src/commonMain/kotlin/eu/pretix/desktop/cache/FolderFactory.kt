@@ -25,6 +25,11 @@ internal fun getDatabasePath(): File {
     return dbFile
 }
 
+/**
+ * Returns the user data dir as a [File].
+ *
+ * Note: if the folder doesn't exist, it will be created.
+ */
 internal fun getUserDataDir(): File {
     val dataDir = getUserDataFolder()
     // make sure the path exists so we can later create files in it
