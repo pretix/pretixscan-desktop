@@ -1,4 +1,4 @@
-This is a Kotlin Multiplatform project targeting Desktop.
+This is a Kotlin Multiplatform project targeting Desktop (JVM).
 
 ## Requirements
 

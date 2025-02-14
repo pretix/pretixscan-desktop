@@ -30,7 +30,7 @@ val pretixModules: List<Module>
             factory<PretixApi> {
                 val config = get<AppConfig>()
                 if (!config.isConfigured) {
-                    throw UnsupportedOperationException("Invalid operation: PretixApi can only be used once the device has been initialised.")
+                    throw UnsupportedOperationException("Invalid operation: PretixApi can only be used once the device has been initialised using SetupManager.")
                 }
 
                 val httpFactory = get<HttpClientFactory>()

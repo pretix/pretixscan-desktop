@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import app.sync.SyncRoot
 import eu.pretix.desktop.cache.AppConfig
 import org.koin.compose.koinInject
 import main.presentation.MainScreen
@@ -41,7 +42,9 @@ fun Navigation(
             SetupScreen(navHostController = navHostController)
         }
         composable(route = Route.Main.route) {
-            MainScreen(navHostController = navHostController)
+            SyncRoot(navHostController) {
+                MainScreen(navHostController = navHostController)
+            }
         }
         composable(route = Route.Settings.route) {
             SettingsScreen(navHostController = navHostController)

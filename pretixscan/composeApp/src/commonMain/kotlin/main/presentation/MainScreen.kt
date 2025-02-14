@@ -32,7 +32,11 @@ fun MainScreen(
 
     when (uiState) {
         MainUiState.SelectEvent -> {
-            SelectEventDialog(onSelectEvent = viewModel::selectEvent)
+            SelectEventDialog(onSelectEvent = {
+                coroutineScope.launch {
+                    viewModel.selectEvent(it)
+                }
+            })
         }
 
         MainUiState.SelectCheckInList -> {

@@ -1,5 +1,6 @@
 package di
 
+import app.sync.syncModule
 import eu.pretix.desktop.cache.di.cacheModules
 import main.mainModule
 import org.koin.core.KoinApplication
@@ -13,6 +14,7 @@ fun KoinApplication.initModules() {
     modules(cacheModules)
     modules(pretixModules)
     modules(ticketsModule)
+    modules(syncModule)
     modules(setupModule)
     modules(mainModule)
     modules(webCamModule)

@@ -2,6 +2,7 @@ package settings.presentation
 
 
 import androidx.lifecycle.ViewModel
+import app.sync.SyncRootService
 import app.ui.KeyValueOption
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.AppConfig

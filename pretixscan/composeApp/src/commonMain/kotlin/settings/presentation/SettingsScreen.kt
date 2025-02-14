@@ -156,6 +156,7 @@ fun SettingsScreen(
                         Setting {
                             Button(onClick = {
                                 viewModel.logout()
+                                navHostController.popBackStack()
                                 navHostController.navigate(Route.Welcome.route)
                             }) {
                                 Text("Logout")

@@ -30,8 +30,13 @@ class TicketSearchBarViewModel(
                 emptyList()
             } else {
                 withContext(Dispatchers.IO) {
-                    val result = ticketProvider.search(appConfig.eventSelectionToMap(), it, 1)
-                    result
+                    try {
+                        val result = ticketProvider.search(appConfig.eventSelectionToMap(), it, 1)
+                        result
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                        emptyList()
+                    }
                 }
             }
         }
