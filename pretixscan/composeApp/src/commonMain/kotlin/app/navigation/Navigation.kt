@@ -25,29 +25,29 @@ fun Navigation(
     val appConfig = koinInject<AppConfig>()
     val startDestination: String = if (appConfig.isConfigured) Route.Main.route else Route.Welcome.route
 
-    // setup navigation graph
-    NavHost(
-        navController = navHostController,
-        startDestination = startDestination,
-        enterTransition = { fadeIn() },
-        exitTransition = { fadeOut() },
-        popEnterTransition = { fadeIn() },
-        popExitTransition = { fadeOut() },
-        modifier = modifier.fillMaxSize(),
-    ) {
-        composable(route = Route.Welcome.route) {
-            WelcomeScreen(navHostController = navHostController)
-        }
-        composable(route = Route.Setup.route) {
-            SetupScreen(navHostController = navHostController)
-        }
-        composable(route = Route.Main.route) {
-            SyncRoot(navHostController) {
+    SyncRoot(navHostController) {
+        // setup navigation graph
+        NavHost(
+            navController = navHostController,
+            startDestination = startDestination,
+            enterTransition = { fadeIn() },
+            exitTransition = { fadeOut() },
+            popEnterTransition = { fadeIn() },
+            popExitTransition = { fadeOut() },
+            modifier = modifier.fillMaxSize(),
+        ) {
+            composable(route = Route.Welcome.route) {
+                WelcomeScreen(navHostController = navHostController)
+            }
+            composable(route = Route.Setup.route) {
+                SetupScreen(navHostController = navHostController)
+            }
+            composable(route = Route.Main.route) {
                 MainScreen(navHostController = navHostController)
             }
-        }
-        composable(route = Route.Settings.route) {
-            SettingsScreen(navHostController = navHostController)
+            composable(route = Route.Settings.route) {
+                SettingsScreen(navHostController = navHostController)
+            }
         }
     }
 }

@@ -16,7 +16,8 @@ import settings.data.PrinterSource
 class SettingsViewModel(
     private val appConfig: AppConfig,
     private val printerSource: PrinterSource,
-    private val appCache: AppCache
+    private val appCache: AppCache,
+    private val syncRootService: SyncRootService
 ) : ViewModel() {
 
     private val _form = MutableStateFlow(ConfigurableSettings())
@@ -55,6 +56,7 @@ class SettingsViewModel(
     }
 
     fun logout() {
+        syncRootService.skipFutureSyncs()
         appCache.reset()
         appConfig.resetEventConfig()
     }

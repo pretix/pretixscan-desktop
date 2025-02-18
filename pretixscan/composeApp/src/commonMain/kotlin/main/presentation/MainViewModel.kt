@@ -8,7 +8,6 @@ import eu.pretix.desktop.cache.Version
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.libpretixsync.sqldelight.CheckInList
-import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.flow.*
 import java.util.logging.Logger
 
@@ -30,7 +29,7 @@ class MainViewModel(
                 if (state is MainUiState.ReadyToScan) {
                     syncViewModel.resumeSync()
                 } else {
-                    syncViewModel.pauseSync()
+                    syncViewModel.skipFutureSyncs()
                 }
             }
             .launchIn(viewModelScope)
