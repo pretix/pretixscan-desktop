@@ -38,6 +38,7 @@ jobs:
         run: ./gradlew packageDistributionForCurrentOS
 
       - name: Read version
+        working-directory: ./pretixscan
         run: ./gradlew -q printVersion >> $GITHUB_ENV
 
       # Upload Windows executables and installers
