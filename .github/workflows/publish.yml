@@ -39,6 +39,7 @@ jobs:
 
       - name: Read version
         working-directory: ./pretixscan
+        shell: bash
         run: ./gradlew -q printVersion >> $GITHUB_ENV
 
       # Upload Windows executables and installers
