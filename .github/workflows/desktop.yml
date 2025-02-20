@@ -8,7 +8,7 @@ on:
 jobs:
   publish:
     name: Build
-    runs-on: [macOS-latest]
+    runs-on: [macOS-latest, ubuntu-latest]
     steps:
       - name: Check out code
         uses: actions/checkout@v4
