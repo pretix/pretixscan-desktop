@@ -1,13 +1,11 @@
-name: Build KMP
+name: Build
 on:
   push:
-    # branches:
-    #   - master
   pull_request:
 
 # prevent duplicate runs on the same branch
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -31,6 +29,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Gradle build
+      - name: Package App
         working-directory: ./pretixscan
-        run: ./gradlew build
+        run: ./gradlew packageDistributionForCurrentOS
