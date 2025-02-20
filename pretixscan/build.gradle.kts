@@ -16,3 +16,15 @@ buildscript {
         classpath("net.ltgt.gradle:gradle-apt-plugin:0.5")
     }
 }
+
+/**
+ * Prints value of property "version" to stdout.
+ *
+ * Usage: ./gradlew -q printVersion
+ */
+task("printVersion") {
+    doLast {
+        val version = project.findProperty("version").toString()
+        println("pretixVersion=$version")
+    }
+}
