@@ -8,7 +8,10 @@ on:
 jobs:
   publish:
     name: Build
-    runs-on: [macOS-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Check out code
         uses: actions/checkout@v4
