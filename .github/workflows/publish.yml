@@ -1,4 +1,4 @@
-name: Build
+name: Publish
 on:
   push:
   pull_request:
@@ -32,3 +32,29 @@ jobs:
       - name: Package App
         working-directory: ./pretixscan
         run: ./gradlew packageDistributionForCurrentOS
+
+      # Upload Windows executables and installers
+      - name: Upload Windows Apps
+        if: runner.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows
+          path: |
+            ./pretixscan/composeApp/build/compose/binaries/main/exe/*.exe
+            ./pretixscan/composeApp/build/compose/binaries/main/msi/*.msi
+
+      # Upload Deb package
+      - name: Upload Linux App
+        if: runner.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Linux
+          path: "./pretixscan/composeApp/build/compose/binaries/main/deb/*.deb"
+
+      # Upload MacOS package
+      - name: Upload MacOS App
+        if: runner.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: MacOS
+          path: "./pretixscan/composeApp/build/compose/binaries/main/dmg/*.dmg"
