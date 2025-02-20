@@ -35,7 +35,7 @@ jobs:
 
       # Upload Windows executables and installers
       - name: Upload Windows Apps
-        if: runner.os == 'windows-latest'
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: Windows
@@ -45,7 +45,7 @@ jobs:
 
       # Upload Deb package
       - name: Upload Linux App
-        if: runner.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
           name: Linux
@@ -53,7 +53,7 @@ jobs:
 
       # Upload MacOS package
       - name: Upload MacOS App
-        if: runner.os == 'macos-latest'
+        if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
           name: MacOS
