@@ -1,0 +1,25 @@
+name: Build KMP
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  publish:
+    name: Build
+    runs-on: [macOS-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@ce999babab2de1c4b649dc15f0ee67e6246c994f
+        with:
+          arguments: ${{ matrix.target }}
