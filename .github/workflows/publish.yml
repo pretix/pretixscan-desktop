@@ -1,6 +1,7 @@
 name: Publish
 on:
-  push:
+  release:
+    types: [released, prereleased]
   pull_request:
     branches:
       - master
