@@ -13,12 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import app.navigation.Route
 import kotlinx.coroutines.launch
-import org.koin.compose.viewmodel.koinViewModel
-import tickets.presentation.TicketSearchBar
 import main.presentation.selectevent.SelectEventDialog
 import main.presentation.selectlist.SelectCheckInListDialog
-import tickets.presentation.TicketHandlingDialog
 import main.presentation.toolbar.MainToolbar
+import org.koin.compose.viewmodel.koinViewModel
+import tickets.presentation.TicketHandlingDialog
+import tickets.presentation.TicketSearchBar
 
 @Composable
 @Preview
@@ -29,6 +29,7 @@ fun MainScreen(
     val viewModel = koinViewModel<MainViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+
 
     when (uiState) {
         MainUiState.SelectEvent -> {
@@ -93,4 +94,5 @@ fun MainScreen(
             )
         }
     }
+
 }

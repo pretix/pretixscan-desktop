@@ -1,6 +1,8 @@
 package setup
 
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,6 +17,7 @@ import app.navigation.Route
 import app.ui.CustomColor
 import app.ui.asColor
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -37,7 +40,7 @@ fun SetupScreen(
     var token by remember { mutableStateOf("") }
     val focusRequester = FocusRequester()
 
-    var coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
 
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -49,12 +52,28 @@ fun SetupScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
+            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(stringResource(Res.string.connect_instruction_heading))
                 Text(stringResource(Res.string.connect_instruction_step1), textAlign = TextAlign.Center)
                 Text(stringResource(Res.string.connect_instruction_step2), textAlign = TextAlign.Center)
                 Text(stringResource(Res.string.connect_instruction_step3), textAlign = TextAlign.Center)
             }
+        }
+
+
+        Row(
+            Modifier.fillMaxHeight()
+                .height(56.dp)
+                .padding(horizontal = 16.dp)
+                .weight(2f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.logo_white),
+                contentDescription = "Pretix logo",
+                modifier = Modifier.background(CustomColor.BrandDark.asColor())
+            )
         }
 
         Row(
@@ -141,6 +160,5 @@ fun SetupScreen(
             )
         }
     }
-
 
 }

@@ -13,12 +13,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import app.navigation.Route
+import app.ui.CustomColor
+import app.ui.asColor
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import pretixscan.composeapp.generated.resources.*
-import app.ui.CustomColor
-import app.ui.asColor
 
 @Composable
 @Preview

@@ -9,6 +9,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import app.sync.SyncRoot
+import app.ui.ScreenRoot
+import com.sun.jna.platform.unix.X11.Screen
 import eu.pretix.desktop.cache.AppConfig
 import org.koin.compose.koinInject
 import main.presentation.MainScreen
@@ -37,16 +39,24 @@ fun Navigation(
             modifier = modifier.fillMaxSize(),
         ) {
             composable(route = Route.Welcome.route) {
-                WelcomeScreen(navHostController = navHostController)
+                ScreenRoot {
+                    WelcomeScreen(navHostController = navHostController)
+                }
             }
             composable(route = Route.Setup.route) {
-                SetupScreen(navHostController = navHostController)
+                ScreenRoot {
+                    SetupScreen(navHostController = navHostController)
+                }
             }
             composable(route = Route.Main.route) {
-                MainScreen(navHostController = navHostController)
+                ScreenRoot {
+                    MainScreen(navHostController = navHostController)
+                }
             }
             composable(route = Route.Settings.route) {
-                SettingsScreen(navHostController = navHostController)
+                ScreenRoot {
+                    SettingsScreen(navHostController = navHostController)
+                }
             }
         }
     }
