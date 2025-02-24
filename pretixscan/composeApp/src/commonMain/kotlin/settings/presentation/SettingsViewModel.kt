@@ -30,7 +30,8 @@ class SettingsViewModel(
             badgePrinter = printerSource.selectOption(appConfig.badgePrinterName),
             badgeLayout = printerSource.selectPrinterOrientation(appConfig.badgePrinterOrientation),
             layouts = printerSource.listPrinterOrientations(),
-            printBadges = appConfig.printBadges
+            printBadges = appConfig.printBadges,
+            syncAuto = appConfig.syncAuto
         )
     }
 
@@ -52,6 +53,11 @@ class SettingsViewModel(
 
     suspend fun setPrintBadges(value: Boolean) {
         appConfig.printBadges = value
+        loadSettings()
+    }
+
+    suspend fun setSyncAuto(value: Boolean) {
+        appConfig.syncAuto = value
         loadSettings()
     }
 

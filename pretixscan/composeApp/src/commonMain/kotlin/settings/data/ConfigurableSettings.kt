@@ -8,5 +8,6 @@ data class ConfigurableSettings(
     val printBadges: Boolean = false,
     val badgePrinter: KeyValueOption? = null,
     val badgeLayout: KeyValueOption? = null,
-    val layouts: List<KeyValueOption> = emptyList()
+    val layouts: List<KeyValueOption> = emptyList(),
+    val syncAuto: Boolean = false
 )

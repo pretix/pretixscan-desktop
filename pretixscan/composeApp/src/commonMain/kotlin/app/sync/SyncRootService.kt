@@ -5,24 +5,19 @@ import androidx.lifecycle.viewModelScope
 import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import java.time.LocalDateTime
+import kotlinx.coroutines.flow.*
+import org.koin.core.context.GlobalContext
+import java.util.*
 import java.util.logging.Logger
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.flow.*
-import org.koin.core.context.GlobalContext
 
 /**
  * Coordinates sync across the app.
  *
  *
  */
-class SyncRootService(
-    private val appConfig: AppConfig
-) : ViewModel() {
+class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
     private val _syncState = MutableStateFlow<SyncState>(SyncState.Idle)
     val syncState: StateFlow<SyncState> = _syncState.asStateFlow()
 
@@ -35,6 +30,7 @@ class SyncRootService(
 
     private val log = Logger.getLogger("SyncRootService")
     private var shouldSync: Boolean = false
+    private var mainSyncJob: Job? = null
 
     private fun tickerFlow(period: Duration, initialDelay: Duration = Duration.ZERO) = flow {
         delay(initialDelay)
@@ -45,37 +41,51 @@ class SyncRootService(
     }
 
     init {
-        log.info("Starting a new sync job")
+        log.info("Starting main sync job loop")
         tickerFlow(5.seconds)
             .filter { shouldSync }
             .onEach {
-                log.info("performing a sync")
-                _syncState.value = SyncState.InProgress("")
-                viewModelScope.launch(Dispatchers.IO) {
-                    try {
-                        if (!appConfig.isConfigured) {
-                            log.info("skip sync while logged out")
-                            _syncState.value = SyncState.Idle
-                            return@launch
-                        }
-                        val syncManager = GlobalContext.get().get<SyncManager>()
-                        syncManager.sync(true) {
-                            println("sync progress $it")
-                            runBlocking {
-                                withContext(Dispatchers.Main) {
-                                    _syncState.value = SyncState.InProgress(it)
-                                }
-                            }
-                        }
-                        _syncState.value = SyncState.Success(lastSync = LocalDateTime.now().toString())
-                    } catch (e: Exception) {
-                        log.warning("sync failed: ${e.stackTraceToString()}")
-                        _syncState.value = SyncState.Error(e.localizedMessage ?: "Unknown error")
-                    }
+                mainSyncJob?.cancel()
+                mainSyncJob = viewModelScope.launch(Dispatchers.IO) {
+                    executeSync()
                 }
             }
             .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope) // the returned job is not used, the viewModelScope is responsible for cancellation
+    }
+
+    private fun executeSync(force: Boolean = false) {
+        try {
+            if (!appConfig.isConfigured) {
+                log.info("skip sync while logged out")
+                _syncState.value = SyncState.Idle
+                return
+            }
+            if (!appConfig.syncAuto && !force) {
+                log.info("skip sync, auto-sync disabled")
+                _syncState.value = SyncState.Idle
+                return
+            }
+            log.info("performing a sync")
+            _syncState.value = SyncState.InProgress("")
+            val syncManager = GlobalContext.get().get<SyncManager>()
+            syncManager.sync(force) {
+                runBlocking {
+                    withContext(Dispatchers.Main) {
+                        _syncState.value = SyncState.InProgress(it)
+                    }
+                }
+            }
+            _syncState.value = SyncState.Success(lastSync = Date().time)
+            appConfig.lastFailedSync = 0L
+            appConfig.lastSync = Date().time
+            appConfig.lastDownload = Date().time
+        } catch (e: Exception) {
+            log.warning("sync failed: ${e.stackTraceToString()}")
+            _syncState.value = SyncState.Error(e.localizedMessage ?: "Unknown error")
+            appConfig.lastFailedSync = Date().time
+            appConfig.lastFailedSyncMsg = e.localizedMessage ?: "Unknown error"
+        }
     }
 
     fun onRouteChanged(route: String) {
@@ -115,7 +125,7 @@ class SyncRootService(
                         }
                     }
                 }
-                _minimumSyncState.value = SyncState.Success(lastSync = LocalDateTime.now().toString())
+                _minimumSyncState.value = SyncState.Success(lastSync = Date().time)
                 log.info("skip sync completed")
             } catch (e: Exception) {
                 log.warning("minimal sync failed: ${e.stackTraceToString()}")
@@ -127,11 +137,26 @@ class SyncRootService(
             resumeSync()
         }
     }
+
+    fun forceSync() {
+        log.info("Full sync requested")
+        val shouldResume = skipFutureSyncs()
+        runBlocking {
+            mainSyncJob?.cancel()
+            mainSyncJob = viewModelScope.launch(Dispatchers.IO) {
+                executeSync(true)
+            }
+        }
+        log.info("Full sync completed")
+        if (shouldResume) {
+            resumeSync()
+        }
+    }
 }
 
 sealed class SyncState {
     object Idle : SyncState()
     data class InProgress(val message: String) : SyncState()
-    data class Success(val lastSync: String) : SyncState()
+    data class Success(val lastSync: Long) : SyncState()
     data class Error(val message: String) : SyncState()
 }

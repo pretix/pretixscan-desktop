@@ -59,6 +59,26 @@ fun SettingsScreen(
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
+                item {
+                    Section(stringResource(Res.string.settings_label_sync)) {
+                        Setting {
+                            Column(
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                SettingCheckbox(
+                                    label = stringResource(Res.string.settings_label_auto_sync),
+                                    description = null,
+                                    checked = form.syncAuto,
+                                    onCheckedChange = {
+                                        coroutineScope.launch {
+                                            viewModel.setSyncAuto(it)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
 //                item {
 //                    Section(stringResource(Res.string.settings_label_verification)) {
 //                        Setting {

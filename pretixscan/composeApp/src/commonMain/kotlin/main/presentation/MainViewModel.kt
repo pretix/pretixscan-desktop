@@ -58,6 +58,10 @@ class MainViewModel(
         _uiState.update { MainUiState.SelectEvent }
     }
 
+    fun performFullSync() {
+        syncViewModel.forceSync()
+    }
+
     suspend fun selectEvent(event: RemoteEvent?) {
         if (event == null) {
             // nothing to do

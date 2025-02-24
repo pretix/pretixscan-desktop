@@ -1,5 +1,6 @@
 package main.presentation.toolbar
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -17,16 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.ui.CustomColor
 import app.ui.Logo
+import app.ui.Tooltip
 import app.ui.asColor
 import eu.pretix.desktop.cache.EventSelection
 import main.presentation.MainViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pretixscan.composeapp.generated.resources.Res
-import pretixscan.composeapp.generated.resources.action_label_settings
-import pretixscan.composeapp.generated.resources.ic_settings_white_24dp
-import pretixscan.composeapp.generated.resources.operation_select_event
+import pretixscan.composeapp.generated.resources.*
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainToolbar(
     modifier: Modifier = Modifier,
@@ -55,11 +55,25 @@ fun MainToolbar(
             }
         }
         Spacer(Modifier.weight(1f))
-        IconButton(onClick = onOpenSettings) {
-            Image(
-                painter = painterResource(Res.drawable.ic_settings_white_24dp),
-                contentDescription = stringResource(Res.string.action_label_settings)
-            )
+
+        Tooltip(stringResource(Res.string.action_sync)) {
+            IconButton(onClick = {
+                viewModel.performFullSync()
+            }) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_refresh_white_24dp),
+                    contentDescription = stringResource(Res.string.action_sync)
+                )
+            }
+        }
+
+        Tooltip(stringResource(Res.string.action_label_settings)) {
+            IconButton(onClick = onOpenSettings) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_settings_white_24dp),
+                    contentDescription = stringResource(Res.string.action_label_settings)
+                )
+            }
         }
     }
 }

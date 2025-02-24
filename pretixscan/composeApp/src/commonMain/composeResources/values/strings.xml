@@ -51,8 +51,8 @@
         <item quantity="other">synchronized %d hours ago</item>
     </plurals>
     <plurals name="sync_status_time_days">
-        <item quantity="one">synchronized %d day ago</item>
-        <item quantity="other">synchronized %d days ago</item>
+        <item quantity="one">synchronized %1$d day ago</item>
+        <item quantity="other">synchronized %1$d days ago</item>
     </plurals>
     <string name="sync_status">Synchronization status</string>
     <string name="sync_status_last">Last successful synchronization:</string>

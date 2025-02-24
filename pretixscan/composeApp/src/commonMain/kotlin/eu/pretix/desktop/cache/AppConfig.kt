@@ -38,6 +38,7 @@ class AppConfig(val dataDir: String) : ConfigStore {
 
     private val PREFS_KEY_PRINTBADGES = "prefs_key_print_badges"
     private val PREFS_KEY_SYNC_ORDERS = "sync_orders"
+    private val PREFS_KEY_SYNC_AUTO = "pref_sync_auto"
     private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
     private val PREFS_KEY_DEVICE_KNOWN_INFO = "known_info"
@@ -370,6 +371,13 @@ class AppConfig(val dataDir: String) : ConfigStore {
         get() = prefs.getBoolean(PREFS_KEY_SYNC_ORDERS, true)
         set(value) {
             prefs.putBoolean(PREFS_KEY_SYNC_ORDERS, value)
+            prefs.flush()
+        }
+
+    var syncAuto: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_SYNC_AUTO, true)
+        set(value) {
+            prefs.putBoolean(PREFS_KEY_SYNC_AUTO, value)
             prefs.flush()
         }
 
