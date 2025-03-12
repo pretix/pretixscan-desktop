@@ -85,6 +85,16 @@ compose.desktop {
             modules("java.instrument", "java.sql.rowset", "jdk.unsupported")
             // if distribution size is not important, we can also:
             // alternatively: includeAllModules = true
+
+            macOS {
+                iconFile.set(File("logo/pretix_app_icon.icns"))
+            }
+            windows {
+                iconFile.set(File("logo/pretix_app_icon.ico"))
+            }
+            linux {
+                iconFile.set(File("logo/pretix_app_icon.png"))
+            }
         }
     }
 }
