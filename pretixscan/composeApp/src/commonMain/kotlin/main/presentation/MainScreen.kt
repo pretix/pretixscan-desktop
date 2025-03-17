@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import app.navigation.Route
+import app.ui.ScreenContentRoot
 import kotlinx.coroutines.launch
 import main.presentation.selectevent.SelectEventDialog
 import main.presentation.selectlist.SelectCheckInListDialog
@@ -66,11 +67,14 @@ fun MainScreen(
                     }
                 )
 
-                TicketSearchBar(onSelectedSearchResult = {
-                    coroutineScope.launch {
-                        viewModel.onHandleSearchResult(it)
-                    }
-                })
+                ScreenContentRoot {
+                    TicketSearchBar(onSelectedSearchResult = {
+                        coroutineScope.launch {
+                            viewModel.onHandleSearchResult(it)
+                        }
+                    })
+                }
+
             }
         }
 
@@ -82,11 +86,13 @@ fun MainScreen(
                     eventSelection = data.eventSelection
                 )
 
-                TicketSearchBar(onSelectedSearchResult = {
-                    coroutineScope.launch {
-                        viewModel.onHandleSearchResult(it)
-                    }
-                })
+                ScreenContentRoot {
+                    TicketSearchBar(onSelectedSearchResult = {
+                        coroutineScope.launch {
+                            viewModel.onHandleSearchResult(it)
+                        }
+                    })
+                }
             }
             TicketHandlingDialog(
                 secret = data.secret,

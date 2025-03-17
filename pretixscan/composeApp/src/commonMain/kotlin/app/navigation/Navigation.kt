@@ -10,10 +10,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import app.sync.SyncRoot
 import app.ui.ScreenRoot
-import com.sun.jna.platform.unix.X11.Screen
 import eu.pretix.desktop.cache.AppConfig
-import org.koin.compose.koinInject
 import main.presentation.MainScreen
+import org.koin.compose.koinInject
 import settings.presentation.SettingsScreen
 import setup.SetupScreen
 import welcome.WelcomeScreen

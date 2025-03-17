@@ -19,6 +19,7 @@ import androidx.navigation.NavHostController
 import app.navigation.Route
 import app.ui.CustomColor
 import app.ui.FieldSpinner
+import app.ui.ScreenContentRoot
 import app.ui.asColor
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -46,39 +47,39 @@ fun SettingsScreen(
             navHostController.popBackStack()
         })
 
-
-        Box {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(16.dp),
-                state = state
-            ) {
-                item {
-                    Text(
-                        stringResource(Res.string.action_label_settings),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                }
-                item {
-                    Section(stringResource(Res.string.settings_label_sync)) {
-                        Setting {
-                            Column(
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                SettingCheckbox(
-                                    label = stringResource(Res.string.settings_label_auto_sync),
-                                    description = null,
-                                    checked = form.syncAuto,
-                                    onCheckedChange = {
-                                        coroutineScope.launch {
-                                            viewModel.setSyncAuto(it)
+        ScreenContentRoot {
+            Box {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(16.dp),
+                    state = state
+                ) {
+                    item {
+                        Text(
+                            stringResource(Res.string.action_label_settings),
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                    }
+                    item {
+                        Section(stringResource(Res.string.settings_label_sync)) {
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    SettingCheckbox(
+                                        label = stringResource(Res.string.settings_label_auto_sync),
+                                        description = null,
+                                        checked = form.syncAuto,
+                                        onCheckedChange = {
+                                            coroutineScope.launch {
+                                                viewModel.setSyncAuto(it)
+                                            }
                                         }
-                                    }
-                                )
+                                    )
+                                }
                             }
                         }
                     }
-                }
 //                item {
 //                    Section(stringResource(Res.string.settings_label_verification)) {
 //                        Setting {
@@ -101,97 +102,98 @@ fun SettingsScreen(
 //                    }
 //                }
 
-                item {
-                    Section(stringResource(Res.string.settings_label_badges)) {
-                        Setting {
-                            Column(
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                SettingCheckbox(
-                                    label = stringResource(Res.string.settings_label_print_badges),
-                                    description = null,
-                                    checked = form.printBadges,
-                                    onCheckedChange = {
-                                        coroutineScope.launch {
-                                            viewModel.setPrintBadges(it)
+                    item {
+                        Section(stringResource(Res.string.settings_label_badges)) {
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    SettingCheckbox(
+                                        label = stringResource(Res.string.settings_label_print_badges),
+                                        description = null,
+                                        checked = form.printBadges,
+                                        onCheckedChange = {
+                                            coroutineScope.launch {
+                                                viewModel.setPrintBadges(it)
+                                            }
                                         }
-                                    }
+                                    )
+                                }
+                            }
+
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.settings_printers_badge)
+                                    )
+                                    FieldSpinner(
+                                        selectedValue = form.badgePrinter?.value,
+                                        availableOptions = form.printers,
+                                        onSelect = {
+                                            coroutineScope.launch {
+                                                viewModel.setBadgePrinter(it)
+                                            }
+                                        },
+                                    )
+                                }
+                            }
+
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.settings_label_badge_layout)
+                                    )
+                                    FieldSpinner(
+                                        selectedValue = form.badgeLayout?.value,
+                                        availableOptions = form.layouts,
+                                        onSelect = {
+                                            coroutineScope.launch {
+                                                viewModel.setBadgePrinterLayout(it)
+                                            }
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        Section(stringResource(Res.string.settings_label_about)) {
+                            Setting {
+                                SettingLabel(
+                                    label = stringResource(Res.string.settings_label_version),
+                                    description = form.version
                                 )
                             }
                         }
+                    }
 
-                        Setting {
-                            Column(
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                Text(
-                                    stringResource(Res.string.settings_printers_badge)
-                                )
-                                FieldSpinner(
-                                    selectedValue = form.badgePrinter?.value,
-                                    availableOptions = form.printers,
-                                    onSelect = {
-                                        coroutineScope.launch {
-                                            viewModel.setBadgePrinter(it)
-                                        }
-                                    },
-                                )
-                            }
-                        }
-
-                        Setting {
-                            Column(
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                Text(
-                                    stringResource(Res.string.settings_label_badge_layout)
-                                )
-                                FieldSpinner(
-                                    selectedValue = form.badgeLayout?.value,
-                                    availableOptions = form.layouts,
-                                    onSelect = {
-                                        coroutineScope.launch {
-                                            viewModel.setBadgePrinterLayout(it)
-                                        }
-                                    },
-                                )
+                    item {
+                        Section(stringResource(Res.string.full_delete)) {
+                            Setting {
+                                Button(onClick = {
+                                    viewModel.logout()
+                                    navHostController.popBackStack()
+                                    navHostController.navigate(Route.Welcome.route)
+                                }) {
+                                    Text("Logout")
+                                }
                             }
                         }
                     }
                 }
 
-                item {
-                    Section(stringResource(Res.string.settings_label_about)) {
-                        Setting {
-                            SettingLabel(
-                                label = stringResource(Res.string.settings_label_version),
-                                description = form.version
-                            )
-                        }
-                    }
-                }
-
-                item {
-                    Section(stringResource(Res.string.full_delete)) {
-                        Setting {
-                            Button(onClick = {
-                                viewModel.logout()
-                                navHostController.popBackStack()
-                                navHostController.navigate(Route.Welcome.route)
-                            }) {
-                                Text("Logout")
-                            }
-                        }
-                    }
-                }
-            }
-
-            VerticalScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                adapter = rememberScrollbarAdapter(
-                    scrollState = state
+                VerticalScrollbar(
+                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                    adapter = rememberScrollbarAdapter(
+                        scrollState = state
+                    )
                 )
-            )
+            }
         }
     }
 }

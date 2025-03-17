@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import app.navigation.Route
 import app.ui.CustomColor
+import app.ui.ScreenContentRoot
 import app.ui.asColor
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -41,124 +42,124 @@ fun SetupScreen(
     val focusRequester = FocusRequester()
 
     val coroutineScope = rememberCoroutineScope()
+    ScreenContentRoot {
+        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
 
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-
-        Row(
-            Modifier.fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 16.dp)
-                .weight(1f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(stringResource(Res.string.connect_instruction_heading))
-                Text(stringResource(Res.string.connect_instruction_step1), textAlign = TextAlign.Center)
-                Text(stringResource(Res.string.connect_instruction_step2), textAlign = TextAlign.Center)
-                Text(stringResource(Res.string.connect_instruction_step3), textAlign = TextAlign.Center)
-            }
-        }
-
-
-        Row(
-            Modifier.fillMaxHeight()
-                .height(56.dp)
-                .padding(horizontal = 16.dp)
-                .weight(2f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.logo_white),
-                contentDescription = "Pretix logo",
-                modifier = Modifier.background(CustomColor.BrandDark.asColor())
-            )
-        }
-
-        Row(
-            Modifier.fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 16.dp)
-                .weight(1f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                OutlinedTextField(
-                    value = url,
-                    onValueChange = { url = it },
-                    label = { Text(stringResource(Res.string.hint_url)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = token,
-                    onValueChange = { token = it },
-                    label = { Text(stringResource(Res.string.hint_token)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
-                )
-            }
-        }
-
-        Row(
-            Modifier.fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
-        ) {
-            Button(
-                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColor()),
-                onClick = {
-                    val apiToken = token
-                    val apiUrl = url
-                    coroutineScope.launch {
-                        viewModel.verifyTokenAndSetup(token = apiToken, url = apiUrl)
-                    }
-                },
-                enabled = uiState != SetupUiState.Loading
+            Row(
+                Modifier.fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 16.dp)
+                    .weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Text(stringResource(Res.string.connect_check_token))
-            }
-        }
-
-        when (uiState) {
-            is SetupUiState.Loading -> {
-                // Show a loading indicator
-                CircularProgressIndicator()
-            }
-
-            is SetupUiState.Success -> {
-                LaunchedEffect(Unit) {
-                    navHostController.navigate(route = Route.Main.route)
+                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(stringResource(Res.string.connect_instruction_heading))
+                    Text(stringResource(Res.string.connect_instruction_step1), textAlign = TextAlign.Center)
+                    Text(stringResource(Res.string.connect_instruction_step2), textAlign = TextAlign.Center)
+                    Text(stringResource(Res.string.connect_instruction_step3), textAlign = TextAlign.Center)
                 }
             }
 
-            is SetupUiState.Error -> {
-                // Show error message in a dialog
-                errorMessage = (uiState as SetupUiState.Error).exception
-                showErrorDialog = true
+
+            Row(
+                Modifier.fillMaxHeight()
+                    .height(56.dp)
+                    .padding(horizontal = 16.dp)
+                    .weight(2f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.logo_white),
+                    contentDescription = "Pretix logo",
+                    modifier = Modifier.background(CustomColor.BrandDark.asColor())
+                )
             }
 
-            SetupUiState.Start -> {
-                // Do nothing
-            }
-        }
+            Row(
+                Modifier.fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 16.dp)
+                    .weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    OutlinedTextField(
+                        value = url,
+                        onValueChange = { url = it },
+                        label = { Text(stringResource(Res.string.hint_url)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-        // Show an alert dialog if there's an error
-        if (showErrorDialog) {
-            ErrorDialog(
-                message = errorMessage,
-                onDismiss = {
-                    errorMessage = ""
-                    showErrorDialog = false
-                    viewModel.dismissLoginError()
+                    OutlinedTextField(
+                        value = token,
+                        onValueChange = { token = it },
+                        label = { Text(stringResource(Res.string.hint_token)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+                    )
                 }
-            )
+            }
+
+            Row(
+                Modifier.fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColor()),
+                    onClick = {
+                        val apiToken = token
+                        val apiUrl = url
+                        coroutineScope.launch {
+                            viewModel.verifyTokenAndSetup(token = apiToken, url = apiUrl)
+                        }
+                    },
+                    enabled = uiState != SetupUiState.Loading
+                ) {
+                    Text(stringResource(Res.string.connect_check_token))
+                }
+            }
+
+            when (uiState) {
+                is SetupUiState.Loading -> {
+                    // Show a loading indicator
+                    CircularProgressIndicator()
+                }
+
+                is SetupUiState.Success -> {
+                    LaunchedEffect(Unit) {
+                        navHostController.navigate(route = Route.Main.route)
+                    }
+                }
+
+                is SetupUiState.Error -> {
+                    // Show error message in a dialog
+                    errorMessage = (uiState as SetupUiState.Error).exception
+                    showErrorDialog = true
+                }
+
+                SetupUiState.Start -> {
+                    // Do nothing
+                }
+            }
+
+            // Show an alert dialog if there's an error
+            if (showErrorDialog) {
+                ErrorDialog(
+                    message = errorMessage,
+                    onDismiss = {
+                        errorMessage = ""
+                        showErrorDialog = false
+                        viewModel.dismissLoginError()
+                    }
+                )
+            }
         }
     }
-
 }
