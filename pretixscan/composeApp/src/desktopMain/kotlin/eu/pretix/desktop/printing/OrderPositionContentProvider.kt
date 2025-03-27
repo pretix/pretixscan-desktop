@@ -49,14 +49,14 @@ class OrderPositionContentProvider(
     }
 
     override fun getTextContent(content: String?, text: String?, textI18n: JSONObject?): String {
-        if (content == "other") {
-            return interpolate(text ?: "")
+        return if (content == "other") {
+            interpolate(text ?: "")
         } else if (content == "other_i18n") {
-            return if (textI18n != null) interpolate(i18nToString(textI18n) ?: "") else ""
+            if (textI18n != null) interpolate(i18nToString(textI18n) ?: "") else ""
         } else if (op.has("pdf_data") && op.getJSONObject("pdf_data").has(content)) {
-            return op.getJSONObject("pdf_data").getString(content)
+            op.getJSONObject("pdf_data").getString(content)
         } else {
-            return "???"
+            "???"
         }
     }
 

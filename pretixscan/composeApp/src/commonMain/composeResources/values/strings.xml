@@ -81,7 +81,7 @@
     <string name="setup_error_response">The server returned an invalid response.</string>
     <string name="setup_error_failed">The initial connection test failed.</string>
     <string name="setup_error_permissions">pretixSCAN does not work properly without granting those permissions. Please restart the app.</string>
-    <string name="welcome_text">pretixSCAN is a event entry app that you can use to validate tickets that you sold through pretix.</string>
+    <string name="welcome_text">pretixSCAN is an event entry app that you can use to validate tickets that you sold through pretix.</string>
     <string name="welcome_disclaimer1">I understand that personal data of attendees of my connected events will be stored on this device and I will secure the device properly.</string>
     <string name="cont">CONTINUE</string>
     <string name="hint_url">URL</string>

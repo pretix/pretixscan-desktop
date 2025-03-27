@@ -9,10 +9,10 @@ import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.setup.SetupManager
 import eu.pretix.libpretixsync.sync.FileStorage
 import eu.pretix.libpretixsync.sync.SyncManager
+import eu.pretix.scan.settings.data.PrinterSource
 import org.json.JSONObject
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import settings.data.PrinterSource
 
 actual val platformModules: List<Module>
     get() = listOf(

@@ -1,13 +1,13 @@
 package di
 
-import app.sync.syncModule
+import eu.pretix.desktop.app.sync.syncModule
 import eu.pretix.desktop.cache.di.cacheModules
-import main.mainModule
+import eu.pretix.desktop.webcam.webCamModule
+import eu.pretix.scan.main.mainModule
+import eu.pretix.scan.settings.settingsModule
+import eu.pretix.scan.setup.setupModule
+import eu.pretix.scan.tickets.ticketsModule
 import org.koin.core.KoinApplication
-import settings.settingsModule
-import setup.setupModule
-import tickets.ticketsModule
-import webcam.webCamModule
 
 fun KoinApplication.initModules() {
     modules(platformModules)

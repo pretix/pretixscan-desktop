@@ -1,8 +1,6 @@
 package eu.pretix.desktop.cache
 
-import java.util.Properties
-
-// Helper object to retrive the version property from the gradle configuration
+// Helper object to retrieve the version property from the gradle configuration
 object Version {
     val version: String by lazy {
         // TODO: Obtain the version from build.gradle or properties file

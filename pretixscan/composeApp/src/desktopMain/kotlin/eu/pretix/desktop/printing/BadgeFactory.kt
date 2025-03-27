@@ -5,15 +5,14 @@ import eu.pretix.desktop.cache.DesktopFileStorage
 import eu.pretix.desktop.cache.getUserCacheFolder
 import eu.pretix.desktop.cache.getUserDataFolder
 import eu.pretix.libpretixsync.models.BadgeLayout
+import eu.pretix.scan.settings.data.PrinterSource
 import org.apache.pdfbox.Loader
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.Orientation
 import org.apache.pdfbox.printing.PDFPageable
 import org.apache.pdfbox.printing.PDFPrintable
 import org.apache.pdfbox.printing.Scaling
-
 import org.json.JSONObject
-import settings.data.PrinterSource
 import java.awt.print.Book
 import java.awt.print.PageFormat
 import java.awt.print.PrinterJob

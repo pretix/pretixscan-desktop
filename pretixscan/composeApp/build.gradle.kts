@@ -77,7 +77,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "pretixSCAN"
-            packageVersion = version
+            packageVersion = version.toString()
             vendor = "rami.io GmbH"
             copyright = "pretix.eu, Raphael Michel"
             licenseFile.set(project.rootProject.file("LICENSE"))

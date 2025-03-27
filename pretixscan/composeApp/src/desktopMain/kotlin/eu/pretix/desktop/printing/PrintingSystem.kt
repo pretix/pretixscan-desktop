@@ -1,12 +1,12 @@
 package eu.pretix.desktop.printing
 
-import app.ui.KeyValueOption
+import eu.pretix.desktop.app.ui.KeyValueOption
+import eu.pretix.scan.settings.data.PrinterSource
 import org.jetbrains.compose.resources.getString
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.settings_printer_layout_auto
 import pretixscan.composeapp.generated.resources.settings_printer_layout_landscape
 import pretixscan.composeapp.generated.resources.settings_printer_layout_portrait
-import settings.data.PrinterSource
 import javax.print.DocFlavor
 import javax.print.PrintServiceLookup
 

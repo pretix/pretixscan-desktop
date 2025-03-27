@@ -1,6 +1,6 @@
 package di
 
-import app.DesktopSentryImpl
+import eu.pretix.desktop.app.DesktopSentryImpl
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.libpretixsync.SentryInterface
@@ -12,9 +12,9 @@ import eu.pretix.libpretixsync.check.ProxyCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.setup.EventManager
 import eu.pretix.libpretixsync.sync.FileStorage
+import eu.pretix.scan.tickets.data.PrintLayoutFetcher
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import tickets.data.PrintLayoutFetcher
 
 
 val pretixModules: List<Module>

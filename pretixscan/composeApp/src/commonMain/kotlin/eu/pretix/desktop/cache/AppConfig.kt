@@ -17,6 +17,7 @@ data class EventSelection(
     val dateTo: DateTime?,
 )
 
+@Suppress("PrivatePropertyName")
 class AppConfig(val dataDir: String) : ConfigStore {
     private val prefs = Preferences.userNodeForPackage(AppConfig::class.java)
 
@@ -110,7 +111,7 @@ class AppConfig(val dataDir: String) : ConfigStore {
         prefs.remove(PREFS_KEY_KNOWN_GATE_NAME)
         prefs.remove(PREFS_KEY_KNOWN_GATE_ID)
         prefs.remove(PREFS_KEY_HIDE_NAMES)
-        val f = File(dataDir, PREFS_KEY_LAST_STATUS_DATA + ".json")
+        val f = File(dataDir, "$PREFS_KEY_LAST_STATUS_DATA.json")
         if (f.exists()) {
             f.delete()
         }
@@ -155,7 +156,7 @@ class AppConfig(val dataDir: String) : ConfigStore {
         }
 
     fun eventSelectionToMap(): Map<String, Long> {
-        return eventSelection.map { it.eventSlug to it.checkInList }.toMap()
+        return eventSelection.associate { it.eventSlug to it.checkInList }
     }
 
     override fun isDebug(): Boolean {

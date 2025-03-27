@@ -1,8 +1,9 @@
 package tickets.data
 
+import eu.pretix.scan.tickets.data.EmailValidator
 import kotlin.test.Test
-import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class EmailValidatorTest {
     companion object {
