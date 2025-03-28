@@ -43,11 +43,11 @@ jobs:
         shell: bash
         run: ./gradlew -q printVersion >> $GITHUB_ENV
 
-      - name: Sign Windows Installer
-        if: matrix.os == 'windows-latest'
-        working-directory: ./pretixscan
-        shell: bash
-        run: ./gradlew signWindowsMsi
+      # - name: Sign Windows Installer
+      #   if: matrix.os == 'windows-latest'
+      #   working-directory: ./pretixscan
+      #   shell: bash
+      #   run: ./gradlew signWindowsMsi
 
       # Upload Windows executables and installers
       - name: Upload Windows Apps
