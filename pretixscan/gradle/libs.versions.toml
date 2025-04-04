@@ -57,3 +57,4 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
 app-cash-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+osdetector = { id = "com.google.osdetector", version = "1.7.3" }

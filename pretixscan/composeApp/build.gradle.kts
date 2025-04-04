@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     id("kotlin-kapt")
+    alias(libs.plugins.osdetector)
 }
 
 kotlin {
@@ -60,6 +61,23 @@ kotlin {
             compileOnly(libs.requery.processor)
             implementation(project(":libpretixsync"))
             implementation(project(":libpretixprint"))
+
+
+            // The JavFX toolkit must be included
+            val fxSuffix = when (osdetector.classifier) {
+                "linux-x86_64" -> "linux"
+                "linux-aarch_64" -> "linux-aarch64"
+                "windows-x86_64" -> "win"
+                "osx-x86_64" -> "mac"
+                "osx-aarch_64" -> "mac-aarch64"
+                else -> throw IllegalStateException("Unknown OS: ${osdetector.classifier}")
+            }
+            implementation("org.openjfx:javafx-base:19:${fxSuffix}")
+            implementation("org.openjfx:javafx-graphics:19:${fxSuffix}")
+            implementation("org.openjfx:javafx-controls:19:${fxSuffix}")
+            implementation("org.openjfx:javafx-swing:19:${fxSuffix}")
+            implementation("org.openjfx:javafx-web:19:${fxSuffix}")
+            implementation("org.openjfx:javafx-media:19:${fxSuffix}")
         }
 
         val desktopTest by getting
@@ -107,63 +125,63 @@ compose.desktop {
     }
 }
 
-
-// KMP doesn't support signing on Windows yet https://youtrack.jetbrains.com/issue/CMP-5285
-// Workaround is to create a custom task to do it, inspired by https://gist.github.com/dlozanovic/386e14cbde3fdf5449fde075058becbb
-val signWindowsExe = tasks.register("signWindowsMsi") {
-    group = "signing"
-    description = "Sign Windows executable"
-
-    dependsOn("createDistributable")
-
-    doLast {
-        val exeDir = project.rootDir.resolve("composeApp/build/compose/binaries/main/msi")
-        val targetFile = exeDir.resolve("pretixSCAN-$version.msi")
-
-        if (targetFile.exists()) {
-            project.exec {
-                commandLine(
-                    "chmod", "755",
-                    targetFile.absolutePath
-                )
-                // Capture and print output/errors
-                standardOutput = System.out
-                errorOutput = System.err
-            }
-
-
-            project.exec {
-                commandLine(
-                    "signcode.exe",
-                    "-spc", "authenticode.spc",
-                    "-v", "authenticode.pvk",
-                    "-a", "sha1",
-                    "-$", "commercial",
-                    "-n", "pretixdroid",
-                    "-i", "https://pretix.eu/",
-                    "-t", "http://timestamp.verisign.com/scripts/timstamp.dll",
-                    "-tr", "10",
-                    targetFile.absolutePath
-                )
-
-                // Capture and print output/errors
-                standardOutput = System.out
-                errorOutput = System.err
-            }
-
-            project.exec {
-                commandLine(
-                    "chmod", "555",
-                    targetFile.absolutePath
-                )
-                // Capture and print output/errors
-                standardOutput = System.out
-                errorOutput = System.err
-            }
-
-            println("Signed: ${targetFile.name}")
-        } else {
-            throw GradleException("Warning: File not found - ${targetFile.absolutePath}")
-        }
-    }
-}
+//
+//// KMP doesn't support signing on Windows yet https://youtrack.jetbrains.com/issue/CMP-5285
+//// Workaround is to create a custom task to do it, inspired by https://gist.github.com/dlozanovic/386e14cbde3fdf5449fde075058becbb
+//val signWindowsExe = tasks.register("signWindowsMsi") {
+//    group = "signing"
+//    description = "Sign Windows executable"
+//
+//    dependsOn("createDistributable")
+//
+//    doLast {
+//        val exeDir = project.rootDir.resolve("composeApp/build/compose/binaries/main/msi")
+//        val targetFile = exeDir.resolve("pretixSCAN-$version.msi")
+//
+//        if (targetFile.exists()) {
+//            project.exec {
+//                commandLine(
+//                    "chmod", "755",
+//                    targetFile.absolutePath
+//                )
+//                // Capture and print output/errors
+//                standardOutput = System.out
+//                errorOutput = System.err
+//            }
+//
+//
+//            project.exec {
+//                commandLine(
+//                    "signcode.exe",
+//                    "-spc", "authenticode.spc",
+//                    "-v", "authenticode.pvk",
+//                    "-a", "sha1",
+//                    "-$", "commercial",
+//                    "-n", "pretixdroid",
+//                    "-i", "https://pretix.eu/",
+//                    "-t", "http://timestamp.verisign.com/scripts/timstamp.dll",
+//                    "-tr", "10",
+//                    targetFile.absolutePath
+//                )
+//
+//                // Capture and print output/errors
+//                standardOutput = System.out
+//                errorOutput = System.err
+//            }
+//
+//            project.exec {
+//                commandLine(
+//                    "chmod", "555",
+//                    targetFile.absolutePath
+//                )
+//                // Capture and print output/errors
+//                standardOutput = System.out
+//                errorOutput = System.err
+//            }
+//
+//            println("Signed: ${targetFile.name}")
+//        } else {
+//            throw GradleException("Warning: File not found - ${targetFile.absolutePath}")
+//        }
+//    }
+//}
