@@ -11,7 +11,6 @@ kotlin {
     jvm("desktop")
 
     sourceSets {
-        val desktopMain by getting
 
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -38,6 +37,13 @@ kotlin {
             api(libs.koin.compose)
             api(libs.koin.compose.viewmodel)
         }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.coroutines.test)
+        }
+
+        val desktopMain by getting
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.sqlite)
@@ -56,10 +62,12 @@ kotlin {
             implementation(project(":libpretixprint"))
         }
 
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.coroutines.test)
+        val desktopTest by getting
+        desktopTest.dependencies {
+            implementation(compose.desktop.uiTestJUnit4)
+            implementation(compose.desktop.currentOs)
         }
+        
 
         all {
             languageSettings.optIn("org.koin.core.annotation.KoinExperimentalAPI")
