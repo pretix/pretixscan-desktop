@@ -178,12 +178,9 @@
     <string name="error_no_available_events">No current or future event could be found. Please check the dates and access rights of your events.</string>
     <string name="event_select_calendar">Show calendar</string>
     <string name="connect_instruction_heading">Here's how to connect to your pretix account</string>
-    <string name="connect_instruction_step1">Log in to pretix and open the "Devices" page of your organizer account
-    </string>
+    <string name="connect_instruction_step1">Log in to pretix and open the "Devices" page of your organizer account</string>
     <string name="connect_instruction_step2">Click "Connect a new device" and select a set of events</string>
-    <string name="connect_instruction_step3">Copy over the system address and token and press return. Alternatively,
-        scan the QR code content into the first field.
-    </string>
+    <string name="connect_instruction_step3">Copy over the system address and token and press return. Alternatively, scan the QR code content into the first field.</string>
     <string name="connect_check_token">Connect device</string>
     <string name="setup_grant_camera_permission">Please grant camera permission to use the QR Scanner</string>
     <string-array name="settings_valuelabels_auto_print_badges">

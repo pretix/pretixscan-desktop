@@ -29,7 +29,8 @@ fun Toolbar(
         Logo()
         Spacer(Modifier.weight(1f))
         Button(
-            onClick = onGoBack) {
+            onClick = onGoBack
+        ) {
             Text("Back")
         }
     }

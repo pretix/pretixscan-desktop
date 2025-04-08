@@ -71,11 +71,21 @@ fun SyncRoot(
                     }
 
                     is SyncState.Success -> {
-                        SyncedTimeAgo(statusHelper.isNever(), statusHelper.daysAgo(), statusHelper.hoursAgo(), statusHelper.minutesAgo())
+                        SyncedTimeAgo(
+                            statusHelper.isNever(),
+                            statusHelper.daysAgo(),
+                            statusHelper.hoursAgo(),
+                            statusHelper.minutesAgo()
+                        )
                     }
 
                     SyncState.Idle -> {
-                        SyncedTimeAgo(statusHelper.isNever(), statusHelper.daysAgo(), statusHelper.hoursAgo(), statusHelper.minutesAgo())
+                        SyncedTimeAgo(
+                            statusHelper.isNever(),
+                            statusHelper.daysAgo(),
+                            statusHelper.hoursAgo(),
+                            statusHelper.minutesAgo()
+                        )
                     }
                 }
             }

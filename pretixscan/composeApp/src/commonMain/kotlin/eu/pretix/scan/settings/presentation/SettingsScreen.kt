@@ -17,10 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import eu.pretix.desktop.app.navigation.Route
-import eu.pretix.desktop.app.ui.CustomColor
-import eu.pretix.desktop.app.ui.FieldSpinner
-import eu.pretix.desktop.app.ui.ScreenContentRoot
-import eu.pretix.desktop.app.ui.asColor
+import eu.pretix.desktop.app.ui.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -66,7 +63,7 @@ fun SettingsScreen(
                                 Column(
                                     horizontalAlignment = Alignment.Start
                                 ) {
-                                    SettingCheckbox(
+                                    CheckboxWithLabel(
                                         label = stringResource(Res.string.settings_label_auto_sync),
                                         description = null,
                                         checked = form.syncAuto,
@@ -108,7 +105,7 @@ fun SettingsScreen(
                                 Column(
                                     horizontalAlignment = Alignment.Start
                                 ) {
-                                    SettingCheckbox(
+                                    CheckboxWithLabel(
                                         label = stringResource(Res.string.settings_label_print_badges),
                                         description = null,
                                         checked = form.printBadges,

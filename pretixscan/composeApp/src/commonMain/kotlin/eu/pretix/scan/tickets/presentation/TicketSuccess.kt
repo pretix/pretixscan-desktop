@@ -31,7 +31,8 @@ fun TicketSuccess(modifier: Modifier = Modifier, data: ResultStateData, onPrintB
         modifier = Modifier.background(data.resultState.color()),
     ) {
         if (data.isPrintable) {
-            Row(modifier = Modifier
+            Row(
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {

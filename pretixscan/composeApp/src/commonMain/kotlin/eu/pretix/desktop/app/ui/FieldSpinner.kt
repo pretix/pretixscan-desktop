@@ -19,10 +19,12 @@ import pretixscan.composeapp.generated.resources.choose_option
 
 
 @Composable
-fun FieldSpinner(modifier: Modifier = Modifier,
-                 selectedValue: String?,
-                 availableOptions: List<KeyValueOption>,
-                 onSelect: (KeyValueOption?) -> Unit) {
+fun FieldSpinner(
+    modifier: Modifier = Modifier,
+    selectedValue: String?,
+    availableOptions: List<KeyValueOption>,
+    onSelect: (KeyValueOption?) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
 
     fun lookUpSelectedValue(value: String?): String? {
@@ -40,12 +42,14 @@ fun FieldSpinner(modifier: Modifier = Modifier,
             shape = RectangleShape
         ) {
             Row {
-                Text(lookUpSelectedValue(selectedValue) ?: stringResource(Res.string.choose_option),
-                     maxLines = 1,
-                     overflow = TextOverflow.Ellipsis,
-                     modifier = Modifier
-                         .weight(1f)
-                         .padding(end = 8.dp))
+                Text(
+                    lookUpSelectedValue(selectedValue) ?: stringResource(Res.string.choose_option),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
+                )
                 Icon(
                     Icons.Default.ArrowDropDown,
                     contentDescription = null,

@@ -125,6 +125,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         dateConfig = DateConfig(minDate = it.valid_date_min, maxDate = it.valid_date_max)
                     )
                 }
+
                 QuestionType.H -> {
                     QuestionFormField(
                         it.serverId,
@@ -184,6 +185,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                             field.copy(value = answer)
                         }
                     }
+
                     QuestionType.N -> {
                         if (answer != null && answer.all { it.isDigit() }) {
                             field.copy(value = answer)
@@ -191,6 +193,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                             field
                         }
                     }
+
                     QuestionType.EMAIL -> {
                         if (answer != null && emailValidator.isValidEmail(answer)) {
                             field.copy(value = answer)
@@ -198,6 +201,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                             field
                         }
                     }
+
                     else -> {
                         field.copy(value = answer)
                     }

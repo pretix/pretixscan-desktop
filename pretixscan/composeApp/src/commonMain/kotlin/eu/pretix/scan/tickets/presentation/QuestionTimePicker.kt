@@ -101,11 +101,11 @@ fun QuestionTimePicker(
                             layoutType = TimePickerLayoutType.Horizontal
                         )
 
-                       Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                           Button(onClick = {expanded = false}) {
-                               Text(stringResource(Res.string.ok))
-                           }
-                       }
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            Button(onClick = { expanded = false }) {
+                                Text(stringResource(Res.string.ok))
+                            }
+                        }
                     }
                 }
 

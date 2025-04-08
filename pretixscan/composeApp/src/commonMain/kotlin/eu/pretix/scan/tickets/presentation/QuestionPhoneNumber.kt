@@ -30,7 +30,12 @@ fun QuestionPhoneNumber(
         FieldSpinner(
             modifier = Modifier.weight(1f),
             selectedValue = country.code,
-            availableOptions = Country.entries.map { country -> KeyValueOption("${country.emoji} ${country.name}", country.code) },
+            availableOptions = Country.entries.map { country ->
+                KeyValueOption(
+                    "${country.emoji} ${country.name}",
+                    country.code
+                )
+            },
             onSelect = {
                 if (it == null) {
                     // nothing to do

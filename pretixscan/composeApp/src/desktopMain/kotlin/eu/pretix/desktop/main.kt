@@ -10,6 +10,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.core.context.startKoin
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.app_name
+import java.awt.Dimension
 
 fun main() = application {
     startKoin {
@@ -20,6 +21,7 @@ fun main() = application {
         title = stringResource(Res.string.app_name),
         state = WindowState(placement = WindowPlacement.Maximized)
     ) {
+        window.minimumSize = Dimension(1024, 768)
         Root()
     }
 }

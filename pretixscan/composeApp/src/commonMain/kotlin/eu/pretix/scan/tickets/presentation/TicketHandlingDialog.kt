@@ -31,14 +31,15 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
     }
 
 
-    Dialog(properties = DialogProperties(
-        dismissOnBackPress = true
-    ), onDismissRequest = { onDismiss() }) {
+    Dialog(
+        properties = DialogProperties(
+            dismissOnBackPress = true
+        ), onDismissRequest = { onDismiss() }) {
         // Custom shape, background, and layout for the dialog
         Surface(
             shape = RoundedCornerShape(16.dp),
         ) {
-            when(uiState.resultState) {
+            when (uiState.resultState) {
                 ResultState.EMPTY -> {}
                 ResultState.LOADING -> {
                     Column(
@@ -49,14 +50,17 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                         CircularProgressIndicator()
                     }
                 }
+
                 ResultState.ERROR -> {
                     TicketFailure(data = uiState)
                 }
+
                 ResultState.DIALOG_UNPAID -> UnpaidDialogView(data = uiState, onCancel = onDismiss, onCheckInAnyway = {
                     coroutineScope.launch {
                         viewModel.handleTicket(secret, ignoreUnpaid = true)
                     }
                 })
+
                 ResultState.DIALOG_QUESTIONS -> QuestionsDialogView(
                     data = uiState,
                     onConfirm = { answers ->
@@ -69,7 +73,11 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                         onDismiss()
                     }
                 )
-                ResultState.WARNING -> {Text(uiState.resultText ?: "")}
+
+                ResultState.WARNING -> {
+                    Text(uiState.resultText ?: "")
+                }
+
                 ResultState.SUCCESS -> {
                     TicketSuccess(
                         data = uiState,
@@ -80,7 +88,10 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                         }
                     )
                 }
-                ResultState.SUCCESS_EXIT -> {Text(uiState.resultText ?: "")}
+
+                ResultState.SUCCESS_EXIT -> {
+                    Text(uiState.resultText ?: "")
+                }
             }
         }
     }

@@ -43,8 +43,8 @@ fun MainToolbar(
         Button(
             modifier = Modifier.padding(horizontal = 16.dp),
             onClick = {
-            viewModel.beginEventSelection()
-        }) {
+                viewModel.beginEventSelection()
+            }) {
             Row {
                 Text(eventSelection.eventName)
                 Icon(

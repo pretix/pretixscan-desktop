@@ -144,7 +144,7 @@ fun QuestionDateTimePicker(
                         } else {
                             QuestionDateTimePickerExpansion.DATE
                         }
-                               },
+                    },
                 trailingIcon = {
                     Icon(Icons.Default.DateRange, contentDescription = null)
                 }
@@ -162,7 +162,7 @@ fun QuestionDateTimePicker(
                         } else {
                             QuestionDateTimePickerExpansion.TIME
                         }
-                               },
+                    },
                 trailingIcon = {
                     Icon(Icons.Outlined.DateRange, contentDescription = null)
                 }
@@ -176,6 +176,7 @@ fun QuestionDateTimePicker(
                     state = datePickerState
                 )
             }
+
             QuestionDateTimePickerExpansion.TIME -> {
                 TimePicker(
                     state = timePickerState,

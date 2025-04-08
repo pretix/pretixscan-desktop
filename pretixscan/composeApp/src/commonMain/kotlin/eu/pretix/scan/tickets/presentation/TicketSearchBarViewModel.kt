@@ -26,7 +26,7 @@ class TicketSearchBarViewModel(
             _isSearching.update { true }
         }
         .map {
-            if(it.isBlank()) {
+            if (it.isBlank()) {
                 emptyList()
             } else {
                 withContext(Dispatchers.IO) {
@@ -46,6 +46,7 @@ class TicketSearchBarViewModel(
             SharingStarted.WhileSubscribed(5000),
             emptyList()
         )
+
     fun onSearchTextChange(text: String) {
         _searchText.value = text
     }

@@ -56,6 +56,7 @@ fun QuestionImagePreview(
                 CircularProgressIndicator()
             }
         }
+
         errorMessage != null -> {
             // Show an error message if something went wrong
             Box(
@@ -65,6 +66,7 @@ fun QuestionImagePreview(
                 Text(text = "Error: $errorMessage")
             }
         }
+
         image != null -> {
             // Display the loaded image
             Image(
@@ -79,6 +81,7 @@ fun QuestionImagePreview(
                 contentDescription = null,
             )
         }
+
         else -> {
             // Fallback in case nothing is loaded
             Box(

@@ -29,7 +29,11 @@ class TicketCodeHandler(
     private val layoutFetcher: PrintLayoutFetcher
 ) {
 
-    suspend fun handleScanResult(rawResult: String?, answers: List<Answer>? = null, ignoreUnpaid: Boolean): ResultStateData {
+    suspend fun handleScanResult(
+        rawResult: String?,
+        answers: List<Answer>? = null,
+        ignoreUnpaid: Boolean
+    ): ResultStateData {
         val checkResult = handleScan(rawResult, answers, ignoreUnpaid)
 
         val scannedEvent = calculateScannedEvent(checkResult.eventSlug)
@@ -50,7 +54,8 @@ class TicketCodeHandler(
         val questionValues = v.toMap()
 
         val badgeLayout = layoutFetcher.getForItemAtEvent(checkResult.positionId, checkResult.eventSlug)
-        val canPrintBadge = conf.printBadges && checkResult.scanType != TicketCheckProvider.CheckInType.EXIT && checkResult.position != null && badgeLayout != null
+        val canPrintBadge =
+            conf.printBadges && checkResult.scanType != TicketCheckProvider.CheckInType.EXIT && checkResult.position != null && badgeLayout != null
 
         val resultState = ResultStateData(
             resultState = checkResult.resultState(),
@@ -80,7 +85,11 @@ class TicketCodeHandler(
     suspend fun handleScan(rawResult: String?, ignoreUnpaid: Boolean): TicketCheckProvider.CheckResult =
         handleScan(rawResult, null, ignoreUnpaid)
 
-    suspend fun handleScan(rawResult: String?, answers: List<Answer>?, ignoreUnpaid: Boolean): TicketCheckProvider.CheckResult {
+    suspend fun handleScan(
+        rawResult: String?,
+        answers: List<Answer>?,
+        ignoreUnpaid: Boolean
+    ): TicketCheckProvider.CheckResult {
         if (rawResult.isNullOrEmpty()) {
             connectivityHelper.recordError()
             return TicketCheckProvider.CheckResult(
@@ -117,7 +126,7 @@ class TicketCodeHandler(
                 scanType,
                 allowQuestions = allowQuestions
             )
-            
+
             println("Check result type: ${checkResult.type}")
 
             if (checkProvider is OnlineCheckProvider) {
@@ -282,6 +291,7 @@ fun TicketCheckProvider.CheckResult.formattedSeat(): String? {
     }
     return null
 }
+
 fun TicketCheckProvider.CheckResult.formattedAnswers(): AnnotatedString? {
     val answers = shownAnswers
     if (scanType != TicketCheckProvider.CheckInType.EXIT && !answers.isNullOrEmpty()) {

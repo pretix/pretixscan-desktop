@@ -6,7 +6,8 @@ import java.util.regex.Pattern
 class EmailValidator {
     // Same validation as django/core/validators.py
     val DOT_ATOM = "^[-!#\\$%&'*+/=?^_`{}|~0-9A-Z]+(\\.[-!#\\$%&'*+/=?^_`{}|~0-9A-Z]+)*\\Z"
-    val QUOTED_STRING = "^\"([\\001-\\010\\013\\014\\016-\\037!#-\\[\\]-\\0177]|\\\\[\\001-\\011\\013\\014\\016-\\0177])*\"\\Z"
+    val QUOTED_STRING =
+        "^\"([\\001-\\010\\013\\014\\016-\\037!#-\\[\\]-\\0177]|\\\\[\\001-\\011\\013\\014\\016-\\0177])*\"\\Z"
     val USER_REGEX = Pattern.compile("($DOT_ATOM|$QUOTED_STRING)", Pattern.CASE_INSENSITIVE)
     val DOMAIN_REGEX = Pattern.compile(
         // max length for domain name labels is 63 characters per RFC 1034

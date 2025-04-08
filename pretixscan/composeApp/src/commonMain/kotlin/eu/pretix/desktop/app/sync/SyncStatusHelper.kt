@@ -17,11 +17,12 @@ class SyncStatusHelper(private val appConfig: AppConfig) {
     }
 
     fun sinceLastDownload(): Long {
-       return Date().time - appConfig.lastDownload
+        return Date().time - appConfig.lastDownload
     }
 
     fun isNever(): Boolean {
-        return sinceLastDownload() == 0L
+        // it appears "never" sometimes returns as 20186
+        return sinceLastDownload() == 0L || (sinceLastDownload() / (24 * 3600 * 1000)).toInt() == 20186
     }
 
     fun isDaysAgo(): Boolean {

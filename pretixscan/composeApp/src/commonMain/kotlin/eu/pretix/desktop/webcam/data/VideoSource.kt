@@ -129,14 +129,14 @@ class DefaultVideoSource : VideoSource {
     }
 }
 
- fun cropToAspectRatio(
-            image: BufferedImage,
-            targetAspectRatio: Double
-        ): BufferedImage {
-            val width = image.width
-            val height = image.height
+fun cropToAspectRatio(
+    image: BufferedImage,
+    targetAspectRatio: Double
+): BufferedImage {
+    val width = image.width
+    val height = image.height
 
-            val cropHeight = height // not rotating the image
-            val cropWidth = (height * targetAspectRatio).toInt()
-            return image.getSubimage((width - cropWidth) / 2, 0, cropWidth, cropHeight)
-        }
+    val cropHeight = height // not rotating the image
+    val cropWidth = (height * targetAspectRatio).toInt()
+    return image.getSubimage((width - cropWidth) / 2, 0, cropWidth, cropHeight)
+}

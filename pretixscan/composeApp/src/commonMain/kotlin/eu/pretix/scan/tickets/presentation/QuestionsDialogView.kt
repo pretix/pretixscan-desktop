@@ -243,6 +243,7 @@ fun QuestionsDialogView(
                                 )
                             }
                         }
+
                         QuestionType.W -> {
                             Column(
                                 horizontalAlignment = Alignment.Start

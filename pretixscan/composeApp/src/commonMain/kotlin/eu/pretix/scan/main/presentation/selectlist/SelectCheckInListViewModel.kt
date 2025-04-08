@@ -30,7 +30,8 @@ class SelectCheckInListViewModel(
             _uiState.value = SelectCheckInListUiState.Loading
             try {
                 val eventSlug = appConfig.eventSlug!!
-                val lists: List<CheckInList> = appCache.db.checkInListQueries.selectByEventSlug(eventSlug).executeAsList()
+                val lists: List<CheckInList> =
+                    appCache.db.checkInListQueries.selectByEventSlug(eventSlug).executeAsList()
 
                 log.info("Found ${lists.size} available lists for selection.")
                 if (lists.isEmpty()) {

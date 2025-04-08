@@ -5,9 +5,9 @@ import io.requery.Persistable
 import io.requery.sql.EntityDataStore
 
 /**
- Local application cache for offline data persistence.
+Local application cache for offline data persistence.
 
- Note: the naming of the fields `data` and `db` is aligned with the android implementation [eu.pretix.pretixscan.droid.PretixScan] to facilitate re-use of code snippets.
+Note: the naming of the fields `data` and `db` is aligned with the android implementation [eu.pretix.pretixscan.droid.PretixScan] to facilitate re-use of code snippets.
  */
 class AppCache(val cacheFactory: LocalCacheFactory) {
     private var _data: EntityDataStore<Persistable>? = null

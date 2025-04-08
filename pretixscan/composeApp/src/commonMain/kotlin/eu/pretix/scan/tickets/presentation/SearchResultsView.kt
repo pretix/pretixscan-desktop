@@ -43,22 +43,22 @@ fun SearchResultsView(
 
         LazyColumn(
             Modifier
-            .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp)
-            .onPreviewKeyEvent {
-                if (searchSuggestions.isEmpty()) {
-                    // nothing to do
-                    false
-                } else if (it.key == Key.DirectionDown) {
-                    focusManager.moveFocus(FocusDirection.Next)
-                    true
-                } else if (it.key == Key.DirectionUp) {
-                    focusManager.moveFocus(FocusDirection.Previous)
-                    true
-                } else {
-                    false
-                }
-            }, state
+                .fillMaxSize()
+                .padding(start = 16.dp, end = 16.dp)
+                .onPreviewKeyEvent {
+                    if (searchSuggestions.isEmpty()) {
+                        // nothing to do
+                        false
+                    } else if (it.key == Key.DirectionDown) {
+                        focusManager.moveFocus(FocusDirection.Next)
+                        true
+                    } else if (it.key == Key.DirectionUp) {
+                        focusManager.moveFocus(FocusDirection.Previous)
+                        true
+                    } else {
+                        false
+                    }
+                }, state
         ) {
             itemsIndexed(searchSuggestions) { index, item ->
                 FocusableRowItem(index, item, onSelectedSearchResult, onFocused = {

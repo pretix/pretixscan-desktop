@@ -2,7 +2,7 @@ package eu.pretix.scan.tickets.data
 
 import eu.pretix.libpretixsync.sync.SyncManager
 
-class ConnectivityHelper: SyncManager.CheckConnectivityFeedback {
+class ConnectivityHelper : SyncManager.CheckConnectivityFeedback {
     override fun recordError() {
         println("TODO: implement recording this error.")
     }

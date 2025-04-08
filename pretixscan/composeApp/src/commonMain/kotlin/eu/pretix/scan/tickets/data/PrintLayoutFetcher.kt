@@ -42,7 +42,7 @@ class PrintLayoutFetcher(private val appCache: AppCache) {
             return appCache.db.badgeLayoutQueries.selectById(layoutId).executeAsOne().toModel()
         }
 
-        return appCache.db.badgeLayoutQueries.selectDefaultForEventSlug(slug).executeAsOneOrNull()?.toModel() ?:
-        BadgeLayout.defaultWithLayout("{\"layout\": [{\"type\":\"textarea\",\"left\":\"13.09\",\"bottom\":\"49.73\",\"fontsize\":\"23.6\",\"color\":[0,0,0,1],\"fontfamily\":\"Open Sans\",\"bold\":true,\"italic\":false,\"width\":\"121.83\",\"content\":\"attendee_name\",\"text\":\"Max Mustermann\",\"align\":\"center\"}]}")
+        return appCache.db.badgeLayoutQueries.selectDefaultForEventSlug(slug).executeAsOneOrNull()?.toModel()
+            ?: BadgeLayout.defaultWithLayout("{\"layout\": [{\"type\":\"textarea\",\"left\":\"13.09\",\"bottom\":\"49.73\",\"fontsize\":\"23.6\",\"color\":[0,0,0,1],\"fontfamily\":\"Open Sans\",\"bold\":true,\"italic\":false,\"width\":\"121.83\",\"content\":\"attendee_name\",\"text\":\"Max Mustermann\",\"align\":\"center\"}]}")
     }
 }
