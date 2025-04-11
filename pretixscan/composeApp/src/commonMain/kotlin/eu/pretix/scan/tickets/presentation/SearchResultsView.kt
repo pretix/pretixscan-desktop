@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalFocusManager
@@ -25,6 +26,7 @@ import eu.pretix.desktop.app.ui.CustomColor
 import eu.pretix.desktop.app.ui.asColor
 import eu.pretix.desktop.app.ui.modifiers.bottomBorder
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import pretixscan.composeapp.generated.resources.*
 
@@ -90,13 +92,24 @@ fun RowItem(
         Spacer(Modifier.height(8.dp))
         Text(item.secret ?: "-", style = MaterialTheme.typography.bodyMedium)
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text(item.ticketName(), style = MaterialTheme.typography.bodyLarge)
+            Column(horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Top) {
+                Text(item.ticketName(), style = MaterialTheme.typography.bodyLarge)
+                Text(item.orderCodeAndPositionId() ?: "", style = MaterialTheme.typography.bodyLarge)
+            }
             Spacer(
                 modifier = Modifier.weight(1f)
             )
-            Text(item.ticketStatus(), style = MaterialTheme.typography.bodyLarge, color = item.ticketStatusColor())
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Top) {
+                Text(item.ticketStatus(), style = MaterialTheme.typography.bodyLarge, color = item.ticketStatusColor())
+                if (item.isRequireAttention) {
+                    Image(
+                        painter = painterResource(Res.drawable.ic_warning_white_24dp),
+                        contentDescription = stringResource(Res.string.ticket_attention),
+                        colorFilter = ColorFilter.tint(item.ticketStatusColor()),
+                    )
+                }
+            }
         }
-        Text(item.orderCode ?: "-", style = MaterialTheme.typography.bodyLarge)
         Spacer(Modifier.height(8.dp))
     }
 }
@@ -177,7 +190,6 @@ fun TicketCheckProvider.SearchResult.ticketStatus(): String {
         null -> TODO()
     }
 }
-
 
 fun TicketCheckProvider.SearchResult.ticketName(): String {
     if (this.variation?.isNotBlank() == true) {

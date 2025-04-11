@@ -36,7 +36,7 @@ fun SyncRoot(
     }
 
     val showMainSyncProgress by viewModel.showMainSyncProgress.collectAsState()
-    print("Current sync state: $syncState")
+    println("Current sync state: $syncState")
 
     Box(Modifier.fillMaxSize()) {
         // render child content
