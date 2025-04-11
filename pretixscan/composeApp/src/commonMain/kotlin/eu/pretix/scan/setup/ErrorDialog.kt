@@ -11,6 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import org.jetbrains.compose.resources.stringResource
+import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.action_label_ok
 
 @Composable
 fun ErrorDialog(
@@ -31,7 +34,7 @@ fun ErrorDialog(
                 Text(text = message, style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = onDismiss) {
-                    Text("OK")
+                    Text(stringResource(Res.string.action_label_ok))
                 }
             }
         }
