@@ -9,7 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import eu.pretix.desktop.app.navigation.Route
 import eu.pretix.desktop.app.ui.ScreenContentRoot
@@ -25,7 +24,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @Preview
 fun MainScreen(
     navHostController: NavHostController,
-    modifier: Modifier = Modifier,
 ) {
     val viewModel = koinViewModel<MainViewModel>()
     val uiState by viewModel.uiState.collectAsState()

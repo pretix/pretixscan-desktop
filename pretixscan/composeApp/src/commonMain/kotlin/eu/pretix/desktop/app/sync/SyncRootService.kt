@@ -1,5 +1,6 @@
 package eu.pretix.desktop.app.sync
 
+import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import eu.pretix.desktop.cache.AppConfig
@@ -13,21 +14,20 @@ import kotlin.time.Duration.Companion.seconds
 
 /**
  * Coordinates sync across the app.
- *
- *
  */
 class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
+    private val log = Logger.getLogger("SyncRootService")
+
     private val _syncState = MutableStateFlow<SyncState>(SyncState.Idle)
     val syncState: StateFlow<SyncState> = _syncState.asStateFlow()
 
     private val _minimumSyncState = MutableStateFlow<SyncState>(SyncState.Idle)
-    val minimumSyncState: StateFlow<SyncState> = _syncState.asStateFlow()
+    val minimumSyncState: StateFlow<SyncState> = _minimumSyncState.asStateFlow()
 
 
     private val _showMainSyncProgress = MutableStateFlow(false)
     val showMainSyncProgress: StateFlow<Boolean> = _showMainSyncProgress.asStateFlow()
 
-    private val log = Logger.getLogger("SyncRootService")
     private var shouldSync: Boolean = false
     private var mainSyncJob: Job? = null
 
@@ -158,4 +158,8 @@ sealed class SyncState {
     data class InProgress(val message: String) : SyncState()
     data class Success(val lastSync: Long) : SyncState()
     data class Error(val message: String) : SyncState()
+}
+
+val LocalSyncRootService = compositionLocalOf<SyncRootService> {
+    error("No SyncRootService found! Make sure to provide it in SyncRoot.")
 }
