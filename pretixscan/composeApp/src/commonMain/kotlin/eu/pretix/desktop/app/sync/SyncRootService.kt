@@ -7,7 +7,6 @@ import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.koin.core.context.GlobalContext
-import java.util.*
 import java.util.logging.Logger
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -54,7 +53,7 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
             .launchIn(viewModelScope) // the returned job is not used, the viewModelScope is responsible for cancellation
     }
 
-    private fun executeSync(force: Boolean = false) {
+    private fun executeSync(force: Boolean = false, nowMillis: Long = System.currentTimeMillis()) {
         try {
             if (!appConfig.isConfigured) {
                 log.info("skip sync while logged out")
@@ -76,14 +75,14 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
                     }
                 }
             }
-            _syncState.value = SyncState.Success(lastSync = Date().time)
+            _syncState.value = SyncState.Success(lastSync = nowMillis)
             appConfig.lastFailedSync = 0L
-            appConfig.lastSync = Date().time
-            appConfig.lastDownload = Date().time
+            appConfig.lastSync = nowMillis
+            appConfig.lastDownload = nowMillis
         } catch (e: Exception) {
             log.warning("sync failed: ${e.stackTraceToString()}")
             _syncState.value = SyncState.Error(e.localizedMessage ?: "Unknown error")
-            appConfig.lastFailedSync = Date().time
+            appConfig.lastFailedSync = nowMillis
             appConfig.lastFailedSyncMsg = e.localizedMessage ?: "Unknown error"
         }
     }
@@ -105,7 +104,7 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
         shouldSync = true
     }
 
-    suspend fun minimalSync() {
+    suspend fun minimalSync(nowMillis: Long = System.currentTimeMillis()) {
         log.info("Running a minimal sync")
         val shouldResume = skipFutureSyncs()
         _minimumSyncState.value = SyncState.InProgress("")
@@ -125,7 +124,7 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
                         }
                     }
                 }
-                _minimumSyncState.value = SyncState.Success(lastSync = Date().time)
+                _minimumSyncState.value = SyncState.Success(lastSync = nowMillis)
                 log.info("skip sync completed")
             } catch (e: Exception) {
                 log.warning("minimal sync failed: ${e.stackTraceToString()}")
@@ -138,13 +137,13 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
         }
     }
 
-    fun forceSync() {
+    fun forceSync(nowMillis: Long = System.currentTimeMillis()) {
         log.info("Full sync requested")
         val shouldResume = skipFutureSyncs()
         runBlocking {
             mainSyncJob?.cancel()
             mainSyncJob = viewModelScope.launch(Dispatchers.IO) {
-                executeSync(true)
+                executeSync(true, nowMillis)
             }
         }
         log.info("Full sync completed")

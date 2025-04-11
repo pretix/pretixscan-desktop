@@ -4,25 +4,24 @@ import androidx.compose.ui.graphics.Color
 import eu.pretix.desktop.app.ui.CustomColor
 import eu.pretix.desktop.app.ui.asColor
 import eu.pretix.desktop.cache.AppConfig
-import java.util.*
 
 class SyncStatusHelper(private val appConfig: AppConfig) {
 
-    fun getColor(): Color {
-        if (appConfig.lastFailedSync > appConfig.lastSync || System.currentTimeMillis() - appConfig.lastDownload > 5 * 60 * 1000) {
+    fun getColor(nowMillis: Long = System.currentTimeMillis()): Color {
+        if (appConfig.lastFailedSync > appConfig.lastSync || nowMillis - appConfig.lastDownload > 5 * 60 * 1000) {
             return CustomColor.BrandRed.asColor()
         }
 
         return CustomColor.BrandGreen.asColor()
     }
 
-    fun sinceLastDownload(): Long {
-        return Date().time - appConfig.lastDownload
+    fun sinceLastDownload(nowMillis: Long = System.currentTimeMillis()): Long {
+        return nowMillis - appConfig.lastDownload
     }
 
     fun isNever(): Boolean {
         // it appears "never" sometimes returns as 20186
-        return sinceLastDownload() == 0L || (sinceLastDownload() / (24 * 3600 * 1000)).toInt() == 20186
+        return appConfig.lastDownload == 0L || sinceLastDownload() == 0L
     }
 
     fun isDaysAgo(): Boolean {
