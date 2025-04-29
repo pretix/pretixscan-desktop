@@ -21,6 +21,9 @@ class MainViewModel(
     private val _uiState = MutableStateFlow<MainUiState<MainUiStateData>>(MainUiState.Loading)
     val uiState: StateFlow<MainUiState<MainUiStateData>> = _uiState
 
+    private val _scanType = MutableStateFlow(appConfig.scanType)
+    val scanType: StateFlow<String> = _scanType
+
     init {
         println("Welcome to app version ${Version.version}. Current scan type is ${appConfig.scanType}.")
 
@@ -52,6 +55,9 @@ class MainViewModel(
                 MainUiStateData(eventSelection = selection)
             )
         }
+        _scanType.update {
+            appConfig.scanType
+        }
     }
 
     fun beginEventSelection() {
@@ -60,6 +66,13 @@ class MainViewModel(
 
     fun performFullSync() {
         syncViewModel.forceSync()
+    }
+
+    fun changeScanType(type: String) {
+        appConfig.scanType = type
+        _scanType.update {
+            type
+        }
     }
 
     suspend fun selectEvent(event: RemoteEvent?) {
