@@ -3,6 +3,7 @@ package eu.pretix.scan.main.presentation.toolbar
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import eu.pretix.desktop.app.ui.CustomColor
@@ -130,7 +132,7 @@ fun ScanTypeToggle(isEntry: Boolean, onChangeScanType: (String) -> Unit) {
                             Res.string.scantype_exit
                     ),
                     color = CustomColor.BrandDark.asColor(),
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier.alignByBaseline().padding(start = 4.dp, bottom = 2.dp).align(Alignment.CenterVertically)
                 )
             }
         }
