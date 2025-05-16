@@ -1,35 +1,33 @@
 name: Build
-
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+
+# prevent duplicate runs on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build on ${{ matrix.os }}
+  publish:
+    name: Build
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          submodules: true # needed for libpretixsync and libpretixprint
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v4
-      with:
-        java-version: '11'
-        distribution: 'adopt'
-        cache: 'gradle'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-    - name: Build with Gradle
-      working-directory: pretixscan
-      run: TERM=dumb ./gradlew clean check test build
+      - name: Gradle build
+        working-directory: ./pretixscan
+        run: ./gradlew :composeApp:build
