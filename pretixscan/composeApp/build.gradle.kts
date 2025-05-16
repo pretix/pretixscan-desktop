@@ -51,11 +51,11 @@ kotlin {
             implementation(libs.appdirs)
             implementation(libs.sqldelight.jvm)
             implementation(libs.androidx.lifecycle.runtime.desktop)
-            implementation(libs.coroutines.jvm)
             implementation(libs.coroutines.swing)
 
             implementation(libs.webcam.driver)
             implementation(libs.apache.pdfbox)
+            implementation("org.jetbrains.compose.material:material-icons-core:1.7.3")
 
             compileOnly(libs.requery)
             compileOnly(libs.requery.processor)
@@ -103,7 +103,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "pretixSCAN"
-            packageVersion = version.toString()
+            packageVersion = version
             vendor = "rami.io GmbH"
             copyright = "pretix.eu, Raphael Michel"
             licenseFile.set(project.rootProject.file("LICENSE"))

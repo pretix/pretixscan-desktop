@@ -75,11 +75,13 @@ class DesktopBadgeFactory(
 
         if (orientation == "Auto") {
             log.info("Printing with automatic orientation")
-            printNewWay(document, attributes, job)
+            updateJobNewWay(document, attributes, job)
         } else {
             log.info("Printing with user selected orientation (old way)")
-            printOldWay(orientation, job, document, attributes)
+            updateJobOldWay(orientation, job, document, attributes)
         }
+
+        job.jobName = "pretixSCAN badge"
 
         log.info("Sending to printer...")
         try {
@@ -91,7 +93,7 @@ class DesktopBadgeFactory(
         log.info("Printing done.")
     }
 
-    private fun printOldWay(
+    private fun updateJobOldWay(
         orientation: String,
         job: PrinterJob,
         document: PDDocument,
@@ -111,13 +113,13 @@ class DesktopBadgeFactory(
         return job
     }
 
-    private fun printNewWay(
+    private fun updateJobNewWay(
         document: PDDocument,
         attributes: HashPrintRequestAttributeSet,
         job: PrinterJob
     ): PrinterJob {
         val book = Book()
-        for (p in document.pages) {
+        document.pages.forEach { p ->
             val rect = document.getPage(0).mediaBox
             val widthPoints = abs(rect.upperRightX - rect.lowerLeftX)
             val heightPoints = abs(rect.lowerLeftY - rect.upperRightY)

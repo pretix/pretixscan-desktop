@@ -14,13 +14,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import eu.pretix.scan.tickets.data.ResultState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Preview
 @Composable
-fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismiss: () -> Unit) {
+fun TicketHandlingDialog(secret: String?, onDismiss: () -> Unit) {
 
     val viewModel = koinViewModel<TicketHandlingDialogViewModel>()
     val uiState by viewModel.uiState.collectAsState()
@@ -82,7 +84,7 @@ fun TicketHandlingDialog(modifier: Modifier = Modifier, secret: String?, onDismi
                     TicketSuccess(
                         data = uiState,
                         onPrintBadges = {
-                            coroutineScope.launch {
+                            CoroutineScope(Dispatchers.IO).launch {
                                 viewModel.printBadges()
                             }
                         }
