@@ -1,5 +1,6 @@
 package eu.pretix.scan.tickets.presentation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -27,6 +28,7 @@ import eu.pretix.desktop.webcam.presentation.WebCam
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.scan.tickets.data.ResultStateData
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -36,7 +38,6 @@ import pretixscan.composeapp.generated.resources.*
 @Preview
 @Composable
 fun QuestionsDialogView(
-    modifier: Modifier = Modifier,
     data: ResultStateData,
     onConfirm: (List<Answer>) -> Unit,
     onCancel: () -> Unit
@@ -75,6 +76,23 @@ fun QuestionsDialogView(
                         Spacer(modifier = Modifier.weight(1.0f))
 
                         Text(data.orderCodeAndPositionId ?: "")
+                    }
+
+                    if (data.attention) {
+                        Row(
+                            modifier = Modifier
+                                .background(CustomColor.BrandBlue.asColor())
+                                .fillMaxWidth()
+                                .padding(PaddingValues(16.dp)),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(stringResource(Res.string.ticket_attention))
+                            Image(
+                                painter = painterResource(Res.drawable.ic_warning_white_24dp),
+                                contentDescription = stringResource(Res.string.ticket_attention),
+                            )
+                        }
                     }
                 }
             }

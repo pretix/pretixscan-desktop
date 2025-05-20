@@ -9,15 +9,13 @@ import androidx.compose.ui.graphics.Color
 
 sealed class CustomColor(val hex: String) {
     data object BrandDark : CustomColor("#281333")
+
     data object BrandLight : CustomColor("#3B1C4A")
     data object BrandGreen : CustomColor("#5CB85C")
-
     data object BrandRed : CustomColor("#D36060")
-
     data object BrandOrange : CustomColor("#FFB419")
-
+    data object BrandBlue : CustomColor("#5F9CD4")
     data object White : CustomColor("#FFFFFF")
-
     data object BrandLightGray : CustomColor("#cccccc")
 }
 
