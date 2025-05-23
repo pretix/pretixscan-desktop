@@ -1,4 +1,4 @@
-package di
+package eu.pretix
 
 import eu.pretix.desktop.app.DesktopSentryImpl
 import eu.pretix.desktop.cache.AppCache

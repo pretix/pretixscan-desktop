@@ -1,5 +1,6 @@
-package di
+package eu.pretix
 
+import di.platformModules
 import eu.pretix.desktop.app.sync.syncModule
 import eu.pretix.desktop.cache.di.cacheModules
 import eu.pretix.desktop.webcam.webCamModule

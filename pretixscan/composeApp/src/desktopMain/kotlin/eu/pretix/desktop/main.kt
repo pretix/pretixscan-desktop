@@ -4,7 +4,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import di.initModules
+import eu.pretix.initModules
 import eu.pretix.desktop.app.Root
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.context.startKoin
