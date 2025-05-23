@@ -1,9 +1,9 @@
 [versions]
-compose-plugin = "1.8.0"
+compose-plugin = "1.8.1"
 junit = "4.13.2"
-kotlin = "2.1.20"
-androidx-lifecycle = "2.8.4"
-androidx-navigation = "2.8.0-alpha13"
+kotlin = "2.1.21"
+androidx-lifecycle = "2.9.0"
+androidx-navigation = "2.9.0-beta01"
 koin = "4.0.4"
 koin-compose = "4.0.4"
 appdirs = "1.2.2"
