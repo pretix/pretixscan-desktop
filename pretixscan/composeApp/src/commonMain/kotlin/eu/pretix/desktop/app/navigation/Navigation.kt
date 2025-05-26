@@ -14,6 +14,7 @@ import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.scan.main.presentation.MainScreen
 import eu.pretix.scan.settings.presentation.SettingsScreen
 import eu.pretix.scan.setup.SetupScreen
+import eu.pretix.scan.status.presentation.StatusScreen
 import eu.pretix.scan.welcome.WelcomeScreen
 import org.koin.compose.koinInject
 
@@ -55,6 +56,11 @@ fun Navigation(
             composable(route = Route.Settings.route) {
                 ScreenRoot {
                     SettingsScreen(navHostController = navHostController)
+                }
+            }
+            composable(route = Route.EventStats.route) {
+                ScreenRoot {
+                    StatusScreen(navHostController = navHostController)
                 }
             }
         }

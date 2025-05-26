@@ -7,6 +7,7 @@ import eu.pretix.desktop.webcam.webCamModule
 import eu.pretix.scan.main.mainModule
 import eu.pretix.scan.settings.settingsModule
 import eu.pretix.scan.setup.setupModule
+import eu.pretix.scan.status.statusModule
 import eu.pretix.scan.tickets.ticketsModule
 import org.koin.core.KoinApplication
 
@@ -20,4 +21,5 @@ fun KoinApplication.initModules() {
     modules(mainModule)
     modules(webCamModule)
     modules(settingsModule)
+    modules(statusModule)
 }

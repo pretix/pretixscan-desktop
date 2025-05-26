@@ -3,7 +3,6 @@ package eu.pretix.scan.main.presentation.toolbar
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import eu.pretix.desktop.app.ui.CustomColor
@@ -33,10 +31,10 @@ import pretixscan.composeapp.generated.resources.*
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainToolbar(
-    modifier: Modifier = Modifier,
     viewModel: MainViewModel,
     eventSelection: EventSelection,
-    onOpenSettings: () -> Unit = {}
+    onOpenSettings: () -> Unit = {},
+    onOpenStatistics: () -> Unit = {}
 ) {
 
     val scanType by viewModel.scanType.collectAsState()
@@ -75,6 +73,15 @@ fun MainToolbar(
                 Image(
                     painter = painterResource(Res.drawable.ic_refresh_white_24dp),
                     contentDescription = stringResource(Res.string.action_sync)
+                )
+            }
+        }
+
+        Tooltip(stringResource(Res.string.action_label_statistics)) {
+            IconButton(onClick = onOpenStatistics) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_statistics_white),
+                    contentDescription = stringResource(Res.string.action_label_statistics)
                 )
             }
         }

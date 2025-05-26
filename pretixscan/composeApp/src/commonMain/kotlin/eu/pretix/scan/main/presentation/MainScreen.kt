@@ -62,6 +62,9 @@ fun MainScreen(
                     eventSelection = data.eventSelection,
                     onOpenSettings = {
                         navHostController.navigate(route = Route.Settings.route)
+                    },
+                    onOpenStatistics = {
+                        navHostController.navigate(route = Route.EventStats.route)
                     }
                 )
 
