@@ -24,8 +24,7 @@ val pretixModules: List<Module>
                 DesktopSentryImpl()
             }
             factory<EventManager> {
-                val store = get<AppCache>().data
-                EventManager(store, get<PretixApi>(), get<AppConfig>(), false)
+                EventManager(get<PretixApi>(), get<AppConfig>(), false)
             }
             factory<PretixApi> {
                 val config = get<AppConfig>()
