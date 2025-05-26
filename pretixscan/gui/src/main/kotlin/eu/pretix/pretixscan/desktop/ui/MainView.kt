@@ -4,10 +4,10 @@ import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXDialog
 import com.jfoenix.controls.JFXToggleButton
 import eu.pretix.libpretixsync.check.TicketCheckProvider
-import eu.pretix.libpretixsync.db.Answer
-import eu.pretix.libpretixsync.db.CheckInList
-import eu.pretix.libpretixsync.db.Event
-import eu.pretix.libpretixsync.db.SubEvent
+import eu.pretix.libpretixsync.sqldelight.Answer
+import eu.pretix.libpretixsync.sqldelight.CheckInList
+import eu.pretix.libpretixsync.sqldelight.Event
+import eu.pretix.libpretixsync.sqldelight.SubEvent
 import eu.pretix.pretixscan.desktop.PretixScanMain
 import eu.pretix.pretixscan.desktop.getBadgeLayout
 import eu.pretix.pretixscan.desktop.printBadge
