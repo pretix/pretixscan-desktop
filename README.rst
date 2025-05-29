@@ -78,12 +78,17 @@ questions in the process, please do not hesitate to ask us.
 Please note that we have a `Code of Conduct`_
 in place that applies to all project contributions, including issues, pull requests, etc.
 
+Security
+--------
+
+If you discover a security issue, please contact us at security@pretix.eu and see our [Responsible Disclosure Policy](https://docs.pretix.eu/trust/security/disclosure/) further information.
+
 License
 -------
 The code in this repository is published under the terms of the Apache License. 
 See the LICENSE file for the complete license text.
 
-This project is maintained by Raphael Michel <mail@raphaelmichel.de>. See the
+This project is maintained by Raphael Michel <support@pretix.eu>. See the
 AUTHORS file for a list of all the awesome folks who contributed to this project.
 
 This project is 100 percent free and open source software. If you are interested in
