@@ -1,18 +1,18 @@
 package eu.pretix.scan.tickets.presentation
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import com.composables.core.*
 import eu.pretix.scan.tickets.data.ResultState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,19 +27,31 @@ fun TicketHandlingDialog(secret: String?, onDismiss: () -> Unit) {
     val viewModel = koinViewModel<TicketHandlingDialogViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val dialogState = rememberDialogState(initiallyVisible = true)
+
+
 
     LaunchedEffect(secret) {
         viewModel.handleTicket(secret)
     }
 
 
+
     Dialog(
-        properties = DialogProperties(
-            dismissOnBackPress = true
-        ), onDismissRequest = { onDismiss() }) {
-        // Custom shape, background, and layout for the dialog
-        Surface(
-            shape = RoundedCornerShape(16.dp),
+        state = dialogState,
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
+        onDismiss = onDismiss
+    ) {
+        Scrim()
+        DialogPanel(
+            modifier = Modifier
+                .displayCutoutPadding()
+                .systemBarsPadding()
+                .widthIn(min = 280.dp, max = 560.dp)
+                .padding(20.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .border(1.dp, Color(0xFFE4E4E4), RoundedCornerShape(12.dp))
+                .background(Color.White),
         ) {
             when (uiState.resultState) {
                 ResultState.EMPTY -> {}

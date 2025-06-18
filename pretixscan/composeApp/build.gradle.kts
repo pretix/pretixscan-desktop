@@ -62,6 +62,8 @@ kotlin {
             implementation(project(":libpretixsync"))
             implementation(project(":libpretixprint"))
 
+            implementation("com.composables:core:1.32.0")
+
 
             // The JavFX toolkit must be included
             val fxSuffix = when (osdetector.classifier) {

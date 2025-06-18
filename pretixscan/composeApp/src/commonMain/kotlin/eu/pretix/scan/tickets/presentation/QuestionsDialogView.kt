@@ -1,29 +1,26 @@
 package eu.pretix.scan.tickets.presentation
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import eu.pretix.desktop.app.ui.CustomColor
-import eu.pretix.desktop.app.ui.FieldSpinner
-import eu.pretix.desktop.app.ui.asColor
+import eu.pretix.desktop.app.ui.*
 import eu.pretix.desktop.webcam.presentation.WebCam
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.Answer
@@ -45,15 +42,22 @@ fun QuestionsDialogView(
     val viewModel = koinViewModel<QuestionsDialogViewModel>()
     val form by viewModel.form.collectAsState()
     val modalQuestion by viewModel.modalQuestion.collectAsState()
-
     val state = rememberLazyListState()
     LaunchedEffect(data) {
         viewModel.buildQuestionsForm(data)
     }
 
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Box {
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
+                .focusable(),
             contentPadding = PaddingValues(bottom = 72.dp),
             state = state
         ) {
@@ -100,23 +104,25 @@ fun QuestionsDialogView(
                 Box(modifier = Modifier.padding(PaddingValues(16.dp))) {
                     when (field.fieldType) {
                         QuestionType.N -> {
-                            TextField(
+                            FieldTextInput(
                                 value = field.value ?: "",
                                 onValueChange = { newValue ->
                                     viewModel.updateAnswer(field.id, newValue)
                                 },
-                                label = { Text(field.label) },
-                                singleLine = true
+                                label = field.label,
+                                maxLines = 1
                             )
                         }
 
                         QuestionType.EMAIL,
                         QuestionType.S -> {
-                            TextField(
+                            FieldTextInput(
                                 value = field.value ?: "",
-                                onValueChange = { viewModel.updateAnswer(field.id, it) },
-                                label = { Text(field.label) },
-                                singleLine = true
+                                onValueChange = { newValue ->
+                                    viewModel.updateAnswer(field.id, newValue)
+                                },
+                                label = field.label,
+                                maxLines = 1
                             )
                         }
 
@@ -124,14 +130,11 @@ fun QuestionsDialogView(
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(
-                                    field.label
-                                )
-                                TextField(
+                                FieldTextInput(
                                     value = field.value ?: "",
                                     onValueChange = { viewModel.updateAnswer(field.id, it) },
-                                    label = { Text(field.label) },
-                                    maxLines = 2
+                                    maxLines = 2,
+                                    label = field.label
                                 )
                             }
                         }
@@ -161,7 +164,12 @@ fun QuestionsDialogView(
                                 )
                                 FieldSpinner(
                                     selectedValue = field.value,
-                                    availableOptions = field.keyValueOptions!!,
+                                    availableOptions = field.keyValueOptions!!.map {
+                                        SelectableValue(
+                                            it.value,
+                                            it.key
+                                        )
+                                    },
                                     onSelect = {
                                         viewModel.updateAnswer(field.id, it?.value)
                                     }
@@ -290,7 +298,12 @@ fun QuestionsDialogView(
 
                                 FieldSpinner(
                                     selectedValue = field.value,
-                                    availableOptions = field.keyValueOptions!!,
+                                    availableOptions = field.keyValueOptions!!.map {
+                                        SelectableValue(
+                                            it.value,
+                                            it.key
+                                        )
+                                    },
                                     onSelect = {
                                         viewModel.updateAnswer(field.id, it?.value)
                                     }

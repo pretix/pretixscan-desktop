@@ -127,7 +127,7 @@ fun SettingsScreen(
                                     )
                                     FieldSpinner(
                                         selectedValue = form.badgePrinter?.value,
-                                        availableOptions = form.printers,
+                                        availableOptions = form.printers.map { SelectableValue(it.value, it.key) },
                                         onSelect = {
                                             coroutineScope.launch {
                                                 viewModel.setBadgePrinter(it)
@@ -146,7 +146,12 @@ fun SettingsScreen(
                                     )
                                     FieldSpinner(
                                         selectedValue = form.badgeLayout?.value,
-                                        availableOptions = form.layouts,
+                                        availableOptions = form.layouts.map {
+                                            SelectableValue(
+                                                it.value,
+                                                it.key
+                                            )
+                                        },
                                         onSelect = {
                                             coroutineScope.launch {
                                                 viewModel.setBadgePrinterLayout(it)

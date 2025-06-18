@@ -2,23 +2,23 @@ package eu.pretix.scan.tickets.presentation
 
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import com.vanniktech.locale.Country
 import eu.pretix.desktop.app.ui.FieldSpinner
-import eu.pretix.desktop.app.ui.KeyValueOption
+import eu.pretix.desktop.app.ui.FieldSpinnerItem
+import eu.pretix.desktop.app.ui.FieldTextInput
+import eu.pretix.desktop.app.ui.SelectableValue
 import java.util.*
 
 
 @Composable
 fun QuestionPhoneNumber(
-    modifier: Modifier = Modifier,
     selectedValue: String?,
     onSelect: (String?) -> Unit
 ) {
-    var country by remember { mutableStateOf<Country>(calculateDefaultCountry(selectedValue)) }
+    var country by remember { mutableStateOf(calculateDefaultCountry(selectedValue)) }
+    country.callingCodes.first()
 
     LaunchedEffect(Unit, selectedValue) {
         country = calculateDefaultCountry(selectedValue)
@@ -28,12 +28,24 @@ fun QuestionPhoneNumber(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FieldSpinner(
-            modifier = Modifier.weight(1f),
             selectedValue = country.code,
             availableOptions = Country.entries.map { country ->
-                KeyValueOption(
-                    "${country.emoji} ${country.name}",
-                    country.code
+                SelectableValue(
+                    country.code,
+                    country.name,
+                    buttonContent = {
+                        FieldSpinnerItem("${country.emoji} ${country.callingCodes.first()}")
+                    },
+                    content = {
+                        FieldSpinnerItem(
+                            "${country.emoji} ${
+                                country.name.replace(
+                                    "_",
+                                    " "
+                                )
+                            } (${country.callingCodes.first()})"
+                        )
+                    }
                 )
             },
             onSelect = {
@@ -47,15 +59,14 @@ fun QuestionPhoneNumber(
                 }
             }
         )
-        TextField(
-            modifier = Modifier.weight(3f),
+
+        FieldTextInput(
             value = selectedValue ?: "",
             onValueChange = { newValue ->
                 if (newValue.all { it.isDigit() || it == '+' }) {
                     onSelect(newValue)
                 }
-            },
-            singleLine = true
+            }
         )
     }
 }

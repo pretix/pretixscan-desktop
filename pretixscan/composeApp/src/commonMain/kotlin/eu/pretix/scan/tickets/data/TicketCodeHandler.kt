@@ -13,6 +13,8 @@ import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.models.db.toModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import pretixscan.composeapp.generated.resources.*
@@ -99,7 +101,9 @@ class TicketCodeHandler(
         }
 
         if (answers.isNullOrEmpty()) {
-            audioPlayer.play(Res.getUri("files/beep.m4a"))
+            withContext(Dispatchers.Main) {
+                audioPlayer.play(Res.getUri("files/beep.m4a"))
+            }
         }
 
         val scanType = when (conf.scanType) {
@@ -160,7 +164,9 @@ class TicketCodeHandler(
             }
 
             if (conf.playSound) {
-                audioPlayer.play(checkResult.pathForSound())
+                withContext(Dispatchers.Main) {
+                    audioPlayer.play(checkResult.pathForSound())
+                }
             }
 
 

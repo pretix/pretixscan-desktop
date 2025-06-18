@@ -3,7 +3,7 @@ package eu.pretix.scan.settings.presentation
 
 import androidx.lifecycle.ViewModel
 import eu.pretix.desktop.app.sync.SyncRootService
-import eu.pretix.desktop.app.ui.KeyValueOption
+import eu.pretix.desktop.app.ui.SelectableValue
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.desktop.cache.Version
@@ -35,7 +35,7 @@ class SettingsViewModel(
         )
     }
 
-    suspend fun setBadgePrinter(option: KeyValueOption?) {
+    suspend fun setBadgePrinter(option: SelectableValue?) {
         if (option == null) {
             return
         }
@@ -43,7 +43,7 @@ class SettingsViewModel(
         loadSettings()
     }
 
-    suspend fun setBadgePrinterLayout(option: KeyValueOption?) {
+    suspend fun setBadgePrinterLayout(option: SelectableValue?) {
         if (option == null) {
             return
         }
