@@ -37,6 +37,12 @@ kotlin {
             api(libs.koin)
             api(libs.koin.compose)
             api(libs.koin.compose.viewmodel)
+
+            // unstyled components
+            implementation(libs.composables.core)
+
+            // additional default icons
+            implementation(libs.jetbrains.material.icons)
         }
 
         commonTest.dependencies {
@@ -55,17 +61,18 @@ kotlin {
 
             implementation(libs.webcam.driver)
             implementation(libs.apache.pdfbox)
-            implementation("org.jetbrains.compose.material:material-icons-core:1.7.3")
+
 
             compileOnly(libs.requery)
             compileOnly(libs.requery.processor)
             implementation(project(":libpretixsync"))
             implementation(project(":libpretixprint"))
 
-            implementation("com.composables:core:1.32.0")
 
+            // phone number validation
+            implementation(libs.google.libphone)
 
-            // The JavFX toolkit must be included
+            // Gadulka links to JavaFX to provide playback of sounds on JVM/desktop
             val fxSuffix = when (osdetector.classifier) {
                 "linux-x86_64" -> "linux"
                 "linux-aarch_64" -> "linux-aarch64"

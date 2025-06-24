@@ -19,6 +19,9 @@ webcam-capture = "0.3.12"
 webcam-driver = "1.2.0"
 multiplatform-locale = "0.9.0"
 pdfbox = "3.0.4"
+composables = "1.32.0"
+jetbrains-material-icons = "1.7.3"
+libphone = "9.0.3"
 
 [libraries]
 apache-pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
@@ -38,7 +41,7 @@ appdirs = { module = "net.harawata:appdirs", version.ref = "appdirs" }
 sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite_jdbc_version" }
 requery = { module = "io.requery:requery", version.ref = "requery" }
 requery-processor = { module = "io.requery:requery-processor", version.ref = "requery" }
-org-json = { module = "org.json:json", version.ref = "org_json"}
+org-json = { module = "org.json:json", version.ref = "org_json" }
 joda-time = { module = "joda-time:joda-time", version.ref = "joda_time" }
 sqldelight-jvm = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -48,8 +51,10 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 gadulka = { module = "eu.iamkonstantin.kotlin:gadulka", version.ref = "gadulka" }
 sarxos-webcam = { module = "com.github.sarxos:webcam-capture", version.ref = "webcam-capture" }
 webcam-driver = { module = "io.github.eduramiba:webcam-capture-driver-native", version.ref = "webcam-driver" }
-
-vanniktech-multiplatform-locale = { module = "com.vanniktech:multiplatform-locale", version.ref = "multiplatform-locale"}
+composables-core = { module = "com.composables:core", version.ref = "composables" }
+jetbrains-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "jetbrains-material-icons" }
+vanniktech-multiplatform-locale = { module = "com.vanniktech:multiplatform-locale", version.ref = "multiplatform-locale" }
+google-libphone = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphone" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
