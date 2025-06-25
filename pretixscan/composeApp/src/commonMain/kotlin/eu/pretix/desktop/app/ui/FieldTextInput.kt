@@ -13,6 +13,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.TextField
 import com.composeunstyled.TextInput
+import org.jetbrains.compose.resources.stringResource
+import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.question_input_invalid
+import pretixscan.composeapp.generated.resources.question_input_required
 
 @Composable
 fun FieldTextInput(
@@ -21,6 +25,7 @@ fun FieldTextInput(
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
     leading: @Composable (() -> Unit)? = null,
+    validation: FieldValidationState? = null,
 ) {
     TextField(
         value = value,
@@ -41,5 +46,26 @@ fun FieldTextInput(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             leading = leading
         )
+
+        if (validation != null) {
+            when (validation) {
+                FieldValidationState.INVALID -> {
+                    Text(
+                        stringResource(Res.string.question_input_invalid),
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                    )
+                }
+
+                FieldValidationState.MISSING -> {
+                    Text(
+                        stringResource(Res.string.question_input_required),
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                    )
+                }
+            }
+        }
     }
 }
+

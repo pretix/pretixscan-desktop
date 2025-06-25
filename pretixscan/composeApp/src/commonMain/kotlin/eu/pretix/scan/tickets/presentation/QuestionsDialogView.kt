@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
@@ -79,7 +80,10 @@ fun QuestionsDialogView(
 
                         Spacer(modifier = Modifier.weight(1.0f))
 
-                        Text(data.orderCodeAndPositionId ?: "")
+                        // allow selection of the value with the mouse e.g. to copy-paste into pretix.eu
+                        SelectionContainer {
+                            Text(data.orderCodeAndPositionId ?: "")
+                        }
                     }
 
                     if (data.attention) {
@@ -322,9 +326,10 @@ fun QuestionsDialogView(
 
                                 QuestionPhoneNumber(
                                     selectedValue = field.value,
-                                    onSelect = {
-                                        viewModel.updateAnswer(field.id, it)
-                                    }
+                                    onSelect = { phone, country ->
+                                        viewModel.updateAnswer(field.id, phone, country)
+                                    },
+                                    validation = field.validation
                                 )
                             }
                         }

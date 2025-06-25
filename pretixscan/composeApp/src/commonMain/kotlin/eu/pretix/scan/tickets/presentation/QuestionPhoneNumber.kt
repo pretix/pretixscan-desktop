@@ -2,20 +2,21 @@ package eu.pretix.scan.tickets.presentation
 
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.vanniktech.locale.Country
-import eu.pretix.desktop.app.ui.FieldSpinner
-import eu.pretix.desktop.app.ui.FieldSpinnerItem
-import eu.pretix.desktop.app.ui.FieldTextInput
-import eu.pretix.desktop.app.ui.SelectableValue
+import eu.pretix.desktop.app.ui.*
 import java.util.*
 
 
 @Composable
 fun QuestionPhoneNumber(
     selectedValue: String?,
-    onSelect: (String?) -> Unit
+    validation: FieldValidationState?,
+    onSelect: (String?, String?) -> Unit
 ) {
     var country by remember { mutableStateOf(calculateDefaultCountry(selectedValue)) }
     country.callingCodes.first()
@@ -25,7 +26,8 @@ fun QuestionPhoneNumber(
     }
 
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        Modifier.padding(top = 8.dp),
+        verticalAlignment = Alignment.Top,
     ) {
         FieldSpinner(
             selectedValue = country.code,
@@ -63,10 +65,9 @@ fun QuestionPhoneNumber(
         FieldTextInput(
             value = selectedValue ?: "",
             onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() || it == '+' }) {
-                    onSelect(newValue)
-                }
-            }
+                onSelect(newValue, country.code)
+            },
+            validation = validation
         )
     }
 }

@@ -2,8 +2,10 @@ package eu.pretix.scan.tickets.presentation
 
 import androidx.lifecycle.ViewModel
 import com.vanniktech.locale.Country
+import eu.pretix.desktop.app.ui.FieldValidationState
 import eu.pretix.desktop.app.ui.KeyValueOption
 import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.scan.tickets.data.PhoneValidator
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.QuestionOption
@@ -28,6 +30,8 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
     val modalQuestion = _modalQuestion.asStateFlow()
 
     private val emailValidator = EmailValidator()
+
+    private val phoneValidator = PhoneValidator()
     fun getCurrentAnswers(data: ResultStateData): List<Answer> {
         val values = _form.value.toMutableList()
 
@@ -87,7 +91,13 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                 QuestionType.F,
                 QuestionType.TEL,
                 QuestionType.B -> {
-                    QuestionFormField(it.serverId, it.question, startingAnswerValue(it, data.answers[it]), it.type)
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        startingAnswerValue(it, data.answers[it]),
+                        it.type,
+                        true
+                    )
                 }
 
                 QuestionType.C -> {
@@ -96,6 +106,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
+                        true,
                         keyValueOptions = it.options?.sortedBy { option -> option.position }
                             ?.map { option -> KeyValueOption(option.value, option.server_id.toString()) },
                         options = it.options?.toMutableList() ?: emptyList()
@@ -108,6 +119,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
+                        true,
                         keyValueOptions = it.options?.sortedBy { option -> option.position }
                             ?.map { option -> KeyValueOption(option.value, option.server_id.toString()) },
                         options = it.options?.toMutableList() ?: emptyList(),
@@ -122,6 +134,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
+                        true,
                         dateConfig = DateConfig(minDate = it.valid_date_min, maxDate = it.valid_date_max)
                     )
                 }
@@ -131,7 +144,8 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         it.serverId,
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
-                        it.type
+                        it.type,
+                        true
                     )
                 }
 
@@ -141,6 +155,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
+                        true,
                         keyValueOptions = Country.entries.map { country -> KeyValueOption(country.name, country.code) }
                     )
                 }
@@ -171,7 +186,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
         }
     }
 
-    fun updateAnswer(questionId: Long, answer: String?) {
+    fun updateAnswer(questionId: Long, answer: String?, extra: String? = null) {
         _form.value = _form.value.map { field ->
             if (field.id == questionId) {
                 log.info("Updating answer for $questionId (${field.fieldType}) to $answer")
@@ -202,6 +217,10 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         }
                     }
 
+                    QuestionType.TEL -> {
+                        field.copy(value = answer, uiExtra = extra)
+                    }
+
                     else -> {
                         field.copy(value = answer)
                     }
@@ -212,12 +231,39 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
         }
     }
 
+
     fun validateForConfirm(): Boolean {
-        _form.value.forEach {
-            log.info("question ${it.label}: ${it.value}")
+        formatAndValidateForm()
+        return _form.value.all { it.validation == null }
+    }
+
+    fun formatAndValidateForm() {
+        // process all values, apply formatting and validation
+        _form.value = _form.value.map {
+            when (it.fieldType) {
+                QuestionType.TEL -> {
+                    val answer = it.value
+                    val country = it.uiExtra
+                    if (answer.isNullOrBlank()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else {
+                        val parsed = phoneValidator.parse(answer, country)
+                        if (parsed == null) {
+                            it.copy(validation = FieldValidationState.INVALID)
+                        } else {
+                            it.copy(validation = null, value = parsed.number)
+                        }
+                    }
+                }
+
+                else -> {
+                    it
+                }
+            }
         }
-        // FIXME: Return false if validation fails
-        return true
+        _form.value.forEach { field ->
+            log.info("question ${field.label}: ${field.value}, valid: ${if (field.validation == null) "yes" else "${field.validation}"}")
+        }
     }
 
     fun showModal(field: QuestionFormField) {
@@ -254,11 +300,15 @@ data class QuestionFormField(
     val label: String,
     var value: String?,
     val fieldType: QuestionType,
+    val required: Boolean,
     var values: List<String>? = null,
     var dateConfig: DateConfig? = null,
     val keyValueOptions: List<KeyValueOption>? = null,
-    val options: List<QuestionOption> = emptyList()
+    val options: List<QuestionOption> = emptyList(),
+    var validation: FieldValidationState? = null,
+    // Extra value used by the UI for form state which isn't part of the pretixsync model
+    var uiExtra: String? = null
 )
 
 data class DateConfig(val minDate: Long?, val maxDate: Long?)
-  
+
