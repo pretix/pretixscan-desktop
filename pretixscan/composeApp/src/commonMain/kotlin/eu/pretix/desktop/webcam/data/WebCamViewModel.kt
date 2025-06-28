@@ -1,7 +1,6 @@
 package eu.pretix.desktop.webcam.data
 
 import androidx.lifecycle.ViewModel
-import com.github.sarxos.webcam.Webcam
 import com.github.sarxos.webcam.WebcamException
 import com.github.sarxos.webcam.util.ImageUtils
 import eu.pretix.desktop.cache.getUserDataFolder
@@ -47,7 +46,7 @@ class WebCamViewModel(
     }
 
 
-    suspend fun observeVideoInput() = coroutineScope.launch {
+    fun observeVideoInput() = coroutineScope.launch {
         videoSource.getAvailableWebcam().collectLatest { videos ->
             val newVideos = listOf(noSelectedVideo) + videos.map { webcam ->
                 Video(
@@ -112,14 +111,6 @@ class WebCamViewModel(
             throw WebcamException(e)
         }
     }
-
-
-    fun listWebCams() {
-        val webcams = Webcam.getWebcams()
-        for (webcam in webcams) {
-            log.info("Found camera ${webcam.name}")
-        }
-    }
 }
 
 data class Video(
@@ -134,9 +125,6 @@ data class Video(
 }
 
 fun Dimension.toResolution() = Video.Resolution(width = this.width, height = this.height)
-
-fun Video.Resolution.toDimension() = Dimension(this.width, this.height)
-
 
 fun defaultCameraState(
     selectedVideo: Video?,
