@@ -19,10 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import eu.pretix.desktop.app.ui.*
-import eu.pretix.desktop.webcam.presentation.WebCam
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.scan.tickets.data.ResultStateData
@@ -220,6 +217,7 @@ fun QuestionsDialogView(
                                         if (field.value != null) {
                                             Button(
                                                 onClick = {
+                                                    viewModel.updateAnswer(field.id, null)
                                                 }) {
                                                 Icon(
                                                     Icons.Filled.Delete,
@@ -376,15 +374,6 @@ fun QuestionsDialogView(
     }
 
     if (modalQuestion != null && modalQuestion?.fieldType == QuestionType.F) {
-        Dialog(
-            onDismissRequest = { viewModel.dismissModal(null) },
-            properties = DialogProperties(
-                usePlatformDefaultWidth = false // Ensures the dialog can be full-window size
-            ),
-        ) {
-            WebCam(onPhotoTaken = {
-                viewModel.dismissModal(it)
-            })
-        }
+        QuestionPhoto(onDismiss = { viewModel.dismissModal(it) })
     }
 }

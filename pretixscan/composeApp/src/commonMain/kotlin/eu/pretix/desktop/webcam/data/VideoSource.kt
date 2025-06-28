@@ -83,6 +83,7 @@ class DefaultVideoSource : VideoSource {
                 it.removeWebcamListener(webcamListener)
             }
         currentVideo.update { null }
+        availableImageDataFlow.update { null }
     }
 
     override fun collectCurrentWebcam(): Flow<Webcam?> = currentVideo

@@ -72,6 +72,9 @@ class WebCamViewModel(
 
     fun stop() {
         videoSource.close()
+        _uiState.value = defaultCameraState(
+            selectedVideo = noSelectedVideo
+        )
     }
 
     fun selectVideo(video: Video) {
