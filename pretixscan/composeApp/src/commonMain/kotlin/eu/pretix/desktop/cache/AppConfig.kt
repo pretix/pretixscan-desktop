@@ -35,6 +35,8 @@ class AppConfig(val dataDir: String) : ConfigStore {
     private val PREFS_KEY_CHECKINLIST_NAME = "pretix_api_checkin_list_name"
     private val PREFS_KEY_PRINTER_BADGE_NAME = "printer_badge_name"
     private val PREFS_KEY_PRINTER_BADGE_ORIENTATION = "printer_badge_orientation"
+
+    private val PREFS_KEY_PREFERRED_CAMERA_NAME = "preferred_camera_name"
     private val PREFS_KEY_AUTO_PRINT_BADGES = "auto_print_badges"
 
     private val PREFS_KEY_PRINTBADGES = "prefs_key_print_badges"
@@ -274,7 +276,7 @@ class AppConfig(val dataDir: String) : ConfigStore {
     }
 
     override fun getPosId(): Long {
-        return 0;
+        return 0
     }
 
     var eventName: String?
@@ -358,6 +360,13 @@ class AppConfig(val dataDir: String) : ConfigStore {
         get() = prefs.get(PREFS_KEY_PRINTER_BADGE_ORIENTATION, "Auto")
         set(value) {
             prefs.put(PREFS_KEY_PRINTER_BADGE_ORIENTATION, value)
+            prefs.flush()
+        }
+
+    var preferredCameraName: String
+        get() = prefs.get(PREFS_KEY_PREFERRED_CAMERA_NAME, "-")
+        set(value) {
+            prefs.put(PREFS_KEY_PREFERRED_CAMERA_NAME, value)
             prefs.flush()
         }
 

@@ -3,6 +3,7 @@ package eu.pretix.desktop.webcam.data
 import androidx.lifecycle.ViewModel
 import com.github.sarxos.webcam.WebcamException
 import com.github.sarxos.webcam.util.ImageUtils
+import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.desktop.cache.getUserDataFolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,8 @@ import java.util.logging.Logger
 import javax.imageio.ImageIO
 
 class WebCamViewModel(
-    private val videoSource: VideoSource
+    private val videoSource: VideoSource,
+    private val appConfig: AppConfig,
 ) : ViewModel() {
     private val log = Logger.getLogger("eu/pretix/desktop/webcam")
 
@@ -40,7 +42,7 @@ class WebCamViewModel(
     )
     val uiState: StateFlow<CameraState> = _uiState
 
-    suspend fun load() {
+    fun load() {
         configureWebCam()
         observeVideoInput()
     }
@@ -60,7 +62,8 @@ class WebCamViewModel(
                     state.copy(availableVideos = newVideos)
                 }
                 if (_uiState.value.preselectCamera && _uiState.value.selectedVideo?.name == "-") {
-                    val newCamera = newVideos.firstOrNull { it.name != "-" }
+                    val newCamera = newVideos.firstOrNull { it.name == appConfig.preferredCameraName }
+                        ?: newVideos.firstOrNull { it.name != "-" }
                     if (newCamera != null) {
                         selectVideo(newCamera)
                     }
@@ -82,6 +85,9 @@ class WebCamViewModel(
             videoSource.close()
             _uiState.update { it.copy(selectedVideo = noSelectedVideo) }
             return
+        }
+        if (appConfig.preferredCameraName != video.name) {
+            appConfig.preferredCameraName = video.name
         }
         videoSource.open(video.name)
         _uiState.update {

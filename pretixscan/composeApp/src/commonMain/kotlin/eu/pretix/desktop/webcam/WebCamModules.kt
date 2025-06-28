@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 val webCamModule = module {
     single {
-        WebCamViewModel(get())
+        WebCamViewModel(get(), get())
     }
     single<VideoSource> {
         DefaultVideoSource()
