@@ -1,6 +1,6 @@
 pretixSCAN is developed by:
 
-rami.io GmbH
+pretix GmbH
 Berthold-Mogel-Str. 1
 69126 Heidelberg
 Germany
