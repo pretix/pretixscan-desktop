@@ -1,11 +1,12 @@
 package eu.pretix.desktop
 
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import eu.pretix.initModules
 import eu.pretix.desktop.app.Root
+import eu.pretix.initModules
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.context.startKoin
 import pretixscan.composeapp.generated.resources.Res
@@ -19,7 +20,8 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = stringResource(Res.string.app_name),
-        state = WindowState(placement = WindowPlacement.Maximized)
+        state = WindowState(placement = WindowPlacement.Maximized),
+        icon = painterResource("pretix_app_icon.png")
     ) {
         window.minimumSize = Dimension(1024, 768)
         Root()
