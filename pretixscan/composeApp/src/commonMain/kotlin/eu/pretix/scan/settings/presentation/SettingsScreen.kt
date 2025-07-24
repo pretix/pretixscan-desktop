@@ -27,7 +27,6 @@ import pretixscan.composeapp.generated.resources.*
 @Composable
 fun SettingsScreen(
     navHostController: NavHostController,
-    modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -70,6 +69,26 @@ fun SettingsScreen(
                                         onCheckedChange = {
                                             coroutineScope.launch {
                                                 viewModel.setSyncAuto(it)
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    item {
+                        Section(stringResource(Res.string.settings_label_ui)) {
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    CheckboxWithLabel(
+                                        label = stringResource(Res.string.settings_label_sounds),
+                                        description = null,
+                                        checked = form.playSounds,
+                                        onCheckedChange = {
+                                            coroutineScope.launch {
+                                                viewModel.setPlaySounds(it)
                                             }
                                         }
                                     )

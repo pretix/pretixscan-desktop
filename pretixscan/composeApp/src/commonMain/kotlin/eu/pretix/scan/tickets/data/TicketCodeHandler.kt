@@ -84,9 +84,6 @@ class TicketCodeHandler(
         return resultState
     }
 
-    suspend fun handleScan(rawResult: String?, ignoreUnpaid: Boolean): TicketCheckProvider.CheckResult =
-        handleScan(rawResult, null, ignoreUnpaid)
-
     suspend fun handleScan(
         rawResult: String?,
         answers: List<Answer>?,
@@ -100,7 +97,7 @@ class TicketCodeHandler(
             )
         }
 
-        if (answers.isNullOrEmpty()) {
+        if (conf.playSound && answers.isNullOrEmpty()) {
             withContext(Dispatchers.Main) {
                 audioPlayer.play(Res.getUri("files/beep.m4a"))
             }

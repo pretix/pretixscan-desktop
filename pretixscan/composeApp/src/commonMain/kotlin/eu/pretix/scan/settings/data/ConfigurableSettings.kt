@@ -9,5 +9,6 @@ data class ConfigurableSettings(
     val badgePrinter: KeyValueOption? = null,
     val badgeLayout: KeyValueOption? = null,
     val layouts: List<KeyValueOption> = emptyList(),
-    val syncAuto: Boolean = false
+    val syncAuto: Boolean = false,
+    val playSounds: Boolean = false,
 )
