@@ -137,46 +137,48 @@ fun SettingsScreen(
                                 }
                             }
 
-                            Setting {
-                                Column(
-                                    horizontalAlignment = Alignment.Start
-                                ) {
-                                    Text(
-                                        stringResource(Res.string.settings_printers_badge)
-                                    )
-                                    FieldSpinner(
-                                        selectedValue = form.badgePrinter?.value,
-                                        availableOptions = form.printers.map { SelectableValue(it.value, it.key) },
-                                        onSelect = {
-                                            coroutineScope.launch {
-                                                viewModel.setBadgePrinter(it)
-                                            }
-                                        },
-                                    )
+                            if (form.printBadges) {
+                                Setting {
+                                    Column(
+                                        horizontalAlignment = Alignment.Start
+                                    ) {
+                                        Text(
+                                            stringResource(Res.string.settings_printers_badge)
+                                        )
+                                        FieldSpinner(
+                                            selectedValue = form.badgePrinter?.value,
+                                            availableOptions = form.printers.map { SelectableValue(it.value, it.key) },
+                                            onSelect = {
+                                                coroutineScope.launch {
+                                                    viewModel.setBadgePrinter(it)
+                                                }
+                                            },
+                                        )
+                                    }
                                 }
-                            }
 
-                            Setting {
-                                Column(
-                                    horizontalAlignment = Alignment.Start
-                                ) {
-                                    Text(
-                                        stringResource(Res.string.settings_label_badge_layout)
-                                    )
-                                    FieldSpinner(
-                                        selectedValue = form.badgeLayout?.value,
-                                        availableOptions = form.layouts.map {
-                                            SelectableValue(
-                                                it.value,
-                                                it.key
-                                            )
-                                        },
-                                        onSelect = {
-                                            coroutineScope.launch {
-                                                viewModel.setBadgePrinterLayout(it)
-                                            }
-                                        },
-                                    )
+                                Setting {
+                                    Column(
+                                        horizontalAlignment = Alignment.Start
+                                    ) {
+                                        Text(
+                                            stringResource(Res.string.settings_label_badge_layout)
+                                        )
+                                        FieldSpinner(
+                                            selectedValue = form.badgeLayout?.value,
+                                            availableOptions = form.layouts.map {
+                                                SelectableValue(
+                                                    it.value,
+                                                    it.key
+                                                )
+                                            },
+                                            onSelect = {
+                                                coroutineScope.launch {
+                                                    viewModel.setBadgePrinterLayout(it)
+                                                }
+                                            },
+                                        )
+                                    }
                                 }
                             }
                         }
