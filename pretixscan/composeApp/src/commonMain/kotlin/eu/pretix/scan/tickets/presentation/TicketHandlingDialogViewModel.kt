@@ -21,14 +21,14 @@ class TicketHandlingDialogViewModel(
     private val _uiState = MutableStateFlow(ResultStateData(resultState = ResultState.EMPTY))
     val uiState = _uiState.asStateFlow()
 
-    fun cancelQuestions() {
+    fun resetTicketHandlingState() {
         _uiState.value = ResultStateData(resultState = ResultState.EMPTY)
     }
 
     suspend fun handleTicket(secret: String?, answers: List<Answer>? = null, ignoreUnpaid: Boolean = false) {
         log.info("Handling ticket $secret")
         _uiState.update {
-            it.copy(resultState = ResultState.LOADING)
+            ResultStateData(resultState = ResultState.LOADING)
         }
         val result = tickerCodeHandler.handleScanResult(
             secret,

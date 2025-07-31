@@ -29,17 +29,22 @@ fun TicketHandlingDialog(secret: String?, onDismiss: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
     val dialogState = rememberDialogState(initiallyVisible = true)
 
-
-
     LaunchedEffect(secret) {
+        viewModel.resetTicketHandlingState()
         viewModel.handleTicket(secret)
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetTicketHandlingState()
+        }
     }
 
 
 
     Dialog(
         state = dialogState,
-        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
         onDismiss = onDismiss
     ) {
         Scrim()
@@ -82,10 +87,7 @@ fun TicketHandlingDialog(secret: String?, onDismiss: () -> Unit) {
                             viewModel.handleTicket(secret, answers = answers, ignoreUnpaid = true)
                         }
                     },
-                    onCancel = {
-                        viewModel.cancelQuestions()
-                        onDismiss()
-                    }
+                    onCancel = onDismiss
                 )
 
                 ResultState.WARNING -> {
