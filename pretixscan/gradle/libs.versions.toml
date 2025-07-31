@@ -1,11 +1,11 @@
 [versions]
-compose-plugin = "1.8.1"
+compose-plugin = "1.8.2"
 junit = "4.13.2"
-kotlin = "2.1.21"
-androidx-lifecycle = "2.9.0"
-androidx-navigation = "2.9.0-beta01"
-koin = "4.0.4"
-koin-compose = "4.0.4"
+kotlin = "2.2.0"
+androidx-lifecycle = "2.9.1"
+androidx-navigation = "2.9.0-beta04"
+koin = "4.1.0"
+koin-compose = "4.1.0"
 appdirs = "1.2.2"
 sqlite_jdbc_version = "3.46.1.0"
 requery = "1.6.0"
@@ -22,6 +22,7 @@ pdfbox = "3.0.4"
 composables = "1.32.0"
 jetbrains-material-icons = "1.7.3"
 libphone = "9.0.3"
+composeHotReload = "1.0.0-beta04"
 
 [libraries]
 apache-pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
@@ -57,6 +58,7 @@ vanniktech-multiplatform-locale = { module = "com.vanniktech:multiplatform-local
 google-libphone = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphone" }
 
 [plugins]
+composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
