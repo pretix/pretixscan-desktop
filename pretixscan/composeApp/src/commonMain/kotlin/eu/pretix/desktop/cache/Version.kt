@@ -1,15 +1,14 @@
 package eu.pretix.desktop.cache
 
+import eu.pretix.desktop.generated.AppVersion
+
 // Helper object to retrieve the version property from the gradle configuration
 object Version {
     val version: String by lazy {
-        // TODO: Obtain the version from build.gradle or properties file
-        return@lazy "1.20.0"
+        AppVersion.VERSION_NAME
     }
 
-
     val versionCode: Int by lazy {
-        // TODO: Obtain the version from build.gradle or properties file
-        return@lazy 1
+        AppVersion.VERSION_CODE
     }
 }

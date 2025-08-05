@@ -9,10 +9,39 @@ plugins {
     alias(libs.plugins.composeHotReload)
 }
 
+// Task to generate version file
+val generateVersionFile = tasks.register("generateVersionFile") {
+    val outputDir = layout.buildDirectory.dir("generated/source/version/commonMain/kotlin")
+
+    inputs.property("version", project.version)
+    outputs.dir(outputDir)
+
+    doLast {
+        val versionFile = outputDir.get().asFile.resolve("eu/pretix/desktop/generated/AppVersion.kt")
+        versionFile.parentFile.mkdirs()
+
+        versionFile.writeText(
+            """
+            // Generated file - do not edit
+            package eu.pretix.desktop.generated
+            
+            object AppVersion {
+                const val VERSION_NAME: String = "${project.version}"
+                const val VERSION_CODE: Int = ${project.version.toString().replace(".", "").toIntOrNull() ?: 1}
+            }
+        """.trimIndent()
+        )
+    }
+}
+
 kotlin {
     jvm("desktop")
 
     sourceSets {
+        // Add generated source to the source set
+        val commonMain by getting {
+            kotlin.srcDir(layout.buildDirectory.dir("generated/source/version/commonMain/kotlin"))
+        }
 
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -106,6 +135,11 @@ kotlin {
 // Set in the root gradle.properties
 val version: String by project
 
+// Make compilation depend on version generation
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    dependsOn(generateVersionFile)
+}
+
 compose.desktop {
     application {
         mainClass = "eu.pretix.desktop.MainKt"
@@ -127,6 +161,17 @@ compose.desktop {
             }
             windows {
                 iconFile.set(File("logo/pretix_app_icon.ico"))
+
+                // MSI specific configuration
+                console = false
+                dirChooser = true
+                perUserInstall = false
+                menuGroup = "pretixSCAN"
+                shortcut = true
+
+                // Upgrade settings - consistent UUID for upgrade support
+                upgradeUuid = "550e8400-e29b-41d4-a716-446655440000"
+
             }
             linux {
                 iconFile.set(File("logo/pretix_app_icon.png"))
