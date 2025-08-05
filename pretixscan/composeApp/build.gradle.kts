@@ -150,7 +150,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "pretixSCAN"
             packageVersion = version
-            vendor = "rami.io GmbH"
+            vendor = "pretix GmbH"
             copyright = "pretix.eu, Raphael Michel"
             licenseFile.set(project.rootProject.file("LICENSE"))
             // run `./gradlew suggestModules` to determine list of modules
