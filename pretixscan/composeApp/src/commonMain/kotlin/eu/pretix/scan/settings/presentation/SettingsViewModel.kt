@@ -25,7 +25,7 @@ class SettingsViewModel(
 
     suspend fun loadSettings() {
         _form.value = _form.value.copy(
-            version = Version.version,
+            version = "${Version.version} (${Version.versionCode})",
             printers = printerSource.listPrinters(),
             badgePrinter = printerSource.selectOption(appConfig.badgePrinterName),
             badgeLayout = printerSource.selectPrinterOrientation(appConfig.badgePrinterOrientation),

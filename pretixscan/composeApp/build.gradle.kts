@@ -12,8 +12,10 @@ plugins {
 // Task to generate version file
 val generateVersionFile = tasks.register("generateVersionFile") {
     val outputDir = layout.buildDirectory.dir("generated/source/version/commonMain/kotlin")
+    val versionCode: String by project
 
     inputs.property("version", project.version)
+    inputs.property("versionCode", versionCode)
     outputs.dir(outputDir)
 
     doLast {
@@ -27,7 +29,7 @@ val generateVersionFile = tasks.register("generateVersionFile") {
             
             object AppVersion {
                 const val VERSION_NAME: String = "${project.version}"
-                const val VERSION_CODE: Int = ${project.version.toString().replace(".", "").toIntOrNull() ?: 1}
+                const val VERSION_CODE: Int = ${versionCode}
             }
         """.trimIndent()
         )
