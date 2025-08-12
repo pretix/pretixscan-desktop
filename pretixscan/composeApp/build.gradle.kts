@@ -9,32 +9,6 @@ plugins {
     alias(libs.plugins.composeHotReload)
 }
 
-// Task to generate version file
-val generateVersionFile = tasks.register("generateVersionFile") {
-    val outputDir = layout.buildDirectory.dir("generated/source/version/commonMain/kotlin")
-    val versionCode: String by project
-
-    inputs.property("version", project.version)
-    inputs.property("versionCode", versionCode)
-    outputs.dir(outputDir)
-
-    doLast {
-        val versionFile = outputDir.get().asFile.resolve("eu/pretix/desktop/generated/AppVersion.kt")
-        versionFile.parentFile.mkdirs()
-
-        versionFile.writeText(
-            """
-            // Generated file - do not edit
-            package eu.pretix.desktop.generated
-            
-            object AppVersion {
-                const val VERSION_NAME: String = "${project.version}"
-                const val VERSION_CODE: Int = ${versionCode}
-            }
-        """.trimIndent()
-        )
-    }
-}
 
 kotlin {
     jvm("desktop")
@@ -136,6 +110,34 @@ kotlin {
 
 // Set in the root gradle.properties
 val version: String by project
+
+
+val generateVersionFile = tasks.register("generateVersionFile") {
+    val outputDir = layout.buildDirectory.dir("generated/source/version/commonMain/kotlin")
+    val versionCode: String by project
+
+    inputs.property("version", project.version)
+    inputs.property("versionCode", versionCode)
+    outputs.dir(outputDir)
+
+    doLast {
+        val versionFile = outputDir.get().asFile.resolve("eu/pretix/desktop/generated/AppVersion.kt")
+        versionFile.parentFile.mkdirs()
+
+        versionFile.writeText(
+            """
+            // Generated file - do not edit
+            package eu.pretix.desktop.generated
+            
+            object AppVersion {
+                const val VERSION_NAME: String = "${project.version}"
+                const val VERSION_CODE: Int = ${versionCode}
+            }
+        """.trimIndent()
+        )
+    }
+}
+
 
 // Make compilation depend on version generation
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
