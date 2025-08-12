@@ -2,6 +2,7 @@ package eu.pretix.desktop.app.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,26 +26,36 @@ fun FieldTextInput(
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
     leading: @Composable (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true,
     validation: FieldValidationState? = null,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     TextField(
         value = value,
+        editable = enabled,
         onValueChange = {
-            onValueChange(it)
+            if (enabled) onValueChange(it)
         },
         maxLines = maxLines,
         singleLine = maxLines == 1,
+        modifier = modifier,
     ) {
         if (label != null) {
             Text(label, modifier = Modifier.padding(bottom = 8.dp), fontWeight = FontWeight.SemiBold)
         }
+        val inputModifier = Modifier
+            .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
+            .border(1.dp, Color(0xFFBDBDBD), RoundedCornerShape(8.dp))
+            .background(if (enabled) Color.White else Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+        
         TextInput(
-            Modifier
-                .fillMaxWidth()
-                .border(1.dp, Color(0xFFBDBDBD), RoundedCornerShape(8.dp))
-                .background(Color.White, RoundedCornerShape(8.dp))
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            leading = leading
+            inputModifier,
+            leading = leading,
+            trailing = trailing
         )
 
         if (validation != null) {

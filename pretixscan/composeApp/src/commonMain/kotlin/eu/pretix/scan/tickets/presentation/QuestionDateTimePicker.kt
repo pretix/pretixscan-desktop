@@ -1,20 +1,25 @@
 package eu.pretix.scan.tickets.presentation
 
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import java.text.SimpleDateFormat
-import java.time.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import eu.pretix.desktop.app.ui.FieldTextInput
+import org.jetbrains.compose.resources.stringResource
+import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.cancel
+import pretixscan.composeapp.generated.resources.ok
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import java.util.*
 
 enum class QuestionDateTimePickerExpansion {
     NONE,
@@ -31,65 +36,21 @@ fun QuestionDateTimePicker(
     value: String?,
     onUpdate: (String?) -> Unit
 ) {
+    // Parse the date and time from the datetime value (format: yyyy-MM-dd'T'HH:mm)
+    var dateValue by remember(value) { mutableStateOf(calculateDate(value)) }
+    var timeValue by remember(value) { mutableStateOf(calculateTime(value) ?: "00:00") }
 
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-    val timeFormat = SimpleDateFormat("HH:mm", Locale.US)
-
-    val dateMillis = try {
-        value?.let {
-            val parsedDate = dateFormat.parse(it)
-            parsedDate?.time?.coerceIn(minDate, maxDate)
+    // Parse time for the time picker
+    val (hourValue, minuteValue) = try {
+        val parts = timeValue.split(":")
+        if (parts.size == 2) {
+            parts[0].toInt() to parts[1].toInt()
+        } else {
+            0 to 0
         }
-    } catch (e: Exception) {
-        null
-    } ?: minDate  // Default to minDate if parsing fails or value is null
-
-    // Define selectable dates criteria
-    val selectableDates = object : SelectableDates {
-        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-            if (minDate != null && utcTimeMillis < minDate) {
-                return false
-            }
-
-            if (maxDate != null && utcTimeMillis > maxDate) {
-                return false
-            }
-
-            return true
-        }
+    } catch (_: Exception) {
+        0 to 0
     }
-
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = dateMillis,
-        initialDisplayedMonthMillis = dateMillis,
-        selectableDates = selectableDates
-    )
-
-    // Collect the selected date in milliseconds as state
-    val selectedDateMillis = datePickerState.selectedDateMillis
-
-
-    val hourValue = try {
-        value?.let {
-            val parsedDate = timeFormat.parse(it)
-            val calendar = Calendar.getInstance()
-            calendar.time = parsedDate
-            calendar.get(Calendar.HOUR_OF_DAY)
-        }
-    } catch (e: Exception) {
-        null
-    } ?: 0
-
-    val minuteValue = try {
-        value?.let {
-            val parsedDate = timeFormat.parse(it)
-            val calendar = Calendar.getInstance()
-            calendar.time = parsedDate
-            calendar.get(Calendar.MINUTE)
-        }
-    } catch (e: Exception) {
-        null
-    } ?: 0
 
     val timePickerState = rememberTimePickerState(
         initialHour = hourValue,
@@ -102,92 +63,89 @@ fun QuestionDateTimePicker(
 
     var expansion by remember { mutableStateOf(QuestionDateTimePickerExpansion.NONE) }
 
-    var visibleDate by remember { mutableStateOf<String?>(null) }
-    var visibleTime by remember { mutableStateOf<String?>(null) }
-
-
-    LaunchedEffect(Unit) {
-        if (selectedDateMillis != null) {
-            val dateString = calculateDateTime(selectedDateMillis, selectedHour, selectedMinute)
-            visibleDate = calculateDate(dateString)
-            visibleTime = calculateTime(dateString)
+    // Update the combined datetime value when either date or time changes
+    LaunchedEffect(dateValue, selectedHour, selectedMinute) {
+        if (dateValue != null) {
+            // Combine date and time into datetime format
+            val time = LocalTime.of(selectedHour, selectedMinute)
+            val timeString = time.format(DateTimeFormatter.ofPattern("HH:mm"))
+            val dateTimeString = "$dateValue" + "T" + timeString
+            onUpdate(dateTimeString)
         } else {
-            visibleDate = null
-            visibleTime = null
-        }
-    }
-
-    LaunchedEffect(selectedDateMillis, selectedHour, selectedMinute) {
-        if (selectedDateMillis != null) {
-            val dateString = calculateDateTime(selectedDateMillis, selectedHour, selectedMinute)
-            visibleDate = calculateDate(dateString)
-            visibleTime = calculateTime(dateString)
-            onUpdate(dateString)
-        } else {
-            visibleDate = null
-            visibleTime = null
             onUpdate(null)
         }
     }
 
-    Column {
-        Row {
-            OutlinedTextField(
-                value = visibleDate ?: "",
-                onValueChange = {},
-                enabled = false,
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        expansion = if (expansion == QuestionDateTimePickerExpansion.DATE) {
-                            QuestionDateTimePickerExpansion.NONE
-                        } else {
-                            QuestionDateTimePickerExpansion.DATE
-                        }
-                    },
-                trailingIcon = {
-                    Icon(Icons.Default.DateRange, contentDescription = null)
-                }
-            )
+    // Convert stored values to display format
+    val timeString = LocalTime.of(selectedHour, selectedMinute).format(DateTimeFormatter.ofPattern("HH:mm"))
+    val displayTime = formatTimeForDisplay(timeString)
 
-            OutlinedTextField(
-                value = visibleTime ?: "",
-                onValueChange = {},
-                enabled = false,
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        expansion = if (expansion == QuestionDateTimePickerExpansion.TIME) {
-                            QuestionDateTimePickerExpansion.NONE
-                        } else {
-                            QuestionDateTimePickerExpansion.TIME
-                        }
-                    },
-                trailingIcon = {
-                    Icon(Icons.Outlined.DateRange, contentDescription = null)
-                }
-            )
-        }
-
-        when (expansion) {
-            QuestionDateTimePickerExpansion.NONE -> {}
-            QuestionDateTimePickerExpansion.DATE -> {
-                DatePicker(
-                    state = datePickerState
-                )
+    Row(modifier = modifier) {
+        // Use the shared DatePickerField for the date portion
+        DatePickerField(
+            value = dateValue,
+            onValueChange = { newDate ->
+                dateValue = newDate
+            },
+            minDate = minDate,
+            maxDate = maxDate,
+            modifier = Modifier.weight(1f),
+            expanded = expansion == QuestionDateTimePickerExpansion.DATE,
+            onExpandedChange = { isExpanded ->
+                expansion =
+                    if (isExpanded) QuestionDateTimePickerExpansion.DATE else QuestionDateTimePickerExpansion.NONE
             }
+        )
 
-            QuestionDateTimePickerExpansion.TIME -> {
-                TimePicker(
-                    state = timePickerState,
-                    layoutType = TimePickerLayoutType.Horizontal
-                )
+        Spacer(modifier = Modifier.width(8.dp))
+
+        FieldTextInput(
+            value = displayTime,
+            onValueChange = {},
+            enabled = false,
+            modifier = Modifier.weight(1f),
+            onClick = {
+                expansion = QuestionDateTimePickerExpansion.TIME
+            },
+            trailing = {
+                Icon(Icons.Default.Schedule, contentDescription = null)
+            }
+        )
+    }
+
+    // Only show time dialog, date dialog is handled by DatePickerField
+    if (expansion == QuestionDateTimePickerExpansion.TIME) {
+        Dialog(
+            onDismissRequest = { expansion = QuestionDateTimePickerExpansion.NONE }
+        ) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TimePicker(
+                        state = timePickerState,
+                        layoutType = TimePickerLayoutType.Vertical
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = { expansion = QuestionDateTimePickerExpansion.NONE }) {
+                            Text(stringResource(Res.string.cancel))
+                        }
+                        TextButton(onClick = { expansion = QuestionDateTimePickerExpansion.NONE }) {
+                            Text(stringResource(Res.string.ok))
+                        }
+                    }
+                }
             }
         }
     }
 }
-
-val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
 
 /**
  * Extracts the date part from a date-time string in the format "yyyy-MM-dd'T'HH:mm".
@@ -252,36 +210,3 @@ fun calculateTime(value: String?): String? {
     }
 }
 
-
-fun calculateDateTime(dateMillis: Long?, hour: Int, minute: Int): String? {
-    if (dateMillis == null) {
-        // the value is empty without a date selection
-        return null
-    }
-
-    // Validate input parameters
-    require(hour in 0..23) { "Hour must be between 0 and 23 inclusive." }
-    require(minute in 0..59) { "Minute must be between 0 and 59 inclusive." }
-
-    // Define the system default time zone
-    val zoneId = ZoneId.systemDefault()
-
-    // Determine the base date
-    val baseLocalDate: LocalDate = Instant.ofEpochMilli(dateMillis).atZone(zoneId).toLocalDate()
-
-    // Create a LocalDateTime by combining the base date with the specified time
-    val localDateTime = LocalDateTime.of(baseLocalDate, LocalTime.of(hour, minute))
-
-    // Convert LocalDateTime to ZonedDateTime using the system default time zone
-    val zonedDateTime = localDateTime.atZone(zoneId)
-
-    // Convert ZonedDateTime to Instant
-    val instant = zonedDateTime.toInstant()
-
-    // Convert Instant to Date
-    val date = Date.from(instant)
-    if (date != null) {
-        return format.format(date)
-    }
-    return null
-}

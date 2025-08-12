@@ -49,6 +49,7 @@ kotlin {
 
             // additional default icons
             implementation(libs.jetbrains.material.icons)
+            implementation(libs.jetbrains.material.icons.extended)
         }
 
         commonTest.dependencies {

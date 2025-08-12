@@ -54,6 +54,7 @@ sarxos-webcam = { module = "com.github.sarxos:webcam-capture", version.ref = "we
 webcam-driver = { module = "io.github.eduramiba:webcam-capture-driver-native", version.ref = "webcam-driver" }
 composables-core = { module = "com.composables:core", version.ref = "composables" }
 jetbrains-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "jetbrains-material-icons" }
+jetbrains-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "jetbrains-material-icons" }
 vanniktech-multiplatform-locale = { module = "com.vanniktech:multiplatform-locale", version.ref = "multiplatform-locale" }
 google-libphone = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphone" }
 
