@@ -165,14 +165,9 @@ fun QuestionsDialogView(
                                 )
                                 FieldSpinner(
                                     selectedValue = field.value,
-                                    availableOptions = field.keyValueOptions!!.map {
-                                        SelectableValue(
-                                            it.value,
-                                            it.key
-                                        )
-                                    },
-                                    onSelect = {
-                                        viewModel.updateAnswer(field.id, it?.value)
+                                    availableOptions = field.keyValueOptions!!,
+                                    onSelect = { selectedOption ->
+                                        viewModel.updateAnswer(field.id, selectedOption?.value)
                                     }
                                 )
                             }
@@ -185,13 +180,18 @@ fun QuestionsDialogView(
                                 Text(
                                     field.label
                                 )
-                                field.keyValueOptions?.forEach { option ->
+                                field.keyValueOptions?.forEach { selectable ->
                                     QuestionCheckbox(
-                                        label = option.key,
-                                        checked = field.values?.contains(option.value) == true,
-                                        onSelect = {
-                                            viewModel.updateChoiceAnswer(field.id, option.value, it == "True")
-                                        })
+                                        label = selectable.label,
+                                        checked = field.values?.contains(selectable.value) == true,
+                                        onSelect = { isChecked ->
+                                            viewModel.updateChoiceAnswer(
+                                                field.id,
+                                                selectable.value,
+                                                isChecked == "True"
+                                            )
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -300,14 +300,16 @@ fun QuestionsDialogView(
 
                                 FieldSpinner(
                                     selectedValue = field.value,
-                                    availableOptions = field.keyValueOptions!!.map {
-                                        SelectableValue(
-                                            it.value,
-                                            it.key
+                                    availableOptions = field.keyValueOptions!!.map { selectableValue ->
+                                        selectableValue.copy(
+                                            content = {
+                                                // Custom rendering for dropdown items
+                                                FieldSpinnerItem(selectableValue.label)
+                                            }
                                         )
                                     },
-                                    onSelect = {
-                                        viewModel.updateAnswer(field.id, it?.value)
+                                    onSelect = { selectedOption ->
+                                        viewModel.updateAnswer(field.id, selectedOption?.value)
                                     }
                                 )
                             }

@@ -3,7 +3,7 @@ package eu.pretix.scan.tickets.presentation
 import androidx.lifecycle.ViewModel
 import com.vanniktech.locale.Country
 import eu.pretix.desktop.app.ui.FieldValidationState
-import eu.pretix.desktop.app.ui.KeyValueOption
+import eu.pretix.desktop.app.ui.SelectableValue
 import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.desktop.scan.tickets.data.PhoneValidator
 import eu.pretix.libpretixsync.check.QuestionType
@@ -82,7 +82,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
         _showNames.value = !config.hideNames
         // FIXME: What is DOB?
 
-        val formFields = data.requiredQuestions.mapNotNull { it ->
+        val formFields = data.requiredQuestions.mapNotNull {
             when (it.type) {
                 QuestionType.N,
                 QuestionType.EMAIL,
@@ -108,7 +108,12 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         it.type,
                         true,
                         keyValueOptions = it.options?.sortedBy { option -> option.position }
-                            ?.map { option -> KeyValueOption(option.value, option.server_id.toString()) },
+                            ?.map { option ->
+                                SelectableValue(
+                                    option.server_id.toString(),
+                                    label = option.value
+                                )
+                            },
                         options = it.options?.toMutableList() ?: emptyList()
                     )
                 }
@@ -121,7 +126,12 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         it.type,
                         true,
                         keyValueOptions = it.options?.sortedBy { option -> option.position }
-                            ?.map { option -> KeyValueOption(option.value, option.server_id.toString()) },
+                            ?.map { option ->
+                                SelectableValue(
+                                    option.server_id.toString(),
+                                    label = option.value
+                                )
+                            },
                         options = it.options?.toMutableList() ?: emptyList(),
                         values = it.dependencyValues
                     )
@@ -156,7 +166,12 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
                         true,
-                        keyValueOptions = Country.entries.map { country -> KeyValueOption(country.name, country.code) }
+                        keyValueOptions = Country.entries.map { country ->
+                            SelectableValue(
+                                country.code,
+                                label = country.name
+                            )
+                        }
                     )
                 }
             }
@@ -287,8 +302,9 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
             return answer
         }
 
-        if (!question.default.isNullOrBlank()) {
-            return question.default
+        val defaultValue = question.default
+        if (!defaultValue.isNullOrBlank()) {
+            return defaultValue
         }
 
         return null
@@ -303,7 +319,7 @@ data class QuestionFormField(
     val required: Boolean,
     var values: List<String>? = null,
     var dateConfig: DateConfig? = null,
-    val keyValueOptions: List<KeyValueOption>? = null,
+    val keyValueOptions: List<SelectableValue>? = null,
     val options: List<QuestionOption> = emptyList(),
     var validation: FieldValidationState? = null,
     // Extra value used by the UI for form state which isn't part of the pretixsync model
