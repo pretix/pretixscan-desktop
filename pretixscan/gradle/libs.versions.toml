@@ -1,0 +1,68 @@
+[versions]
+compose-plugin = "1.8.2"
+junit = "4.13.2"
+kotlin = "2.2.0"
+androidx-lifecycle = "2.9.1"
+androidx-navigation = "2.9.0-beta04"
+koin = "4.1.0"
+koin-compose = "4.1.0"
+appdirs = "1.2.2"
+sqlite_jdbc_version = "3.46.1.0"
+requery = "1.6.0"
+org_json = "20240303"
+joda_time = "2.13.0"
+protobuf = "0.9.4"
+sqldelight = "2.0.2"
+coroutines = "1.10.2"
+gadulka = "1.6.3"
+webcam-capture = "0.3.12"
+webcam-driver = "1.2.0"
+multiplatform-locale = "0.9.0"
+pdfbox = "3.0.4"
+composables = "1.39.0"
+jetbrains-material-icons = "1.7.3"
+libphone = "9.0.3"
+composeHotReload = "1.0.0-beta04"
+
+[libraries]
+apache-pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-desktop = { module = "androidx.lifecycle:lifecycle-viewmodel-desktop", version.ref = "androidx-lifecycle" }
+androidx-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
+koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
+#koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin-compose" }
+appdirs = { module = "net.harawata:appdirs", version.ref = "appdirs" }
+sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite_jdbc_version" }
+requery = { module = "io.requery:requery", version.ref = "requery" }
+requery-processor = { module = "io.requery:requery-processor", version.ref = "requery" }
+org-json = { module = "org.json:json", version.ref = "org_json" }
+joda-time = { module = "joda-time:joda-time", version.ref = "joda_time" }
+sqldelight-jvm = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "coroutines" }
+coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+gadulka = { module = "eu.iamkonstantin.kotlin:gadulka", version.ref = "gadulka" }
+sarxos-webcam = { module = "com.github.sarxos:webcam-capture", version.ref = "webcam-capture" }
+webcam-driver = { module = "io.github.eduramiba:webcam-capture-driver-native", version.ref = "webcam-driver" }
+composables-core = { module = "com.composables:core", version.ref = "composables" }
+jetbrains-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "jetbrains-material-icons" }
+jetbrains-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "jetbrains-material-icons" }
+vanniktech-multiplatform-locale = { module = "com.vanniktech:multiplatform-locale", version.ref = "multiplatform-locale" }
+google-libphone = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphone" }
+
+[plugins]
+composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
+app-cash-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+osdetector = { id = "com.google.osdetector", version = "1.7.3" }
