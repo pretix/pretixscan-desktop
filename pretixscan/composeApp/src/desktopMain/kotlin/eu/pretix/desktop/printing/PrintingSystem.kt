@@ -1,6 +1,6 @@
 package eu.pretix.desktop.printing
 
-import eu.pretix.desktop.app.ui.KeyValueOption
+import eu.pretix.desktop.app.ui.SelectableValue
 import eu.pretix.scan.settings.data.PrinterSource
 import org.jetbrains.compose.resources.getString
 import pretixscan.composeapp.generated.resources.Res
@@ -11,18 +11,18 @@ import javax.print.DocFlavor
 import javax.print.PrintServiceLookup
 
 class PrintingSystem : PrinterSource {
-    override fun listPrinters(): List<KeyValueOption> {
+    override fun listPrinters(): List<SelectableValue> {
         return PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.PAGEABLE, null)
             .map {
-                KeyValueOption(
-                    key = it.name,
-                    value = it.name
+                SelectableValue(
+                    value = it.name,
+                    label = it.name
                 )
             }
     }
 
 
-    override fun selectOption(name: String?): KeyValueOption? {
+    override fun selectOption(name: String?): SelectableValue? {
         if (name.isNullOrBlank()) {
             return null
         }
@@ -31,52 +31,52 @@ class PrintingSystem : PrinterSource {
                 it.name == name
             }
         if (service != null) {
-            return KeyValueOption(key = service.name, value = service.name)
+            return SelectableValue(value = service.name, label = service.name)
         }
         return null
     }
 
-    override suspend fun listPrinterOrientations(): List<KeyValueOption> {
+    override suspend fun listPrinterOrientations(): List<SelectableValue> {
         return listOf(
-            KeyValueOption(
-                key = "Auto",
-                value = getString(Res.string.settings_printer_layout_auto)
+            SelectableValue(
+                value = "Auto",
+                label = getString(Res.string.settings_printer_layout_auto)
             ),
-            KeyValueOption(
-                key = "Landscape",
-                value = getString(Res.string.settings_printer_layout_landscape)
+            SelectableValue(
+                value = "Landscape",
+                label = getString(Res.string.settings_printer_layout_landscape)
             ),
-            KeyValueOption(
-                key = "Portrait",
-                value = getString(Res.string.settings_printer_layout_portrait)
+            SelectableValue(
+                value = "Portrait",
+                label = getString(Res.string.settings_printer_layout_portrait)
             )
         )
     }
 
-    override suspend fun selectPrinterOrientation(value: String?): KeyValueOption? {
+    override suspend fun selectPrinterOrientation(value: String?): SelectableValue? {
         if (value.isNullOrBlank()) {
             return null
         }
 
         return when (value) {
             "Auto" -> {
-                KeyValueOption(
-                    key = "Auto",
-                    value = getString(Res.string.settings_printer_layout_auto)
+                SelectableValue(
+                    value = "Auto",
+                    label = getString(Res.string.settings_printer_layout_auto)
                 )
             }
 
             "Landscape" -> {
-                KeyValueOption(
-                    key = "Landscape",
-                    value = getString(Res.string.settings_printer_layout_landscape)
+                SelectableValue(
+                    value = "Landscape",
+                    label = getString(Res.string.settings_printer_layout_landscape)
                 )
             }
 
             "Portrait" -> {
-                KeyValueOption(
-                    key = "Portrait",
-                    value = getString(Res.string.settings_printer_layout_portrait)
+                SelectableValue(
+                    value = "Portrait",
+                    label = getString(Res.string.settings_printer_layout_portrait)
                 )
             }
 
