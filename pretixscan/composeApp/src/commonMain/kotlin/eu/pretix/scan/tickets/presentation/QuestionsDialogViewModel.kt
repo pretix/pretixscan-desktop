@@ -12,6 +12,7 @@ import eu.pretix.libpretixsync.db.QuestionOption
 import eu.pretix.libpretixsync.models.Question
 import eu.pretix.scan.tickets.data.EmailValidator
 import eu.pretix.scan.tickets.data.ResultStateData
+import eu.pretix.scan.tickets.data.calculateDefaultCountry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -305,6 +306,11 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
         val defaultValue = question.default
         if (!defaultValue.isNullOrBlank()) {
             return defaultValue
+        }
+
+        // For Country questions, use the system's default country when no value is set
+        if (question.type == QuestionType.CC) {
+            return calculateDefaultCountry(null).code
         }
 
         return null

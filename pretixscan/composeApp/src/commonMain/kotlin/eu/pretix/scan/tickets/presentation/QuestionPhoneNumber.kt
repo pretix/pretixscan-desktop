@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vanniktech.locale.Country
 import eu.pretix.desktop.app.ui.*
-import java.util.*
+import eu.pretix.scan.tickets.data.calculateDefaultCountry
 
 
 @Composable
@@ -72,17 +72,4 @@ fun QuestionPhoneNumber(
     }
 }
 
-fun calculateDefaultCountry(value: String?): Country {
-    val currentLocale: Locale = Locale.getDefault()
-    val userCountry = Country.fromOrNull(currentLocale.country) ?: Country.ENGLAND
-    if (value.isNullOrBlank()) {
-        return userCountry
-    }
-    // guess the country from the calling code
-    val matchingCountry = Country.entries.firstOrNull { c ->
-        c.callingCodes.any { code ->
-            value.startsWith(code)
-        }
-    }
-    return matchingCountry ?: userCountry
-}
+
