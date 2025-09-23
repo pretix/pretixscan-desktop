@@ -1,7 +1,6 @@
 package eu.pretix.desktop.cache
 
 import app.cash.sqldelight.ColumnAdapter
-import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
 import eu.pretix.libpretixsync.sqldelight.*
 import java.math.BigDecimal
@@ -9,23 +8,9 @@ import java.util.*
 
 fun createSyncDatabase(
     driver: SqlDriver,
-    version: Long?,
     dateAdapter: ColumnAdapter<Date, String>,
     bigDecimalAdapter: ColumnAdapter<BigDecimal, Double>,
 ): SyncDatabase {
-//    // TODO: Check DB migrations
-//    if (version == null || version == 0L) {
-//        try {
-//            val t = object : TransacterImpl(driver) {}
-//            t.transaction {
-//                SyncDatabase.Schema.create(driver)
-//            }
-//        } catch (e: Throwable) {
-//            e.printStackTrace()
-//            throw e
-//        }
-//    }
-
     return SyncDatabase(
         driver = driver,
         CheckInAdapter = CheckIn.Adapter(
@@ -64,16 +49,4 @@ fun createSyncDatabase(
         ),
         QueuedCheckInAdapter = QueuedCheckIn.Adapter(datetimeAdapter = dateAdapter),
     )
-}
-
-fun readVersionPragma(driver: SqlDriver): Long? {
-    return driver.executeQuery(
-        identifier = null,
-        sql = "PRAGMA user_version;",
-        mapper = { cursor ->
-            cursor.next()
-            QueryResult.Value(cursor.getLong(0))
-        },
-        parameters = 0,
-    ).value
 }

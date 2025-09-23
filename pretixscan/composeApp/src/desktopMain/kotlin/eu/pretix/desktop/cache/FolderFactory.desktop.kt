@@ -10,7 +10,7 @@ import net.harawata.appdirs.AppDirsFactory
  */
 actual fun getUserDataFolder(): String {
     val appDirsInstance = AppDirsFactory.getInstance()!!
-    return appDirsInstance.getUserDataDir("pretixscan", "1", "pretix")
+    return appDirsInstance.getUserDataDir("pretixscan", "2", "pretix")
 }
 
 /**
@@ -26,5 +26,5 @@ actual fun getUserDataFolder(): String {
  */
 actual fun getUserCacheFolder(): String {
     val appDirsInstance = AppDirsFactory.getInstance()!!
-    return appDirsInstance.getUserCacheDir("pretixscan", "1", "pretix")
+    return appDirsInstance.getUserCacheDir("pretixscan", "2", "pretix")
 }

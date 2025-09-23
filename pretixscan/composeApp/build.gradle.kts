@@ -70,8 +70,6 @@ kotlin {
             implementation(libs.apache.pdfbox)
 
 
-            compileOnly(libs.requery)
-            compileOnly(libs.requery.processor)
             implementation(project(":libpretixsync"))
             implementation(project(":libpretixprint"))
 
