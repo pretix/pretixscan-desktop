@@ -55,13 +55,14 @@ class AppConfig(val dataDir: String) : ConfigStore {
     private val PREFS_KEY_LARGE_COLOR = "large_color"
     private val PREFS_KEY_ALLOW_SEARCH = "allow_search"
     private val PREFS_KEY_API_VERSION = "pretix_api_version"
-    private val PREFS_KEY_ASYNC_MODE = "async"
+    private val PREFS_KEY_OFFLINE_MODE = "offline"
     private val PREFS_KEY_PROXY_MODE = "proxy"
     private val PREFS_KEY_LAST_SYNC = "last_sync"
     private val PREFS_KEY_LAST_FAILED_SYNC = "last_failed_sync"
     private val PREFS_KEY_LAST_FAILED_SYNC_MSG = "last_failed_sync_msg"
     private val PREFS_KEY_LAST_DOWNLOAD = "last_download"
     private val PREFS_KEY_LAST_CLEANUP = "last_cleanup"
+    private val PREFS_KEY_UI_REDUCE_MOTION = "ui_reduce_motion"
     private val PREFS_KEY_LAST_STATUS_DATA = "last_status_data"
     private val PREFS_KEY_LAST_UPDATE_CHECK = "last_update_check_"
     private val PREFS_KEY_UPDATE_CHECK_NEWER_VERSION = "update_check_newer_version_"
@@ -127,10 +128,10 @@ class AppConfig(val dataDir: String) : ConfigStore {
             prefs.flush()
         }
 
-    var asyncModeEnabled
-        get() = prefs.getBoolean(PREFS_KEY_ASYNC_MODE, false)
+    var offlineMode
+        get() = prefs.getBoolean(PREFS_KEY_OFFLINE_MODE, false)
         set(value) {
-            prefs.putBoolean(PREFS_KEY_ASYNC_MODE, value)
+            prefs.putBoolean(PREFS_KEY_OFFLINE_MODE, value)
             prefs.flush()
         }
 
@@ -253,7 +254,7 @@ class AppConfig(val dataDir: String) : ConfigStore {
         return se
     }
 
-    override fun getSelectedCheckinListForEvent(event: String?): Long? {
+    override fun getSelectedCheckinListForEvent(event: String?): Long {
         return checkInListId
     }
 
@@ -293,7 +294,7 @@ class AppConfig(val dataDir: String) : ConfigStore {
             prefs.flush()
         }
 
-    var hideNames: Boolean
+    var uiHideNames: Boolean
         get() = prefs.getBoolean(PREFS_KEY_HIDE_NAMES, true)
         set(value) {
             prefs.putBoolean(PREFS_KEY_HIDE_NAMES, value)
@@ -339,6 +340,13 @@ class AppConfig(val dataDir: String) : ConfigStore {
         get() = prefs.getBoolean(PREFS_KEY_AUTO_PRINT_BADGES, false)
         set(value) {
             prefs.putBoolean(PREFS_KEY_AUTO_PRINT_BADGES, value)
+            prefs.flush()
+        }
+
+    var uiReduceMotion: Boolean
+        get() = prefs.getBoolean(PREFS_KEY_UI_REDUCE_MOTION, false)
+        set(value) {
+            prefs.putBoolean(PREFS_KEY_UI_REDUCE_MOTION, value)
             prefs.flush()
         }
 

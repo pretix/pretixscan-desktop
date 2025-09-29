@@ -21,17 +21,7 @@ use it, but do have a backup plan.
 Building and Running
 --------------------
 
-This project contains submodules, so the first command you execute should be::
-
-    git submodule update --init
-
-This project is built using Gradle. It requires a JDK in version 11.
-You can then build and run the project using::
-
-    cd pretixscan
-    JAVA_HOME=/usr/lib/jvm/java-11-jdk ./gradlew :gui:run
-
-To create packages, see PACKAGING.md.
+To build and run the app locally, please refer to the [developer readme](pretixscan/README.md).
 
 FAQ
 ---
@@ -75,14 +65,14 @@ in place that applies to all project contributions, including issues, pull reque
 
 License
 -------
-The code in this repository is published under the terms of the Apache License. 
+The code in this repository is published under the terms of the Apache License.
 See the LICENSE file for the complete license text.
 
 This project is maintained by Raphael Michel <mail@raphaelmichel.de>. See the
 AUTHORS file for a list of all the awesome folks who contributed to this project.
 
 This project is 100 percent free and open source software. If you are interested in
-commercial support, hosting services or supporting this project financially, please 
+commercial support, hosting services or supporting this project financially, please
 go to `pretix.eu`_ or contact Raphael directly.
 
 .. _pretix: https://pretix.eu

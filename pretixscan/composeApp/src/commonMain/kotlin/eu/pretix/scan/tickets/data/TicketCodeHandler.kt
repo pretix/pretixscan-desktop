@@ -65,7 +65,7 @@ class TicketCodeHandler(
             resultOffline = checkResult.offline,
             ticketAndVariationName = checkResult.ticketAndVariationName(),
             orderCodeAndPositionId = checkResult.orderCodeAndPositionId(),
-            attendeeName = checkResult.formattedAttendeeName(conf.hideNames),
+            attendeeName = checkResult.formattedAttendeeName(conf.uiHideNames),
             seat = checkResult.formattedSeat(),
             reasonExplanation = checkResult.reasonExplanation(),
             questionAndAnswers = checkResult.formattedAnswers(),

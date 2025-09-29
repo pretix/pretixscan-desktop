@@ -60,6 +60,26 @@ fun SettingsScreen(
                         )
                     }
                     item {
+                        Section(stringResource(Res.string.settings_label_verification)) {
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    CheckboxWithLabel(
+                                        label = stringResource(Res.string.settings_label_scan_offline),
+                                        description = null,
+                                        checked = form.offlineMode,
+                                        onCheckedChange = {
+                                            coroutineScope.launch {
+                                                viewModel.setOfflineMode(it)
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    item {
                         Section(stringResource(Res.string.settings_label_sync)) {
                             Setting {
                                 Column(
@@ -92,6 +112,40 @@ fun SettingsScreen(
                                         onCheckedChange = {
                                             coroutineScope.launch {
                                                 viewModel.setPlaySounds(it)
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    CheckboxWithLabel(
+                                        label = stringResource(Res.string.settings_label_ui_reduce_motion),
+                                        description = stringResource(Res.string.settings_label_ui_reduce_motion_summary),
+                                        checked = form.uiReduceMotion,
+                                        onCheckedChange = {
+                                            coroutineScope.launch {
+                                                viewModel.setUiReduceMotion(it)
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    CheckboxWithLabel(
+                                        label = stringResource(Res.string.settings_label_hide_names),
+                                        description = stringResource(Res.string.settings_label_hide_names_summary),
+                                        checked = form.uiHideNames,
+                                        onCheckedChange = {
+                                            coroutineScope.launch {
+                                                viewModel.setUiHideNames(it)
                                             }
                                         }
                                     )

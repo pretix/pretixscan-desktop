@@ -27,6 +27,9 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
     private val _showNames = MutableStateFlow(false)
     val showNames = _showNames.asStateFlow()
 
+    private val _uiBlinkSpecialTickets = MutableStateFlow(true)
+    val uiBlinkSpecialTickets = _uiBlinkSpecialTickets.asStateFlow()
+
     private val _modalQuestion = MutableStateFlow<QuestionFormField?>(null)
     val modalQuestion = _modalQuestion.asStateFlow()
 
@@ -67,6 +70,12 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
             }
     }
 
+
+    fun applyUiSettings() {
+        _uiBlinkSpecialTickets.value = !config.uiReduceMotion
+        _showNames.value = !config.uiHideNames
+    }
+
     fun buildQuestionsForm(data: ResultStateData) {
         log.info(
             "there are ${data.requiredQuestions.size} questions, ${
@@ -80,10 +89,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
             }"
         )
 
-        _showNames.value = !config.hideNames
-        // FIXME: What is DOB?
-
-        val formFields = data.requiredQuestions.mapNotNull {
+        val formFields: List<QuestionFormField> = data.requiredQuestions.map {
             when (it.type) {
                 QuestionType.N,
                 QuestionType.EMAIL,
@@ -170,7 +176,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
                         keyValueOptions = Country.entries.map { country ->
                             SelectableValue(
                                 country.code,
-                                label = country.name
+                                label = country.readableName()
                             )
                         }
                     )
@@ -205,7 +211,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
     fun updateAnswer(questionId: Long, answer: String?, extra: String? = null) {
         _form.value = _form.value.map { field ->
             if (field.id == questionId) {
-                log.info("Updating answer for $questionId (${field.fieldType}) to $answer")
+                log.info("Updating answer for $questionId (${field.fieldType}) to $answer, extra: $extra")
 
                 when (field.fieldType) {
                     QuestionType.F -> {

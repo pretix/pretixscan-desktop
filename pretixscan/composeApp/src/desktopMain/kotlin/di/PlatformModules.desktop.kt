@@ -39,7 +39,7 @@ actual val platformModules: List<Module>
 
                 val uploadInterval: Long = 1000
                 var downloadInterval: Long = 30000
-                if (!config.asyncModeEnabled) {
+                if (!config.offlineMode) {
                     downloadInterval = 120000
                 }
 

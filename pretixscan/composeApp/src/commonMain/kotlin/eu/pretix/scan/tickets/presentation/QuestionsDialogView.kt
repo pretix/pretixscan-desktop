@@ -1,29 +1,29 @@
 package eu.pretix.scan.tickets.presentation
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import eu.pretix.desktop.app.ui.*
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.scan.tickets.data.ResultStateData
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -40,9 +40,12 @@ fun QuestionsDialogView(
     val viewModel = koinViewModel<QuestionsDialogViewModel>()
     val form by viewModel.form.collectAsState()
     val modalQuestion by viewModel.modalQuestion.collectAsState()
+    val uiBlinkSpecialTickets by viewModel.uiBlinkSpecialTickets.collectAsState()
+    val showNames by viewModel.showNames.collectAsState()
     val state = rememberLazyListState()
     LaunchedEffect(data) {
         viewModel.buildQuestionsForm(data)
+        viewModel.applyUiSettings()
     }
 
     val focusRequester = remember { FocusRequester() }
@@ -70,34 +73,35 @@ fun QuestionsDialogView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.padding(end = 16.dp))
-                        Text(data.ticketAndVariationName ?: "")
-                        if (!data.attendeeName.isNullOrBlank()) {
-                            Text(data.attendeeName)
-                        }
 
-                        Spacer(modifier = Modifier.weight(1.0f))
+                        Column(horizontalAlignment = Alignment.Start) {
+                            Row {
+                                if (showNames && !data.attendeeName.isNullOrBlank()) {
+                                    Text(data.attendeeName, style = MaterialTheme.typography.headlineSmall)
+                                }
+                            }
 
-                        // allow selection of the value with the mouse e.g. to copy-paste into pretix.eu
-                        SelectionContainer {
-                            Text(data.orderCodeAndPositionId ?: "")
+
+                            Row {
+                                Text(data.ticketAndVariationName ?: "")
+
+                                Spacer(modifier = Modifier.weight(1.0f))
+
+                                // allow selection of the value with the mouse e.g. to copy-paste into pretix.eu
+                                SelectionContainer {
+                                    Text(data.orderCodeAndPositionId ?: "")
+                                }
+                            }
+
                         }
                     }
 
                     if (data.attention) {
-                        Row(
-                            modifier = Modifier
-                                .background(CustomColor.BrandBlue.asColor())
-                                .fillMaxWidth()
-                                .padding(PaddingValues(16.dp)),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text(stringResource(Res.string.ticket_attention))
-                            Image(
-                                painter = painterResource(Res.drawable.ic_warning_white_24dp),
-                                contentDescription = stringResource(Res.string.ticket_attention),
+                        AttentionTicketBar(
+                            Modifier.blinking(
+                                alphaEnabled = uiBlinkSpecialTickets
                             )
-                        }
+                        )
                     }
                 }
             }
@@ -111,7 +115,8 @@ fun QuestionsDialogView(
                                     viewModel.updateAnswer(field.id, newValue)
                                 },
                                 label = field.label,
-                                maxLines = 1
+                                maxLines = 1,
+                                required = field.required
                             )
                         }
 
@@ -123,7 +128,8 @@ fun QuestionsDialogView(
                                     viewModel.updateAnswer(field.id, newValue)
                                 },
                                 label = field.label,
-                                maxLines = 1
+                                maxLines = 1,
+                                required = field.required
                             )
                         }
 
@@ -135,7 +141,8 @@ fun QuestionsDialogView(
                                     value = field.value ?: "",
                                     onValueChange = { viewModel.updateAnswer(field.id, it) },
                                     maxLines = 2,
-                                    label = field.label
+                                    label = field.label,
+                                    required = field.required
                                 )
                             }
                         }
@@ -144,8 +151,10 @@ fun QuestionsDialogView(
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(
-                                    field.label
+                                RequiredTextLabel(
+                                    label = field.label,
+                                    required = field.required,
+                                    fontWeight = FontWeight.SemiBold
                                 )
                                 QuestionCheckbox(
                                     label = stringResource(Res.string.yes),
@@ -160,8 +169,10 @@ fun QuestionsDialogView(
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(
-                                    field.label
+                                RequiredTextLabel(
+                                    label = field.label,
+                                    required = field.required,
+                                    fontWeight = FontWeight.SemiBold
                                 )
                                 FieldSpinner(
                                     selectedValue = field.value,
@@ -177,8 +188,10 @@ fun QuestionsDialogView(
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(
-                                    field.label
+                                RequiredTextLabel(
+                                    label = field.label,
+                                    required = field.required,
+                                    fontWeight = FontWeight.SemiBold
                                 )
                                 field.keyValueOptions?.forEach { selectable ->
                                     QuestionCheckbox(
@@ -200,8 +213,10 @@ fun QuestionsDialogView(
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(
-                                    field.label
+                                RequiredTextLabel(
+                                    label = field.label,
+                                    required = field.required,
+                                    fontWeight = FontWeight.SemiBold
                                 )
                                 Row {
                                     Column(
@@ -241,8 +256,10 @@ fun QuestionsDialogView(
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(
-                                    field.label
+                                RequiredTextLabel(
+                                    label = field.label,
+                                    required = field.required,
+                                    fontWeight = FontWeight.SemiBold
                                 )
                                 QuestionDatepicker(
                                     minDate = field.dateConfig?.minDate,
@@ -259,8 +276,10 @@ fun QuestionsDialogView(
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(
-                                    field.label
+                                RequiredTextLabel(
+                                    label = field.label,
+                                    required = field.required,
+                                    fontWeight = FontWeight.SemiBold
                                 )
                                 QuestionTimePicker(
                                     value = field.value,
@@ -276,8 +295,10 @@ fun QuestionsDialogView(
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(
-                                    field.label
+                                RequiredTextLabel(
+                                    label = field.label,
+                                    required = field.required,
+                                    fontWeight = FontWeight.SemiBold
                                 )
                                 QuestionDateTimePicker(
                                     minDate = field.dateConfig?.minDate,
@@ -294,10 +315,11 @@ fun QuestionsDialogView(
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(
-                                    field.label
+                                RequiredTextLabel(
+                                    label = field.label,
+                                    required = field.required,
+                                    fontWeight = FontWeight.SemiBold
                                 )
-
                                 FieldSpinner(
                                     selectedValue = field.value,
                                     availableOptions = field.keyValueOptions!!.map { selectableValue ->
@@ -320,10 +342,11 @@ fun QuestionsDialogView(
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(
-                                    field.label
+                                RequiredTextLabel(
+                                    label = field.label,
+                                    required = field.required,
+                                    fontWeight = FontWeight.SemiBold
                                 )
-
                                 QuestionPhoneNumber(
                                     selectedValue = field.value,
                                     onSelect = { phone, country ->

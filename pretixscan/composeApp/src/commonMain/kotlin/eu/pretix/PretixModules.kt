@@ -48,10 +48,13 @@ val pretixModules: List<Module>
                 val appCache = get<AppCache>()
 
                 if (config.proxyMode) {
+                    println("Resolving TicketCheckProvider in proxy mode")
                     ProxyCheckProvider(config, get<HttpClientFactory>())
-                } else if (config.asyncModeEnabled) {
+                } else if (config.offlineMode) {
+                    println("Resolving TicketCheckProvider in offline mode")
                     AsyncCheckProvider(config, appCache.db)
                 } else {
+                    println("Resolving TicketCheckProvider in online mode")
                     OnlineCheckProvider(
                         config,
                         get<HttpClientFactory>(),

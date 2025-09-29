@@ -11,4 +11,7 @@ data class ConfigurableSettings(
     val layouts: List<SelectableValue> = emptyList(),
     val syncAuto: Boolean = false,
     val playSounds: Boolean = false,
+    val offlineMode: Boolean = false,
+    val uiReduceMotion: Boolean = false,
+    val uiHideNames: Boolean = false,
 )

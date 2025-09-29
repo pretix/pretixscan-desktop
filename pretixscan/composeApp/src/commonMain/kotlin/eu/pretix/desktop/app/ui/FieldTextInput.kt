@@ -28,6 +28,7 @@ fun FieldTextInput(
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
     enabled: Boolean = true,
+    required: Boolean = false,
     validation: FieldValidationState? = null,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
@@ -43,7 +44,7 @@ fun FieldTextInput(
         modifier = modifier,
     ) {
         if (label != null) {
-            Text(label, modifier = Modifier.padding(bottom = 8.dp), fontWeight = FontWeight.SemiBold)
+            RequiredTextLabel(label = label, required = required, fontWeight = FontWeight.SemiBold)
         }
         val inputModifier = Modifier
             .fillMaxWidth()

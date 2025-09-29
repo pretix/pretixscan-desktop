@@ -1,26 +1,40 @@
 This is a Kotlin Multiplatform project targeting Desktop (JVM).
 
+## Getting started
+
+This project contains submodules, so the first command you execute should be:
+
+```bash
+git submodule update --init
+```
+
+
 ## Requirements
 
-The project is being developed using JDK 21. Some dependencies require JDK 11 to be available on the system to build.
+The project is being developed using JDK 23. Some dependencies require JDK 11 to be available on the system to build.
+
+Navigate to the root of the project source code `cd pretixscan`.
 
 You can run the desktop application in full local runtime (ideal for development):
 
-```shell
+```bash
 ./gradlew run
 ```
 
 To run the final binary image for the current platform:
 
-```shell
+```bash
 ./gradlew runDistributable
 ```
 
 ## Packaging
 
-https://github.com/JetBrains/compose-multiplatform/tree/master/tutorials/Native_distributions_and_local_execution
+KMP provides for various native distributions to be created, please refer to the [JetBrains documentation](https://github.com/JetBrains/compose-multiplatform/tree/master/tutorials/Native_distributions_and_local_execution).
 
-```shell
+
+For example, create a distribution package for the current OS:
+
+```bash
 ./gradlew packageDistributionForCurrentOS
 ```
 

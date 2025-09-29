@@ -33,6 +33,9 @@ class SettingsViewModel(
             printBadges = appConfig.printBadges,
             syncAuto = appConfig.syncAuto,
             playSounds = appConfig.playSound,
+            offlineMode = appConfig.offlineMode,
+            uiReduceMotion = appConfig.uiReduceMotion,
+            uiHideNames = appConfig.uiHideNames,
         )
     }
 
@@ -64,6 +67,21 @@ class SettingsViewModel(
 
     suspend fun setPlaySounds(value: Boolean) {
         appConfig.playSound = value
+        loadSettings()
+    }
+
+    suspend fun setUiReduceMotion(value: Boolean) {
+        appConfig.uiReduceMotion = value
+        loadSettings()
+    }
+
+    suspend fun setUiHideNames(value: Boolean) {
+        appConfig.uiHideNames = value
+        loadSettings()
+    }
+
+    suspend fun setOfflineMode(value: Boolean) {
+        appConfig.offlineMode = value
         loadSettings()
     }
 
