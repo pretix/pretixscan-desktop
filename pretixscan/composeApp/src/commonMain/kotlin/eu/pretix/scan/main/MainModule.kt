@@ -11,13 +11,18 @@ import org.koin.dsl.module
 internal val mainModule
     get() = module {
         factory {
-            MainViewModel(get(), get())
+            MainViewModel(get(), get(), get())
         }
         factory {
             SelectEventListViewModel(get<AppCache>(), get<AppConfig>(), get<EventManager>())
         }
-        factory {
-            SelectCheckInListViewModel(get<AppCache>(), get<AppConfig>())
+        factory { (eventSlug: String?, subEventId: Long?) ->
+            SelectCheckInListViewModel(
+                appCache = get(),
+                appConfig = get(),
+                eventSlugOverride = eventSlug,
+                subEventIdOverride = subEventId
+            )
         }
 
     }

@@ -3,17 +3,26 @@ package eu.pretix.scan.main.presentation.toolbar
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -46,20 +55,42 @@ fun MainToolbar(
             .padding(16.dp)
     ) {
         Logo()
-        Button(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            onClick = {
-                viewModel.beginEventSelection()
-            }) {
-            Row {
-                Text(eventSelection.eventName)
-                Icon(
-                    Icons.Default.ArrowDropDown,
-                    contentDescription = stringResource(Res.string.operation_select_event),
-                    tint = CustomColor.White.asColor()
-                )
+
+        // Multi-event button
+        LaunchedEffect(Unit) {
+            viewModel.updateEventButtonDisplay()
+        }
+
+        val buttonLabel by viewModel.eventButtonLabel.collectAsState()
+        val tooltipText by viewModel.eventButtonTooltip.collectAsState()
+
+        val buttonContent = @Composable {
+            Button(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                onClick = {
+                    viewModel.beginEventSelection()
+                }
+            ) {
+                Row {
+                    Text(buttonLabel)
+                    Icon(
+                        Icons.Default.ArrowDropDown,
+                        contentDescription = stringResource(Res.string.operation_select_event),
+                        tint = CustomColor.White.asColor()
+                    )
+                }
             }
         }
+
+        // Apply tooltip only when it's not empty (multiple events)
+        if (tooltipText.isNotEmpty()) {
+            Tooltip(tooltipText) {
+                buttonContent()
+            }
+        } else {
+            buttonContent()
+        }
+
         Spacer(Modifier.weight(1f))
 
         ScanTypeToggle(isEntry, onChangeScanType = {

@@ -1,6 +1,16 @@
 package eu.pretix.scan.main.presentation
 
 import eu.pretix.desktop.cache.EventSelection
+import org.joda.time.DateTime
+
+// Presentation model for multi-event selection
+data class EventForSelection(
+    val slug: String,
+    val name: String,
+    val subEventId: Long?,
+    val dateFrom: DateTime?,
+    val dateTo: DateTime?
+)
 
 sealed class MainUiState<out T> {
     data class ReadyToScan<out T>(val data: T) : MainUiState<T>()
@@ -9,6 +19,13 @@ sealed class MainUiState<out T> {
     data object Loading : MainUiState<Nothing>()
     data object SelectEvent : MainUiState<Nothing>()
     data object SelectCheckInList : MainUiState<Nothing>()
+
+    // State for sequential per-event check-in list selection in advanced mode
+    data class SelectCheckInListsForMultipleEvents(
+        val events: List<EventForSelection>,
+        val currentEventIndex: Int = 0,
+        val completedSelections: Map<String, Long> = emptyMap() // Map<eventSlug, checkInListId>
+    ) : MainUiState<Nothing>()
 }
 
 data class MainUiStateData(val eventSelection: EventSelection, val secret: String? = null)

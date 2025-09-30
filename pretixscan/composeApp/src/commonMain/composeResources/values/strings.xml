@@ -33,10 +33,14 @@
     <string name="debug_info_device">Device: %1$s</string>
     <string name="action_search">Search</string>
     <string name="action_manual">Manual setup</string>
+    <string name="action_reload_events">Reload Events</string>
     <string name="operation_select_event">Select Event</string>
     <string name="operation_select_events">Select Events</string>
     <string name="events_selected">%s events selected</string>
     <string name="operation_select_checkinlist">Select Check-in list</string>
+    <string name="advanced_mode">Advanced Mode</string>
+    <string name="advanced_mode_description">Select multiple events for concurrent scanning</string>
+    <string name="change_event_selection">Change event selection</string>
     <string name="settings_label_auto_sync">Automatic Synchronization</string>
     <string name="settings_label_orders_sync">Download orders</string>
     <string name="settings_summary_orders_sync">Without this option, pretixSCAN will not download order data and not be able to scan offline tickets with pretix\'s default settings.</string>
@@ -205,4 +209,6 @@
     <string name="settings_printer_layout_landscape">Landscape</string>
     <string name="settings_printer_layout_portrait">Portrait</string>
     <string name="settings_label_badge_layout">Orientation</string>
+    <string name="sync_completed">Sync completed successfully</string>
+    <string name="sync_error">Sync completed with errors</string>
 </resources>

@@ -1,5 +1,3 @@
-// ABOUTME: Questions with custom components sometimes use stand-alone Text for their label
-
 package eu.pretix.desktop.app.ui
 
 import androidx.compose.foundation.layout.padding

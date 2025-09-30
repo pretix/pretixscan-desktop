@@ -13,6 +13,8 @@ import java.util.logging.Logger
 class SelectCheckInListViewModel(
     private val appCache: AppCache,
     private val appConfig: AppConfig,
+    private val eventSlugOverride: String? = null,
+    private val subEventIdOverride: Long? = null
 ) : ViewModel() {
     private val log = Logger.getLogger("SelectCheckInListViewModel")
 
@@ -29,17 +31,27 @@ class SelectCheckInListViewModel(
         run {
             _uiState.value = SelectCheckInListUiState.Loading
             try {
-                val eventSlug = appConfig.eventSlug!!
-                val lists: List<CheckInList> =
-                    appCache.db.checkInListQueries.selectByEventSlug(eventSlug).executeAsList()
+                val eventSlug = eventSlugOverride ?: appConfig.eventSlug!!
+                val subEventId = subEventIdOverride ?: appConfig.subEventId
 
-                log.info("Found ${lists.size} available lists for selection.")
+                val lists: List<CheckInList> = if (subEventId != null && subEventId > 0) {
+                    // Filter by subevent if specified
+                    appCache.db.checkInListQueries
+                        .selectByEventSlug(eventSlug)
+                        .executeAsList()
+                        .filter { it.subevent_id == null || it.subevent_id == subEventId }
+                } else {
+                    appCache.db.checkInListQueries.selectByEventSlug(eventSlug).executeAsList()
+                }
+
+                log.info("Found ${lists.size} available lists for event $eventSlug (subevent: $subEventId)")
                 if (lists.isEmpty()) {
                     _uiState.update { SelectCheckInListUiState.Empty }
                 } else {
                     _uiState.update { SelectCheckInListUiState.Selecting(lists) }
                 }
             } catch (e: Exception) {
+                log.severe("Failed to load lists: ${e.message}")
                 e.printStackTrace()
                 _uiState.update { SelectCheckInListUiState.Error(e.message ?: "Unknown error") }
             }

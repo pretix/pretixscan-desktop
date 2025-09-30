@@ -24,6 +24,8 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
     private val _minimumSyncState = MutableStateFlow<SyncState>(SyncState.Idle)
     val minimumSyncState: StateFlow<SyncState> = _minimumSyncState.asStateFlow()
 
+    private val _eventSyncStates = MutableStateFlow<Map<String, EventSyncState>>(emptyMap())
+    val eventSyncStates: StateFlow<Map<String, EventSyncState>> = _eventSyncStates.asStateFlow()
 
     private val _showMainSyncProgress = MutableStateFlow(false)
     val showMainSyncProgress: StateFlow<Boolean> = _showMainSyncProgress.asStateFlow()
@@ -65,22 +67,65 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
                 _syncState.value = SyncState.Idle
                 return
             }
-            log.info("performing a sync")
-            _syncState.value = SyncState.InProgress("")
+
+            val events = appConfig.eventSelections
+            if (events.isEmpty()) {
+                log.info("no events to sync")
+                _syncState.value = SyncState.Idle
+                return
+            }
+
+            log.info("performing sync for ${events.size} events")
+
+            // Initialize event sync states
+            _eventSyncStates.value = events.associate {
+                it.eventSlug to EventSyncState.Pending
+            }
+
+            _syncState.value = SyncState.InProgress("Syncing ${events.size} event(s)...")
             val syncManager = GlobalContext.get().get<SyncManager>()
-            syncManager.sync(force) {
+
+            syncManager.sync(force) { message ->
                 runBlocking {
                     withContext(Dispatchers.Main) {
-                        _syncState.value = SyncState.InProgress(it)
+                        _syncState.value = SyncState.InProgress(message)
+
+                        // Update per-event state based on message content
+                        events.forEach { event ->
+                            if (message.contains(event.eventSlug, ignoreCase = true) ||
+                                message.contains(event.eventName, ignoreCase = true)) {
+                                _eventSyncStates.update { states ->
+                                    states + (event.eventSlug to EventSyncState.InProgress(message))
+                                }
+                            }
+                        }
                     }
                 }
             }
+
+            // Mark all as success
+            _eventSyncStates.value = events.associate {
+                it.eventSlug to EventSyncState.Success
+            }
+
             _syncState.value = SyncState.Success(lastSync = nowMillis)
             appConfig.lastFailedSync = 0L
             appConfig.lastSync = nowMillis
             appConfig.lastDownload = nowMillis
         } catch (e: Exception) {
             log.warning("sync failed: ${e.stackTraceToString()}")
+
+            // Mark in-progress events as error
+            _eventSyncStates.update { states ->
+                states.mapValues { (_, state) ->
+                    when (state) {
+                        is EventSyncState.InProgress -> EventSyncState.Error(e.localizedMessage ?: "Sync failed")
+                        EventSyncState.Pending -> EventSyncState.Error(e.localizedMessage ?: "Sync failed")
+                        else -> state
+                    }
+                }
+            }
+
             _syncState.value = SyncState.Error(e.localizedMessage ?: "Unknown error")
             appConfig.lastFailedSync = nowMillis
             appConfig.lastFailedSyncMsg = e.localizedMessage ?: "Unknown error"
@@ -158,6 +203,13 @@ sealed class SyncState {
     data class InProgress(val message: String) : SyncState()
     data class Success(val lastSync: Long) : SyncState()
     data class Error(val message: String) : SyncState()
+}
+
+sealed class EventSyncState {
+    object Pending : EventSyncState()
+    data class InProgress(val message: String) : EventSyncState()
+    object Success : EventSyncState()
+    data class Error(val message: String) : EventSyncState()
 }
 
 val LocalSyncRootService = compositionLocalOf<SyncRootService> {

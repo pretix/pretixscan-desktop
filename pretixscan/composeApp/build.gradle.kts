@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlinx.serialization)
     id("kotlin-kapt")
     alias(libs.plugins.osdetector)
     alias(libs.plugins.composeHotReload)
@@ -34,6 +35,7 @@ kotlin {
             implementation(libs.org.json)
             implementation(libs.joda.time)
             implementation(libs.vanniktech.multiplatform.locale)
+            implementation(libs.kotlinx.serialization.json)
 
             // play short audio files
             implementation(libs.gadulka)

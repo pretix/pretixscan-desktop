@@ -2,24 +2,58 @@ package eu.pretix.desktop.cache
 
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.joda.time.DateTime
 import org.json.JSONObject
 import java.io.File
 import java.util.prefs.Preferences
+import java.util.logging.Logger
 
 
+object DateTimeSerializer : KSerializer<DateTime> {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("DateTime", PrimitiveKind.LONG)
+
+    override fun serialize(encoder: Encoder, value: DateTime) {
+        encoder.encodeLong(value.millis)
+    }
+
+    override fun deserialize(decoder: Decoder): DateTime {
+        return DateTime(decoder.decodeLong())
+    }
+}
+
+@Serializable
 data class EventSelection(
     val eventSlug: String,
     val eventName: String,
     val subEventId: Long?,
-    val checkInList: Long,
+    val checkInListId: Long,
+    val checkInListName: String,
+    @Serializable(with = DateTimeSerializer::class)
     val dateFrom: DateTime?,
+    @Serializable(with = DateTimeSerializer::class)
     val dateTo: DateTime?,
 )
 
 @Suppress("PrivatePropertyName")
 class AppConfig(val dataDir: String) : ConfigStore {
     private val prefs = Preferences.userNodeForPackage(AppConfig::class.java)
+    private val log = Logger.getLogger(AppConfig::class.java.name)
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+        prettyPrint = false
+    }
 
     private val VERSION = Version.version
 
@@ -69,6 +103,9 @@ class AppConfig(val dataDir: String) : ConfigStore {
     private val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
 
     private val PREFS_KEY_HIDE_NAMES = "pref_hide_names"
+
+    private val PREFS_KEY_EVENT_SELECTIONS = "event_selections_json"
+    private val PREFS_KEY_ACTIVE_EVENT_INDEX = "active_event_index"
 
     fun setDeviceConfig(
         url: String,
@@ -135,31 +172,64 @@ class AppConfig(val dataDir: String) : ConfigStore {
             prefs.flush()
         }
 
-    var eventSelection: List<EventSelection>
+    var eventSelections: List<EventSelection>
         get() {
-            val slug = eventSlug
-            val name = eventName
+            val jsonString = prefs.get(PREFS_KEY_EVENT_SELECTIONS, null)
+            if (jsonString == null) {
+                // Migration: convert old single event to list
+                val slug = eventSlug
+                val name = eventName
+                val listId = checkInListId
+                val listName = checkInListName
 
-            if (slug == null || name == null) {
+                if (slug != null && name != null && listId > 0) {
+                    return listOf(
+                        EventSelection(
+                            eventSlug = slug,
+                            eventName = name,
+                            subEventId = subEventId,
+                            checkInListId = listId,
+                            checkInListName = listName,
+                            dateFrom = null,
+                            dateTo = null
+                        )
+                    )
+                }
                 return emptyList()
             }
-            return listOf(
-                EventSelection(
-                    slug,
-                    name,
-                    subEventId ?: -1,
-                    checkInListId,
-                    null,
-                    null
-                )
-            )
+
+            return try {
+                json.decodeFromString<List<EventSelection>>(jsonString)
+            } catch (e: Exception) {
+                log.warning("Failed to parse event selections: ${e.message}")
+                emptyList()
+            }
         }
         set(value) {
-            //TODO: not implemented yet
+            val jsonString = json.encodeToString(value)
+            prefs.put(PREFS_KEY_EVENT_SELECTIONS, jsonString)
+            prefs.flush()
+        }
+
+    var activeEventIndex: Int
+        get() = prefs.getInt(PREFS_KEY_ACTIVE_EVENT_INDEX, 0)
+        set(value) {
+            prefs.putInt(PREFS_KEY_ACTIVE_EVENT_INDEX, value)
+            prefs.flush()
+        }
+
+    val activeEvent: EventSelection?
+        get() = eventSelections.getOrNull(activeEventIndex)
+
+    @Deprecated("Use eventSelections (plural) instead", ReplaceWith("eventSelections"))
+    var eventSelection: List<EventSelection>
+        get() = eventSelections
+        set(value) {
+            eventSelections = value
         }
 
     fun eventSelectionToMap(): Map<String, Long> {
-        return eventSelection.associate { it.eventSlug to it.checkInList }
+        return eventSelections.associate { it.eventSlug to it.checkInListId }
     }
 
     override fun isDebug(): Boolean {
@@ -243,19 +313,16 @@ class AppConfig(val dataDir: String) : ConfigStore {
     }
 
     override fun getSynchronizedEvents(): List<String> {
-        val e = eventSlug
-        if (e != null) return listOf(e)
-        return emptyList()
+        return eventSelections.map { it.eventSlug }
     }
 
     override fun getSelectedSubeventForEvent(event: String): Long? {
-        val se = subEventId ?: return null
-        if (se < 1) return null
-        return se
+        return eventSelections.find { it.eventSlug == event }?.subEventId
     }
 
     override fun getSelectedCheckinListForEvent(event: String?): Long {
-        return checkInListId
+        if (event == null) return activeEvent?.checkInListId ?: 0
+        return eventSelections.find { it.eventSlug == event }?.checkInListId ?: 0
     }
 
     var subEventId: Long?

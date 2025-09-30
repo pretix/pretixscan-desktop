@@ -22,6 +22,7 @@ composables = "1.39.0"
 jetbrains-material-icons = "1.7.3"
 libphone = "9.0.3"
 composeHotReload = "1.0.0-beta07"
+kotlinx-serialization-json = "1.8.0"
 
 [libraries]
 apache-pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
@@ -54,6 +55,7 @@ jetbrains-material-icons = { module = "org.jetbrains.compose.material:material-i
 jetbrains-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "jetbrains-material-icons" }
 vanniktech-multiplatform-locale = { module = "com.vanniktech:multiplatform-locale", version.ref = "multiplatform-locale" }
 google-libphone = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphone" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
@@ -63,3 +65,4 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
 app-cash-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 osdetector = { id = "com.google.osdetector", version = "1.7.3" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

@@ -14,6 +14,7 @@ import eu.pretix.desktop.app.navigation.Route
 import eu.pretix.desktop.app.ui.ScreenContentRoot
 import eu.pretix.scan.main.presentation.selectevent.SelectEventDialog
 import eu.pretix.scan.main.presentation.selectlist.SelectCheckInListDialog
+import eu.pretix.scan.main.presentation.selectlist.SelectCheckInListForMultiEventDialog
 import eu.pretix.scan.main.presentation.toolbar.MainToolbar
 import eu.pretix.scan.tickets.presentation.TicketHandlingDialog
 import eu.pretix.scan.tickets.presentation.TicketSearchBar
@@ -32,17 +33,36 @@ fun MainScreen(
 
     when (uiState) {
         MainUiState.SelectEvent -> {
-            SelectEventDialog(onSelectEvent = {
-                coroutineScope.launch {
-                    viewModel.selectEvent(it)
+            SelectEventDialog(
+                onSelectEvent = {
+                    coroutineScope.launch {
+                        viewModel.selectEvent(it)
+                    }
+                },
+                onSelectMultipleEvents = { events ->
+                    coroutineScope.launch {
+                        viewModel.selectMultipleEvents(events)
+                    }
                 }
-            })
+            )
         }
 
         MainUiState.SelectCheckInList -> {
             SelectCheckInListDialog(onSelectCheckInList = {
                 viewModel.selectCheckInList(it)
             })
+        }
+
+        is MainUiState.SelectCheckInListsForMultipleEvents -> {
+            val state = uiState as MainUiState.SelectCheckInListsForMultipleEvents
+            SelectCheckInListForMultiEventDialog(
+                currentEvent = state.events[state.currentEventIndex],
+                currentEventIndex = state.currentEventIndex,
+                totalEvents = state.events.size,
+                onSelectCheckInList = { listId ->
+                    viewModel.selectCheckInListForCurrentEvent(listId)
+                }
+            )
         }
 
         MainUiState.Loading -> {

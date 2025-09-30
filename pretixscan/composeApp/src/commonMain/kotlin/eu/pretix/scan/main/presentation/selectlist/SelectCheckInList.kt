@@ -17,9 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import eu.pretix.libpretixsync.sqldelight.CheckInList
-import eu.pretix.scan.setup.SetupUiState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.error_no_available_events
 
@@ -29,7 +29,9 @@ fun SelectCheckInList(
     selectedCheckInList: CheckInList? = null,
     onSelectCheckInList: (CheckInList) -> Unit = {},
 ) {
-    val viewModel = koinViewModel<SelectCheckInListViewModel>()
+    val viewModel: SelectCheckInListViewModel = koinViewModel(
+        parameters = { parametersOf(null, null) }
+    )
     val uiState by viewModel.uiState.collectAsState()
 
 
@@ -39,7 +41,7 @@ fun SelectCheckInList(
         }
 
         is SelectCheckInListUiState.Error -> {
-            Text((uiState as SetupUiState.Error).exception)
+            Text((uiState as SelectCheckInListUiState.Error).exception)
         }
 
         SelectCheckInListUiState.Loading -> {

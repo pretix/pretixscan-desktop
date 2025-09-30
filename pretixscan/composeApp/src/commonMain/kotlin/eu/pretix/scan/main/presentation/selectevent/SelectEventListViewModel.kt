@@ -20,26 +20,19 @@ class SelectEventListViewModel(
     private val _uiState = MutableStateFlow<SelectEventListUiState<List<RemoteEvent>>>(SelectEventListUiState.Loading)
     val uiState: StateFlow<SelectEventListUiState<List<RemoteEvent>>> = _uiState
 
-
-    init {
-        loadSelectableEvents()
-    }
-
-    private fun loadSelectableEvents() {
-        run {
-            _uiState.value = SelectEventListUiState.Loading
-            try {
-                val events = eventManager.getAvailableEvents()
-                log.info("Found ${events.size} available events for selection.")
-                if (events.isEmpty()) {
-                    _uiState.update { SelectEventListUiState.Empty }
-                } else {
-                    _uiState.update { SelectEventListUiState.Selecting(events) }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _uiState.update { SelectEventListUiState.Error(e.message ?: "Unknown error") }
+    suspend fun reloadEvents() {
+        _uiState.value = SelectEventListUiState.Loading
+        try {
+            val events = eventManager.getAvailableEvents()
+            log.info("Found ${events.size} available events for selection.")
+            if (events.isEmpty()) {
+                _uiState.update { SelectEventListUiState.Empty }
+            } else {
+                _uiState.update { SelectEventListUiState.Selecting(events) }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _uiState.update { SelectEventListUiState.Error(e.message ?: "Unknown error") }
         }
     }
 }
