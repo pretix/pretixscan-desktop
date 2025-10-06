@@ -2,14 +2,7 @@ package eu.pretix.scan.main.presentation.selectevent
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
@@ -30,13 +23,7 @@ import eu.pretix.libpretixsync.setup.RemoteEvent
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pretixscan.composeapp.generated.resources.Res
-import pretixscan.composeapp.generated.resources.action_reload_events
-import pretixscan.composeapp.generated.resources.advanced_mode
-import pretixscan.composeapp.generated.resources.advanced_mode_description
-import pretixscan.composeapp.generated.resources.ic_refresh_white_24dp
-import pretixscan.composeapp.generated.resources.ok
-import pretixscan.composeapp.generated.resources.operation_select_event
+import pretixscan.composeapp.generated.resources.*
 
 @Composable
 @Preview
@@ -84,7 +71,7 @@ fun SelectEventDialog(
                             enabled = syncState !is SyncState.InProgress
                         ) {
                             Image(
-                                painter = painterResource(Res.drawable.ic_refresh_white_24dp),
+                                painter = painterResource(Res.drawable.ic_refresh_dark_24dp),
                                 contentDescription = stringResource(Res.string.action_reload_events),
                                 modifier = Modifier.size(24.dp)
                             )
