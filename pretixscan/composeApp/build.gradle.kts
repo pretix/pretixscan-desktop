@@ -37,6 +37,9 @@ kotlin {
             implementation(libs.vanniktech.multiplatform.locale)
             implementation(libs.kotlinx.serialization.json)
 
+            api(libs.datastore.core)
+            api(libs.datastore.preferences)
+
             // play short audio files
             implementation(libs.gadulka)
 

@@ -3,7 +3,7 @@ package eu.pretix.desktop.app.sync
 import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Coordinates sync across the app.
  */
-class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
+class SyncRootService(private val appConfig: DataStoreConfigStore) : ViewModel() {
     private val log = Logger.getLogger("SyncRootService")
 
     private val _syncState = MutableStateFlow<SyncState>(SyncState.Idle)

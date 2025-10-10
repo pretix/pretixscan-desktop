@@ -1,8 +1,6 @@
 package eu.pretix.scan.main.presentation.selectevent
 
 import androidx.lifecycle.ViewModel
-import eu.pretix.desktop.cache.AppCache
-import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.libpretixsync.setup.EventManager
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,8 +9,6 @@ import kotlinx.coroutines.flow.update
 import java.util.logging.Logger
 
 class SelectEventListViewModel(
-    appCache: AppCache,
-    appConfig: AppConfig,
     private val eventManager: EventManager
 ) : ViewModel() {
     private val log = Logger.getLogger("SelectEventListViewModel")
@@ -20,7 +16,7 @@ class SelectEventListViewModel(
     private val _uiState = MutableStateFlow<SelectEventListUiState<List<RemoteEvent>>>(SelectEventListUiState.Loading)
     val uiState: StateFlow<SelectEventListUiState<List<RemoteEvent>>> = _uiState
 
-    suspend fun reloadEvents() {
+    fun reloadEvents() {
         _uiState.value = SelectEventListUiState.Loading
         try {
             val events = eventManager.getAvailableEvents()

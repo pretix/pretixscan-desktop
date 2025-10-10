@@ -3,9 +3,9 @@ package eu.pretix.desktop.app.sync
 import androidx.compose.ui.graphics.Color
 import eu.pretix.desktop.app.ui.CustomColor
 import eu.pretix.desktop.app.ui.asColor
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 
-class SyncStatusHelper(private val appConfig: AppConfig) {
+class SyncStatusHelper(private val appConfig: DataStoreConfigStore) {
 
     fun getColor(nowMillis: Long = System.currentTimeMillis()): Color {
         if (appConfig.lastFailedSync > appConfig.lastSync || nowMillis - appConfig.lastDownload > 5 * 60 * 1000) {

@@ -1,8 +1,7 @@
 package eu.pretix.scan.setup
 
 import androidx.lifecycle.ViewModel
-import eu.pretix.desktop.cache.AppCache
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.cache.Version
 import eu.pretix.desktop.printing.BadgeFactory
 import eu.pretix.libpretixsync.setup.SetupManager
@@ -11,9 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class SetupViewModel(
-    appCache: AppCache,
     private val setupManager: SetupManager,
-    private val configStore: AppConfig,
+    private val configStore: DataStoreConfigStore,
     private val badgeFactory: BadgeFactory
 ) :
     ViewModel() {

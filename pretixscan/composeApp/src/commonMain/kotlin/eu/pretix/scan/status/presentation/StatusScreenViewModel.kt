@@ -2,7 +2,7 @@ package eu.pretix.scan.status.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 
 class StatusScreenViewModel(
-    private val appConfig: AppConfig,
+    private val appConfig: DataStoreConfigStore,
     private val provider: TicketCheckProvider): ViewModel() {
     private val log = Logger.getLogger("StatusScreenViewModel")
 

@@ -1,6 +1,6 @@
 package eu.pretix.desktop.printing
 
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.cache.DesktopFileStorage
 import eu.pretix.desktop.cache.getUserCacheFolder
 import eu.pretix.desktop.cache.getUserDataFolder
@@ -29,7 +29,7 @@ import kotlin.math.abs
  * Generates badge PDFs which can be printed
  */
 class DesktopBadgeFactory(
-    private val appConfig: AppConfig,
+    private val appConfig: DataStoreConfigStore,
     private val printerSource: PrinterSource,
     private val fileStorage: DesktopFileStorage,
     private val renderer: Renderer,

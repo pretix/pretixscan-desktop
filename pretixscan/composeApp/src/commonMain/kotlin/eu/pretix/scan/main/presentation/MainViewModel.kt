@@ -3,18 +3,18 @@ package eu.pretix.scan.main.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import eu.pretix.desktop.app.sync.SyncRootService
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
+import eu.pretix.desktop.cache.EventSelection
 import eu.pretix.desktop.cache.Version
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.libpretixsync.sqldelight.CheckInList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import java.util.logging.Logger
 
 
 class MainViewModel(
-    private val appConfig: AppConfig,
+    private val appConfig: DataStoreConfigStore,
     private val syncViewModel: SyncRootService,
     private val appCache: eu.pretix.desktop.cache.AppCache
 ) : ViewModel() {
@@ -123,7 +123,7 @@ class MainViewModel(
         val eventName = appConfig.eventName!!
         val subEventId = appConfig.subEventId
 
-        val newSelection = eu.pretix.desktop.cache.EventSelection(
+        val newSelection = EventSelection(
             eventSlug = eventSlug,
             eventName = eventName,
             subEventId = subEventId,
@@ -253,7 +253,7 @@ class MainViewModel(
                 .find { it.server_id == listId }
                 ?: return@mapNotNull null
 
-            eu.pretix.desktop.cache.EventSelection(
+            EventSelection(
                 eventSlug = event.slug,
                 eventName = event.name,
                 subEventId = event.subEventId,

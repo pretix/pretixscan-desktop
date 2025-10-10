@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import eu.iamkonstantin.kotlin.gadulka.GadulkaPlayer
 import eu.pretix.desktop.cache.AppCache
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.libpretixsync.SentryInterface
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalResourceApi::class)
 class TicketCodeHandler(
-    private val conf: AppConfig,
+    private val conf: DataStoreConfigStore,
     private val appCache: AppCache,
     private val checkProvider: TicketCheckProvider,
     private val audioPlayer: GadulkaPlayer,
@@ -181,7 +181,7 @@ class TicketCodeHandler(
     }
 
     private fun calculateScannedEvent(eventSlug: String?): eu.pretix.libpretixsync.models.Event? {
-        if (!eventSlug.isNullOrBlank() && conf.eventSelection.size > 1) {
+        if (!eventSlug.isNullOrBlank() && conf.eventSelections.size > 1) {
             return appCache.db.eventQueries.selectBySlug(eventSlug).executeAsOneOrNull()?.toModel()
         }
 

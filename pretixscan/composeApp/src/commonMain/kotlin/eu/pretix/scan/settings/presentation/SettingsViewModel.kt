@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import eu.pretix.desktop.app.sync.SyncRootService
 import eu.pretix.desktop.app.ui.SelectableValue
 import eu.pretix.desktop.cache.AppCache
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.cache.Version
 import eu.pretix.scan.settings.data.ConfigurableSettings
 import eu.pretix.scan.settings.data.PrinterSource
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 
 class SettingsViewModel(
-    private val appConfig: AppConfig,
+    private val appConfig: DataStoreConfigStore,
     private val printerSource: PrinterSource,
     private val appCache: AppCache,
     private val syncRootService: SyncRootService

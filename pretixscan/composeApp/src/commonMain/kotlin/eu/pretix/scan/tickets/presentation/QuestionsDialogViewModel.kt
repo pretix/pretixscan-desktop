@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.vanniktech.locale.Country
 import eu.pretix.desktop.app.ui.FieldValidationState
 import eu.pretix.desktop.app.ui.SelectableValue
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.scan.tickets.data.PhoneValidator
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.Answer
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.logging.Logger
 
-class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
+class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewModel() {
 
     private val log = Logger.getLogger("tickets")
     private val _form = MutableStateFlow(emptyList<QuestionFormField>())

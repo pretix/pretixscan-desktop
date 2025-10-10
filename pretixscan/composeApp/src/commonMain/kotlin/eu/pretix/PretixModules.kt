@@ -2,7 +2,7 @@ package eu.pretix
 
 import eu.pretix.desktop.app.DesktopSentryImpl
 import eu.pretix.desktop.cache.AppCache
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.libpretixsync.SentryInterface
 import eu.pretix.libpretixsync.api.HttpClientFactory
 import eu.pretix.libpretixsync.api.PretixApi
@@ -24,10 +24,10 @@ val pretixModules: List<Module>
                 DesktopSentryImpl()
             }
             factory<EventManager> {
-                EventManager(get<PretixApi>(), get<AppConfig>(), false)
+                EventManager(get<PretixApi>(), get<DataStoreConfigStore>(), false)
             }
             factory<PretixApi> {
-                val config = get<AppConfig>()
+                val config = get<DataStoreConfigStore>()
                 if (!config.isConfigured) {
                     throw UnsupportedOperationException("Invalid operation: PretixApi can only be used once the device has been initialised using SetupManager.")
                 }
@@ -40,7 +40,7 @@ val pretixModules: List<Module>
                 )
             }
             factory<TicketCheckProvider> {
-                val config = get<AppConfig>()
+                val config = get<DataStoreConfigStore>()
                 if (!config.isConfigured) {
                     throw UnsupportedOperationException("Invalid operation: TicketCheckProvider can only be used once the device has been initialised.")
                 }

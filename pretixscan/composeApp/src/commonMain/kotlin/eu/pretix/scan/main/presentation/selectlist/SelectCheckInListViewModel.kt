@@ -3,7 +3,7 @@ package eu.pretix.scan.main.presentation.selectlist
 
 import androidx.lifecycle.ViewModel
 import eu.pretix.desktop.cache.AppCache
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.libpretixsync.sqldelight.CheckInList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +12,7 @@ import java.util.logging.Logger
 
 class SelectCheckInListViewModel(
     private val appCache: AppCache,
-    private val appConfig: AppConfig,
+    private val appConfig: DataStoreConfigStore,
     private val eventSlugOverride: String? = null,
     private val subEventIdOverride: Long? = null
 ) : ViewModel() {
