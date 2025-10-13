@@ -13,6 +13,13 @@ class ConfigMigration(
     private val logger = Logger.getLogger(ConfigMigration::class.java.name)
 
     /**
+     * Deletes the old configuration preferences from disk
+     */
+    fun deleteOldConfig() {
+        oldConfig.resetEventConfig()
+    }
+
+    /**
      * Check if old configuration exists and hasn't been migrated yet.
      */
     suspend fun canMigrate(): Boolean {

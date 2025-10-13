@@ -11,6 +11,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import org.joda.time.DateTime
 import org.json.JSONObject
+import java.io.File
 import java.util.logging.Logger
 import java.util.prefs.Preferences
 
@@ -57,7 +58,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
     private val PREFS_KEY_PRINTBADGES = "prefs_key_print_badges"
     private val PREFS_KEY_SYNC_ORDERS = "sync_orders"
     private val PREFS_KEY_SYNC_AUTO = "pref_sync_auto"
-    private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
     private val PREFS_KEY_DEVICE_KNOWN_INFO = "known_info"
     private val PREFS_KEY_SCAN_TYPE = "scan_type"
@@ -462,4 +462,27 @@ class AppConfig(val dataDir: String) : ConfigStore {
 
     internal val deviceSerial: String
         get() = prefs.get(PREFS_KEY_DEVICE_SERIAL, "")
+
+
+    fun resetEventConfig() {
+        prefs.remove(PREFS_KEY_API_URL)
+        prefs.remove(PREFS_KEY_API_KEY)
+        prefs.remove(PREFS_KEY_API_VERSION)
+        prefs.remove(PREFS_KEY_LAST_DOWNLOAD)
+        prefs.remove(PREFS_KEY_LAST_SYNC)
+        prefs.remove(PREFS_KEY_LAST_FAILED_SYNC)
+        prefs.remove(PREFS_KEY_LAST_STATUS_DATA)
+        prefs.remove(PREFS_KEY_SUBEVENT_ID)
+        prefs.remove(PREFS_KEY_EVENT_SLUG)
+        prefs.remove(PREFS_KEY_EVENT_NAME)
+        prefs.remove(PREFS_KEY_CHECKINLIST_ID)
+        prefs.remove(PREFS_KEY_KNOWN_GATE_NAME)
+        prefs.remove(PREFS_KEY_KNOWN_GATE_ID)
+        prefs.remove(PREFS_KEY_HIDE_NAMES)
+        val f = File(dataDir, "$PREFS_KEY_LAST_STATUS_DATA.json")
+        if (f.exists()) {
+            f.delete()
+        }
+        prefs.flush()
+    }
 }

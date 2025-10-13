@@ -85,7 +85,7 @@ class SyncRootService(private val appConfig: DataStoreConfigStore) : ViewModel()
             _syncState.value = SyncState.InProgress("Syncing ${events.size} event(s)...")
             val syncManager = GlobalContext.get().get<SyncManager>()
 
-            syncManager.sync(force) { message ->
+            val syncResult = syncManager.sync(force) { message ->
                 runBlocking {
                     withContext(Dispatchers.Main) {
                         _syncState.value = SyncState.InProgress(message)
@@ -101,6 +101,11 @@ class SyncRootService(private val appConfig: DataStoreConfigStore) : ViewModel()
                         }
                     }
                 }
+            }
+
+            if (syncResult.exception != null) {
+                log.warning("sync failed, rethrowing: $syncResult")
+                throw syncResult.exception
             }
 
             // Mark all as success

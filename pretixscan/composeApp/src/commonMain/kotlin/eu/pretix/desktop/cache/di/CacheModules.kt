@@ -3,6 +3,7 @@ package eu.pretix.desktop.cache.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import eu.pretix.desktop.cache.*
+import eu.pretix.desktop.migration.V1DirectoryLocator
 import eu.pretix.libpretixsync.config.ConfigStore
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -29,7 +30,7 @@ val cacheModules
             // ConfigMigration singleton (creates its own AppConfig instance)
             single<ConfigMigration> {
                 ConfigMigration(
-                    oldConfig = AppConfig(getUserDataFolder()),
+                    oldConfig = AppConfig(V1DirectoryLocator.getV1DataDir().path),
                     newConfig = get()
                 )
             }

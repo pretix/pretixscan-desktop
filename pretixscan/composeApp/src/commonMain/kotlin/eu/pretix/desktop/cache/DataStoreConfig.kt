@@ -506,16 +506,6 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun resetEventConfig() {
-        dataStore.edit { prefs ->
-            prefs.remove(PreferenceKeys.API_URL)
-            prefs.remove(PreferenceKeys.API_KEY)
-            prefs.remove(PreferenceKeys.API_VERSION)
-            prefs.remove(PreferenceKeys.LAST_DOWNLOAD)
-            prefs.remove(PreferenceKeys.LAST_SYNC)
-            prefs.remove(PreferenceKeys.LAST_FAILED_SYNC)
-            prefs.remove(PreferenceKeys.DEVICE_KNOWN_GATE_NAME)
-            prefs.remove(PreferenceKeys.DEVICE_KNOWN_GATE_ID)
-            prefs.remove(PreferenceKeys.UI_HIDE_NAMES)
-        }
+        dataStore.edit { it.clear() }
     }
 }
