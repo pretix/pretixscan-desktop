@@ -2,6 +2,7 @@ package eu.pretix.desktop.cache
 
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
+import eu.pretix.pretixscan.desktop.PretixScanConfig
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -31,7 +32,7 @@ object DateTimeSerializer : KSerializer<DateTime> {
 
 @Suppress("PrivatePropertyName")
 class AppConfig(val dataDir: String) : ConfigStore {
-    private val prefs = Preferences.userNodeForPackage(AppConfig::class.java)
+    private val prefs = Preferences.userNodeForPackage(PretixScanConfig::class.java)
     private val log = Logger.getLogger(AppConfig::class.java.name)
 
     private val json = Json {
