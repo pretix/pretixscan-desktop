@@ -18,7 +18,9 @@ class MigrationCoordinator(
      * Check if migration should be performed
      */
     suspend fun needsMigration(): Boolean {
-        return configMigration.canMigrate()
+        val needsMigration = configMigration.canMigrate()
+        logger.info("Needs migration: $needsMigration")
+        return needsMigration
     }
 
     /**

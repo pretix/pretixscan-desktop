@@ -28,3 +28,8 @@ actual fun getUserCacheFolder(): String {
     val appDirsInstance = AppDirsFactory.getInstance()!!
     return appDirsInstance.getUserCacheDir("pretixscan", "2", "pretix")
 }
+
+actual fun getLogDirectory(): String {
+    val appDirsInstance = AppDirsFactory.getInstance()!!
+    return appDirsInstance.getUserLogDir("pretixscan", "2", "pretix")
+}

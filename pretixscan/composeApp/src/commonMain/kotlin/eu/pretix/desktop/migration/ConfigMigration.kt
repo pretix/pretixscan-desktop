@@ -25,7 +25,10 @@ class ConfigMigration(
      * Check if old configuration exists and hasn't been migrated yet.
      */
     suspend fun canMigrate(): Boolean {
-        return oldConfig.isConfigured && !newConfig.isMigrationComplete()
+        val oldConfigured = oldConfig.isConfigured
+        val isAlreadyMigrated = newConfig.isMigrationComplete()
+        logger.info("Detecting if migration is possible: oldConfigured, isAlreadyMigrated: $oldConfigured, $isAlreadyMigrated")
+        return oldConfigured && !isAlreadyMigrated
     }
 
     /**
