@@ -1,6 +1,5 @@
 package eu.pretix.desktop.migration
 
-import eu.pretix.desktop.cache.ConfigMigration
 import java.util.logging.Logger
 
 sealed class MigrationResult {

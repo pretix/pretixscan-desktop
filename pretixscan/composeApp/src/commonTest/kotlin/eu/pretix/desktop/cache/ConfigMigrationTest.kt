@@ -3,6 +3,7 @@ package eu.pretix.desktop.cache
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import eu.pretix.desktop.migration.ConfigMigration
 import kotlinx.coroutines.test.runTest
 import okio.Path.Companion.toPath
 import kotlin.io.path.createTempDirectory

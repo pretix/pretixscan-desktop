@@ -3,7 +3,7 @@ package eu.pretix
 import di.platformModules
 import eu.pretix.desktop.app.sync.syncModule
 import eu.pretix.desktop.cache.di.cacheModules
-import eu.pretix.desktop.migration.migrationModule
+import eu.pretix.desktop.migration.di.migrationModule
 import eu.pretix.desktop.webcam.webCamModule
 import eu.pretix.scan.main.mainModule
 import eu.pretix.scan.settings.settingsModule

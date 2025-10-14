@@ -1,5 +1,7 @@
-package eu.pretix.desktop.cache
+package eu.pretix.desktop.migration
 
+import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfig
 import java.util.logging.Logger
 
 /**
