@@ -1,8 +1,18 @@
-package eu.pretix.desktop.cache
+package eu.pretix.pretixscan.desktop
 
+/*
+* This file mimics the package and signature of the pretixSCAN v1 application configuration.
+*
+* While the exact class name is not important, the `java.util.prefs.Preferences` system uses the package namespace
+* to calculate the path where preferences (settings) are stored.
+*
+* This class must be able to load and parse v1 preferences in order to offer them as values during migration to v2.
+*
+* */
+
+import eu.pretix.desktop.cache.EventSelection
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
-import eu.pretix.pretixscan.desktop.PretixScanConfig
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -32,7 +42,7 @@ object DateTimeSerializer : KSerializer<DateTime> {
 
 @Suppress("PrivatePropertyName")
 class AppConfig(val dataDir: String) : ConfigStore {
-    private val prefs = Preferences.userNodeForPackage(PretixScanConfig::class.java)
+    private val prefs = Preferences.userNodeForPackage(AppConfig::class.java)
     private val log = Logger.getLogger(AppConfig::class.java.name)
 
     private val json = Json {
@@ -174,17 +184,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
 
     val activeEvent: EventSelection?
         get() = eventSelections.getOrNull(activeEventIndex)
-
-    @Deprecated("Use eventSelections (plural) instead", ReplaceWith("eventSelections"))
-    var eventSelection: List<EventSelection>
-        get() = eventSelections
-        set(value) {
-            eventSelections = value
-        }
-
-    fun eventSelectionToMap(): Map<String, Long> {
-        return eventSelections.associate { it.eventSlug to it.checkInListId }
-    }
 
     override fun isDebug(): Boolean {
         return false

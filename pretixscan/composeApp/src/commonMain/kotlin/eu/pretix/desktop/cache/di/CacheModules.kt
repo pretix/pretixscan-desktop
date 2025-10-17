@@ -6,6 +6,7 @@ import eu.pretix.desktop.cache.*
 import eu.pretix.desktop.migration.ConfigMigration
 import eu.pretix.desktop.migration.V1DirectoryLocator
 import eu.pretix.libpretixsync.config.ConfigStore
+import eu.pretix.pretixscan.desktop.AppConfig
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import kotlin.io.path.Path
@@ -44,7 +45,6 @@ val cacheModules
             // Bind ConfigStore interface to DataStoreConfigStore
             single<ConfigStore> { get<DataStoreConfigStore>() }
 
-            // Keep existing
             singleOf(::AppCache)
         },
     )

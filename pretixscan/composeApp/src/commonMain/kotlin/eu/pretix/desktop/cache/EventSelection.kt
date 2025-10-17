@@ -1,5 +1,6 @@
 package eu.pretix.desktop.cache
 
+import eu.pretix.pretixscan.desktop.DateTimeSerializer
 import kotlinx.serialization.Serializable
 import org.joda.time.DateTime
 
