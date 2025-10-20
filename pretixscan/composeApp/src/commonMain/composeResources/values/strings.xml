@@ -49,12 +49,12 @@
     <string name="settings_label_auto_switch">Automatic event selection</string>
     <string name="settings_summary_auto_switch">With this option, pretixSCAN will ask the server during synchronization if the server suggests switching the app to a different event and check-in list and then switches automatically.</string>
     <plurals name="sync_status_time_minutes">
-        <item quantity="one">synchronized %d minute ago</item>
-        <item quantity="other">synchronized %d minutes ago</item>
+        <item quantity="one">synchronized %1$d minute ago</item>
+        <item quantity="other">synchronized %1$d minutes ago</item>
     </plurals>
     <plurals name="sync_status_time_hours">
-        <item quantity="one">synchronized %d hour ago</item>
-        <item quantity="other">synchronized %d hours ago</item>
+        <item quantity="one">synchronized %1$d hour ago</item>
+        <item quantity="other">synchronized %1$d hours ago</item>
     </plurals>
     <plurals name="sync_status_time_days">
         <item quantity="one">synchronized %1$d day ago</item>
