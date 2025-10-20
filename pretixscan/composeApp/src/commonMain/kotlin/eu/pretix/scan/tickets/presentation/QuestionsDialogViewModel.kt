@@ -191,7 +191,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
     fun updateChoiceAnswer(questionId: Long, value: String, checked: Boolean?) {
         _form.value = _form.value.map { field ->
             if (field.id == questionId && field.fieldType == QuestionType.M) {
-                log.info("Updating choices for $questionId (${field.fieldType}) value:checked $value:$checked")
+                log.info("Updating choices for $questionId (${field.fieldType})")
                 when (checked) {
                     true -> {
                         val updatedValues = (field.values?.toList()?.toMutableList()
@@ -211,7 +211,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
     fun updateAnswer(questionId: Long, answer: String?, extra: String? = null) {
         _form.value = _form.value.map { field ->
             if (field.id == questionId) {
-                log.info("Updating answer for $questionId (${field.fieldType}) to $answer, extra: $extra")
+                log.info("Updating answer for $questionId (${field.fieldType})")
 
                 when (field.fieldType) {
                     QuestionType.F -> {
@@ -284,7 +284,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
             }
         }
         _form.value.forEach { field ->
-            log.info("question ${field.label}: ${field.value}, valid: ${if (field.validation == null) "yes" else "${field.validation}"}")
+            log.info("question ${field.label}, valid: ${if (field.validation == null) "yes" else "${field.validation}"}")
         }
     }
 

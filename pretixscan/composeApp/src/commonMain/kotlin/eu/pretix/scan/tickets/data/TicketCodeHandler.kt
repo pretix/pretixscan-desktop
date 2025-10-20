@@ -19,6 +19,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import pretixscan.composeapp.generated.resources.*
 import java.text.SimpleDateFormat
+import java.util.logging.Logger
 
 @OptIn(ExperimentalResourceApi::class)
 class TicketCodeHandler(
@@ -30,6 +31,7 @@ class TicketCodeHandler(
     private val connectivityHelper: ConnectivityHelper,
     private val layoutFetcher: PrintLayoutFetcher
 ) {
+    private val log = Logger.getLogger("TicketCodeHandler")
 
     suspend fun handleScanResult(
         rawResult: String?,
@@ -128,7 +130,7 @@ class TicketCodeHandler(
                 allowQuestions = allowQuestions
             )
 
-            println("Check result type: ${checkResult.type}")
+            log.info("Check result type: ${checkResult.type}")
 
             if (checkProvider is OnlineCheckProvider) {
                 if (checkResult.type == TicketCheckProvider.CheckResult.Type.ERROR) {

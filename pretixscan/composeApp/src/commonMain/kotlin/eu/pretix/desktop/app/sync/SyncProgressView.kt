@@ -83,7 +83,6 @@ fun SyncedTimeAgo(never: Boolean, daysAgo: Int, hoursAgo: Int, minutesAgo: Int) 
         }
 
         statusHelper.isDaysAgo() -> {
-            println("days ago ${statusHelper.daysAgo()}")
             Text(
                 pluralStringResource(
                     Res.plurals.sync_status_time_days,

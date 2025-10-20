@@ -34,7 +34,7 @@ class MainViewModel(
     val eventButtonTooltip = _eventButtonTooltip.asStateFlow()
 
     init {
-        println("Welcome to app version ${Version.version}. Current scan type is ${appConfig.scanType}.")
+        log.info("Welcome to app version ${Version.version}. Current scan type is ${appConfig.scanType}.")
 
         uiState
             .onEach { state ->

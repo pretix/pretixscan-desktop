@@ -26,7 +26,7 @@ class TicketHandlingDialogViewModel(
     }
 
     suspend fun handleTicket(secret: String?, answers: List<Answer>? = null, ignoreUnpaid: Boolean = false) {
-        log.info("Handling ticket $secret")
+        log.info("Handling ticket")
         _uiState.update {
             ResultStateData(resultState = ResultState.LOADING)
         }

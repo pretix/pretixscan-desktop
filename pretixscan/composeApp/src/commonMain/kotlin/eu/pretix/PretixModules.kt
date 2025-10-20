@@ -15,6 +15,9 @@ import eu.pretix.libpretixsync.sync.FileStorage
 import eu.pretix.scan.tickets.data.PrintLayoutFetcher
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import java.util.logging.Logger
+
+private val log = Logger.getLogger("PretixModules")
 
 
 val pretixModules: List<Module>
@@ -48,13 +51,13 @@ val pretixModules: List<Module>
                 val appCache = get<AppCache>()
 
                 if (config.proxyMode) {
-                    println("Resolving TicketCheckProvider in proxy mode")
+                    log.info("Resolving TicketCheckProvider in proxy mode")
                     ProxyCheckProvider(config, get<HttpClientFactory>())
                 } else if (config.offlineMode) {
-                    println("Resolving TicketCheckProvider in offline mode")
+                    log.info("Resolving TicketCheckProvider in offline mode")
                     AsyncCheckProvider(config, appCache.db)
                 } else {
-                    println("Resolving TicketCheckProvider in online mode")
+                    log.info("Resolving TicketCheckProvider in online mode")
                     OnlineCheckProvider(
                         config,
                         get<HttpClientFactory>(),
