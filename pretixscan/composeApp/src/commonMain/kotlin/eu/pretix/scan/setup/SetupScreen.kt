@@ -40,6 +40,12 @@ fun SetupScreen(
     val focusRequester = FocusRequester()
 
     val coroutineScope = rememberCoroutineScope()
+
+    // Check and execute migration if needed on screen load
+    LaunchedEffect(Unit) {
+        viewModel.checkAndExecuteMigration()
+    }
+
     ScreenContentRoot {
 
         Row(

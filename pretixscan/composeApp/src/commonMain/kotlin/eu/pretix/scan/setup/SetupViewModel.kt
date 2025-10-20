@@ -3,6 +3,8 @@ package eu.pretix.scan.setup
 import androidx.lifecycle.ViewModel
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.cache.Version
+import eu.pretix.desktop.migration.MigrationCoordinator
+import eu.pretix.desktop.migration.MigrationResult
 import eu.pretix.desktop.printing.BadgeFactory
 import eu.pretix.libpretixsync.setup.SetupManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +14,8 @@ import kotlinx.coroutines.flow.update
 class SetupViewModel(
     private val setupManager: SetupManager,
     private val configStore: DataStoreConfigStore,
-    private val badgeFactory: BadgeFactory
+    private val badgeFactory: BadgeFactory,
+    private val migrationCoordinator: MigrationCoordinator
 ) :
     ViewModel() {
     private val _uiState = MutableStateFlow<SetupUiState<String>>(SetupUiState.Start)
@@ -20,6 +23,27 @@ class SetupViewModel(
 
     fun dismissLoginError() {
         _uiState.update { SetupUiState.Start }
+    }
+
+    /**
+     * Check if migration is needed and execute it if so.
+     * Uses the same UI states as the normal login flow.
+     */
+    suspend fun checkAndExecuteMigration() {
+        if (!migrationCoordinator.needsMigration()) {
+            return
+        }
+
+        _uiState.update { SetupUiState.Loading }
+
+        when (val result = migrationCoordinator.executeMigration()) {
+            is MigrationResult.Success -> {
+                _uiState.update { SetupUiState.Success }
+            }
+            is MigrationResult.Failure -> {
+                _uiState.update { SetupUiState.Error(result.error) }
+            }
+        }
     }
 
     suspend fun verifyTokenAndSetup(token: String, url: String) {
