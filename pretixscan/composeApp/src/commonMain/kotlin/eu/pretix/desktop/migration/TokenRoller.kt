@@ -36,8 +36,8 @@ class TokenRoller(
                 JSONObject()
             )
 
-            val newKey = response.data?.getString("key")
-                ?: throw IllegalStateException("No key in response")
+            val newKey = response.data?.getString("api_token")
+                ?: throw IllegalStateException("No api_token in response")
 
             logger.info("Token rolled successfully, new key received")
             Result.success(newKey)
