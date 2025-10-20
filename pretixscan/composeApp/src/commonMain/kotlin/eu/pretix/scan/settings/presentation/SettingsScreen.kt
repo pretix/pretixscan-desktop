@@ -282,7 +282,7 @@ fun SettingsScreen(
                                         navHostController.popBackStack()
                                         navHostController.navigate(Route.Welcome.route)
                                     },
-                                    label = stringResource(Res.string.full_delete_action),
+                                    label = stringResource(Res.string.full_delete_action)
                                 )
                             }
                         }

@@ -73,58 +73,64 @@ fun StatusScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         val listState = rememberLazyListState()
-                        val data = (uiState as StatusUiState.Success<TicketCheckProvider.StatusResult>).data
+                        val events = (uiState as StatusUiState.Success<List<TicketCheckProvider.StatusResult>>).data
                         LazyColumn(
                             Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(vertical = 16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             state = listState
                         ) {
-                            item {
-                                CardRow {
-                                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                                        Text(data.eventName ?: "", style = MaterialTheme.typography.titleMedium)
-                                    }
+                            events.forEach { event ->
+                                item(key = "header-${event.eventName}") {
+                                    CardRow {
+                                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                                            Text(event.eventName ?: "", style = MaterialTheme.typography.titleMedium)
+                                        }
 
-                                    Row(
-                                        Modifier.padding(vertical = 16.dp),
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        CardMetricItem(
-                                            data.totalTickets.toString(),
-                                            stringResource(Res.string.total_tickets_sold)
-                                        )
-
-                                        Spacer(Modifier.width(128.dp))
-
-                                        CardMetricItem(
-                                            data.alreadyScanned.toString(),
-                                            stringResource(Res.string.already_scanned)
-                                        )
-                                    }
-
-                                    if (data.currentlyInside != null) {
-                                        Row(horizontalArrangement = Arrangement.Center) {
+                                        Row(
+                                            Modifier.padding(vertical = 16.dp),
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
                                             CardMetricItem(
-                                                data.currentlyInside.toString(),
-                                                stringResource(Res.string.currently_inside)
+                                                event.totalTickets.toString(),
+                                                stringResource(Res.string.total_tickets_sold)
+                                            )
+
+                                            Spacer(Modifier.width(128.dp))
+
+                                            CardMetricItem(
+                                                event.alreadyScanned.toString(),
+                                                stringResource(Res.string.already_scanned)
                                             )
                                         }
+
+                                        if (event.currentlyInside != null) {
+                                            Row(horizontalArrangement = Arrangement.Center) {
+                                                CardMetricItem(
+                                                    event.currentlyInside.toString(),
+                                                    stringResource(Res.string.currently_inside)
+                                                )
+                                            }
+                                        }
+
                                     }
-
                                 }
-                            }
 
-                            items(
-                                items = data.items ?: emptyList<TicketCheckProvider.StatusResultItem>(),
-                                key = { iot -> iot.id }) { item ->
-                                CardRow {
-                                    CardHeading(item.name ?: "", item.checkins.toString() + "/" + item.total.toString())
-                                    item.variations?.forEach { variation ->
-                                        CardFact(
-                                            variation.name ?: "",
-                                            variation.checkins.toString() + "/" + variation.total.toString()
+                                items(
+                                    items = event.items ?: emptyList<TicketCheckProvider.StatusResultItem>(),
+                                    key = { item -> "${event.eventName}-${item.id}" }
+                                ) { item ->
+                                    CardRow {
+                                        CardHeading(
+                                            item.name ?: "",
+                                            item.checkins.toString() + "/" + item.total.toString()
                                         )
+                                        item.variations?.forEach { variation ->
+                                            CardFact(
+                                                variation.name ?: "",
+                                                variation.checkins.toString() + "/" + variation.total.toString()
+                                            )
+                                        }
                                     }
                                 }
                             }

@@ -147,7 +147,7 @@ fun SetupScreen(
                     // Show an alert dialog if there's an error
                     if (showErrorDialog) {
                         ErrorDialog(
-                            title = stringResource(Res.string.error_unknown_exception),
+                            title = stringResource(Res.string.error_connecting_token),
                             message = errorMessage,
                             onDismiss = {
                                 errorMessage = ""

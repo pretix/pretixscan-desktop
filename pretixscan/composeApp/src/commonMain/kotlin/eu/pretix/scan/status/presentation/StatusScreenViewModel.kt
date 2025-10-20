@@ -19,32 +19,42 @@ class StatusScreenViewModel(
 
     fun loadStats() {
         viewModelScope.launch {
-            val result: TicketCheckProvider.StatusResult? = refreshStats()
-            if (result != null) {
-                _status.value = StatusUiState.Success(data = result)
+            val results: List<TicketCheckProvider.StatusResult>? = refreshStats()
+            if (results != null) {
+                _status.value = StatusUiState.Success(data = results)
             } else {
                 _status.value = StatusUiState.FailedToLoadStats
             }
         }
     }
-    
-    private val _status = MutableStateFlow<StatusUiState<TicketCheckProvider.StatusResult>>(StatusUiState.Loading)
-    val status: StateFlow<StatusUiState<TicketCheckProvider.StatusResult>> = _status.asStateFlow()
 
-    suspend fun refreshStats(): TicketCheckProvider.StatusResult? {
+    private val _status = MutableStateFlow<StatusUiState<List<TicketCheckProvider.StatusResult>>>(StatusUiState.Loading)
+    val status: StateFlow<StatusUiState<List<TicketCheckProvider.StatusResult>>> = _status.asStateFlow()
+
+    suspend fun refreshStats(): List<TicketCheckProvider.StatusResult>? {
         try {
-            val checkInListId = appConfig.checkInListId
-            val eventSlug = appConfig.eventSlug
-            if (checkInListId == 0L || eventSlug == null) {
-                log.warning("No check-in list or event selected, not refreshing stats")
+            val eventSelections = appConfig.eventSelections
+            if (eventSelections.isEmpty()) {
+                log.warning("No events selected, not refreshing stats")
                 return null
             }
 
-            val result = withContext(Dispatchers.IO) {
-                provider.status(eventSlug, checkInListId)
+            val results = mutableListOf<TicketCheckProvider.StatusResult>()
+
+            for (selection in eventSelections) {
+                val result = withContext(Dispatchers.IO) {
+                    provider.status(selection.eventSlug, selection.checkInListId)
+                }
+
+                if (result == null) {
+                    log.warning("Failed to load stats for event ${selection.eventSlug}")
+                    return null // Any failure means total failure
+                }
+
+                results.add(result)
             }
 
-            return result
+            return results
         } catch (e: Exception) {
             log.throwing(StatusScreenViewModel::class.java.simpleName, "refreshStats", e)
             return null
