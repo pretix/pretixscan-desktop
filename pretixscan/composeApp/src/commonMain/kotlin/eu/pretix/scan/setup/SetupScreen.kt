@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import eu.pretix.desktop.app.navigation.Route
 import eu.pretix.desktop.app.ui.CustomColor
+import eu.pretix.desktop.app.ui.FieldTextInput
 import eu.pretix.desktop.app.ui.ScreenContentRoot
 import eu.pretix.desktop.app.ui.asColor
 import kotlinx.coroutines.launch
@@ -80,19 +81,20 @@ fun SetupScreen(
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(32.dp))
-                    OutlinedTextField(
+                    FieldTextInput(
                         value = url,
                         onValueChange = { url = it },
-                        label = { Text(stringResource(Res.string.hint_url)) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        label = stringResource(Res.string.hint_url),
+                        maxLines = 1,
+                        required = true
                     )
 
-                    OutlinedTextField(
+                    FieldTextInput(
                         value = token,
                         onValueChange = { token = it },
-                        label = { Text(stringResource(Res.string.hint_token)) },
-                        singleLine = true,
+                        label = stringResource(Res.string.hint_token),
+                        maxLines = 1,
+                        required = true,
                         modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
                     )
 
@@ -136,7 +138,9 @@ fun SetupScreen(
                         }
 
                         SetupUiState.Start -> {
-                            // Do nothing
+                            LaunchedEffect(Unit) {
+                                focusRequester.requestFocus()
+                            }
                         }
                     }
 
