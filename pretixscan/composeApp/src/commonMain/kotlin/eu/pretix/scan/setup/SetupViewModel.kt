@@ -7,9 +7,11 @@ import eu.pretix.desktop.migration.MigrationCoordinator
 import eu.pretix.desktop.migration.MigrationResult
 import eu.pretix.desktop.printing.BadgeFactory
 import eu.pretix.libpretixsync.setup.SetupManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 
 class SetupViewModel(
     private val setupManager: SetupManager,
@@ -50,28 +52,30 @@ class SetupViewModel(
         _uiState.update { SetupUiState.Loading }
 
         try {
-            val init = setupManager.initialize(
-                url,
-                token
-            )
-            configStore.setDeviceConfig(
-                init.url,
-                init.api_token,
-                init.organizer,
-                init.device_id,
-                init.unique_serial,
-                Version.versionCode
-            )
-            configStore.proxyMode = token.startsWith("proxy=")
-            if (init.gate_name != null) {
-                configStore.deviceKnownGateName = init.gate_name!!
-                configStore.deviceKnownGateID = init.gate_id!!
-            }
-            if (init.security_profile == "pretixscan_online_kiosk") {
-                configStore.syncOrders = false
-            }
+            withContext(Dispatchers.IO) {
+                val init = setupManager.initialize(
+                    url,
+                    token
+                )
+                configStore.setDeviceConfig(
+                    init.url,
+                    init.api_token,
+                    init.organizer,
+                    init.device_id,
+                    init.unique_serial,
+                    Version.versionCode
+                )
+                configStore.proxyMode = token.startsWith("proxy=")
+                if (init.gate_name != null) {
+                    configStore.deviceKnownGateName = init.gate_name!!
+                    configStore.deviceKnownGateID = init.gate_id!!
+                }
+                if (init.security_profile == "pretixscan_online_kiosk") {
+                    configStore.syncOrders = false
+                }
 
-            badgeFactory.setup()
+                badgeFactory.setup()
+            }
 
             _uiState.update { SetupUiState.Success }
         } catch (e: Exception) {
