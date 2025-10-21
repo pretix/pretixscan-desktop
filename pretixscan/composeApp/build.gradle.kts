@@ -154,6 +154,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "pretixSCAN"
             packageVersion = version
             vendor = "pretix GmbH"
             copyright = "pretix.eu, Raphael Michel"
@@ -164,7 +165,6 @@ compose.desktop {
             // alternatively: includeAllModules = true
 
             macOS {
-                packageName = "pretixSCAN"
                 iconFile.set(File("logo/pretix_app_icon.icns"))
             }
             windows {
@@ -183,7 +183,6 @@ compose.desktop {
 
             }
             linux {
-                packageName = "pretixSCAN"
                 iconFile.set(File("logo/pretix_app_icon.png"))
             }
         }
