@@ -154,7 +154,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "pretixSCAN"
+            packageName = "pretixSCAN Desktop"
             packageVersion = version
             vendor = "pretix GmbH"
             copyright = "pretix.eu, Raphael Michel"
@@ -174,7 +174,7 @@ compose.desktop {
                 console = false
                 dirChooser = true
                 perUserInstall = false
-                menuGroup = "pretixSCAN"
+                menuGroup = "pretixSCAN Desktop"
                 shortcut = true
 
                 // Upgrade settings - consistent UUID for upgrade support
