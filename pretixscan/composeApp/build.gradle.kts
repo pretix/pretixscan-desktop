@@ -155,11 +155,10 @@ compose.desktop {
         nativeDistributions {
             // On Windows, we need the packageName to be set as 'pretixSCAN Desktop' in order to avoid a conflict with v1
 
-            val requiredPackageName = findProperty("appPackageName")?.toString()
-                ?: throw GradleException("Package name must be provided via -PappPackageName=<name>")
+            val packageNameValue = findProperty("appPackageName")?.toString() ?: "pretixSCAN-default"
 
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = requiredPackageName
+            packageName = packageNameValue
             packageVersion = version
             vendor = "pretix GmbH"
             copyright = "pretix.eu, Raphael Michel"
@@ -191,6 +190,15 @@ compose.desktop {
             linux {
                 iconFile.set(File("logo/pretix_app_icon.png"))
             }
+        }
+    }
+}
+
+// Validate packageName is provided for packaging tasks
+tasks.matching { it.name.contains("package", ignoreCase = true) }.configureEach {
+    doFirst {
+        if (findProperty("appPackageName") == null) {
+            throw GradleException("Package name must be provided via -PappPackageName=<name> for packaging tasks")
         }
     }
 }

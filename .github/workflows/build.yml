@@ -30,4 +30,4 @@ jobs:
 
       - name: Gradle build
         working-directory: ./pretixscan
-        run: ./gradlew :composeApp:build -PappPackageName="pretixSCAN"
+        run: ./gradlew :composeApp:build
