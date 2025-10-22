@@ -37,7 +37,8 @@ jobs:
 
       - name: Package App
         working-directory: ./pretixscan
-        run: ./gradlew packageDistributionForCurrentOS
+        shell: bash
+        run: ./gradlew packageDistributionForCurrentOS -PappPackageName="${{ runner.os == 'Windows' && 'pretixSCAN Desktop' || 'pretixSCAN' }}"
 
       - name: Read version
         working-directory: ./pretixscan

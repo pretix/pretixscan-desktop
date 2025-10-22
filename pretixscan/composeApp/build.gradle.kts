@@ -153,8 +153,13 @@ compose.desktop {
         mainClass = "eu.pretix.desktop.MainKt"
 
         nativeDistributions {
+            // On Windows, we need the packageName to be set as 'pretixSCAN Desktop' in order to avoid a conflict with v1
+
+            val requiredPackageName = findProperty("appPackageName")?.toString()
+                ?: throw GradleException("Package name must be provided via -PappPackageName=<name>")
+
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "pretixSCAN"
+            packageName = requiredPackageName
             packageVersion = version
             vendor = "pretix GmbH"
             copyright = "pretix.eu, Raphael Michel"
@@ -167,8 +172,8 @@ compose.desktop {
             macOS {
                 iconFile.set(File("logo/pretix_app_icon.icns"))
             }
+
             windows {
-                packageName = "pretixSCAN Desktop"
                 iconFile.set(File("logo/pretix_app_icon.ico"))
 
                 // MSI specific configuration
@@ -182,6 +187,7 @@ compose.desktop {
                 upgradeUuid = "550e8400-e29b-41d4-a716-446655440000"
 
             }
+
             linux {
                 iconFile.set(File("logo/pretix_app_icon.png"))
             }
