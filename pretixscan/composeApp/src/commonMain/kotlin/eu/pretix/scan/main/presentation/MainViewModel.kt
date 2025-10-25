@@ -153,6 +153,16 @@ class MainViewModel(
         }
     }
 
+    suspend fun onHandleDirectScan(secret: String) {
+        log.info("AutoScan: Handling direct scan for ticket")
+        val currentState = _uiState.value
+        if (currentState is MainUiState.ReadyToScan) {
+            _uiState.update {
+                MainUiState.HandlingTicket(currentState.data.secret(secret))
+            }
+        }
+    }
+
     fun onHandleTicketHandlingDismissed() {
         val currentState = _uiState.value
         if (currentState is MainUiState.HandlingTicket) {

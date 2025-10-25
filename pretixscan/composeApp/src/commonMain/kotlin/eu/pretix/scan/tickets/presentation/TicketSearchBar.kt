@@ -19,7 +19,8 @@ import pretixscan.composeapp.generated.resources.searchfield_prompt
 @Composable
 fun TicketSearchBar(
     modifier: Modifier = Modifier,
-    onSelectedSearchResult: (TicketCheckProvider.SearchResult) -> Unit
+    onSelectedSearchResult: (TicketCheckProvider.SearchResult) -> Unit,
+    onDirectScan: (String) -> Unit = {}
 ) {
     val viewModel = koinViewModel<TicketSearchBarViewModel>()
 
@@ -35,7 +36,8 @@ fun TicketSearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                onSearch = viewModel::onSearchTextChange
+                onSearch = viewModel::onSearchTextChange,
+                onDirectScan = onDirectScan
             )
         }
 
@@ -54,7 +56,11 @@ fun TicketSearchBar(
         } else {
             SearchResultsView(
                 searchSuggestions,
-                onSelectedSearchResult = onSelectedSearchResult
+                onSelectedSearchResult = { result ->
+                    // Clear search before handling result (matches old implementation)
+                    viewModel.clearSearch()
+                    onSelectedSearchResult(result)
+                }
             )
         }
     }

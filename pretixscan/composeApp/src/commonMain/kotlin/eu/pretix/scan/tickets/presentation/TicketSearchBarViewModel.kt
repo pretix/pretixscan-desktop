@@ -50,6 +50,10 @@ class TicketSearchBarViewModel(
     fun onSearchTextChange(text: String) {
         _searchText.value = text
     }
+
+    fun clearSearch() {
+        _searchText.value = ""
+    }
 }
 
 
