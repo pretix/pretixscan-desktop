@@ -7,6 +7,7 @@ on:
       - master
       - main
       - update-tornadofx
+      - vnext-kmp
 
 # prevent duplicate runs on the same branch
 concurrency:
@@ -36,7 +37,8 @@ jobs:
 
       - name: Package App
         working-directory: ./pretixscan
-        run: ./gradlew packageDistributionForCurrentOS
+        shell: bash
+        run: ./gradlew packageDistributionForCurrentOS -PappPackageName="${{ runner.os == 'Windows' && 'pretixSCAN Desktop' || 'pretixSCAN' }}"
 
       - name: Read version
         working-directory: ./pretixscan
@@ -55,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pretixSCAN-${{ env.pretixVersion }}-win-x86_64.msi
-          path: ./pretixscan/composeApp/build/compose/binaries/main/msi/pretixSCAN-${{ env.pretixVersion }}.msi
+          path: ./pretixscan/composeApp/build/compose/binaries/main/msi/pretixSCAN Desktop-${{ env.pretixVersion }}.msi
 
       - name: Upload Linux amd64
         if: matrix.os == 'ubuntu-latest'

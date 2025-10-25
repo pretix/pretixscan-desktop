@@ -1,7 +1,5 @@
 package eu.pretix.scan.main
 
-import eu.pretix.desktop.cache.AppCache
-import eu.pretix.desktop.cache.AppConfig
 import eu.pretix.libpretixsync.setup.EventManager
 import eu.pretix.scan.main.presentation.MainViewModel
 import eu.pretix.scan.main.presentation.selectevent.SelectEventListViewModel
@@ -14,7 +12,7 @@ internal val mainModule
             MainViewModel(get(), get(), get())
         }
         factory {
-            SelectEventListViewModel(get<AppCache>(), get<AppConfig>(), get<EventManager>())
+            SelectEventListViewModel(get<EventManager>())
         }
         factory { (eventSlug: String?, subEventId: Long?) ->
             SelectCheckInListViewModel(

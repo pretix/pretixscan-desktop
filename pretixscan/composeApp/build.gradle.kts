@@ -37,6 +37,9 @@ kotlin {
             implementation(libs.vanniktech.multiplatform.locale)
             implementation(libs.kotlinx.serialization.json)
 
+            api(libs.datastore.core)
+            api(libs.datastore.preferences)
+
             // play short audio files
             implementation(libs.gadulka)
 
@@ -150,8 +153,12 @@ compose.desktop {
         mainClass = "eu.pretix.desktop.MainKt"
 
         nativeDistributions {
+            // On Windows, we need the packageName to be set as 'pretixSCAN Desktop' in order to avoid a conflict with v1
+
+            val packageNameValue = findProperty("appPackageName")?.toString() ?: "pretixSCAN-default"
+
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "pretixSCAN"
+            packageName = packageNameValue
             packageVersion = version
             vendor = "pretix GmbH"
             copyright = "pretix.eu, Raphael Michel"
@@ -164,6 +171,7 @@ compose.desktop {
             macOS {
                 iconFile.set(File("logo/pretix_app_icon.icns"))
             }
+
             windows {
                 iconFile.set(File("logo/pretix_app_icon.ico"))
 
@@ -171,16 +179,26 @@ compose.desktop {
                 console = false
                 dirChooser = true
                 perUserInstall = false
-                menuGroup = "pretixSCAN"
+                menuGroup = "pretixSCAN Desktop"
                 shortcut = true
 
                 // Upgrade settings - consistent UUID for upgrade support
                 upgradeUuid = "550e8400-e29b-41d4-a716-446655440000"
 
             }
+
             linux {
                 iconFile.set(File("logo/pretix_app_icon.png"))
             }
+        }
+    }
+}
+
+// Validate packageName is provided for packaging tasks
+tasks.matching { it.name.contains("package", ignoreCase = true) }.configureEach {
+    doFirst {
+        if (findProperty("appPackageName") == null) {
+            throw GradleException("Package name must be provided via -PappPackageName=<name> for packaging tasks")
         }
     }
 }

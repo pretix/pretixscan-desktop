@@ -23,6 +23,7 @@ jetbrains-material-icons = "1.7.3"
 libphone = "9.0.3"
 composeHotReload = "1.0.0-beta07"
 kotlinx-serialization-json = "1.8.0"
+datastore = "1.1.7"
 
 [libraries]
 apache-pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
@@ -56,6 +57,8 @@ jetbrains-material-icons-extended = { module = "org.jetbrains.compose.material:m
 vanniktech-multiplatform-locale = { module = "com.vanniktech:multiplatform-locale", version.ref = "multiplatform-locale" }
 google-libphone = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphone" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+datastore-core = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }

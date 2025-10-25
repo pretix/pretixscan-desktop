@@ -2,7 +2,7 @@ package eu.pretix.scan.tickets.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 @OptIn(FlowPreview::class)
 class TicketSearchBarViewModel(
     private val ticketProvider: TicketCheckProvider,
-    private val appConfig: AppConfig
+    private val appConfig: DataStoreConfigStore
 ) : ViewModel() {
 
     private val _searchText = MutableStateFlow("")

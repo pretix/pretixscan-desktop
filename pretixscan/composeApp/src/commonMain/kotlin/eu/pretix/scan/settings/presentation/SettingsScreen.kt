@@ -3,12 +3,12 @@ package eu.pretix.scan.settings.presentation
 
 //import androidx.compose.material3.Button
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,9 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.composeunstyled.Button
+import com.composeunstyled.Icon
 import eu.pretix.desktop.app.navigation.Route
 import eu.pretix.desktop.app.ui.*
+import eu.pretix.desktop.cache.getLogDirectory
+import eu.pretix.desktop.cache.getUserDataFolder
+import eu.pretix.desktop.cache.openPathInFileBrowser
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -248,27 +251,39 @@ fun SettingsScreen(
                     }
 
                     item {
+                        Section(stringResource(Res.string.settings_label_diagnostics)) {
+                            Setting {
+                                PrimaryButton(
+                                    onClick = {
+                                        openPathInFileBrowser(getUserDataFolder())
+                                    },
+                                    label = stringResource((Res.string.open_data_folder_action)),
+                                    icon = { Icon(Icons.Default.Folder, contentDescription = null) }
+                                )
+                                Spacer(Modifier.width(16.dp))
+                                PrimaryButton(
+                                    onClick = {
+                                        openPathInFileBrowser(getLogDirectory())
+                                    },
+                                    label = stringResource((Res.string.open_logs_folder_action)),
+                                    icon = { Icon(Icons.Default.Folder, contentDescription = null) }
+                                )
+                            }
+                        }
+                    }
+
+                    item {
                         Section(stringResource(Res.string.full_delete)) {
                             Setting {
-                                Button(
+                                PrimaryButton(
                                     onClick = {
                                         // TODO: confirm reset
                                         viewModel.logout()
                                         navHostController.popBackStack()
                                         navHostController.navigate(Route.Welcome.route)
                                     },
-                                    backgroundColor = CustomColor.White.asColor(),
-                                    contentColor = CustomColor.BrandDark.asColor(),
-                                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-                                    shape = RoundedCornerShape(16.dp),
-                                    modifier = Modifier.border(
-                                        1.dp,
-                                        CustomColor.BrandDark.asColor(),
-                                        RoundedCornerShape(16.dp)
-                                    )
-                                ) {
-                                    Text(stringResource(Res.string.full_delete_action))
-                                }
+                                    label = stringResource(Res.string.full_delete_action)
+                                )
                             }
                         }
                     }

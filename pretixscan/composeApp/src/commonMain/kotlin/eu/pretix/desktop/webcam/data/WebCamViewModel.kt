@@ -3,7 +3,7 @@ package eu.pretix.desktop.webcam.data
 import androidx.lifecycle.ViewModel
 import com.github.sarxos.webcam.WebcamException
 import com.github.sarxos.webcam.util.ImageUtils
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.cache.getUserDataFolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,7 @@ import javax.imageio.ImageIO
 
 class WebCamViewModel(
     private val videoSource: VideoSource,
-    private val appConfig: AppConfig,
+    private val appConfig: DataStoreConfigStore,
 ) : ViewModel() {
     private val log = Logger.getLogger("eu/pretix/desktop/webcam")
 

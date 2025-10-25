@@ -35,7 +35,7 @@ actual val platformModules: List<Module>
                 )
             }
             factory<SyncManager> {
-                val config = get<AppConfig>()
+                val config = get<DataStoreConfigStore>()
 
                 val uploadInterval: Long = 1000
                 var downloadInterval: Long = 30000
@@ -45,7 +45,7 @@ actual val platformModules: List<Module>
 
 
                 SyncManager(
-                    get<AppConfig>(),
+                    get<DataStoreConfigStore>(),
                     get<PretixApi>(),
                     get<SentryInterface>(),
                     get<AppCache>().db,

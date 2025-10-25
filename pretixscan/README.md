@@ -35,7 +35,7 @@ KMP provides for various native distributions to be created, please refer to the
 For example, create a distribution package for the current OS:
 
 ```bash
-./gradlew packageDistributionForCurrentOS
+./gradlew packageDistributionForCurrentOS -PappPackageName="pretixSCAN"
 ```
 
 By default, packages are created under `pretixscan/composeApp/build/compose/binaries`.

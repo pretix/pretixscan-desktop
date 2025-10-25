@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import eu.pretix.desktop.app.navigation.Route
 import eu.pretix.desktop.app.ui.CustomColor
+import eu.pretix.desktop.app.ui.FieldTextInput
 import eu.pretix.desktop.app.ui.ScreenContentRoot
 import eu.pretix.desktop.app.ui.asColor
 import kotlinx.coroutines.launch
@@ -31,15 +32,17 @@ fun SetupScreen(
     val viewModel = koinViewModel<SetupViewModel>()
     val uiState by viewModel.uiState.collectAsState()
 
-    // Local state to control the visibility of the alert dialog
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
-
     var url by remember { mutableStateOf("https://pretix.eu") }
     var token by remember { mutableStateOf("") }
     val focusRequester = FocusRequester()
 
     val coroutineScope = rememberCoroutineScope()
+
+    // Check and execute migration if needed on screen load
+    LaunchedEffect(Unit) {
+        viewModel.checkAndExecuteMigration()
+    }
+
     ScreenContentRoot {
 
         Row(
@@ -74,27 +77,36 @@ fun SetupScreen(
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(32.dp))
-                    OutlinedTextField(
+                    FieldTextInput(
                         value = url,
                         onValueChange = { url = it },
-                        label = { Text(stringResource(Res.string.hint_url)) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        label = stringResource(Res.string.hint_url),
+                        maxLines = 1,
+                        required = true,
+                        enabled = uiState != SetupUiState.Loading
                     )
 
-                    OutlinedTextField(
+                    FieldTextInput(
                         value = token,
                         onValueChange = { token = it },
-                        label = { Text(stringResource(Res.string.hint_token)) },
-                        singleLine = true,
+                        label = stringResource(Res.string.hint_token),
+                        maxLines = 1,
+                        required = true,
+                        enabled = uiState != SetupUiState.Loading,
                         modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
                     )
 
                     Row(
                         Modifier.fillMaxWidth()
                             .padding(vertical = 32.dp),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        if (uiState == SetupUiState.Loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.padding(end = 16.dp).size(24.dp)
+                            )
+                        }
                         Button(
                             colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColor()),
                             onClick = {
@@ -113,8 +125,7 @@ fun SetupScreen(
 
                     when (uiState) {
                         is SetupUiState.Loading -> {
-                            // Show a loading indicator
-                            CircularProgressIndicator()
+                            // Loading indicator shown in button row
                         }
 
                         is SetupUiState.Success -> {
@@ -124,27 +135,20 @@ fun SetupScreen(
                         }
 
                         is SetupUiState.Error -> {
-                            // Show error message in a dialog
-                            errorMessage = (uiState as SetupUiState.Error).exception
-                            showErrorDialog = true
+                            ErrorDialog(
+                                title = stringResource(Res.string.error_connecting_token),
+                                message = (uiState as SetupUiState.Error).exception,
+                                onDismiss = {
+                                    viewModel.dismissLoginError()
+                                }
+                            )
                         }
 
                         SetupUiState.Start -> {
-                            // Do nothing
-                        }
-                    }
-
-                    // Show an alert dialog if there's an error
-                    if (showErrorDialog) {
-                        ErrorDialog(
-                            title = stringResource(Res.string.error_unknown_exception),
-                            message = errorMessage,
-                            onDismiss = {
-                                errorMessage = ""
-                                showErrorDialog = false
-                                viewModel.dismissLoginError()
+                            LaunchedEffect(Unit) {
+                                focusRequester.requestFocus()
                             }
-                        )
+                        }
                     }
                 }
             }

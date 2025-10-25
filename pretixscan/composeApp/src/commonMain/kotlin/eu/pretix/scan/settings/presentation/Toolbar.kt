@@ -15,6 +15,9 @@ import androidx.compose.ui.unit.dp
 import eu.pretix.desktop.app.ui.CustomColor
 import eu.pretix.desktop.app.ui.Logo
 import eu.pretix.desktop.app.ui.asColor
+import org.jetbrains.compose.resources.stringResource
+import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.action_label_back
 
 @Composable
 fun Toolbar(
@@ -31,7 +34,7 @@ fun Toolbar(
         Button(
             onClick = onGoBack
         ) {
-            Text("Back")
+            Text(stringResource(Res.string.action_label_back))
         }
     }
 }

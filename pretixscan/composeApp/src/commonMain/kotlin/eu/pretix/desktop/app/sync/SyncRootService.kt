@@ -3,7 +3,7 @@ package eu.pretix.desktop.app.sync
 import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Coordinates sync across the app.
  */
-class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
+class SyncRootService(private val appConfig: DataStoreConfigStore) : ViewModel() {
     private val log = Logger.getLogger("SyncRootService")
 
     private val _syncState = MutableStateFlow<SyncState>(SyncState.Idle)
@@ -27,10 +27,16 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
     private val _eventSyncStates = MutableStateFlow<Map<String, EventSyncState>>(emptyMap())
     val eventSyncStates: StateFlow<Map<String, EventSyncState>> = _eventSyncStates.asStateFlow()
 
-    private val _showMainSyncProgress = MutableStateFlow(false)
-    val showMainSyncProgress: StateFlow<Boolean> = _showMainSyncProgress.asStateFlow()
+    private val _currentRoute = MutableStateFlow<String?>(null)
+    private val _shouldSync = MutableStateFlow(false)
 
-    private var shouldSync: Boolean = false
+    val showMainSyncProgress: StateFlow<Boolean> = combine(
+        _currentRoute,
+        _shouldSync
+    ) { route, shouldSync ->
+        route == "/eu/pretix/scan/main" && shouldSync
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     private var mainSyncJob: Job? = null
 
     private fun tickerFlow(period: Duration, initialDelay: Duration = Duration.ZERO) = flow {
@@ -44,7 +50,7 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
     init {
         log.info("Starting main sync job loop")
         tickerFlow(5.seconds)
-            .filter { shouldSync }
+            .filter { _shouldSync.value }
             .onEach {
                 mainSyncJob?.cancel()
                 mainSyncJob = viewModelScope.launch(Dispatchers.IO) {
@@ -85,7 +91,7 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
             _syncState.value = SyncState.InProgress("Syncing ${events.size} event(s)...")
             val syncManager = GlobalContext.get().get<SyncManager>()
 
-            syncManager.sync(force) { message ->
+            val syncResult = syncManager.sync(force) { message ->
                 runBlocking {
                     withContext(Dispatchers.Main) {
                         _syncState.value = SyncState.InProgress(message)
@@ -101,6 +107,11 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
                         }
                     }
                 }
+            }
+
+            if (syncResult.exception != null) {
+                log.warning("sync failed, rethrowing: $syncResult")
+                throw syncResult.exception
             }
 
             // Mark all as success
@@ -134,19 +145,19 @@ class SyncRootService(private val appConfig: AppConfig) : ViewModel() {
 
     fun onRouteChanged(route: String) {
         log.info("Route changed ${route}")
-        _showMainSyncProgress.value = route == "/eu/pretix/scan/main"
+        _currentRoute.value = route
     }
 
     fun skipFutureSyncs(): Boolean {
         log.info("Pausing sync")
-        val shouldResume = shouldSync
-        shouldSync = false
+        val shouldResume = _shouldSync.value
+        _shouldSync.value = false
         return shouldResume
     }
 
     fun resumeSync() {
         log.info("Resuming sync")
-        shouldSync = true
+        _shouldSync.value = true
     }
 
     suspend fun minimalSync(nowMillis: Long = System.currentTimeMillis()) {

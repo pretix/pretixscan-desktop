@@ -1,22 +1,30 @@
-package eu.pretix.desktop.cache
+package eu.pretix.pretixscan.desktop
 
+/*
+* This file mimics the package and signature of the pretixSCAN v1 application configuration.
+*
+* While the exact class name is not important, the `java.util.prefs.Preferences` system uses the package namespace
+* to calculate the path where preferences (settings) are stored.
+*
+* This class must be able to load and parse v1 preferences in order to offer them as values during migration to v2.
+*
+* */
+
+import eu.pretix.desktop.cache.EventSelection
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.config.ConfigStore
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.joda.time.DateTime
 import org.json.JSONObject
 import java.io.File
-import java.util.prefs.Preferences
 import java.util.logging.Logger
+import java.util.prefs.Preferences
 
 
 object DateTimeSerializer : KSerializer<DateTime> {
@@ -32,19 +40,6 @@ object DateTimeSerializer : KSerializer<DateTime> {
     }
 }
 
-@Serializable
-data class EventSelection(
-    val eventSlug: String,
-    val eventName: String,
-    val subEventId: Long?,
-    val checkInListId: Long,
-    val checkInListName: String,
-    @Serializable(with = DateTimeSerializer::class)
-    val dateFrom: DateTime?,
-    @Serializable(with = DateTimeSerializer::class)
-    val dateTo: DateTime?,
-)
-
 @Suppress("PrivatePropertyName")
 class AppConfig(val dataDir: String) : ConfigStore {
     private val prefs = Preferences.userNodeForPackage(AppConfig::class.java)
@@ -54,8 +49,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
         ignoreUnknownKeys = true
         prettyPrint = false
     }
-
-    private val VERSION = Version.version
 
     private val PREFS_KEY_API_URL = "pretix_api_url"
     private val PREFS_KEY_API_KEY = "pretix_api_key"
@@ -76,7 +69,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
     private val PREFS_KEY_PRINTBADGES = "prefs_key_print_badges"
     private val PREFS_KEY_SYNC_ORDERS = "sync_orders"
     private val PREFS_KEY_SYNC_AUTO = "pref_sync_auto"
-    private val PREFS_KEY_SHOW_INFO = "show_info"
     private val PREFS_KEY_DEVICE_KNOWN_VERSION = "known_version"
     private val PREFS_KEY_DEVICE_KNOWN_INFO = "known_info"
     private val PREFS_KEY_SCAN_TYPE = "scan_type"
@@ -86,8 +78,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
     private val PREFS_KEY_KNOWN_GATE_ID = "known_gate_id"
     private val PREFS_KEY_PLAY_SOUND = "play_sound"
     private val PREFS_KEY_AUTO_SWITCH = "auto_switch"
-    private val PREFS_KEY_LARGE_COLOR = "large_color"
-    private val PREFS_KEY_ALLOW_SEARCH = "allow_search"
     private val PREFS_KEY_API_VERSION = "pretix_api_version"
     private val PREFS_KEY_OFFLINE_MODE = "offline"
     private val PREFS_KEY_PROXY_MODE = "proxy"
@@ -98,8 +88,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
     private val PREFS_KEY_LAST_CLEANUP = "last_cleanup"
     private val PREFS_KEY_UI_REDUCE_MOTION = "ui_reduce_motion"
     private val PREFS_KEY_LAST_STATUS_DATA = "last_status_data"
-    private val PREFS_KEY_LAST_UPDATE_CHECK = "last_update_check_"
-    private val PREFS_KEY_UPDATE_CHECK_NEWER_VERSION = "update_check_newer_version_"
     private val PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS = "cache_known_live_event_slugs"
 
     private val PREFS_KEY_HIDE_NAMES = "pref_hide_names"
@@ -131,30 +119,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
         prefs.remove(PREFS_KEY_EVENT_NAME)
         prefs.remove(PREFS_KEY_CHECKINLIST_ID)
         prefs.remove(PREFS_KEY_HIDE_NAMES)
-        prefs.flush()
-    }
-
-    fun resetEventConfig() {
-        prefs.remove(PREFS_KEY_API_URL)
-        prefs.remove(PREFS_KEY_API_KEY)
-        prefs.remove(PREFS_KEY_SHOW_INFO)
-        prefs.remove(PREFS_KEY_ALLOW_SEARCH)
-        prefs.remove(PREFS_KEY_API_VERSION)
-        prefs.remove(PREFS_KEY_LAST_DOWNLOAD)
-        prefs.remove(PREFS_KEY_LAST_SYNC)
-        prefs.remove(PREFS_KEY_LAST_FAILED_SYNC)
-        prefs.remove(PREFS_KEY_LAST_STATUS_DATA)
-        prefs.remove(PREFS_KEY_SUBEVENT_ID)
-        prefs.remove(PREFS_KEY_EVENT_SLUG)
-        prefs.remove(PREFS_KEY_EVENT_NAME)
-        prefs.remove(PREFS_KEY_CHECKINLIST_ID)
-        prefs.remove(PREFS_KEY_KNOWN_GATE_NAME)
-        prefs.remove(PREFS_KEY_KNOWN_GATE_ID)
-        prefs.remove(PREFS_KEY_HIDE_NAMES)
-        val f = File(dataDir, "$PREFS_KEY_LAST_STATUS_DATA.json")
-        if (f.exists()) {
-            f.delete()
-        }
         prefs.flush()
     }
 
@@ -220,17 +184,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
 
     val activeEvent: EventSelection?
         get() = eventSelections.getOrNull(activeEventIndex)
-
-    @Deprecated("Use eventSelections (plural) instead", ReplaceWith("eventSelections"))
-    var eventSelection: List<EventSelection>
-        get() = eventSelections
-        set(value) {
-            eventSelections = value
-        }
-
-    fun eventSelectionToMap(): Map<String, Long> {
-        return eventSelections.associate { it.eventSlug to it.checkInListId }
-    }
 
     override fun isDebug(): Boolean {
         return false
@@ -338,11 +291,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
             prefs.flush()
         }
 
-    fun setOrganizerSlug(value: String) {
-        prefs.put(PREFS_KEY_ORGANIZER_SLUG, value)
-        prefs.flush()
-    }
-
     override fun getPosId(): Long {
         return 0
     }
@@ -368,13 +316,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
             prefs.flush()
         }
 
-    var largeColor: Boolean
-        get() = prefs.getBoolean(PREFS_KEY_LARGE_COLOR, false)
-        set(value) {
-            prefs.putBoolean(PREFS_KEY_LARGE_COLOR, value)
-            prefs.flush()
-        }
-
     var checkInListId: Long
         get() = prefs.getLong(PREFS_KEY_CHECKINLIST_ID, 0)
         set(value) {
@@ -386,20 +327,6 @@ class AppConfig(val dataDir: String) : ConfigStore {
         get() = prefs.get(PREFS_KEY_CHECKINLIST_NAME, "")
         set(value) {
             prefs.put(PREFS_KEY_CHECKINLIST_NAME, value)
-            prefs.flush()
-        }
-
-    var lastUpdateCheck: Long
-        get() = prefs.getLong(PREFS_KEY_LAST_UPDATE_CHECK + VERSION, 0)
-        set(value) {
-            prefs.putLong(PREFS_KEY_LAST_UPDATE_CHECK + VERSION, value)
-            prefs.flush()
-        }
-
-    var updateCheckNewerVersion: String
-        get() = prefs.get(PREFS_KEY_UPDATE_CHECK_NEWER_VERSION + VERSION, "")
-        set(value) {
-            prefs.put(PREFS_KEY_UPDATE_CHECK_NEWER_VERSION + VERSION, value)
             prefs.flush()
         }
 
@@ -520,16 +447,42 @@ class AppConfig(val dataDir: String) : ConfigStore {
         return prefs.getBoolean(PREFS_KEY_AUTO_SWITCH, false)
     }
 
-    fun setAutoSwitchRequested(value: Boolean) {
-        return prefs.putBoolean(PREFS_KEY_AUTO_SWITCH, value)
-    }
-
     override fun getKnownLiveEventSlugs(): Set<String> {
         return prefs.get(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, "").split(",").filter { it.isNotEmpty() }.toSet()
     }
 
     override fun setKnownLiveEventSlugs(slugs: Set<String>) {
         prefs.put(PREFS_KEY_KNOWN_LIVE_EVENT_SLUGS, slugs.joinToString(","))
+        prefs.flush()
+    }
+
+    internal fun getApiDeviceId(): Long {
+        return prefs.getLong(PREFS_KEY_API_DEVICE_ID, 0L)
+    }
+
+    internal val deviceSerial: String
+        get() = prefs.get(PREFS_KEY_DEVICE_SERIAL, "")
+
+
+    fun resetEventConfig() {
+        prefs.remove(PREFS_KEY_API_URL)
+        prefs.remove(PREFS_KEY_API_KEY)
+        prefs.remove(PREFS_KEY_API_VERSION)
+        prefs.remove(PREFS_KEY_LAST_DOWNLOAD)
+        prefs.remove(PREFS_KEY_LAST_SYNC)
+        prefs.remove(PREFS_KEY_LAST_FAILED_SYNC)
+        prefs.remove(PREFS_KEY_LAST_STATUS_DATA)
+        prefs.remove(PREFS_KEY_SUBEVENT_ID)
+        prefs.remove(PREFS_KEY_EVENT_SLUG)
+        prefs.remove(PREFS_KEY_EVENT_NAME)
+        prefs.remove(PREFS_KEY_CHECKINLIST_ID)
+        prefs.remove(PREFS_KEY_KNOWN_GATE_NAME)
+        prefs.remove(PREFS_KEY_KNOWN_GATE_ID)
+        prefs.remove(PREFS_KEY_HIDE_NAMES)
+        val f = File(dataDir, "$PREFS_KEY_LAST_STATUS_DATA.json")
+        if (f.exists()) {
+            f.delete()
+        }
         prefs.flush()
     }
 }

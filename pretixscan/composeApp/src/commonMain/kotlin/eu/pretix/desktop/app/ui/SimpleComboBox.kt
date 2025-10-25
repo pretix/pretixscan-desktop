@@ -328,8 +328,6 @@ fun MenuScope.MenuContent(
                                         .startsWith(char.lowercase()))
                                 }
                                 if (matchingOption != null) {
-                                    val matchIndex = menuState.options.indexOf(matchingOption)
-                                    println("found match for $char at index ${matchIndex} for label ${matchingOption.label} and value ${matchingOption.value}, requesting focus")
                                     menuState.focusItem(matchingOption)
                                     true
                                 } else false

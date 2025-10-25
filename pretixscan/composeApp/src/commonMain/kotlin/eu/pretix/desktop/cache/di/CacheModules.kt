@@ -1,16 +1,50 @@
 package eu.pretix.desktop.cache.di
 
-import eu.pretix.desktop.cache.AppCache
-import eu.pretix.desktop.cache.AppConfig
-import eu.pretix.desktop.cache.getUserDataFolder
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import eu.pretix.desktop.cache.*
+import eu.pretix.desktop.migration.ConfigMigration
+import eu.pretix.desktop.migration.V1DirectoryLocator
+import eu.pretix.libpretixsync.config.ConfigStore
+import eu.pretix.pretixscan.desktop.AppConfig
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 
 
 val cacheModules
     get() = listOf(
         module {
+            // DataStore instance
+            single<DataStore<Preferences>> {
+                createDataStore {
+                    val path = Path(getUserDataFolder())
+                    path.resolve(DATA_STORE_FILE_NAME).absolutePathString()
+                }
+            }
+
+            // DataStoreConfig singleton
+            single<DataStoreConfig> {
+                DataStoreConfig(dataStore = get())
+            }
+
+            // ConfigMigration singleton (creates its own AppConfig instance)
+            single<ConfigMigration> {
+                ConfigMigration(
+                    oldConfig = AppConfig(V1DirectoryLocator.getV1DataDir().path),
+                    newConfig = get()
+                )
+            }
+
+            // ConfigStore adapter for libpretixsync
+            single<DataStoreConfigStore> {
+                DataStoreConfigStore(dataStoreConfig = get())
+            }
+
+            // Bind ConfigStore interface to DataStoreConfigStore
+            single<ConfigStore> { get<DataStoreConfigStore>() }
+
             singleOf(::AppCache)
-            singleOf<AppConfig>({ AppConfig(getUserDataFolder()) })
         },
     )

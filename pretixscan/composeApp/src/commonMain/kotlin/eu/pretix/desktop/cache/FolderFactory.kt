@@ -6,6 +6,7 @@ expect fun getUserDataFolder(): String
 
 expect fun getUserCacheFolder(): String
 
+expect fun getLogDirectory(): String
 /**
 Retrieves the path to the legacy database file.
 

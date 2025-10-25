@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import eu.iamkonstantin.kotlin.gadulka.GadulkaPlayer
 import eu.pretix.desktop.cache.AppCache
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.libpretixsync.SentryInterface
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.TicketCheckProvider
@@ -19,10 +19,11 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import pretixscan.composeapp.generated.resources.*
 import java.text.SimpleDateFormat
+import java.util.logging.Logger
 
 @OptIn(ExperimentalResourceApi::class)
 class TicketCodeHandler(
-    private val conf: AppConfig,
+    private val conf: DataStoreConfigStore,
     private val appCache: AppCache,
     private val checkProvider: TicketCheckProvider,
     private val audioPlayer: GadulkaPlayer,
@@ -30,6 +31,7 @@ class TicketCodeHandler(
     private val connectivityHelper: ConnectivityHelper,
     private val layoutFetcher: PrintLayoutFetcher
 ) {
+    private val log = Logger.getLogger("TicketCodeHandler")
 
     suspend fun handleScanResult(
         rawResult: String?,
@@ -128,7 +130,7 @@ class TicketCodeHandler(
                 allowQuestions = allowQuestions
             )
 
-            println("Check result type: ${checkResult.type}")
+            log.info("Check result type: ${checkResult.type}")
 
             if (checkProvider is OnlineCheckProvider) {
                 if (checkResult.type == TicketCheckProvider.CheckResult.Type.ERROR) {
@@ -181,7 +183,7 @@ class TicketCodeHandler(
     }
 
     private fun calculateScannedEvent(eventSlug: String?): eu.pretix.libpretixsync.models.Event? {
-        if (!eventSlug.isNullOrBlank() && conf.eventSelection.size > 1) {
+        if (!eventSlug.isNullOrBlank() && conf.eventSelections.size > 1) {
             return appCache.db.eventQueries.selectBySlug(eventSlug).executeAsOneOrNull()?.toModel()
         }
 

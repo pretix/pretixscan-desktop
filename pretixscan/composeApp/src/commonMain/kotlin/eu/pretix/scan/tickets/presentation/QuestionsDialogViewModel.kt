@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.vanniktech.locale.Country
 import eu.pretix.desktop.app.ui.FieldValidationState
 import eu.pretix.desktop.app.ui.SelectableValue
-import eu.pretix.desktop.cache.AppConfig
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.scan.tickets.data.PhoneValidator
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.Answer
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.logging.Logger
 
-class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
+class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewModel() {
 
     private val log = Logger.getLogger("tickets")
     private val _form = MutableStateFlow(emptyList<QuestionFormField>())
@@ -191,7 +191,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
     fun updateChoiceAnswer(questionId: Long, value: String, checked: Boolean?) {
         _form.value = _form.value.map { field ->
             if (field.id == questionId && field.fieldType == QuestionType.M) {
-                log.info("Updating choices for $questionId (${field.fieldType}) value:checked $value:$checked")
+                log.info("Updating choices for $questionId (${field.fieldType})")
                 when (checked) {
                     true -> {
                         val updatedValues = (field.values?.toList()?.toMutableList()
@@ -211,7 +211,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
     fun updateAnswer(questionId: Long, answer: String?, extra: String? = null) {
         _form.value = _form.value.map { field ->
             if (field.id == questionId) {
-                log.info("Updating answer for $questionId (${field.fieldType}) to $answer, extra: $extra")
+                log.info("Updating answer for $questionId (${field.fieldType})")
 
                 when (field.fieldType) {
                     QuestionType.F -> {
@@ -284,7 +284,7 @@ class QuestionsDialogViewModel(private val config: AppConfig) : ViewModel() {
             }
         }
         _form.value.forEach { field ->
-            log.info("question ${field.label}: ${field.value}, valid: ${if (field.validation == null) "yes" else "${field.validation}"}")
+            log.info("question ${field.label}, valid: ${if (field.validation == null) "yes" else "${field.validation}"}")
         }
     }
 

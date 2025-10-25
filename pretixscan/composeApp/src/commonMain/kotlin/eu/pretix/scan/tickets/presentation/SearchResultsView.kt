@@ -64,7 +64,6 @@ fun SearchResultsView(
         ) {
             itemsIndexed(searchSuggestions) { index, item ->
                 FocusableRowItem(index, item, onSelectedSearchResult, onFocused = {
-                    println("Focused row $index")
                     focusedIndex.value = index
                 }, focusedIndex = focusedIndex.value)
             }
