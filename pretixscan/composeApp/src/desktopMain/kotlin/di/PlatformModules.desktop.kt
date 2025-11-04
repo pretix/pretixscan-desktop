@@ -1,5 +1,6 @@
 package di
 
+import eu.pretix.desktop.app.scan.GlobalScanHandler
 import eu.pretix.desktop.cache.*
 import eu.pretix.desktop.printing.*
 import eu.pretix.libpretixsync.SentryInterface
@@ -18,6 +19,7 @@ actual val platformModules: List<Module>
     get() = listOf(
         module {
             single<LocalCacheFactory> { JvmLocalCacheFactory() }
+            single { GlobalScanHandler() }
         },
         module {
             factory<HttpClientFactory> {

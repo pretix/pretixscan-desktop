@@ -9,6 +9,8 @@ import eu.pretix.desktop.cache.Version
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.libpretixsync.sqldelight.CheckInList
+import eu.pretix.scan.tickets.data.ResultState
+import eu.pretix.scan.tickets.data.requiresUserInteraction
 import kotlinx.coroutines.flow.*
 import java.util.logging.Logger
 
@@ -156,9 +158,37 @@ class MainViewModel(
     suspend fun onHandleDirectScan(secret: String) {
         log.info("AutoScan: Handling direct scan for ticket")
         val currentState = _uiState.value
-        if (currentState is MainUiState.ReadyToScan) {
-            _uiState.update {
-                MainUiState.HandlingTicket(currentState.data.secret(secret))
+
+        when (currentState) {
+            is MainUiState.ReadyToScan -> {
+                _uiState.update {
+                    MainUiState.HandlingTicket(
+                        currentState.data
+                            .secret(secret)
+                            .copy(scanTimestamp = System.currentTimeMillis())
+                    )
+                }
+            }
+            is MainUiState.HandlingTicket -> {
+                val currentResultState = currentState.data.resultState
+
+                if (currentResultState?.requiresUserInteraction() == true) {
+                    log.info("AutoScan: Ignoring new scan - current dialog requires user interaction (state: $currentResultState)")
+                    return
+                }
+
+                log.info("AutoScan: New scan while handling auto-dismissible dialog, interrupting")
+                _uiState.update { MainUiState.ReadyToScan(currentState.data.secret(null)) }
+                _uiState.update {
+                    MainUiState.HandlingTicket(
+                        currentState.data
+                            .secret(secret)
+                            .copy(scanTimestamp = System.currentTimeMillis())
+                    )
+                }
+            }
+            else -> {
+                log.info("AutoScan: Ignoring scan in state: ${currentState::class.simpleName}")
             }
         }
     }
@@ -168,6 +198,17 @@ class MainViewModel(
         if (currentState is MainUiState.HandlingTicket) {
             _uiState.update {
                 MainUiState.ReadyToScan(currentState.data.secret(null))
+            }
+        }
+    }
+
+    fun onTicketResultDetermined(resultState: ResultState) {
+        val currentState = _uiState.value
+        if (currentState is MainUiState.HandlingTicket) {
+            _uiState.update {
+                MainUiState.HandlingTicket(
+                    currentState.data.copy(resultState = resultState)
+                )
             }
         }
     }

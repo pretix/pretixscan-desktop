@@ -21,7 +21,7 @@ fun QuestionPhoneNumber(
     var country by remember { mutableStateOf(calculateDefaultCountry(selectedValue)) }
     country.callingCodes.first()
 
-    LaunchedEffect(Unit, selectedValue) {
+    LaunchedEffect(Unit) {
         country = calculateDefaultCountry(selectedValue)
     }
 

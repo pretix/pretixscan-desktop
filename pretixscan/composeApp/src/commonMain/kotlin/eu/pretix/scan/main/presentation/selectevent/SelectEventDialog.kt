@@ -102,7 +102,7 @@ fun SelectEventDialog(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                // Event List - now supports both modes
+                // Event List
                 SelectEventList(
                     advancedMode = advancedMode,
                     selectedEvent = selectedEvent,

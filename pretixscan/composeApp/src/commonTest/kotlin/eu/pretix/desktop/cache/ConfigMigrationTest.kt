@@ -8,16 +8,39 @@ import eu.pretix.pretixscan.desktop.AppConfig
 import kotlinx.coroutines.test.runTest
 import okio.Path.Companion.toPath
 import kotlin.io.path.createTempDirectory
+import kotlin.io.path.deleteIfExists
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import java.nio.file.Path
 
 class ConfigMigrationTest {
 
+    private lateinit var testTempDir: Path
+    private val testFiles = mutableListOf<Path>()
+
+    @BeforeTest
+    fun setup() {
+        testTempDir = createTempDirectory("pretixscan-test-")
+    }
+
+    @AfterTest
+    fun teardown() {
+        testFiles.forEach { file ->
+            runCatching { file.deleteIfExists() }
+        }
+        runCatching { testTempDir.deleteIfExists() }
+        testFiles.clear()
+    }
+
     private fun createTestDataStore(): DataStore<Preferences> {
+        val testFile = testTempDir.resolve("test_${System.nanoTime()}.preferences_pb")
+        testFiles.add(testFile)
         return PreferenceDataStoreFactory.createWithPath(
-            produceFile = { "test_${System.nanoTime()}.preferences_pb".toPath() }
+            produceFile = { testFile.toString().toPath() }
         )
     }
 

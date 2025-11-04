@@ -1,6 +1,7 @@
 package eu.pretix.scan.main.presentation
 
 import eu.pretix.desktop.cache.EventSelection
+import eu.pretix.scan.tickets.data.ResultState
 import org.joda.time.DateTime
 
 // Presentation model for multi-event selection
@@ -28,7 +29,12 @@ sealed class MainUiState<out T> {
     ) : MainUiState<Nothing>()
 }
 
-data class MainUiStateData(val eventSelection: EventSelection, val secret: String? = null)
+data class MainUiStateData(
+    val eventSelection: EventSelection,
+    val secret: String? = null,
+    val scanTimestamp: Long = 0L,
+    val resultState: ResultState? = null
+)
 
 fun MainUiStateData.secret(secret: String?): MainUiStateData {
     return this.copy(secret = secret)

@@ -103,7 +103,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
-                        true
+                        it.required
                     )
                 }
 
@@ -113,7 +113,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
-                        true,
+                        it.required,
                         keyValueOptions = it.options?.sortedBy { option -> option.position }
                             ?.map { option ->
                                 SelectableValue(
@@ -131,7 +131,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
-                        true,
+                        it.required,
                         keyValueOptions = it.options?.sortedBy { option -> option.position }
                             ?.map { option ->
                                 SelectableValue(
@@ -151,7 +151,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
-                        true,
+                        it.required,
                         dateConfig = DateConfig(minDate = it.valid_date_min, maxDate = it.valid_date_max)
                     )
                 }
@@ -162,7 +162,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
-                        true
+                        it.required
                     )
                 }
 
@@ -172,7 +172,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                         it.question,
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
-                        true,
+                        it.required,
                         keyValueOptions = Country.entries.map { country ->
                             SelectableValue(
                                 country.code,
@@ -267,7 +267,11 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     val answer = it.value
                     val country = it.uiExtra
                     if (answer.isNullOrBlank()) {
-                        it.copy(validation = FieldValidationState.MISSING)
+                        if (it.required) {
+                            it.copy(validation = FieldValidationState.MISSING)
+                        } else {
+                            it.copy(validation = null)
+                        }
                     } else {
                         val parsed = phoneValidator.parse(answer, country)
                         if (parsed == null) {
@@ -278,8 +282,20 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     }
                 }
 
+                QuestionType.M -> {
+                    if (it.required && it.values.isNullOrEmpty()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else {
+                        it.copy(validation = null)
+                    }
+                }
+
                 else -> {
-                    it
+                    if (it.required && it.value.isNullOrBlank()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else {
+                        it.copy(validation = null)
+                    }
                 }
             }
         }

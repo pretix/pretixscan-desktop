@@ -3,6 +3,7 @@ package eu.pretix.scan.tickets.presentation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -11,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.scan.main.presentation.MainUiState
+import eu.pretix.scan.main.presentation.MainViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.Res
@@ -27,12 +30,23 @@ fun TicketSearchBar(
     onDirectScan: (String) -> Unit = {}
 ) {
     val viewModel = koinViewModel<TicketSearchBarViewModel>()
+    val mainViewModel = koinViewModel<MainViewModel>()
 
     val searchQuery by viewModel.searchText.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
     val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
+    val mainUiState by mainViewModel.uiState.collectAsState()
 
     val barcodePattern = remember { Regex("[a-zA-Z0-9=+/]{5,}") }
+
+    val currentSecret = (mainUiState as? MainUiState.HandlingTicket)?.data?.secret
+
+    LaunchedEffect(currentSecret) {
+        if (currentSecret != null) {
+            log.info("AutoScan: Dialog appeared for new ticket, clearing search field")
+            viewModel.clearSearch()
+        }
+    }
 
     Column {
         Row(modifier = Modifier.padding(top = 16.dp).padding(horizontal = 16.dp)) {
@@ -42,8 +56,7 @@ fun TicketSearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                onSearch = viewModel::onSearchTextChange,
-                onDirectScan = onDirectScan,
+                onSearchValueChanged = viewModel::onSearchTextChange,
                 onEnterPressed = {
                     if (searchSuggestions.isNotEmpty()) {
                         log.info("AutoScan: Enter pressed with search results, selecting first result")

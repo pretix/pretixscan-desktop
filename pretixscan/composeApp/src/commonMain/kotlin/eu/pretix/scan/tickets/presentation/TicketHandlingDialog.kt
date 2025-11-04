@@ -2,7 +2,6 @@ package eu.pretix.scan.tickets.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -11,13 +10,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import com.composables.core.*
 import eu.pretix.scan.tickets.data.ResultState
+import eu.pretix.scan.tickets.data.isAutoDismissible
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,33 +27,31 @@ private val log = Logger.getLogger("TicketHandlingDialog")
 
 @Preview
 @Composable
-fun TicketHandlingDialog(secret: String?, onDismiss: () -> Unit) {
+fun TicketHandlingDialog(
+    secret: String?,
+    scanTimestamp: Long,
+    onDismiss: () -> Unit,
+    onResultStateChanged: (ResultState) -> Unit = {}
+) {
 
     val viewModel = koinViewModel<TicketHandlingDialogViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val dialogState = rememberDialogState(initiallyVisible = true)
     var remainingTimeProgress by remember { mutableStateOf(1.0f) }
-    val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(secret) {
+    LaunchedEffect(secret, scanTimestamp) {
         viewModel.resetTicketHandlingState()
         viewModel.handleTicket(secret)
     }
 
-    // Request focus when transitioning to success states so Space key works
-    // Keyed on resultState so it re-runs after questions/unpaid dialogs
-    LaunchedEffect(uiState.resultState) {
-        if (uiState.resultState == ResultState.SUCCESS ||
-            uiState.resultState == ResultState.SUCCESS_EXIT) {
-            log.info("AutoScan: Requesting focus for success state: ${uiState.resultState}")
-            focusRequester.requestFocus()
-        }
-    }
-
     // Auto-dismiss countdown for successful scans (30 seconds)
     LaunchedEffect(uiState.resultState) {
-        if (uiState.resultState == ResultState.SUCCESS || uiState.resultState == ResultState.SUCCESS_EXIT) {
+        if (uiState.resultState != ResultState.EMPTY && uiState.resultState != ResultState.LOADING) {
+            onResultStateChanged(uiState.resultState)
+        }
+
+        if (uiState.resultState.isAutoDismissible()) {
             val totalDuration = 30000L // 30 seconds in milliseconds
             val updateInterval = 100L // Update every 100ms for smooth animation
             var elapsed = 0L
@@ -98,9 +94,7 @@ fun TicketHandlingDialog(secret: String?, onDismiss: () -> Unit) {
                 .clip(RoundedCornerShape(12.dp))
                 .border(1.dp, Color(0xFFE4E4E4), RoundedCornerShape(12.dp))
                 .background(Color.White)
-                .focusRequester(focusRequester)
-                .focusable()
-                .onKeyEvent { keyEvent ->
+                .onPreviewKeyEvent { keyEvent ->
                     // Handle Space key to manually dismiss dialog
                     // Enter key is NOT handled here to allow continuous scanning
                     if (keyEvent.type == KeyEventType.KeyDown &&

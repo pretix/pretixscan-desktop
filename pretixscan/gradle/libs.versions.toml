@@ -24,6 +24,7 @@ libphone = "9.0.3"
 composeHotReload = "1.0.0-beta07"
 kotlinx-serialization-json = "1.8.0"
 datastore = "1.1.7"
+mockk = "1.14.6"
 
 [libraries]
 apache-pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
@@ -59,6 +60,9 @@ google-libphone = { module = "com.googlecode.libphonenumber:libphonenumber", ver
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 datastore-core = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }

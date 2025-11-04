@@ -4,16 +4,13 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import eu.pretix.desktop.app.navigation.Route
+import eu.pretix.desktop.app.scan.GlobalScanSetup
 import eu.pretix.desktop.app.ui.ScreenContentRoot
-import eu.pretix.desktop.app.ui.autoScanEventListener
 import eu.pretix.scan.main.presentation.selectevent.SelectEventDialog
 import eu.pretix.scan.main.presentation.selectlist.SelectCheckInListDialog
 import eu.pretix.scan.main.presentation.selectlist.SelectCheckInListForMultiEventDialog
@@ -32,6 +29,14 @@ fun MainScreen(
     val uiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
+    GlobalScanSetup(
+        stateFlow = viewModel.uiState,
+        onHandleDirectScan = { secret ->
+            coroutineScope.launch {
+                viewModel.onHandleDirectScan(secret)
+            }
+        }
+    )
 
     when (uiState) {
         MainUiState.SelectEvent -> {
@@ -78,13 +83,7 @@ fun MainScreen(
 
         is MainUiState.ReadyToScan -> {
             val data = (uiState as MainUiState.ReadyToScan<MainUiStateData>).data
-            Column(
-                modifier = Modifier.autoScanEventListener(
-                    onAlphanumericKey = { _ ->
-                        // Event propagates to SearchTextField which auto-focuses on mount
-                    }
-                )
-            ) {
+            Column {
                 MainToolbar(
                     viewModel = viewModel,
                     eventSelection = data.eventSelection,
@@ -116,11 +115,7 @@ fun MainScreen(
 
         is MainUiState.HandlingTicket -> {
             val data = (uiState as MainUiState.HandlingTicket<MainUiStateData>).data
-            Column(
-                modifier = Modifier.autoScanEventListener { _ ->
-                    // Event propagates to SearchTextField which maintains focus
-                }
-            ) {
+            Column {
                 MainToolbar(
                     viewModel = viewModel,
                     eventSelection = data.eventSelection
@@ -143,7 +138,9 @@ fun MainScreen(
             }
             TicketHandlingDialog(
                 secret = data.secret,
-                onDismiss = viewModel::onHandleTicketHandlingDismissed
+                scanTimestamp = data.scanTimestamp,
+                onDismiss = viewModel::onHandleTicketHandlingDismissed,
+                onResultStateChanged = viewModel::onTicketResultDetermined
             )
         }
     }

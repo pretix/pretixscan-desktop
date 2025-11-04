@@ -29,6 +29,14 @@ fun ResultState.color(): Color {
     }
 }
 
+fun ResultState.requiresUserInteraction(): Boolean {
+    return this == ResultState.DIALOG_UNPAID || this == ResultState.DIALOG_QUESTIONS
+}
+
+fun ResultState.isAutoDismissible(): Boolean {
+    return this == ResultState.SUCCESS || this == ResultState.SUCCESS_EXIT
+}
+
 data class ResultStateData(
     val resultState: ResultState,
     val resultText: String? = null,

@@ -26,8 +26,7 @@ fun SearchTextField(
     modifier: Modifier = Modifier,
     value: String = "",
     hint: String = "",
-    onSearch: (String) -> Unit = {},
-    onDirectScan: (String) -> Unit = {},
+    onSearchValueChanged: (String) -> Unit = {},
     onEnterPressed: () -> Unit = {}
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -40,6 +39,10 @@ fun SearchTextField(
         mutableStateOf(value)
     }
 
+    LaunchedEffect(value) {
+        text = value
+    }
+
     Box {
         TextField(
             value = text,
@@ -47,8 +50,9 @@ fun SearchTextField(
                 Text(hint)
             },
             onValueChange = {
-                text = it
-                onSearch(it)
+                val trimmedValue = it.trim()
+                text = trimmedValue
+                onSearchValueChanged(trimmedValue)
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {
@@ -63,7 +67,7 @@ fun SearchTextField(
                 when {
                     text.isNotEmpty() -> IconButton(onClick = {
                         text = ""
-                        onSearch("")
+                        onSearchValueChanged("")
                     }, modifier = Modifier.pointerHoverIcon(PointerIcon.Default)) {
                         Icon(
                             imageVector = Icons.Filled.Clear,

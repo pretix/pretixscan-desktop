@@ -210,46 +210,14 @@ fun QuestionsDialogView(
                         }
 
                         QuestionType.F -> {
-                            Column(
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                RequiredTextLabel(
-                                    label = field.label,
-                                    required = field.required,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Row {
-                                    Column(
-                                        modifier = Modifier.weight(2f)
-                                            .padding(end = 16.dp)
-                                    ) {
-                                        Button(
-                                            onClick = {
-                                                viewModel.showModal(field)
-                                            }) {
-                                            Text(stringResource(Res.string.take_a_photo))
-                                        }
-                                        if (field.value != null) {
-                                            Button(
-                                                onClick = {
-                                                    viewModel.updateAnswer(field.id, null)
-                                                }) {
-                                                Icon(
-                                                    Icons.Filled.Delete,
-                                                    contentDescription = stringResource(Res.string.delete_photo)
-                                                )
-                                                Text(stringResource(Res.string.delete_photo))
-                                            }
-                                        }
-                                    }
-
-                                    if (field.value != null) {
-                                        Box(modifier = Modifier.weight(1f)) {
-                                            QuestionImagePreview(filePath = field.value!!)
-                                        }
-                                    }
-                                }
-                            }
+                            FiledFileUpload(
+                                label = field.label,
+                                required = field.required,
+                                validation = field.validation,
+                                selectedFilePath = field.value,
+                                onSelectFile = { viewModel.showModal(field) },
+                                onDeleteFile = { viewModel.updateAnswer(field.id, null) }
+                            )
                         }
 
                         QuestionType.D -> {
