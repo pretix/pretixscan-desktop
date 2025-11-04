@@ -162,7 +162,15 @@ fun TicketHandlingDialog(secret: String?, onDismiss: () -> Unit) {
                 }
 
                 ResultState.SUCCESS_EXIT -> {
-                    Text(uiState.resultText ?: "")
+                    TicketSuccess(
+                        data = uiState,
+                        onPrintBadges = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                viewModel.printBadges()
+                            }
+                        },
+                        remainingTimeProgress = remainingTimeProgress
+                    )
                 }
             }
         }
