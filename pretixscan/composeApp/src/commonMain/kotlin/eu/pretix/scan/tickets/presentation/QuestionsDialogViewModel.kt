@@ -96,7 +96,6 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                 QuestionType.S,
                 QuestionType.T,
                 QuestionType.F,
-                QuestionType.TEL,
                 QuestionType.B -> {
                     QuestionFormField(
                         it.serverId,
@@ -104,6 +103,23 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                         startingAnswerValue(it, data.answers[it]),
                         it.type,
                         it.required
+                    )
+                }
+
+                QuestionType.TEL -> {
+                    val answerValue = startingAnswerValue(it, data.answers[it])
+                    val countryCode = if (!answerValue.isNullOrBlank()) {
+                        calculateDefaultCountry(answerValue).code
+                    } else {
+                        null
+                    }
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        answerValue,
+                        it.type,
+                        it.required,
+                        uiExtra = countryCode
                     )
                 }
 

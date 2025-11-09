@@ -317,6 +317,7 @@ fun QuestionsDialogView(
                                 )
                                 QuestionPhoneNumber(
                                     selectedValue = field.value,
+                                    uiExtra = field.uiExtra,
                                     onSelect = { phone, country ->
                                         viewModel.updateAnswer(field.id, phone, country)
                                     },
