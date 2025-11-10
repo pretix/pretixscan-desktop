@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import eu.pretix.scan.tickets.presentation.QuestionImagePreview
+import eu.pretix.scan.tickets.utils.ImageLoader
 import org.jetbrains.compose.resources.stringResource
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.delete_photo
@@ -31,6 +32,7 @@ fun FiledFileUpload(
     selectedFilePath: String?,
     onSelectFile: () -> Unit = {},
     onDeleteFile: () -> Unit = {},
+    imageLoader: ImageLoader? = null
 ) {
     Column(
         horizontalAlignment = Alignment.Start
@@ -60,7 +62,10 @@ fun FiledFileUpload(
 
             if (selectedFilePath != null) {
                 Box(modifier = Modifier.weight(1f)) {
-                    QuestionImagePreview(filePath = selectedFilePath)
+                    QuestionImagePreview(
+                        filePath = selectedFilePath,
+                        imageLoader = imageLoader
+                    )
                 }
             }
         }

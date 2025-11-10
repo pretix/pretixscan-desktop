@@ -216,7 +216,8 @@ fun QuestionsDialogView(
                                 validation = field.validation,
                                 selectedFilePath = field.value,
                                 onSelectFile = { viewModel.showModal(field) },
-                                onDeleteFile = { viewModel.updateAnswer(field.id, null) }
+                                onDeleteFile = { viewModel.updateAnswer(field.id, null) },
+                                imageLoader = viewModel.imageLoader
                             )
                         }
 

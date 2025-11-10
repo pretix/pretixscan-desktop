@@ -25,6 +25,7 @@ composeHotReload = "1.0.0-beta07"
 kotlinx-serialization-json = "1.8.0"
 datastore = "1.1.7"
 mockk = "1.14.6"
+okhttp = "4.9.3"
 
 [libraries]
 apache-pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
@@ -63,6 +64,7 @@ datastore-preferences = { module = "androidx.datastore:datastore-preferences", v
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }

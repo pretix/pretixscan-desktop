@@ -47,15 +47,13 @@ class TicketCodeHandler(
             q.resolveDependency(questions)
         }
 
-        // FIXME: There may be provided answers
-        val v = mutableMapOf<eu.pretix.libpretixsync.models.Question, String>()
+        val questionValues = mutableMapOf<Long, String>()
         checkResult.requiredAnswers?.forEach {
             val answer = it.currentValue
             if (!answer.isNullOrBlank()) {
-                v[it.question.toModel()] = answer
+                questionValues[it.question.server_id] = answer
             }
         }
-        val questionValues = v.toMap()
 
         val badgeLayout = layoutFetcher.getForItemAtEvent(checkResult.positionId, checkResult.eventSlug)
         val canPrintBadge =

@@ -2,6 +2,7 @@ package eu.pretix.scan.tickets.presentation
 
 import eu.pretix.desktop.app.ui.FieldValidationState
 import eu.pretix.desktop.cache.DataStoreConfigStore
+import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.models.Question
@@ -21,6 +22,7 @@ import kotlin.test.*
 class QuestionsDialogViewModelTest {
 
     private lateinit var config: DataStoreConfigStore
+    private lateinit var api: PretixApi
     private lateinit var viewModel: QuestionsDialogViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -28,9 +30,10 @@ class QuestionsDialogViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         config = mockk(relaxed = true)
+        api = mockk(relaxed = true)
         every { config.uiReduceMotion } returns false
         every { config.uiHideNames } returns false
-        viewModel = QuestionsDialogViewModel(config)
+        viewModel = QuestionsDialogViewModel(config, api)
     }
 
     @AfterTest
@@ -221,6 +224,467 @@ class QuestionsDialogViewModelTest {
 
         val isValid = viewModel.validateForConfirm()
         assertFalse(isValid)
+    }
+
+    @Test
+    fun `text question with pre-answered value is pre-filled`() = runTest {
+        val textQuestion = Question(
+            id = 1L,
+            serverId = 100L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Company Name",
+            identifier = "company",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.T
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = mapOf(100L to "Acme Corporation")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 100L }
+        assertEquals("Acme Corporation", formField.value)
+        assertEquals(QuestionType.T, formField.fieldType)
+    }
+
+    @Test
+    fun `single-choice question with pre-answered value is pre-filled`() = runTest {
+        val option1 = eu.pretix.libpretixsync.db.QuestionOption(1L, 1L, "red", "Red")
+        val option2 = eu.pretix.libpretixsync.db.QuestionOption(2L, 2L, "blue", "Blue")
+
+        val choiceQuestion = Question(
+            id = 1L,
+            serverId = 200L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Favorite Color",
+            identifier = "color",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.C,
+            options = listOf(option1, option2)
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(choiceQuestion),
+            answers = mapOf(200L to "1")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 200L }
+        assertEquals("1", formField.value)
+        assertEquals(QuestionType.C, formField.fieldType)
+    }
+
+    @Test
+    fun `multiple-choice question with pre-answered values are pre-filled`() = runTest {
+        val option1 = eu.pretix.libpretixsync.db.QuestionOption(1L, 1L, "vegetarian", "Vegetarian")
+        val option2 = eu.pretix.libpretixsync.db.QuestionOption(2L, 2L, "vegan", "Vegan")
+        val option3 = eu.pretix.libpretixsync.db.QuestionOption(3L, 3L, "gluten-free", "Gluten-free")
+
+        val multiChoiceQuestion = Question(
+            id = 1L,
+            serverId = 300L,
+            eventSlug = "test-event",
+            position = 0,
+            required = false,
+            question = "Dietary Requirements",
+            identifier = "dietary",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.M,
+            options = listOf(option1, option2, option3)
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(multiChoiceQuestion),
+            answers = mapOf(300L to "1,3")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 300L }
+        assertEquals("1,3", formField.value)
+        assertEquals(QuestionType.M, formField.fieldType)
+        assertEquals(listOf("1", "3"), formField.values)
+    }
+
+    @Test
+    fun `date question with pre-answered value is pre-filled`() = runTest {
+        val dateQuestion = Question(
+            id = 1L,
+            serverId = 400L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Birth Date",
+            identifier = "birthdate",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.D
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(dateQuestion),
+            answers = mapOf(400L to "2023-05-15")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 400L }
+        assertEquals("2023-05-15", formField.value)
+        assertEquals(QuestionType.D, formField.fieldType)
+    }
+
+    @Test
+    fun `datetime question with pre-answered value is pre-filled`() = runTest {
+        val datetimeQuestion = Question(
+            id = 1L,
+            serverId = 500L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Arrival Time",
+            identifier = "arrival",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.W
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(datetimeQuestion),
+            answers = mapOf(500L to "2023-05-15T14:30:00")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 500L }
+        assertEquals("2023-05-15T14:30:00", formField.value)
+        assertEquals(QuestionType.W, formField.fieldType)
+    }
+
+    @Test
+    fun `time question with pre-answered value is pre-filled`() = runTest {
+        val timeQuestion = Question(
+            id = 1L,
+            serverId = 600L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Preferred Time",
+            identifier = "time",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.H
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(timeQuestion),
+            answers = mapOf(600L to "14:30:00")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 600L }
+        assertEquals("14:30:00", formField.value)
+        assertEquals(QuestionType.H, formField.fieldType)
+    }
+
+    @Test
+    fun `boolean question with pre-answered value is pre-filled`() = runTest {
+        val boolQuestion = Question(
+            id = 1L,
+            serverId = 700L,
+            eventSlug = "test-event",
+            position = 0,
+            required = false,
+            question = "Newsletter Subscription",
+            identifier = "newsletter",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.B
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(boolQuestion),
+            answers = mapOf(700L to "True")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 700L }
+        assertEquals("True", formField.value)
+        assertEquals(QuestionType.B, formField.fieldType)
+    }
+
+    @Test
+    fun `email question with pre-answered value is pre-filled`() = runTest {
+        val emailQuestion = Question(
+            id = 1L,
+            serverId = 800L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Email Address",
+            identifier = "email",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.EMAIL
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(emailQuestion),
+            answers = mapOf(800L to "test@example.com")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 800L }
+        assertEquals("test@example.com", formField.value)
+        assertEquals(QuestionType.EMAIL, formField.fieldType)
+    }
+
+    @Test
+    fun `number question with pre-answered value is pre-filled`() = runTest {
+        val numberQuestion = Question(
+            id = 1L,
+            serverId = 900L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Number of Guests",
+            identifier = "guests",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.N
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = mapOf(900L to "5")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 900L }
+        assertEquals("5", formField.value)
+        assertEquals(QuestionType.N, formField.fieldType)
+    }
+
+    @Test
+    fun `country question with pre-answered value is pre-filled`() = runTest {
+        val countryQuestion = Question(
+            id = 1L,
+            serverId = 1000L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Country of Residence",
+            identifier = "country",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.CC
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(countryQuestion),
+            answers = mapOf(1000L to "BE")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 1000L }
+        assertEquals("BE", formField.value)
+        assertEquals(QuestionType.CC, formField.fieldType)
+    }
+
+    @Test
+    fun `phone question with pre-answered value is pre-filled with correct country code`() = runTest {
+        val phoneQuestion = Question(
+            id = 1L,
+            serverId = 1100L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Phone Number",
+            identifier = "phone",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.TEL
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(phoneQuestion),
+            answers = mapOf(1100L to "+32474123456")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 1100L }
+        assertEquals("+32474123456", formField.value)
+        assertEquals("BE", formField.uiExtra)
+        assertEquals(QuestionType.TEL, formField.fieldType)
+    }
+
+    @Test
+    fun `mix of answered and unanswered questions only pre-fills answered ones`() = runTest {
+        val question1 = Question(
+            id = 1L,
+            serverId = 100L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Company Name",
+            identifier = "company",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.T
+        )
+
+        val question2 = Question(
+            id = 2L,
+            serverId = 200L,
+            eventSlug = "test-event",
+            position = 1,
+            required = true,
+            question = "Email",
+            identifier = "email",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.EMAIL
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question1, question2),
+            answers = mapOf(100L to "Acme Corporation")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField1 = viewModel.form.value.first { it.id == 100L }
+        assertEquals("Acme Corporation", formField1.value)
+
+        val formField2 = viewModel.form.value.first { it.id == 200L }
+        assertNull(formField2.value)
+    }
+
+    @Test
+    fun `pre-filled text value passes validation when required`() = runTest {
+        val textQuestion = Question(
+            id = 1L,
+            serverId = 100L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Company Name",
+            identifier = "company",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.T
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = mapOf(100L to "Acme Corporation")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        val isValid = viewModel.validateForConfirm()
+
+        assertTrue(isValid)
+        val formField = viewModel.form.value.first { it.id == 100L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `user can modify pre-filled value and submit new value`() = runTest {
+        val textQuestion = Question(
+            id = 1L,
+            serverId = 100L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Company Name",
+            identifier = "company",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.T
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = mapOf(100L to "Acme Corporation")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField1 = viewModel.form.value.first { it.id == 100L }
+        assertEquals("Acme Corporation", formField1.value)
+
+        viewModel.updateAnswer(100L, "New Company Name")
+
+        val formField2 = viewModel.form.value.first { it.id == 100L }
+        assertEquals("New Company Name", formField2.value)
+
+        val answers = viewModel.getCurrentAnswers(data)
+        assertEquals(1, answers.size)
+        assertEquals("New Company Name", answers[0].value)
+    }
+
+    @Test
+    fun `multiple-choice question without pre-answer should not use dependencyValues as initial values`() = runTest {
+        val option1 = eu.pretix.libpretixsync.db.QuestionOption(1L, 1L, "vegetarian", "Vegetarian")
+        val option2 = eu.pretix.libpretixsync.db.QuestionOption(2L, 2L, "vegan", "Vegan")
+        val option3 = eu.pretix.libpretixsync.db.QuestionOption(3L, 3L, "gluten-free", "Gluten-free")
+
+        val multiChoiceQuestion = Question(
+            id = 1L,
+            serverId = 300L,
+            eventSlug = "test-event",
+            position = 0,
+            required = false,
+            question = "Dietary Requirements",
+            identifier = "dietary",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.M,
+            options = listOf(option1, option2, option3),
+            dependencyQuestionServerId = 100L,
+            dependencyValues = listOf("1", "2")
+        )
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(multiChoiceQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 300L }
+        assertNull(formField.values, "values should be null when no answer is provided, not fall back to dependencyValues")
     }
 
     private fun createTestQuestion() = Question(

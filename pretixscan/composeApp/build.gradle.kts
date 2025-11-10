@@ -78,6 +78,7 @@ kotlin {
             implementation(project(":libpretixsync"))
             implementation(project(":libpretixprint"))
 
+            implementation(libs.okhttp)
 
             // phone number validation
             implementation(libs.google.libphone)

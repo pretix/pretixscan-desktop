@@ -24,7 +24,7 @@ val ticketsModule = module {
         TicketHandlingDialogViewModel(get(), get())
     }
     factory {
-        QuestionsDialogViewModel(get())
+        QuestionsDialogViewModel(get(), get())
     }
     factory<GadulkaPlayer> {
         GadulkaPlayer()

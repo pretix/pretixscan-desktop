@@ -6,6 +6,7 @@ import eu.pretix.desktop.app.ui.FieldValidationState
 import eu.pretix.desktop.app.ui.SelectableValue
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.scan.tickets.data.PhoneValidator
+import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.QuestionOption
@@ -13,14 +14,19 @@ import eu.pretix.libpretixsync.models.Question
 import eu.pretix.scan.tickets.data.EmailValidator
 import eu.pretix.scan.tickets.data.ResultStateData
 import eu.pretix.scan.tickets.data.calculateDefaultCountry
+import eu.pretix.scan.tickets.utils.ImageLoader
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.logging.Logger
 
-class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewModel() {
+class QuestionsDialogViewModel(
+    private val config: DataStoreConfigStore,
+    private val api: PretixApi
+) : ViewModel() {
 
     private val log = Logger.getLogger("tickets")
+    val imageLoader = ImageLoader(api)
     private val _form = MutableStateFlow(emptyList<QuestionFormField>())
     val form = _form.asStateFlow()
 
@@ -100,14 +106,14 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
                         it.required
                     )
                 }
 
                 QuestionType.TEL -> {
-                    val answerValue = startingAnswerValue(it, data.answers[it])
+                    val answerValue = startingAnswerValue(it, data.answers[it.serverId])
                     val countryCode = if (!answerValue.isNullOrBlank()) {
                         calculateDefaultCountry(answerValue).code
                     } else {
@@ -127,7 +133,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
                         it.required,
                         keyValueOptions = it.options?.sortedBy { option -> option.position }
@@ -142,10 +148,11 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                 }
 
                 QuestionType.M -> {
+                    val answerValue = startingAnswerValue(it, data.answers[it.serverId])
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        answerValue,
                         it.type,
                         it.required,
                         keyValueOptions = it.options?.sortedBy { option -> option.position }
@@ -156,7 +163,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                                 )
                             },
                         options = it.options?.toMutableList() ?: emptyList(),
-                        values = it.dependencyValues
+                        values = answerValue?.split(",")?.filter { it.isNotBlank() }
                     )
                 }
 
@@ -165,7 +172,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
                         it.required,
                         dateConfig = DateConfig(minDate = it.valid_date_min, maxDate = it.valid_date_max)
@@ -176,7 +183,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
                         it.required
                     )
@@ -186,7 +193,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
                         it.required,
                         keyValueOptions = Country.entries.map { country ->
@@ -231,12 +238,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
 
                 when (field.fieldType) {
                     QuestionType.F -> {
-                        if (answer != null) {
-                            // for files, pretixlibsync requires a "file:///" prefix
-                            field.copy(value = "file://${answer}")
-                        } else {
-                            field.copy(value = answer)
-                        }
+                        field.copy(value = formatFileAnswer(answer))
                     }
 
                     QuestionType.N -> {
@@ -352,6 +354,15 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
         }
 
         return null
+    }
+
+    private fun formatFileAnswer(answer: String?): String? {
+        return when {
+            answer == null -> null
+            answer.contains("://") -> answer
+            answer.isEmpty() -> answer
+            else -> "file://$answer"
+        }
     }
 }
 
