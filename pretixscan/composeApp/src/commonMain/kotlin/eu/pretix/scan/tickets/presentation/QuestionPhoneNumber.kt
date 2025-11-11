@@ -19,6 +19,16 @@ fun QuestionPhoneNumber(
     uiExtra: String?,
     onSelect: (String?, String?) -> Unit
 ) {
+    var isCountryExplicitlySelected by remember(uiExtra, selectedValue) {
+        val detectedCountry = calculateDefaultCountry(selectedValue)
+        val providedCountry = if (!uiExtra.isNullOrBlank()) {
+            Country.entries.firstOrNull { it.code == uiExtra }
+        } else {
+            null
+        }
+        mutableStateOf(providedCountry != null && providedCountry.code != detectedCountry.code)
+    }
+
     val country = remember(uiExtra, selectedValue) {
         when {
             !uiExtra.isNullOrBlank() -> Country.entries.firstOrNull { it.code == uiExtra }
@@ -51,7 +61,8 @@ fun QuestionPhoneNumber(
             },
             onSelect = {
                 if (it != null) {
-                    onSelect(selectedValue, it.value)
+                    isCountryExplicitlySelected = true
+                    onSelect("", it.value)
                 }
             }
         )
@@ -59,7 +70,16 @@ fun QuestionPhoneNumber(
         FieldTextInput(
             value = selectedValue ?: "",
             onValueChange = { newValue ->
-                onSelect(newValue, country.code)
+                if (!isCountryExplicitlySelected && !newValue.isNullOrBlank() && newValue.startsWith("+")) {
+                    val detectedCountry = calculateDefaultCountry(newValue)
+                    if (detectedCountry.code != country.code) {
+                        onSelect(newValue, detectedCountry.code)
+                    } else {
+                        onSelect(newValue, country.code)
+                    }
+                } else {
+                    onSelect(newValue, country.code)
+                }
             },
             validation = validation
         )

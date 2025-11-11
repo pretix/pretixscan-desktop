@@ -10,6 +10,7 @@ import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.libpretixsync.SentryInterface
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
+import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.models.db.toModel
@@ -295,7 +296,7 @@ fun TicketCheckProvider.CheckResult.formattedSeat(): String? {
     return null
 }
 
-fun TicketCheckProvider.CheckResult.formattedAnswers(): AnnotatedString? {
+suspend fun TicketCheckProvider.CheckResult.formattedAnswers(): AnnotatedString? {
     val answers = shownAnswers
     if (scanType != TicketCheckProvider.CheckInType.EXIT && !answers.isNullOrEmpty()) {
         return buildAnnotatedString {
@@ -304,7 +305,17 @@ fun TicketCheckProvider.CheckResult.formattedAnswers(): AnnotatedString? {
                     append(questionAnswer.question.toModel().question + ":")
                 }
                 append(" ")
-                append(questionAnswer.currentValue) // FIXME: yes/no is written here as true/false
+                val currentValue = questionAnswer.currentValue
+                val question = questionAnswer.question.toModel()
+                if (question.type == QuestionType.B && !currentValue.isNullOrBlank()) {
+                    when (currentValue) {
+                        "True" -> append(getString(Res.string.yes))
+                        "False" -> append(getString(Res.string.no))
+                        else -> append(currentValue)
+                    }
+                } else {
+                    append(currentValue)
+                }
                 if (index != answers.lastIndex) {
                     append("\n")
                 }

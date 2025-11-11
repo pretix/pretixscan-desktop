@@ -1,5 +1,8 @@
 package eu.pretix.scan.tickets.presentation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.vanniktech.locale.Country
@@ -169,5 +172,49 @@ class PhoneNumberInputUITest {
 
         composeTestRule.onNodeWithText("🇩🇪 +49", useUnmergedTree = true)
             .assertExists("Should extract Germany from +49 E164 number")
+    }
+
+    @Test
+    fun testExplicitCountryChange_clearsPhoneField() {
+        var selectedPhone by mutableStateOf("+32111111111")
+        var selectedCountry by mutableStateOf("BE")
+
+        composeTestRule.setContent {
+            QuestionPhoneNumber(
+                selectedValue = selectedPhone,
+                validation = null,
+                uiExtra = selectedCountry,
+                onSelect = { phone, country ->
+                    selectedPhone = phone ?: ""
+                    selectedCountry = country ?: ""
+                }
+            )
+        }
+
+        composeTestRule.waitForIdle()
+
+        assertEquals("+32111111111", selectedPhone, "Initial phone should be Belgian number")
+        assertEquals("BE", selectedCountry, "Initial country should be Belgium")
+
+        composeTestRule.onNodeWithText("+32111111111", useUnmergedTree = true)
+            .assertExists("Phone number should be displayed")
+        composeTestRule.onNodeWithText("🇧🇪 +32", useUnmergedTree = true)
+            .assertExists("Belgium should be selected")
+
+        selectedCountry = "FR"
+        selectedPhone = ""
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("🇫🇷 +33", useUnmergedTree = true)
+            .assertExists("France should now be selected")
+
+        val emptyPhoneInput = composeTestRule.onNodeWithText("", useUnmergedTree = true)
+            .assertExists("Phone input should be empty after country change")
+
+        emptyPhoneInput.performTextInput("+33123456789")
+        composeTestRule.waitForIdle()
+
+        assertEquals("+33123456789", selectedPhone, "Should accept new French number")
+        assertEquals("FR", selectedCountry, "Country should remain France")
     }
 }

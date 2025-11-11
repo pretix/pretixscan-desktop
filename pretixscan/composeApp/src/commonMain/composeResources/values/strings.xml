@@ -132,6 +132,7 @@
     <string name="question_input_required">This field is required.</string>
     <string name="question_input_invalid">This input is not valid.</string>
     <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="cancel">Cancel</string>
     <string name="status_redeemed">Redeemed</string>
     <string name="status_unpaid">Unpaid</string>
