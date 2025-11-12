@@ -338,34 +338,18 @@ fun QuestionsDialogView(
             )
         )
 
-        Surface(
+        DialogBottomBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter),
-            shadowElevation = 8.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(CustomColor.White.asColor())
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(onClick = onCancel) {
-                    Text(stringResource(Res.string.cancel))
-                }
-                Spacer(modifier = Modifier.weight(1.0f))
-                Button(
-                    onClick = {
-                        if (viewModel.validateForConfirm()) {
-                            onConfirm(viewModel.getCurrentAnswers(data))
-                        }
-                    }
-                ) {
-                    Text(stringResource(Res.string.cont))
+            cancelLabel = stringResource(Res.string.cancel),
+            primaryLabel = stringResource(Res.string.cont),
+            onCancel = onCancel,
+            onPrimary = {
+                if (viewModel.validateForConfirm()) {
+                    onConfirm(viewModel.getCurrentAnswers(data))
                 }
             }
-        }
+        )
     }
 
     if (modalQuestion != null && modalQuestion?.fieldType == QuestionType.F) {

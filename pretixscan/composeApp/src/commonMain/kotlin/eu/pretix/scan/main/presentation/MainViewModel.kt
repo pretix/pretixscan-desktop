@@ -35,6 +35,10 @@ class MainViewModel(
     private val _eventButtonTooltip = MutableStateFlow("")
     val eventButtonTooltip = _eventButtonTooltip.asStateFlow()
 
+
+    private var lastEventSelectionBeforeBeginSelect: EventSelection? = null
+
+
     init {
         log.info("Welcome to app version ${Version.version}. Current scan type is ${appConfig.scanType}.")
 
@@ -68,6 +72,11 @@ class MainViewModel(
     }
 
     fun beginEventSelection() {
+        // if ready to scan, store the eventSelection in case of cancel
+        val currentUiState = _uiState.value
+        if (currentUiState is MainUiState.ReadyToScan) {
+            lastEventSelectionBeforeBeginSelect = currentUiState.data.eventSelection
+        }
         _uiState.update { MainUiState.SelectEvent }
     }
 
@@ -102,7 +111,14 @@ class MainViewModel(
 
     suspend fun selectEvent(event: RemoteEvent?) {
         if (event == null) {
-            // nothing to do
+            val canContinueScanningWithSelection = lastEventSelectionBeforeBeginSelect
+            if (canContinueScanningWithSelection != null) {
+                _uiState.update {
+                    MainUiState.ReadyToScan(
+                        MainUiStateData(eventSelection = canContinueScanningWithSelection)
+                    )
+                }
+            }
             return
         }
         appConfig.eventSlug = event.slug

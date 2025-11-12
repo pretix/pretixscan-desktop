@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import eu.pretix.desktop.app.navigation.Route
 import eu.pretix.desktop.app.scan.GlobalScanSetup
@@ -86,7 +85,6 @@ fun MainScreen(
             Column {
                 MainToolbar(
                     viewModel = viewModel,
-                    eventSelection = data.eventSelection,
                     onOpenSettings = {
                         navHostController.navigate(route = Route.Settings.route)
                     },
@@ -117,8 +115,7 @@ fun MainScreen(
             val data = (uiState as MainUiState.HandlingTicket<MainUiStateData>).data
             Column {
                 MainToolbar(
-                    viewModel = viewModel,
-                    eventSelection = data.eventSelection
+                    viewModel = viewModel
                 )
 
                 ScreenContentRoot {

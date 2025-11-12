@@ -1,9 +1,12 @@
 package eu.pretix.scan.main.presentation.selectevent
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
@@ -65,6 +68,7 @@ fun SelectEventList(
 ) {
     val viewModel = koinViewModel<SelectEventListViewModel>()
     val uiState by viewModel.uiState.collectAsState()
+    val state = rememberLazyListState()
 
     // Initial load and reload handling
     LaunchedEffect(reloadTrigger) {
@@ -75,15 +79,21 @@ fun SelectEventList(
 
     when (uiState) {
         SelectEventListUiState.Empty -> {
-            Text(stringResource(Res.string.error_no_available_events))
+            Row(modifier = Modifier.padding(PaddingValues(all = 16.dp))) {
+                Text(stringResource(Res.string.error_no_available_events))
+            }
         }
 
         is SelectEventListUiState.Error -> {
-            Text((uiState as SelectEventListUiState.Error).exception)
+            Row(modifier = Modifier.padding(PaddingValues(all = 16.dp))) {
+                Text((uiState as SelectEventListUiState.Error).exception)
+            }
         }
 
         SelectEventListUiState.Loading -> {
-            CircularProgressIndicator()
+            Row(modifier = Modifier.padding(PaddingValues(horizontal = 16.dp))) {
+                CircularProgressIndicator()
+            }
         }
 
         is SelectEventListUiState.Selecting -> {
@@ -94,51 +104,61 @@ fun SelectEventList(
                 onEventsLoaded(list)
             }
 
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(16.dp)
-            ) {
-                items(list) { item ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .then(
-                                if (!advancedMode) {
-                                    Modifier.selectableGroup()  // Accessibility for radio group
-                                } else {
-                                    Modifier
-                                }
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start,
-                    ) {
-                        // Conditional rendering: RadioButton (single) or Checkbox (multi)
-                        if (advancedMode) {
-                            Checkbox(
-                                checked = item.slug in selectedEventSlugs,
-                                onCheckedChange = { onSelectEvent(item) }
-                            )
-                        } else {
-                            RadioButton(
-                                selected = item.slug == selectedEvent?.slug,
-                                onClick = { onSelectEvent(item) },
-                            )
-                        }
-
-                        Column {
-                            Text(item.name, fontWeight = FontWeight.Bold)
-                            val startDate = formatEventDate(item.date_from)
-                            val endDate = if (item.date_to != null) formatEventDate(item.date_to) else null
-                            val dateText = if (endDate != null && endDate.isNotEmpty()) {
-                                "$startDate - $endDate"
+            Box {
+                LazyColumn(
+                    state = state,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    items(list) { item ->
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                                .then(
+                                    if (!advancedMode) {
+                                        Modifier.selectableGroup()  // Accessibility for radio group
+                                    } else {
+                                        Modifier
+                                    }
+                                ),
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.Start,
+                        ) {
+                            // Conditional rendering: RadioButton (single) or Checkbox (multi)
+                            if (advancedMode) {
+                                Checkbox(
+                                    checked = item.slug in selectedEventSlugs,
+                                    onCheckedChange = { onSelectEvent(item) }
+                                )
                             } else {
-                                startDate
+                                RadioButton(
+                                    selected = item.slug == selectedEvent?.slug,
+                                    onClick = { onSelectEvent(item) },
+                                )
                             }
-                            Text(dateText)
+
+                            Column {
+                                Text(item.name, fontWeight = FontWeight.Bold)
+                                val startDate = formatEventDate(item.date_from)
+                                val endDate = if (item.date_to != null) formatEventDate(item.date_to) else null
+                                val dateText = if (endDate != null && endDate.isNotEmpty()) {
+                                    "$startDate - $endDate"
+                                } else {
+                                    startDate
+                                }
+                                Text(dateText)
+                            }
                         }
                     }
                 }
+
+                VerticalScrollbar(
+                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                    adapter = rememberScrollbarAdapter(
+                        scrollState = state
+                    )
+                )
             }
         }
     }
