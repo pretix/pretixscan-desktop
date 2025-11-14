@@ -3,6 +3,7 @@ package eu.pretix.scan.main.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import eu.pretix.desktop.app.sync.SyncRootService
+import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.cache.EventSelection
 import eu.pretix.desktop.cache.Version
@@ -18,7 +19,7 @@ import java.util.logging.Logger
 class MainViewModel(
     private val appConfig: DataStoreConfigStore,
     private val syncViewModel: SyncRootService,
-    private val appCache: eu.pretix.desktop.cache.AppCache
+    private val appCache: AppCache
 ) : ViewModel() {
     private val log = Logger.getLogger("MainViewModel")
 
@@ -128,12 +129,22 @@ class MainViewModel(
 
         syncViewModel.minimalSync()
 
-        _uiState.update { MainUiState.SelectCheckInList }
+        _uiState.update {
+            MainUiState.SelectCheckInList(
+                event = EventForSelection(
+                    slug = event.slug,
+                    name = event.name,
+                    subEventId = event.subevent_id,
+                    dateFrom = event.date_from,
+                    dateTo = event.date_to
+                )
+            )
+        }
     }
 
     fun selectCheckInList(list: CheckInList?) {
         if (list == null) {
-            // nothing to do
+            _uiState.update { MainUiState.SelectEvent }
             return
         }
 
@@ -173,9 +184,7 @@ class MainViewModel(
 
     suspend fun onHandleDirectScan(secret: String) {
         log.info("AutoScan: Handling direct scan for ticket")
-        val currentState = _uiState.value
-
-        when (currentState) {
+        when (val currentState = _uiState.value) {
             is MainUiState.ReadyToScan -> {
                 _uiState.update {
                     MainUiState.HandlingTicket(
@@ -274,15 +283,14 @@ class MainViewModel(
     }
 
     fun selectCheckInListForCurrentEvent(listId: Long?) {
-        val currentState = _uiState.value
-        if (currentState !is MainUiState.SelectCheckInListsForMultipleEvents) {
-            log.warning("selectCheckInListForCurrentEvent called in wrong state")
+        if (listId == null) {
+            _uiState.update { MainUiState.SelectEvent }
             return
         }
 
-        if (listId == null) {
-            // User cancelled - abort entire multi-event flow, no changes to config
-            log.info("Multi-event selection cancelled by user")
+        val currentState = _uiState.value
+        if (currentState !is MainUiState.SelectCheckInListsForMultipleEvents) {
+            log.warning("selectCheckInListForCurrentEvent called in wrong state")
             _uiState.update { MainUiState.SelectEvent }
             return
         }

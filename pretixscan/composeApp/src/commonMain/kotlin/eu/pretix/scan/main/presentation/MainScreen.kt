@@ -4,7 +4,10 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.navigation.NavHostController
 import eu.pretix.desktop.app.navigation.Route
@@ -12,7 +15,6 @@ import eu.pretix.desktop.app.scan.GlobalScanSetup
 import eu.pretix.desktop.app.ui.ScreenContentRoot
 import eu.pretix.scan.main.presentation.selectevent.SelectEventDialog
 import eu.pretix.scan.main.presentation.selectlist.SelectCheckInListDialog
-import eu.pretix.scan.main.presentation.selectlist.SelectCheckInListForMultiEventDialog
 import eu.pretix.scan.main.presentation.toolbar.MainToolbar
 import eu.pretix.scan.tickets.presentation.TicketHandlingDialog
 import eu.pretix.scan.tickets.presentation.TicketSearchBar
@@ -53,22 +55,25 @@ fun MainScreen(
             )
         }
 
-        MainUiState.SelectCheckInList -> {
-            SelectCheckInListDialog(onSelectCheckInList = {
-                viewModel.selectCheckInList(it)
-            })
+        is MainUiState.SelectCheckInList -> {
+            val state = uiState as MainUiState.SelectCheckInList
+            SelectCheckInListDialog(
+                eventForSelection = state.event,
+                onSelectCheckInList = {
+                    coroutineScope.launch {
+                        viewModel.selectCheckInList(it)
+                    }
+                }
+            )
         }
 
         is MainUiState.SelectCheckInListsForMultipleEvents -> {
             val state = uiState as MainUiState.SelectCheckInListsForMultipleEvents
-            SelectCheckInListForMultiEventDialog(
-                currentEvent = state.events[state.currentEventIndex],
-                currentEventIndex = state.currentEventIndex,
-                totalEvents = state.events.size,
-                onSelectCheckInList = { listId ->
-                    viewModel.selectCheckInListForCurrentEvent(listId)
-                }
-            )
+            SelectCheckInListDialog(
+                eventForSelection = state.events[state.currentEventIndex],
+                onSelectCheckInList = { list ->
+                    viewModel.selectCheckInListForCurrentEvent(list?.server_id)
+                })
         }
 
         MainUiState.Loading -> {
@@ -81,7 +86,7 @@ fun MainScreen(
         }
 
         is MainUiState.ReadyToScan -> {
-            val data = (uiState as MainUiState.ReadyToScan<MainUiStateData>).data
+            (uiState as MainUiState.ReadyToScan<MainUiStateData>).data
             Column {
                 MainToolbar(
                     viewModel = viewModel,

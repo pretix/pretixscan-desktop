@@ -19,7 +19,7 @@ sealed class MainUiState<out T> {
     data class HandlingTicket<out T>(val data: T) : MainUiState<T>()
     data object Loading : MainUiState<Nothing>()
     data object SelectEvent : MainUiState<Nothing>()
-    data object SelectCheckInList : MainUiState<Nothing>()
+    data class SelectCheckInList(val event: EventForSelection) : MainUiState<Nothing>()
 
     // State for sequential per-event check-in list selection in advanced mode
     data class SelectCheckInListsForMultipleEvents(

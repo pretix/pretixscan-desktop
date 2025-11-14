@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import eu.pretix.desktop.app.ui.SelectListRow
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.scan.tickets.presentation.formatDateForDisplay
 import kotlinx.coroutines.Dispatchers
@@ -28,33 +29,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.error_no_available_events
-
-/**
- * Safely formats a Joda Time DateTime for display using locale-aware formatting.
- * Falls back to raw date string if formatting fails.
- */
-private fun formatEventDate(dateTime: org.joda.time.DateTime?): String {
-    if (dateTime == null) return ""
-
-    return try {
-        // Convert to LocalDate and get yyyy-MM-dd format
-        val dateString = dateTime.toLocalDate().toString()  // This produces "yyyy-MM-dd"
-        // Use existing formatter which handles locale-aware display
-        val formatted = formatDateForDisplay(dateString)
-        if (formatted.isNotEmpty() && formatted != dateString) {
-            formatted
-        } else {
-            dateString  // Fallback to ISO format if locale formatting failed
-        }
-    } catch (e: Exception) {
-        // Ultimate fallback
-        try {
-            dateTime.toLocalDate().toString()
-        } catch (e2: Exception) {
-            dateTime.toString()
-        }
-    }
-}
 
 @Composable
 @Preview
@@ -79,20 +53,30 @@ fun SelectEventList(
 
     when (uiState) {
         SelectEventListUiState.Empty -> {
-            Row(modifier = Modifier.padding(PaddingValues(all = 16.dp))) {
-                Text(stringResource(Res.string.error_no_available_events))
+            SelectListRow {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Text(stringResource(Res.string.error_no_available_events))
+                }
             }
         }
 
         is SelectEventListUiState.Error -> {
-            Row(modifier = Modifier.padding(PaddingValues(all = 16.dp))) {
-                Text((uiState as SelectEventListUiState.Error).exception)
+            SelectListRow {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Text((uiState as SelectEventListUiState.Error).exception)
+                }
             }
         }
 
         SelectEventListUiState.Loading -> {
-            Row(modifier = Modifier.padding(PaddingValues(horizontal = 16.dp))) {
-                CircularProgressIndicator()
+            SelectListRow {
+                Row(
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
 
@@ -122,7 +106,7 @@ fun SelectEventList(
                                         Modifier
                                     }
                                 ),
-                            verticalAlignment = Alignment.Top,
+                            verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start,
                         ) {
                             // Conditional rendering: RadioButton (single) or Checkbox (multi)
@@ -164,3 +148,30 @@ fun SelectEventList(
     }
 }
 
+
+/**
+ * Safely formats a Joda Time DateTime for display using locale-aware formatting.
+ * Falls back to raw date string if formatting fails.
+ */
+private fun formatEventDate(dateTime: org.joda.time.DateTime?): String {
+    if (dateTime == null) return ""
+
+    return try {
+        // Convert to LocalDate and get yyyy-MM-dd format
+        val dateString = dateTime.toLocalDate().toString()  // This produces "yyyy-MM-dd"
+        // Use existing formatter which handles locale-aware display
+        val formatted = formatDateForDisplay(dateString)
+        if (formatted.isNotEmpty() && formatted != dateString) {
+            formatted
+        } else {
+            dateString  // Fallback to ISO format if locale formatting failed
+        }
+    } catch (e: Exception) {
+        // Ultimate fallback
+        try {
+            dateTime.toLocalDate().toString()
+        } catch (e2: Exception) {
+            dateTime.toString()
+        }
+    }
+}
