@@ -1,16 +1,18 @@
 package eu.pretix.scan.main.presentation.selectevent
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material.Divider
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,6 +20,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import eu.pretix.desktop.app.ui.SelectListRow
@@ -92,13 +96,20 @@ fun SelectEventList(
                 LazyColumn(
                     state = state,
                     modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(16.dp)
+                    contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp)
                 ) {
-                    items(list) { item ->
+                    itemsIndexed(list) { index, item ->
                         Row(
                             Modifier
+                                .selectable(
+                                    selected = item.slug in selectedEventSlugs || item.slug == selectedEvent?.slug,
+                                    onClick = { onSelectEvent(item) },
+                                    indication = LocalIndication.current,
+                                    interactionSource = null,
+                                    role = Role.Switch
+                                )
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                                .padding(vertical = 8.dp)
                                 .then(
                                     if (!advancedMode) {
                                         Modifier.selectableGroup()  // Accessibility for radio group
@@ -109,19 +120,11 @@ fun SelectEventList(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start,
                         ) {
-                            // Conditional rendering: RadioButton (single) or Checkbox (multi)
-                            if (advancedMode) {
-                                Checkbox(
-                                    checked = item.slug in selectedEventSlugs,
-                                    onCheckedChange = { onSelectEvent(item) }
-                                )
-                            } else {
-                                RadioButton(
-                                    selected = item.slug == selectedEvent?.slug,
-                                    onClick = { onSelectEvent(item) },
-                                )
-                            }
 
+                            Checkbox(
+                                checked = item.slug in selectedEventSlugs || item.slug == selectedEvent?.slug,
+                                onCheckedChange = { onSelectEvent(item) }
+                            )
                             Column {
                                 Text(item.name, fontWeight = FontWeight.Bold)
                                 val startDate = formatEventDate(item.date_from)
@@ -133,6 +136,9 @@ fun SelectEventList(
                                 }
                                 Text(dateText)
                             }
+                        }
+                        if (index < list.lastIndex) {
+                            Divider(color = Color.Gray, thickness = 1.dp)
                         }
                     }
                 }
