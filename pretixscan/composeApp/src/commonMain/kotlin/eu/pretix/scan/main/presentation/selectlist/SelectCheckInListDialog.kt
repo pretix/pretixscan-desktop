@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import eu.pretix.desktop.app.ui.CustomColor
@@ -37,7 +38,7 @@ fun SelectCheckInListDialog(
         // header
         Column(
             modifier = Modifier
-                .background(CustomColor.BrandOrange.asColor()),
+                .background(CustomColor.BrandDark.asColor()),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
@@ -46,7 +47,7 @@ fun SelectCheckInListDialog(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(eventForSelection.name, fontWeight = FontWeight.Bold)
+                Text(eventForSelection.name, color = Color.White, fontWeight = FontWeight.Bold)
             }
 
             Row(
@@ -54,7 +55,7 @@ fun SelectCheckInListDialog(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(Res.string.operation_select_checkinlist))
+                Text(stringResource(Res.string.operation_select_checkinlist), color = Color.White)
             }
         }
 

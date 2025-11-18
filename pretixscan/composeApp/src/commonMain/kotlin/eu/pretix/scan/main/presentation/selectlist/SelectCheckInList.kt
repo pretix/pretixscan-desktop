@@ -90,7 +90,7 @@ fun SelectCheckInList(
                                     role = Role.Switch
                                 )
                                 .fillMaxWidth()
-                                .padding(bottom = 8.dp)
+                                .padding(vertical = 8.dp)
                                 .selectableGroup(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start,

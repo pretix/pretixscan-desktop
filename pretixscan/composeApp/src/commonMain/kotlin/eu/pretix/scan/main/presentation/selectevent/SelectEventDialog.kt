@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import eu.pretix.desktop.app.sync.LocalSyncRootService
 import eu.pretix.desktop.app.sync.SyncError
@@ -47,7 +48,7 @@ fun SelectEventDialog(
     FocusedRoundedDialog(onDismiss = { onSelectEvent(null) }, content = {
         Column(
             modifier = Modifier
-                .background(CustomColor.BrandOrange.asColor()),
+                .background(CustomColor.BrandDark.asColor()),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
@@ -57,7 +58,7 @@ fun SelectEventDialog(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(Res.string.operation_select_event))
+                Text(stringResource(Res.string.operation_select_event), color = Color.White)
 
                 Spacer(Modifier.weight(1f))
 
@@ -65,7 +66,7 @@ fun SelectEventDialog(
                 // Advanced mode button
                 Tooltip(stringResource(Res.string.advanced_mode_description)) {
                     IconButton(
-                        colors = if (advancedMode) IconButtonDefaults.filledIconButtonColors() else IconButtonDefaults.iconButtonColors(),
+                        colors = if (advancedMode) IconButtonDefaults.filledTonalIconButtonColors() else IconButtonDefaults.iconButtonColors(),
                         onClick = {
                             val nextMode = !advancedMode
                             advancedMode = nextMode
@@ -79,10 +80,10 @@ fun SelectEventDialog(
                         enabled = syncState !is SyncState.InProgress
                     ) {
                         Image(
-                            painter = if (advancedMode) painterResource(Res.drawable.ic_shuffle_24dp) else painterResource(
-                                Res.drawable.ic_shuffle_dark_24dp
+                            painter = if (advancedMode) painterResource(Res.drawable.ic_shuffle_dark_24dp) else painterResource(
+                                Res.drawable.ic_shuffle_24dp
                             ),
-                            contentDescription = stringResource(Res.string.action_reload_events),
+                            contentDescription = stringResource(Res.string.advanced_mode),
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -97,7 +98,7 @@ fun SelectEventDialog(
                         enabled = syncState !is SyncState.InProgress
                     ) {
                         Image(
-                            painter = painterResource(Res.drawable.ic_refresh_dark_24dp),
+                            painter = painterResource(Res.drawable.ic_refresh_white_24dp),
                             contentDescription = stringResource(Res.string.action_reload_events),
                             modifier = Modifier.size(22.dp)
                         )
