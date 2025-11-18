@@ -23,7 +23,6 @@ import eu.pretix.desktop.app.ui.CustomColor
 import eu.pretix.desktop.app.ui.Logo
 import eu.pretix.desktop.app.ui.Tooltip
 import eu.pretix.desktop.app.ui.asColor
-import eu.pretix.desktop.cache.EventSelection
 import eu.pretix.scan.main.presentation.MainViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -33,7 +32,6 @@ import pretixscan.composeapp.generated.resources.*
 @Composable
 fun MainToolbar(
     viewModel: MainViewModel,
-    eventSelection: EventSelection,
     onOpenSettings: () -> Unit = {},
     onOpenStatistics: () -> Unit = {}
 ) {

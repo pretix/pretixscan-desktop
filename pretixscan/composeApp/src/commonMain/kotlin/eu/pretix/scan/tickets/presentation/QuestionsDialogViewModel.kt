@@ -6,6 +6,7 @@ import eu.pretix.desktop.app.ui.FieldValidationState
 import eu.pretix.desktop.app.ui.SelectableValue
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.scan.tickets.data.PhoneValidator
+import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.QuestionOption
@@ -13,14 +14,19 @@ import eu.pretix.libpretixsync.models.Question
 import eu.pretix.scan.tickets.data.EmailValidator
 import eu.pretix.scan.tickets.data.ResultStateData
 import eu.pretix.scan.tickets.data.calculateDefaultCountry
+import eu.pretix.scan.tickets.utils.ImageLoader
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.logging.Logger
 
-class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewModel() {
+class QuestionsDialogViewModel(
+    private val config: DataStoreConfigStore,
+    private val api: PretixApi
+) : ViewModel() {
 
     private val log = Logger.getLogger("tickets")
+    val imageLoader = ImageLoader(api)
     private val _form = MutableStateFlow(emptyList<QuestionFormField>())
     val form = _form.asStateFlow()
 
@@ -96,14 +102,30 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                 QuestionType.S,
                 QuestionType.T,
                 QuestionType.F,
-                QuestionType.TEL,
                 QuestionType.B -> {
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
-                        true
+                        it.required
+                    )
+                }
+
+                QuestionType.TEL -> {
+                    val answerValue = startingAnswerValue(it, data.answers[it.serverId])
+                    val countryCode = if (!answerValue.isNullOrBlank()) {
+                        calculateDefaultCountry(answerValue).code
+                    } else {
+                        null
+                    }
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        answerValue,
+                        it.type,
+                        it.required,
+                        uiExtra = countryCode
                     )
                 }
 
@@ -111,9 +133,9 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
-                        true,
+                        it.required,
                         keyValueOptions = it.options?.sortedBy { option -> option.position }
                             ?.map { option ->
                                 SelectableValue(
@@ -126,12 +148,13 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                 }
 
                 QuestionType.M -> {
+                    val answerValue = startingAnswerValue(it, data.answers[it.serverId])
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        answerValue,
                         it.type,
-                        true,
+                        it.required,
                         keyValueOptions = it.options?.sortedBy { option -> option.position }
                             ?.map { option ->
                                 SelectableValue(
@@ -140,7 +163,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                                 )
                             },
                         options = it.options?.toMutableList() ?: emptyList(),
-                        values = it.dependencyValues
+                        values = answerValue?.split(",")?.filter { it.isNotBlank() }
                     )
                 }
 
@@ -149,9 +172,9 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
-                        true,
+                        it.required,
                         dateConfig = DateConfig(minDate = it.valid_date_min, maxDate = it.valid_date_max)
                     )
                 }
@@ -160,9 +183,9 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
-                        true
+                        it.required
                     )
                 }
 
@@ -170,9 +193,9 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     QuestionFormField(
                         it.serverId,
                         it.question,
-                        startingAnswerValue(it, data.answers[it]),
+                        startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
-                        true,
+                        it.required,
                         keyValueOptions = Country.entries.map { country ->
                             SelectableValue(
                                 country.code,
@@ -215,12 +238,7 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
 
                 when (field.fieldType) {
                     QuestionType.F -> {
-                        if (answer != null) {
-                            // for files, pretixlibsync requires a "file:///" prefix
-                            field.copy(value = "file://${answer}")
-                        } else {
-                            field.copy(value = answer)
-                        }
+                        field.copy(value = formatFileAnswer(answer))
                     }
 
                     QuestionType.N -> {
@@ -267,7 +285,11 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     val answer = it.value
                     val country = it.uiExtra
                     if (answer.isNullOrBlank()) {
-                        it.copy(validation = FieldValidationState.MISSING)
+                        if (it.required) {
+                            it.copy(validation = FieldValidationState.MISSING)
+                        } else {
+                            it.copy(validation = null)
+                        }
                     } else {
                         val parsed = phoneValidator.parse(answer, country)
                         if (parsed == null) {
@@ -278,8 +300,20 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
                     }
                 }
 
+                QuestionType.M -> {
+                    if (it.required && it.values.isNullOrEmpty()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else {
+                        it.copy(validation = null)
+                    }
+                }
+
                 else -> {
-                    it
+                    if (it.required && it.value.isNullOrBlank()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else {
+                        it.copy(validation = null)
+                    }
                 }
             }
         }
@@ -320,6 +354,15 @@ class QuestionsDialogViewModel(private val config: DataStoreConfigStore) : ViewM
         }
 
         return null
+    }
+
+    private fun formatFileAnswer(answer: String?): String? {
+        return when {
+            answer == null -> null
+            answer.contains("://") -> answer
+            answer.isEmpty() -> answer
+            else -> "file://$answer"
+        }
     }
 }
 

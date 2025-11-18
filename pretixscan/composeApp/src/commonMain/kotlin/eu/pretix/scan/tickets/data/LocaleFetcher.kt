@@ -10,13 +10,19 @@ fun calculateDefaultCountry(value: String?): Country {
     if (value.isNullOrBlank()) {
         return userCountry
     }
-    // guess the country from the calling code
-    val matchingCountry = Country.entries.firstOrNull { c ->
-        c.callingCodes.any { code ->
-            value.startsWith(code)
-        }
+
+    if (value.startsWith("+")) {
+        val matchingCountry = Country.entries
+            .sortedByDescending { it.callingCodes.firstOrNull()?.length ?: 0 }
+            .firstOrNull { c ->
+                c.callingCodes.any { code ->
+                    value.startsWith(code)
+                }
+            }
+        return matchingCountry ?: userCountry
     }
-    return matchingCountry ?: userCountry
+
+    return userCountry
 }
 
 /**

@@ -21,7 +21,7 @@ class TicketSearchBarViewModel(
     val isSearching = _isSearching.asStateFlow()
 
     val searchSuggestions = searchText
-        .debounce(1000L)
+        .debounce(300L)
         .onEach {
             _isSearching.update { true }
         }

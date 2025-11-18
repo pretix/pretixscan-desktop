@@ -11,7 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import eu.pretix.desktop.app.ui.CustomColor
 import eu.pretix.desktop.app.ui.asColor
 import eu.pretix.scan.tickets.data.ResultStateData
@@ -89,15 +91,62 @@ fun TicketSuccess(
             }
         }
 
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(CustomColor.White.asColor())
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp)
         ) {
-            Text(data.orderCodeAndPositionId ?: "", style = MaterialTheme.typography.bodyLarge)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                if (data.attendeeName != null) {
+                    Text(
+                        text = data.attendeeName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                if (data.orderCodeAndPositionId != null) {
+                    Text(
+                        text = data.orderCodeAndPositionId,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            if (data.seat != null || data.questionAndAnswers != null || data.checkInTexts != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Column {
+                    if (data.seat != null) {
+                        Text(
+                            text = data.seat,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+
+                    if (data.questionAndAnswers != null) {
+                        Text(
+                            text = data.questionAndAnswers,
+                            style = MaterialTheme.typography.bodySmall,
+                            lineHeight = 18.sp
+                        )
+                    }
+
+                    if (data.checkInTexts != null) {
+                        Text(
+                            text = data.checkInTexts,
+                            style = MaterialTheme.typography.bodySmall,
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
+            }
         }
 
         // Countdown progress indicator

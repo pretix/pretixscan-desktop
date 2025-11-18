@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import eu.pretix.scan.tickets.utils.ImageLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.awt.image.BufferedImage
@@ -23,21 +24,29 @@ import javax.imageio.ImageIO
 @Composable
 fun QuestionImagePreview(
     modifier: Modifier = Modifier,
-    filePath: String
+    filePath: String,
+    imageLoader: ImageLoader? = null
 ) {
     var image by remember { mutableStateOf<BufferedImage?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(filePath) {
-        val realPath = filePath.replaceFirst("file://", "")
+    LaunchedEffect(filePath, imageLoader) {
         try {
-            withContext(Dispatchers.IO) {
-                val file = File(realPath)
-                val bufferedImage = ImageIO.read(file)
-                bufferedImage
-            }?.let {
+            val loadedImage = if (filePath.startsWith("https")) {
+                imageLoader?.loadImage(filePath)
+            } else {
+                withContext(Dispatchers.IO) {
+                    val realPath = filePath.replaceFirst("file://", "")
+                    val file = File(realPath)
+                    ImageIO.read(file)
+                }
+            }
+
+            loadedImage?.let {
                 image = it
+            } ?: run {
+                errorMessage = "Failed to load image"
             }
         } catch (e: Exception) {
             errorMessage = e.message

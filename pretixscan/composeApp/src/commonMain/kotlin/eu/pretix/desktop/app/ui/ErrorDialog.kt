@@ -1,4 +1,4 @@
-package eu.pretix.scan.setup
+package eu.pretix.desktop.app.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

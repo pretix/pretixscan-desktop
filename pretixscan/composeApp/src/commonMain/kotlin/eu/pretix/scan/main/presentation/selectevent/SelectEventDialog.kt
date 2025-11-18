@@ -2,23 +2,21 @@ package eu.pretix.scan.main.presentation.selectevent
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import eu.pretix.desktop.app.sync.LocalSyncRootService
 import eu.pretix.desktop.app.sync.SyncError
 import eu.pretix.desktop.app.sync.SyncProgressView
 import eu.pretix.desktop.app.sync.SyncState
-import eu.pretix.desktop.app.ui.CheckboxWithLabel
-import eu.pretix.desktop.app.ui.Tooltip
+import eu.pretix.desktop.app.ui.*
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -29,7 +27,7 @@ import pretixscan.composeapp.generated.resources.*
 @Preview
 fun SelectEventDialog(
     onSelectEvent: (RemoteEvent?) -> Unit,
-    onSelectMultipleEvents: ((List<RemoteEvent>) -> Unit)? = null
+    onSelectMultipleEvents: (List<RemoteEvent>) -> Unit
 ) {
     val syncRootService = LocalSyncRootService.current
     val syncState by syncRootService.minimumSyncState.collectAsState()
@@ -46,121 +44,140 @@ fun SelectEventDialog(
     var selectedEventSlugs by remember { mutableStateOf<Set<String>>(emptySet()) }
     var allEvents by remember { mutableStateOf<List<RemoteEvent>>(emptyList()) }
 
-    Dialog(onDismissRequest = { onSelectEvent(null) }) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
+
+    FocusedRoundedDialog(onDismiss = { onSelectEvent(null) }, content = {
+        Column(
+            modifier = Modifier
+                .background(CustomColor.BrandDark.asColor()),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            // Header with title and reload button
+            Row(
+                modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Header with title and reload button
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(stringResource(Res.string.operation_select_event))
+                Text(stringResource(Res.string.operation_select_event), color = Color.White)
 
-                    // Reload button
-                    Tooltip(stringResource(Res.string.action_reload_events)) {
-                        IconButton(
-                            onClick = {
-                                reloadTrigger++  // Increment to trigger reload
-                            },
-                            enabled = syncState !is SyncState.InProgress
-                        ) {
-                            Image(
-                                painter = painterResource(Res.drawable.ic_refresh_dark_24dp),
-                                contentDescription = stringResource(Res.string.action_reload_events),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                }
+                Spacer(Modifier.weight(1f))
 
-                Spacer(modifier = Modifier.height(16.dp))
 
-                // Advanced Mode Toggle
-                if (onSelectMultipleEvents != null) {
-                    CheckboxWithLabel(
-                        label = stringResource(Res.string.advanced_mode),
-                        description = stringResource(Res.string.advanced_mode_description),
-                        checked = advancedMode,
-                        onCheckedChange = {
-                            advancedMode = it
-                            // Reset selections when switching modes
-                            if (it) {
+                // Advanced mode button
+                Tooltip(stringResource(Res.string.advanced_mode_description)) {
+                    IconButton(
+                        colors = if (advancedMode) IconButtonDefaults.filledTonalIconButtonColors() else IconButtonDefaults.iconButtonColors(),
+                        onClick = {
+                            val nextMode = !advancedMode
+                            advancedMode = nextMode
+                            if (nextMode) {
                                 selectedEvent = null
                                 selectedEventSlugs = emptySet()
                             } else {
                                 selectedEventSlugs = emptySet()
                             }
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                        },
+                        enabled = syncState !is SyncState.InProgress
+                    ) {
+                        Image(
+                            painter = if (advancedMode) painterResource(Res.drawable.ic_shuffle_dark_24dp) else painterResource(
+                                Res.drawable.ic_shuffle_24dp
+                            ),
+                            contentDescription = stringResource(Res.string.advanced_mode),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
 
-                // Event List - now supports both modes
-                SelectEventList(
-                    advancedMode = advancedMode,
-                    selectedEvent = selectedEvent,
-                    selectedEventSlugs = selectedEventSlugs,
-                    onSelectEvent = { event ->
-                        if (advancedMode) {
-                            // Multi-select: toggle event in set
-                            selectedEventSlugs = if (event.slug in selectedEventSlugs) {
-                                selectedEventSlugs - event.slug
-                            } else {
-                                selectedEventSlugs + event.slug
-                            }
-                        } else {
-                            // Single-select: replace
-                            selectedEvent = event
-                        }
-                    },
-                    onEventsLoaded = { events ->
-                        allEvents = events
-                    },
-                    reloadTrigger = reloadTrigger
-                )
-
-                when (syncState) {
-                    is SyncState.Error -> {
-                        SyncError(syncState as SyncState.Error)
-                    }
-
-                    SyncState.Idle, is SyncState.Success -> {
-                        Button(
-                            onClick = {
-                                if (advancedMode) {
-                                    // Multi-select: return all selected events
-                                    val selected = allEvents.filter { it.slug in selectedEventSlugs }
-                                    coroutineScope.launch {
-                                        onSelectMultipleEvents?.invoke(selected)
-                                    }
-                                } else {
-                                    // Single-select: return one event
-                                    onSelectEvent(selectedEvent)
-                                }
-                            },
-                            modifier = Modifier.padding(top = 16.dp),
-                            enabled = if (advancedMode) {
-                                selectedEventSlugs.isNotEmpty()
-                            } else {
-                                selectedEvent != null
-                            },
-                        ) {
-                            Text(stringResource(Res.string.ok))
-                        }
-                    }
-
-                    is SyncState.InProgress -> {
-                        SyncProgressView(syncState)
+                // Reload button
+                Tooltip(stringResource(Res.string.action_reload_events)) {
+                    IconButton(
+                        onClick = {
+                            reloadTrigger++  // Increment to trigger reload
+                        },
+                        enabled = syncState !is SyncState.InProgress
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.ic_refresh_white_24dp),
+                            contentDescription = stringResource(Res.string.action_reload_events),
+                            modifier = Modifier.size(22.dp)
+                        )
                     }
                 }
             }
         }
-    }
+
+
+
+        SelectEventList(
+            advancedMode = advancedMode,
+            selectedEvent = selectedEvent,
+            selectedEventSlugs = selectedEventSlugs,
+            onSelectEvent = { event ->
+                if (advancedMode) {
+                    // Multi-select: toggle event in set
+                    selectedEventSlugs = if (event.slug in selectedEventSlugs) {
+                        selectedEventSlugs - event.slug
+                    } else {
+                        selectedEventSlugs + event.slug
+                    }
+                } else {
+                    // Single-select: replace
+                    selectedEvent = event
+                }
+            },
+            onEventsLoaded = { events ->
+                allEvents = events
+            },
+            reloadTrigger = reloadTrigger
+        )
+    }, bottomAccessory = {
+
+        when (syncState) {
+            is SyncState.Error -> {
+                DialogBottomBarContent(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                ) {
+                    SyncError(syncState as SyncState.Error)
+                }
+            }
+
+            SyncState.Idle, is SyncState.Success -> {
+                DialogBottomBar(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter),
+                    primaryLabel = stringResource(Res.string.text_action_select),
+                    cancelLabel = stringResource(Res.string.cancel),
+                    onCancel = { onSelectEvent(null) },
+                    onPrimary = {
+                        if (advancedMode) {
+                            // Multi-select: return all selected events
+                            val selected = allEvents.filter { it.slug in selectedEventSlugs }
+                            coroutineScope.launch {
+                                onSelectMultipleEvents?.invoke(selected)
+                            }
+                        } else {
+                            // Single-select: return one event
+                            onSelectEvent(selectedEvent)
+                        }
+                    },
+                    primaryEnabled = if (advancedMode) {
+                        selectedEventSlugs.isNotEmpty()
+                    } else {
+                        selectedEvent != null
+                    }
+                )
+            }
+
+            is SyncState.InProgress -> {
+                DialogBottomBarContent(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                ) {
+                    SyncProgressView(syncState)
+                }
+            }
+        }
+    })
 }

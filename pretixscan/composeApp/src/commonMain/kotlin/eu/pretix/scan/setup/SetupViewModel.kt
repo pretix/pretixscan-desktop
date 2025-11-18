@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import org.json.JSONException
+import org.json.JSONObject
+import org.json.JSONTokener
 
 class SetupViewModel(
     private val setupManager: SetupManager,
@@ -81,6 +84,62 @@ class SetupViewModel(
         } catch (e: Exception) {
             e.printStackTrace()
             _uiState.update { SetupUiState.Error(e.message ?: "Unknown error") }
+        }
+    }
+
+    companion object {
+        fun parseHandshakeQR(scannedText: String): Pair<String, String>? {
+            return try {
+                if (!isStrictJson(scannedText)) {
+                    return null
+                }
+
+                val json = JSONObject(JSONTokener(scannedText))
+
+                if (json.has("version")) {
+                    return null
+                }
+
+                if (!json.has("handshake_version")) {
+                    return null
+                }
+
+                val handshakeVersionValue = json.get("handshake_version")
+                if (handshakeVersionValue !is Int) {
+                    return null
+                }
+
+                val handshakeVersion = handshakeVersionValue as Int
+                if (handshakeVersion < 0 || handshakeVersion > 1) {
+                    return null
+                }
+
+                if (!json.has("url") || !json.has("token")) {
+                    return null
+                }
+
+                if (json.isNull("url") || json.isNull("token")) {
+                    return null
+                }
+
+                val url = json.getString("url")
+                val token = json.getString("token")
+
+                Pair(url, token)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        private fun isStrictJson(text: String): Boolean {
+            val trimmed = text.trim()
+            if (!trimmed.startsWith("{")) return false
+
+            if (trimmed.contains(Regex(",\\s*}"))) return false
+
+            if (trimmed.contains(Regex("\\{\\s*[a-zA-Z]"))) return false
+
+            return true
         }
     }
 }

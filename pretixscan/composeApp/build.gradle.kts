@@ -78,6 +78,7 @@ kotlin {
             implementation(project(":libpretixsync"))
             implementation(project(":libpretixprint"))
 
+            implementation(libs.okhttp)
 
             // phone number validation
             implementation(libs.google.libphone)
@@ -103,6 +104,9 @@ kotlin {
         desktopTest.dependencies {
             implementation(compose.desktop.uiTestJUnit4)
             implementation(compose.desktop.currentOs)
+            implementation(libs.mockk)
+            implementation(libs.koin.test)
+            implementation(libs.koin.test.junit4)
         }
         
 

@@ -132,6 +132,7 @@
     <string name="question_input_required">This field is required.</string>
     <string name="question_input_invalid">This input is not valid.</string>
     <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="cancel">Cancel</string>
     <string name="status_redeemed">Redeemed</string>
     <string name="status_unpaid">Unpaid</string>
@@ -216,4 +217,11 @@
     <string name="settings_label_badge_layout">Orientation</string>
     <string name="sync_completed">Sync completed successfully</string>
     <string name="sync_error">Sync completed with errors</string>
+    <string name="badge_printing_not_available">Badge printing unavailable</string>
+    <string name="badge_printing_not_possible_no_available_printer">There are no available printers on the system.
+        Please, configure at least one printer and try again.
+    </string>
+    <string name="badge_printing_selected_printer_not_available">The selected printer is currently unavailable. Please
+        check that the device is online and connected to the system.
+    </string>
 </resources>

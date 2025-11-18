@@ -20,6 +20,8 @@ class SelectEventListViewModel(
         _uiState.value = SelectEventListUiState.Loading
         try {
             val events = eventManager.getAvailableEvents()
+//            val f = events[0]
+//            val manyEvents = (0..100).map { f }
             log.info("Found ${events.size} available events for selection.")
             if (events.isEmpty()) {
                 _uiState.update { SelectEventListUiState.Empty }

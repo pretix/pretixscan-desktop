@@ -29,6 +29,14 @@ fun ResultState.color(): Color {
     }
 }
 
+fun ResultState.requiresUserInteraction(): Boolean {
+    return this == ResultState.DIALOG_UNPAID || this == ResultState.DIALOG_QUESTIONS
+}
+
+fun ResultState.isAutoDismissible(): Boolean {
+    return this == ResultState.SUCCESS || this == ResultState.SUCCESS_EXIT
+}
+
 data class ResultStateData(
     val resultState: ResultState,
     val resultText: String? = null,
@@ -45,7 +53,7 @@ data class ResultStateData(
     val attention: Boolean = false,
     val scanType: TicketCheckProvider.CheckInType = TicketCheckProvider.CheckInType.ENTRY,
     val requiredQuestions: List<Question> = emptyList(),
-    val answers: Map<Question, String> = emptyMap(),
+    val answers: Map<Long, String> = emptyMap(),
     val isPrintable: Boolean = false,
     val badgeLayout: BadgeLayout? = null,
     val position: JSONObject? = null

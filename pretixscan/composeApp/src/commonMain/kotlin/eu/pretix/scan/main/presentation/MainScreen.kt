@@ -9,14 +9,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import eu.pretix.desktop.app.navigation.Route
+import eu.pretix.desktop.app.scan.GlobalScanSetup
 import eu.pretix.desktop.app.ui.ScreenContentRoot
-import eu.pretix.desktop.app.ui.autoScanEventListener
 import eu.pretix.scan.main.presentation.selectevent.SelectEventDialog
 import eu.pretix.scan.main.presentation.selectlist.SelectCheckInListDialog
-import eu.pretix.scan.main.presentation.selectlist.SelectCheckInListForMultiEventDialog
 import eu.pretix.scan.main.presentation.toolbar.MainToolbar
 import eu.pretix.scan.tickets.presentation.TicketHandlingDialog
 import eu.pretix.scan.tickets.presentation.TicketSearchBar
@@ -32,6 +30,14 @@ fun MainScreen(
     val uiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
+    GlobalScanSetup(
+        stateFlow = viewModel.uiState,
+        onHandleDirectScan = { secret ->
+            coroutineScope.launch {
+                viewModel.onHandleDirectScan(secret)
+            }
+        }
+    )
 
     when (uiState) {
         MainUiState.SelectEvent -> {
@@ -49,22 +55,25 @@ fun MainScreen(
             )
         }
 
-        MainUiState.SelectCheckInList -> {
-            SelectCheckInListDialog(onSelectCheckInList = {
-                viewModel.selectCheckInList(it)
-            })
+        is MainUiState.SelectCheckInList -> {
+            val state = uiState as MainUiState.SelectCheckInList
+            SelectCheckInListDialog(
+                eventForSelection = state.event,
+                onSelectCheckInList = {
+                    coroutineScope.launch {
+                        viewModel.selectCheckInList(it)
+                    }
+                }
+            )
         }
 
         is MainUiState.SelectCheckInListsForMultipleEvents -> {
             val state = uiState as MainUiState.SelectCheckInListsForMultipleEvents
-            SelectCheckInListForMultiEventDialog(
-                currentEvent = state.events[state.currentEventIndex],
-                currentEventIndex = state.currentEventIndex,
-                totalEvents = state.events.size,
-                onSelectCheckInList = { listId ->
-                    viewModel.selectCheckInListForCurrentEvent(listId)
-                }
-            )
+            SelectCheckInListDialog(
+                eventForSelection = state.events[state.currentEventIndex],
+                onSelectCheckInList = { list ->
+                    viewModel.selectCheckInListForCurrentEvent(list?.server_id)
+                })
         }
 
         MainUiState.Loading -> {
@@ -77,17 +86,10 @@ fun MainScreen(
         }
 
         is MainUiState.ReadyToScan -> {
-            val data = (uiState as MainUiState.ReadyToScan<MainUiStateData>).data
-            Column(
-                modifier = Modifier.autoScanEventListener(
-                    onAlphanumericKey = { _ ->
-                        // Event propagates to SearchTextField which auto-focuses on mount
-                    }
-                )
-            ) {
+            (uiState as MainUiState.ReadyToScan<MainUiStateData>).data
+            Column {
                 MainToolbar(
                     viewModel = viewModel,
-                    eventSelection = data.eventSelection,
                     onOpenSettings = {
                         navHostController.navigate(route = Route.Settings.route)
                     },
@@ -116,14 +118,9 @@ fun MainScreen(
 
         is MainUiState.HandlingTicket -> {
             val data = (uiState as MainUiState.HandlingTicket<MainUiStateData>).data
-            Column(
-                modifier = Modifier.autoScanEventListener { _ ->
-                    // Event propagates to SearchTextField which maintains focus
-                }
-            ) {
+            Column {
                 MainToolbar(
-                    viewModel = viewModel,
-                    eventSelection = data.eventSelection
+                    viewModel = viewModel
                 )
 
                 ScreenContentRoot {
@@ -143,7 +140,9 @@ fun MainScreen(
             }
             TicketHandlingDialog(
                 secret = data.secret,
-                onDismiss = viewModel::onHandleTicketHandlingDismissed
+                scanTimestamp = data.scanTimestamp,
+                onDismiss = viewModel::onHandleTicketHandlingDismissed,
+                onResultStateChanged = viewModel::onTicketResultDetermined
             )
         }
     }

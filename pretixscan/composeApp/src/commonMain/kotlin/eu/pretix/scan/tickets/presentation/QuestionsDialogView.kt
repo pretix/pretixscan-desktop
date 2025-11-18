@@ -210,46 +210,15 @@ fun QuestionsDialogView(
                         }
 
                         QuestionType.F -> {
-                            Column(
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                RequiredTextLabel(
-                                    label = field.label,
-                                    required = field.required,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Row {
-                                    Column(
-                                        modifier = Modifier.weight(2f)
-                                            .padding(end = 16.dp)
-                                    ) {
-                                        Button(
-                                            onClick = {
-                                                viewModel.showModal(field)
-                                            }) {
-                                            Text(stringResource(Res.string.take_a_photo))
-                                        }
-                                        if (field.value != null) {
-                                            Button(
-                                                onClick = {
-                                                    viewModel.updateAnswer(field.id, null)
-                                                }) {
-                                                Icon(
-                                                    Icons.Filled.Delete,
-                                                    contentDescription = stringResource(Res.string.delete_photo)
-                                                )
-                                                Text(stringResource(Res.string.delete_photo))
-                                            }
-                                        }
-                                    }
-
-                                    if (field.value != null) {
-                                        Box(modifier = Modifier.weight(1f)) {
-                                            QuestionImagePreview(filePath = field.value!!)
-                                        }
-                                    }
-                                }
-                            }
+                            FiledFileUpload(
+                                label = field.label,
+                                required = field.required,
+                                validation = field.validation,
+                                selectedFilePath = field.value,
+                                onSelectFile = { viewModel.showModal(field) },
+                                onDeleteFile = { viewModel.updateAnswer(field.id, null) },
+                                imageLoader = viewModel.imageLoader
+                            )
                         }
 
                         QuestionType.D -> {
@@ -349,6 +318,7 @@ fun QuestionsDialogView(
                                 )
                                 QuestionPhoneNumber(
                                     selectedValue = field.value,
+                                    uiExtra = field.uiExtra,
                                     onSelect = { phone, country ->
                                         viewModel.updateAnswer(field.id, phone, country)
                                     },
@@ -368,34 +338,18 @@ fun QuestionsDialogView(
             )
         )
 
-        Surface(
+        DialogBottomBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter),
-            shadowElevation = 8.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(CustomColor.White.asColor())
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(onClick = onCancel) {
-                    Text(stringResource(Res.string.cancel))
-                }
-                Spacer(modifier = Modifier.weight(1.0f))
-                Button(
-                    onClick = {
-                        if (viewModel.validateForConfirm()) {
-                            onConfirm(viewModel.getCurrentAnswers(data))
-                        }
-                    }
-                ) {
-                    Text(stringResource(Res.string.cont))
+            cancelLabel = stringResource(Res.string.cancel),
+            primaryLabel = stringResource(Res.string.cont),
+            onCancel = onCancel,
+            onPrimary = {
+                if (viewModel.validateForConfirm()) {
+                    onConfirm(viewModel.getCurrentAnswers(data))
                 }
             }
-        }
+        )
     }
 
     if (modalQuestion != null && modalQuestion?.fieldType == QuestionType.F) {
