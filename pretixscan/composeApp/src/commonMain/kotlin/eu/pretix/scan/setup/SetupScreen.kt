@@ -38,6 +38,17 @@ fun SetupScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
+    // Auto-parse handshake JSON if token field contains it
+    LaunchedEffect(token) {
+        if (token.trim().startsWith("{")) {
+            SetupViewModel.parseHandshakeQR(token)?.let { (parsedUrl, parsedToken) ->
+                url = parsedUrl
+                token = parsedToken
+                viewModel.verifyTokenAndSetup(token = parsedToken, url = parsedUrl)
+            }
+        }
+    }
+
     // Check and execute migration if needed on screen load
     LaunchedEffect(Unit) {
         viewModel.checkAndExecuteMigration()
@@ -77,24 +88,29 @@ fun SetupScreen(
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(32.dp))
-                    FieldTextInput(
-                        value = url,
-                        onValueChange = { url = it },
-                        label = stringResource(Res.string.hint_url),
-                        maxLines = 1,
-                        required = true,
-                        enabled = uiState != SetupUiState.Loading
-                    )
 
-                    FieldTextInput(
-                        value = token,
-                        onValueChange = { token = it },
-                        label = stringResource(Res.string.hint_token),
-                        maxLines = 1,
-                        required = true,
-                        enabled = uiState != SetupUiState.Loading,
-                        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
-                    )
+                    Row (modifier = Modifier.padding(vertical = 16.dp)) {
+                        FieldTextInput(
+                            value = url,
+                            onValueChange = { url = it },
+                            label = stringResource(Res.string.hint_url),
+                            maxLines = 1,
+                            required = true,
+                            enabled = uiState != SetupUiState.Loading
+                        )
+                    }
+
+                    Row (modifier = Modifier.padding(vertical = 16.dp)) {
+                        FieldTextInput(
+                            value = token,
+                            onValueChange = { token = it },
+                            label = stringResource(Res.string.hint_token),
+                            maxLines = 1,
+                            required = true,
+                            enabled = uiState != SetupUiState.Loading,
+                            modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+                        )
+                    }
 
                     Row(
                         Modifier.fillMaxWidth()
