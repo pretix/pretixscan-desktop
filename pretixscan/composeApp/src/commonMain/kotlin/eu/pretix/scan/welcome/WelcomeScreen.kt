@@ -1,9 +1,9 @@
 package eu.pretix.scan.welcome
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -13,10 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import eu.pretix.desktop.app.navigation.Route
-import eu.pretix.desktop.app.ui.CheckboxWithLabel
-import eu.pretix.desktop.app.ui.CustomColor
-import eu.pretix.desktop.app.ui.ScreenContentRoot
-import eu.pretix.desktop.app.ui.asColor
+import eu.pretix.desktop.app.ui.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -29,48 +26,79 @@ fun WelcomeScreen(
 ) {
     var acceptedTerms by remember { mutableStateOf(false) }
 
-    ScreenContentRoot {
-        Row(
-            modifier = Modifier.fillMaxSize().padding(64.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Top
-        ) {
-            Row(modifier = Modifier.padding(top = 64.dp)) {
+    Column {
+        Toolbar()
 
-                Image(
-                    painter = painterResource(Res.drawable.pretix_logo_dark_angled),
-                    contentDescription = "Pretix logo",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.width(320.dp)
-                )
+        ScreenContentRoot {
 
-                Column(modifier = Modifier.padding(horizontal = 64.dp)) {
-                    Text(stringResource(Res.string.headline_setup), style = MaterialTheme.typography.headlineMedium)
-                    Text(stringResource(Res.string.welcome_text), style = MaterialTheme.typography.bodyLarge)
-                    Spacer(modifier = Modifier.height(32.dp))
-                    CheckboxWithLabel(
-                        label = stringResource(Res.string.welcome_disclaimer1),
-                        description = "",
-                        checked = acceptedTerms,
-                    ) { acceptedTerms = it }
-                    Row(
-                        Modifier.fillMaxWidth()
-                            .padding(vertical = 32.dp),
-                        horizontalArrangement = Arrangement.End
+            Box {
+                Row {
+                    Column(
+                        modifier = Modifier.fillMaxHeight().padding(start = 64.dp, end = 32.dp),
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Button(
-                            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.BrandGreen.asColor()),
-                            enabled = acceptedTerms,
-                            onClick = {
-                                navHostController.navigate(route = Route.Setup.route)
-                            }) {
-                            Text(stringResource(Res.string.cont))
+                        Image(
+                            painter = painterResource(Res.drawable.pretix_logo_dark_angled),
+                            contentDescription = "Pretix logo",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.width(320.dp).padding(bottom = 64.dp)
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier.fillMaxHeight().padding(start = 32.dp, end = 64.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Row(modifier = Modifier.padding(vertical = 16.dp)) {
+                            Text(
+                                stringResource(Res.string.headline_setup),
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                        }
+
+                        Row(modifier = Modifier.padding(vertical = 16.dp)) {
+                            Text(stringResource(Res.string.welcome_text), style = MaterialTheme.typography.bodyLarge)
+                        }
+
+                        Row(modifier = Modifier.padding(vertical = 16.dp)) {
+                            CheckboxWithLabel(
+                                label = stringResource(Res.string.welcome_disclaimer1),
+                                description = "",
+                                checked = acceptedTerms,
+                            ) { acceptedTerms = it }
+                        }
+
+                        Row(
+                            Modifier.fillMaxWidth()
+                                .padding(vertical = 32.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Button(
+                                enabled = acceptedTerms,
+                                onClick = {
+                                    navHostController.navigate(route = Route.Setup.route)
+                                }) {
+                                Text(stringResource(Res.string.cont))
+                            }
                         }
                     }
                 }
-
             }
         }
+    }
+}
 
+
+@Composable
+private fun Toolbar(
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+            .background(CustomColor.BrandDark.asColor())
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Logo()
+        Spacer(Modifier.weight(1f))
     }
 }
