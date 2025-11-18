@@ -10,7 +10,9 @@ import eu.pretix.desktop.cache.Version
 import eu.pretix.scan.settings.data.ConfigurableSettings
 import eu.pretix.scan.settings.data.PrinterSource
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 
 class SettingsViewModel(
@@ -23,7 +25,15 @@ class SettingsViewModel(
     private val _form = MutableStateFlow(ConfigurableSettings())
     val form = _form.asStateFlow()
 
+    private val _uiState = MutableStateFlow<SettingsUiState<String>>(SettingsUiState.Start)
+    val uiState: StateFlow<SettingsUiState<String>> = _uiState
+
+    fun dismissError() {
+        _uiState.update { SettingsUiState.Start }
+    }
+
     suspend fun loadSettings() {
+        val badgePrinterWasSelected = appConfig.printBadges && appConfig.badgePrinterName != null
         _form.value = _form.value.copy(
             version = "${Version.version} (${Version.versionCode})",
             printers = printerSource.listPrinters(),
@@ -37,6 +47,11 @@ class SettingsViewModel(
             uiReduceMotion = appConfig.uiReduceMotion,
             uiHideNames = appConfig.uiHideNames,
         )
+
+        // check if printer setup is correct
+        if (_form.value.printBadges && badgePrinterWasSelected && _form.value.badgePrinter == null) {
+            _uiState.update { SettingsUiState.ErrorSelectedPrinterNotAvailable }
+        }
     }
 
     suspend fun setBadgePrinter(option: SelectableValue?) {
@@ -56,8 +71,27 @@ class SettingsViewModel(
     }
 
     suspend fun setPrintBadges(value: Boolean) {
-        appConfig.printBadges = value
-        loadSettings()
+        if (value) {
+            // turning badge printing on, check that we have at least one selectable printer
+            loadSettings()
+            val firstPrinter = _form.value.printers.firstOrNull()
+            if (firstPrinter == null) {
+                // sorry
+                appConfig.printBadges = false
+                loadSettings()
+                _uiState.update { SettingsUiState.ErrorNoAvailablePrinters }
+                return
+            }
+
+            // turn printing on, preselect the first printer
+            appConfig.printBadges = true
+            setBadgePrinter(firstPrinter)
+
+        } else {
+            // turning printing off
+            appConfig.printBadges = false
+            loadSettings()
+        }
     }
 
     suspend fun setSyncAuto(value: Boolean) {

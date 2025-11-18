@@ -38,6 +38,7 @@ fun SettingsScreen(
 
     val viewModel = koinViewModel<SettingsViewModel>()
     val form by viewModel.form.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
     val state = rememberLazyListState()
 
     LaunchedEffect(Unit) {
@@ -296,6 +297,29 @@ fun SettingsScreen(
                     )
                 )
             }
+        }
+    }
+
+    when (uiState) {
+        is SettingsUiState.Start -> {}
+        is SettingsUiState.ErrorNoAvailablePrinters -> {
+            ErrorDialog(
+                title = stringResource(Res.string.badge_printing_not_available),
+                message = stringResource(Res.string.badge_printing_not_possible_no_available_printer),
+                onDismiss = {
+                    viewModel.dismissError()
+                }
+            )
+        }
+
+        is SettingsUiState.ErrorSelectedPrinterNotAvailable -> {
+            ErrorDialog(
+                title = stringResource(Res.string.badge_printing_not_available),
+                message = stringResource(Res.string.badge_printing_selected_printer_not_available),
+                onDismiss = {
+                    viewModel.dismissError()
+                }
+            )
         }
     }
 }

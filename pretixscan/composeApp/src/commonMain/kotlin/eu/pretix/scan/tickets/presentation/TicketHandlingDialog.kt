@@ -14,13 +14,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import com.composables.core.*
+import eu.pretix.desktop.app.ui.ErrorDialog
 import eu.pretix.scan.tickets.data.ResultState
 import eu.pretix.scan.tickets.data.isAutoDismissible
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.badge_printing_not_available
 import java.util.logging.Logger
 
 private val log = Logger.getLogger("TicketHandlingDialog")
@@ -36,6 +40,7 @@ fun TicketHandlingDialog(
 
     val viewModel = koinViewModel<TicketHandlingDialogViewModel>()
     val uiState by viewModel.uiState.collectAsState()
+    val localTicketHandlingErrors by viewModel.localTicketHandlingErrors.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val dialogState = rememberDialogState(initiallyVisible = true)
     var remainingTimeProgress by remember { mutableStateOf(1.0f) }
@@ -167,6 +172,20 @@ fun TicketHandlingDialog(
                     )
                 }
             }
+        }
+    }
+
+
+    when (localTicketHandlingErrors) {
+        is TicketHandlingErrors.None -> {}
+        is TicketHandlingErrors.Error -> {
+            ErrorDialog(
+                title = stringResource(Res.string.badge_printing_not_available),
+                message = (localTicketHandlingErrors as TicketHandlingErrors.Error).exception,
+                onDismiss = {
+                    viewModel.dismissError()
+                }
+            )
         }
     }
 }
