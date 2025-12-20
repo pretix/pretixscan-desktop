@@ -224,4 +224,8 @@
     <string name="badge_printing_selected_printer_not_available">The selected printer is currently unavailable. Please
         check that the device is online and connected to the system.
     </string>
+    <string name="settings_section_camera">Camera</string>
+    <string name="settings_preferred_camera_label">Preferred camera</string>
+    <string name="settings_camera_auto">Auto</string>
+    <string name="no_available_cameras">No available cameras</string>
 </resources>

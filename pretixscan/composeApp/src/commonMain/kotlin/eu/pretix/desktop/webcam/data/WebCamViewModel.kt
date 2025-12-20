@@ -30,7 +30,7 @@ class WebCamViewModel(
     val availableImageData: StateFlow<ImageData?> = videoSource.collectAvailableImageData()
     private val coroutineScope = CoroutineScope(Dispatchers.IO + Job())
     private val noSelectedVideo = Video(
-        name = "-",
+        name = VideoSource.NO_CAMERA_NAME,
         availableResolutions = listOf(),
         fps = .0,
     )
@@ -43,14 +43,13 @@ class WebCamViewModel(
     val uiState: StateFlow<CameraState> = _uiState
 
     fun load() {
-        configureWebCam()
         observeVideoInput()
     }
 
 
     fun observeVideoInput() = coroutineScope.launch {
         videoSource.getAvailableWebcam().collectLatest { videos ->
-            val newVideos = listOf(noSelectedVideo) + videos.map { webcam ->
+            val newVideos = videos.map { webcam ->
                 Video(
                     name = webcam.name,
                     availableResolutions = webcam.device.resolutions.map { it.toResolution() },
@@ -61,12 +60,15 @@ class WebCamViewModel(
                 _uiState.update { state ->
                     state.copy(availableVideos = newVideos)
                 }
-                if (_uiState.value.preselectCamera && _uiState.value.selectedVideo?.name == "-") {
-                    val newCamera = newVideos.firstOrNull { it.name == appConfig.preferredCameraName }
-                        ?: newVideos.firstOrNull { it.name != "-" }
-                    if (newCamera != null) {
-                        selectVideo(newCamera)
+                if (_uiState.value.preselectCamera && _uiState.value.selectedVideo?.name == VideoSource.NO_CAMERA_NAME) {
+                    val newCamera = when {
+                        appConfig.preferredCameraName != VideoSource.NO_CAMERA_NAME -> {
+                            newVideos.firstOrNull { it.name == appConfig.preferredCameraName }
+                                ?: newVideos.firstOrNull()
+                        }
+                        else -> newVideos.firstOrNull()
                     }
+                    newCamera?.let { selectVideo(it) }
                 }
             }
         }
@@ -81,13 +83,10 @@ class WebCamViewModel(
 
     fun selectVideo(video: Video) {
         if (video.name == _uiState.value.selectedVideo?.name) return
-        if (video.name == "-") {
+        if (video.name == VideoSource.NO_CAMERA_NAME) {
             videoSource.close()
             _uiState.update { it.copy(selectedVideo = noSelectedVideo) }
             return
-        }
-        if (appConfig.preferredCameraName != video.name) {
-            appConfig.preferredCameraName = video.name
         }
         videoSource.open(video.name)
         _uiState.update {
