@@ -24,6 +24,7 @@ import eu.pretix.desktop.app.ui.*
 import eu.pretix.desktop.cache.getLogDirectory
 import eu.pretix.desktop.cache.getUserDataFolder
 import eu.pretix.desktop.cache.openPathInFileBrowser
+import eu.pretix.desktop.webcam.data.VideoSource
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -241,6 +242,29 @@ fun SettingsScreen(
                     }
 
                     item {
+                        Section(stringResource(Res.string.settings_section_camera)) {
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.settings_preferred_camera_label)
+                                    )
+                                    FieldSpinner(
+                                        selectedValue = form.preferredCamera,
+                                        availableOptions = listOf(SelectableValue(VideoSource.NO_CAMERA_NAME, stringResource(Res.string.settings_camera_auto))) + form.cameras.map { SelectableValue(it, it) },
+                                        onSelect = {
+                                            coroutineScope.launch {
+                                                viewModel.setPreferredCamera(it?.value)
+                                            }
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    item {
                         Section(stringResource(Res.string.settings_label_about)) {
                             Setting {
                                 SettingLabel(
@@ -337,7 +361,7 @@ fun Section(heading: String, content: @Composable () -> Unit) {
             fontWeight = FontWeight.Medium
         )
         content()
-        HorizontalDivider()
+        ListDivider()
     }
 }
 

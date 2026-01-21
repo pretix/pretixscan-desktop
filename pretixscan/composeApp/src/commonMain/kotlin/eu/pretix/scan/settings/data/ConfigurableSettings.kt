@@ -14,4 +14,6 @@ data class ConfigurableSettings(
     val offlineMode: Boolean = false,
     val uiReduceMotion: Boolean = false,
     val uiHideNames: Boolean = false,
+    val cameras: List<String> = emptyList(),
+    val preferredCamera: String? = null,
 )

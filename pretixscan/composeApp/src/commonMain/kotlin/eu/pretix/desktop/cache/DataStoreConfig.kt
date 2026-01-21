@@ -2,6 +2,7 @@ package eu.pretix.desktop.cache
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
+import eu.pretix.desktop.webcam.data.VideoSource
 import eu.pretix.libpretixsync.api.PretixApi
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.builtins.ListSerializer
@@ -364,7 +365,7 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
     // ============================================================
 
     suspend fun getPreferredCameraName(): String =
-        dataStore.data.first()[PreferenceKeys.PREFERRED_CAMERA_NAME] ?: "-"
+        dataStore.data.first()[PreferenceKeys.PREFERRED_CAMERA_NAME] ?: VideoSource.NO_CAMERA_NAME
 
     suspend fun setPreferredCameraName(value: String) {
         dataStore.edit { it[PreferenceKeys.PREFERRED_CAMERA_NAME] = value }

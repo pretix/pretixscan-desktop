@@ -10,9 +10,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.Divider
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import eu.pretix.desktop.app.ui.ListDivider
 import eu.pretix.desktop.app.ui.SelectListRow
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.scan.tickets.presentation.formatDateForDisplay
@@ -137,9 +139,7 @@ fun SelectEventList(
                                 Text(dateText)
                             }
                         }
-                        if (index < list.lastIndex) {
-                            Divider(color = Color.Gray, thickness = 1.dp)
-                        }
+                        ListDivider(index, list.lastIndex)
                     }
                 }
 

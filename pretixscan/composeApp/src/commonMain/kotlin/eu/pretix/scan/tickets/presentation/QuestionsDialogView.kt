@@ -6,18 +6,23 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.BlendMode.Companion.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import eu.pretix.desktop.app.ui.*
@@ -26,11 +31,14 @@ import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.scan.tickets.data.ResultStateData
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import org.koin.compose.viewmodel.koinViewModel
-import pretixscan.composeapp.generated.resources.*
+import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.cancel
+import pretixscan.composeapp.generated.resources.cont
+import pretixscan.composeapp.generated.resources.yes
 
 
-@Preview
 @Composable
 fun QuestionsDialogView(
     data: ResultStateData,
@@ -105,8 +113,8 @@ fun QuestionsDialogView(
                     }
                 }
             }
-            items(form) { field ->
-                Box(modifier = Modifier.padding(PaddingValues(16.dp))) {
+            itemsIndexed(form) { index, field ->
+                SelectListRow {
                     when (field.fieldType) {
                         QuestionType.N -> {
                             FieldTextInput(
@@ -328,7 +336,9 @@ fun QuestionsDialogView(
                         }
                     }
                 }
+                ListDivider(index, form.lastIndex)
             }
+
         }
 
         VerticalScrollbar(

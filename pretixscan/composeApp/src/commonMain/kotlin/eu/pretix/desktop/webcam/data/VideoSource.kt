@@ -21,6 +21,10 @@ interface VideoSource {
     fun collectAvailableImageData(): StateFlow<ImageData?>
 
     fun takeScreenshot(): BufferedImage?
+
+    companion object {
+        const val NO_CAMERA_NAME = "-"
+    }
 }
 
 sealed class VideoState {
@@ -40,6 +44,10 @@ data class ImageData(
 )
 
 class DefaultVideoSource : VideoSource {
+
+    init {
+        configureWebCam()
+    }
 
     private var currentVideo: MutableStateFlow<Webcam?> = MutableStateFlow(null)
     private val videoEventFlow: MutableStateFlow<VideoState> = MutableStateFlow(VideoState.Closed)

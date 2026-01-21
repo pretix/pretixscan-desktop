@@ -127,7 +127,7 @@ fun QuestionDateTimePicker(
                 ) {
                     TimePicker(
                         state = timePickerState,
-                        layoutType = TimePickerLayoutType.Vertical
+                        layoutType = TimePickerLayoutType.Horizontal,
                     )
 
                     Row(

@@ -2,22 +2,28 @@ package eu.pretix.scan.settings.presentation
 
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import eu.pretix.desktop.app.sync.SyncRootService
 import eu.pretix.desktop.app.ui.SelectableValue
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.cache.Version
+import eu.pretix.desktop.webcam.data.VideoSource
 import eu.pretix.scan.settings.data.ConfigurableSettings
 import eu.pretix.scan.settings.data.PrinterSource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 
 class SettingsViewModel(
     private val appConfig: DataStoreConfigStore,
     private val printerSource: PrinterSource,
+    private val videoSource: VideoSource,
     private val appCache: AppCache,
     private val syncRootService: SyncRootService
 ) : ViewModel() {
@@ -30,6 +36,15 @@ class SettingsViewModel(
 
     fun dismissError() {
         _uiState.update { SettingsUiState.Start }
+    }
+
+    private fun loadCameras() {
+        viewModelScope.launch(Dispatchers.IO) {
+            videoSource.getAvailableWebcam().collectLatest { webcams ->
+                val cameraNames = webcams.map { it.name }
+                _form.update { it.copy(cameras = cameraNames) }
+            }
+        }
     }
 
     suspend fun loadSettings() {
@@ -46,9 +61,10 @@ class SettingsViewModel(
             offlineMode = appConfig.offlineMode,
             uiReduceMotion = appConfig.uiReduceMotion,
             uiHideNames = appConfig.uiHideNames,
+            preferredCamera = appConfig.preferredCameraName,
         )
+        loadCameras()
 
-        // check if printer setup is correct
         if (_form.value.printBadges && badgePrinterWasSelected && _form.value.badgePrinter == null) {
             _uiState.update { SettingsUiState.ErrorSelectedPrinterNotAvailable }
         }
@@ -116,6 +132,11 @@ class SettingsViewModel(
 
     suspend fun setOfflineMode(value: Boolean) {
         appConfig.offlineMode = value
+        loadSettings()
+    }
+
+    suspend fun setPreferredCamera(name: String?) {
+        appConfig.preferredCameraName = name ?: VideoSource.NO_CAMERA_NAME
         loadSettings()
     }
 

@@ -21,6 +21,7 @@ import eu.pretix.desktop.app.ui.Logo
 import eu.pretix.desktop.app.ui.asColor
 import eu.pretix.desktop.webcam.data.ImageData
 import eu.pretix.desktop.webcam.data.Video
+import eu.pretix.desktop.webcam.data.VideoSource
 import eu.pretix.desktop.webcam.data.WebCamViewModel
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
@@ -72,13 +73,21 @@ fun WebCam(onPhotoTaken: (String?) -> Unit) {
 
                 Column {
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = {
-                        val path = viewModel.savePhoto()
-                        onPhotoTaken(path)
-                    }) {
-                        Image(
-                            painter = painterResource(Res.drawable.ic_photo_camera_white_24),
-                            contentDescription = stringResource(Res.string.take_a_photo)
+                    if (selectedVideo != null && selectedVideo.name != VideoSource.NO_CAMERA_NAME) {
+                        IconButton(onClick = {
+                            val path = viewModel.savePhoto()
+                            onPhotoTaken(path)
+                        }) {
+                            Image(
+                                painter = painterResource(Res.drawable.ic_photo_camera_white_24),
+                                contentDescription = stringResource(Res.string.take_a_photo)
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = stringResource(Res.string.no_available_cameras),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -105,45 +114,35 @@ fun Toolbar(
         Spacer(Modifier.weight(1f))
 
         if (availableDeviceNames != null) {
-            Box(contentAlignment = Alignment.TopStart) {
-                Button(modifier = Modifier.padding(horizontal = 16.dp), onClick = { expanded = true }) {
-                    Row {
-                        if (selectedDevice != "-") {
-                            Text(selectedDevice ?: "")
-                        } else {
-                            Text(stringResource(Res.string.select_camera))
+            if (availableDeviceNames.isNotEmpty() && selectedDevice != VideoSource.NO_CAMERA_NAME) {
+                Box(contentAlignment = Alignment.TopStart) {
+                    Button(modifier = Modifier.padding(horizontal = 16.dp), onClick = { expanded = true }) {
+                        Row {
+                            Text(selectedDevice ?: stringResource(Res.string.select_camera))
+                            Icon(
+                                Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = CustomColor.White.asColor()
+                            )
                         }
-                        Icon(
-                            Icons.Default.ArrowDropDown,
-                            contentDescription = null,
-                            tint = CustomColor.White.asColor()
-                        )
                     }
-                }
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    availableDeviceNames.forEachIndexed { _, name ->
-                        DropdownMenuItem(
-                            text = {
-                                if (name == "-") {
-                                    Text(stringResource(Res.string.none_camera))
-                                } else {
-                                    Text(name)
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        availableDeviceNames.forEach { name ->
+                            DropdownMenuItem(
+                                text = { Text(name) },
+                                onClick = {
+                                    onDeviceSelect(name)
+                                    expanded = false
+                                },
+                                leadingIcon = {
+                                    if (name == selectedDevice) {
+                                        Icon(Icons.Default.Check, contentDescription = null)
+                                    } else {
+                                        Icon(Icons.Default.Face, contentDescription = null)
+                                    }
                                 }
-                            },
-                            onClick = {
-                                onDeviceSelect(name)
-                                expanded = false
-                            },
-                            leadingIcon = {
-                                if (name == selectedDevice) {
-                                    Icon(Icons.Default.Check, contentDescription = null)
-                                } else if (name == "-") {
-                                    Icon(Icons.Default.Close, contentDescription = null)
-                                } else {
-                                    Icon(Icons.Default.Face, contentDescription = null)
-                                }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
@@ -158,7 +157,7 @@ private fun VideoSurface(
     selectedVideo: Video?,
     availableImageData: ImageData?,
 ) {
-    if (selectedVideo?.name == "-") return
+    if (selectedVideo?.name == VideoSource.NO_CAMERA_NAME) return
     if (availableImageData == null) return
     val imageRatio = availableImageData.image.width.toFloat() / availableImageData.image.height
     Box(
