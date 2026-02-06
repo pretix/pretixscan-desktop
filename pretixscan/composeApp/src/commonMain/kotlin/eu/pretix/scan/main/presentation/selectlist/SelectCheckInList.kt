@@ -11,17 +11,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -98,9 +95,9 @@ fun SelectCheckInList(
                             horizontalArrangement = Arrangement.Start,
                         ) {
 
-                            Checkbox(
-                                checked = item.id == selectedCheckInList?.id,
-                                onCheckedChange = { onSelectCheckInList(item) }
+                            RadioButton(
+                                selected = item.id == selectedCheckInList?.id,
+                                onClick = { onSelectCheckInList(item) }
                             )
 
                             Column {

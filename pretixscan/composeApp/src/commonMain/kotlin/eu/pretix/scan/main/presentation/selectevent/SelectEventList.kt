@@ -10,10 +10,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,14 +20,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import eu.pretix.desktop.app.ui.ListDivider
 import eu.pretix.desktop.app.ui.SelectListRow
 import eu.pretix.libpretixsync.setup.RemoteEvent
-import eu.pretix.scan.tickets.presentation.formatDateForDisplay
+import eu.pretix.scan.main.utils.formatEventDateTimeRange
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
@@ -104,7 +102,7 @@ fun SelectEventList(
                         Row(
                             Modifier
                                 .selectable(
-                                    selected = item.slug in selectedEventSlugs || item.slug == selectedEvent?.slug,
+                                    selected = isEventSelected(item, selectedEvent, selectedEventSlugs, advancedMode),
                                     onClick = { onSelectEvent(item) },
                                     indication = LocalIndication.current,
                                     interactionSource = null,
@@ -114,7 +112,7 @@ fun SelectEventList(
                                 .padding(vertical = 8.dp)
                                 .then(
                                     if (!advancedMode) {
-                                        Modifier.selectableGroup()  // Accessibility for radio group
+                                        Modifier.selectableGroup()
                                     } else {
                                         Modifier
                                     }
@@ -123,20 +121,20 @@ fun SelectEventList(
                             horizontalArrangement = Arrangement.Start,
                         ) {
 
-                            Checkbox(
-                                checked = item.slug in selectedEventSlugs || item.slug == selectedEvent?.slug,
-                                onCheckedChange = { onSelectEvent(item) }
-                            )
+                            if (advancedMode) {
+                                Checkbox(
+                                    checked = isEventSelected(item, selectedEvent, selectedEventSlugs, true),
+                                    onCheckedChange = { onSelectEvent(item) }
+                                )
+                            } else {
+                                RadioButton(
+                                    selected = isEventSelected(item, selectedEvent, selectedEventSlugs, false),
+                                    onClick = { onSelectEvent(item) }
+                                )
+                            }
                             Column {
                                 Text(item.name, fontWeight = FontWeight.Bold)
-                                val startDate = formatEventDate(item.date_from)
-                                val endDate = if (item.date_to != null) formatEventDate(item.date_to) else null
-                                val dateText = if (endDate != null && endDate.isNotEmpty()) {
-                                    "$startDate - $endDate"
-                                } else {
-                                    startDate
-                                }
-                                Text(dateText)
+                                Text(formatEventDateTimeRange(item.date_from, item.date_to))
                             }
                         }
                         ListDivider(index, list.lastIndex)
@@ -155,29 +153,16 @@ fun SelectEventList(
 }
 
 
-/**
- * Safely formats a Joda Time DateTime for display using locale-aware formatting.
- * Falls back to raw date string if formatting fails.
- */
-private fun formatEventDate(dateTime: org.joda.time.DateTime?): String {
-    if (dateTime == null) return ""
-
-    return try {
-        // Convert to LocalDate and get yyyy-MM-dd format
-        val dateString = dateTime.toLocalDate().toString()  // This produces "yyyy-MM-dd"
-        // Use existing formatter which handles locale-aware display
-        val formatted = formatDateForDisplay(dateString)
-        if (formatted.isNotEmpty() && formatted != dateString) {
-            formatted
-        } else {
-            dateString  // Fallback to ISO format if locale formatting failed
-        }
-    } catch (e: Exception) {
-        // Ultimate fallback
-        try {
-            dateTime.toLocalDate().toString()
-        } catch (e2: Exception) {
-            dateTime.toString()
-        }
+internal fun isEventSelected(
+    item: RemoteEvent,
+    selectedEvent: RemoteEvent?,
+    selectedSlugs: Set<String>,
+    advancedMode: Boolean
+): Boolean {
+    return if (advancedMode) {
+        item.slug in selectedSlugs
+    } else {
+        item.slug == selectedEvent?.slug &&
+                item.subevent_id == selectedEvent.subevent_id
     }
 }

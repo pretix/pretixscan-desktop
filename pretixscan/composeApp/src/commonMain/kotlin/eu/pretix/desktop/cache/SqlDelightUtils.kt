@@ -35,6 +35,7 @@ fun createSyncDatabase(
             price_after_voucherAdapter = bigDecimalAdapter,
             tax_rateAdapter = bigDecimalAdapter,
             tax_valueAdapter = bigDecimalAdapter,
+            line_price_grossAdapter = bigDecimalAdapter,
         ),
         ReceiptAdapter = Receipt.Adapter(
             datetime_closedAdapter = dateAdapter,
@@ -48,5 +49,9 @@ fun createSyncDatabase(
             date_toAdapter = dateAdapter,
         ),
         QueuedCheckInAdapter = QueuedCheckIn.Adapter(datetimeAdapter = dateAdapter),
+        DiscountAdapter = Discount.Adapter(
+            available_fromAdapter = dateAdapter,
+            available_untilAdapter = dateAdapter,
+        ),
     )
 }
