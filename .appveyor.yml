@@ -1,0 +1,7 @@
+build: off
+
+branches:
+  except:
+    - vnext-kmp
+
+skip_branch_with_pr: true
