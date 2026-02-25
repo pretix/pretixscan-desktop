@@ -3,7 +3,10 @@ package eu.pretix.scan.main.presentation.selectlist
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,25 +41,14 @@ fun SelectCheckInListDialog(
         // header
         Column(
             modifier = Modifier
-                .background(CustomColor.BrandDark.asColor()),
+                .fillMaxWidth()
+                .background(CustomColor.BrandDark.asColor())
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-            Row(
-                modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)).fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(eventForSelection.name, color = Color.White, fontWeight = FontWeight.Bold)
-            }
-
-            Row(
-                modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(Res.string.operation_select_checkinlist), color = Color.White)
-            }
+            Text(eventForSelection.name, color = Color.White, fontWeight = FontWeight.Bold)
+            Text(stringResource(Res.string.operation_select_checkinlist), color = Color.White)
         }
 
         // content list
