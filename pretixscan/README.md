@@ -46,6 +46,9 @@ By default, packages are created under `pretixscan/composeApp/build/compose/bina
   found [here](https://kotlinlang.org/docs/multiplatform/compose-localize-strings.html#what-s-next).
 - Base locale is stored at `pretixscan/composeApp/src/commonMain/composeResources/values/strings.xml`
 
+To test a locale, you can start the application by adding the locale as a VM option:
+`-Duser.language=de -Duser.region=DE`
+
 ## Acknowledgements
 
 * Webcam support implementation was inspired by [akexorcist/backdrop](https://github.com/akexorcist/backdrop)
