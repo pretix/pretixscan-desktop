@@ -238,6 +238,10 @@ class DataStoreConfigStore(
         get() = runBlocking { dataStoreConfig.getSyncAuto() }
         set(value) = runBlocking { dataStoreConfig.setSyncAuto(value) }
 
+    var unpaidAsk: Boolean
+        get() = runBlocking { dataStoreConfig.getUnpaidAsk() }
+        set(value) = runBlocking { dataStoreConfig.setUnpaidAsk(value) }
+
     // Hardware Settings
     var preferredCameraName: String
         get() = runBlocking { dataStoreConfig.getPreferredCameraName() }

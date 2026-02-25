@@ -118,12 +118,14 @@ class TicketCodeHandler(
         val startedAt = System.currentTimeMillis()
 
         try {
+            val effectiveIgnoreUnpaid = ignoreUnpaid || !conf.unpaidAsk
+
             val checkResult = checkProvider.check(
                 conf.eventSelectionToMap(),
                 ticketid = rawResult,
                 source_type = sourceType,
                 answers = answers,
-                ignore_unpaid = ignoreUnpaid,
+                ignore_unpaid = effectiveIgnoreUnpaid,
                 with_badge_data = withBadgeData,
                 scanType,
                 allowQuestions = allowQuestions

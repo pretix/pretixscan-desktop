@@ -82,6 +82,22 @@ fun SettingsScreen(
                                     )
                                 }
                             }
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    CheckboxWithLabel(
+                                        label = stringResource(Res.string.pref_unpaid_ask),
+                                        description = stringResource(Res.string.pref_unpaid_ask_summary),
+                                        checked = form.unpaidAsk,
+                                        onCheckedChange = {
+                                            coroutineScope.launch {
+                                                viewModel.setUnpaidAsk(it)
+                                            }
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
                     item {

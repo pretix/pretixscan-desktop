@@ -78,6 +78,7 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
         val PRINT_BADGES = booleanPreferencesKey("print_badges")
         val SYNC_ORDERS = booleanPreferencesKey("sync_orders")
         val SYNC_AUTO = booleanPreferencesKey("sync_auto")
+        val UNPAID_ASK = booleanPreferencesKey("unpaid_ask")
 
         // Legacy single-event storage (coexists with eventSelections for backward compatibility)
         val EVENT_SLUG = stringPreferencesKey("event_slug")
@@ -421,6 +422,13 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
 
     suspend fun setSyncAuto(value: Boolean) {
         dataStore.edit { it[PreferenceKeys.SYNC_AUTO] = value }
+    }
+
+    suspend fun getUnpaidAsk(): Boolean =
+        dataStore.data.first()[PreferenceKeys.UNPAID_ASK] ?: true
+
+    suspend fun setUnpaidAsk(value: Boolean) {
+        dataStore.edit { it[PreferenceKeys.UNPAID_ASK] = value }
     }
 
     // ============================================================

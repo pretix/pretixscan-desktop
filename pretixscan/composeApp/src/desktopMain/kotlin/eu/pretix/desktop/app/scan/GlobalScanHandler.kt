@@ -2,7 +2,6 @@ package eu.pretix.desktop.app.scan
 
 import eu.pretix.scan.main.presentation.MainUiState
 import eu.pretix.scan.main.presentation.MainUiStateData
-import eu.pretix.scan.tickets.data.requiresUserInteraction
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
 import java.awt.KeyEventDispatcher

@@ -2,6 +2,7 @@ package eu.pretix.scan.tickets.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -10,13 +11,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import com.composables.core.*
 import eu.pretix.desktop.app.ui.ErrorDialog
+import eu.pretix.scan.tickets.data.DismissBehavior
 import eu.pretix.scan.tickets.data.ResultState
-import eu.pretix.scan.tickets.data.isAutoDismissible
+import eu.pretix.scan.tickets.data.dismissBehavior
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,21 +48,22 @@ fun TicketHandlingDialog(
     val coroutineScope = rememberCoroutineScope()
     val dialogState = rememberDialogState(initiallyVisible = true)
     var remainingTimeProgress by remember { mutableStateOf(1.0f) }
+    val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(secret, scanTimestamp) {
         viewModel.resetTicketHandlingState()
         viewModel.handleTicket(secret)
     }
 
-    // Auto-dismiss countdown for successful scans (30 seconds)
     LaunchedEffect(uiState.resultState) {
         if (uiState.resultState != ResultState.EMPTY && uiState.resultState != ResultState.LOADING) {
+            focusRequester.requestFocus()
             onResultStateChanged(uiState.resultState)
         }
 
-        if (uiState.resultState.isAutoDismissible()) {
-            val totalDuration = 30000L // 30 seconds in milliseconds
-            val updateInterval = 100L // Update every 100ms for smooth animation
+        if (uiState.resultState.dismissBehavior() == DismissBehavior.AutoDismiss) {
+            val totalDuration = 30000L
+            val updateInterval = 100L
             var elapsed = 0L
 
             while (elapsed < totalDuration) {
@@ -67,11 +72,9 @@ fun TicketHandlingDialog(
                 remainingTimeProgress = 1.0f - (elapsed.toFloat() / totalDuration.toFloat())
             }
 
-            // Time's up, dismiss the dialog
             log.info("AutoScan: 30s auto-dismiss timer expired")
             onDismiss()
         } else {
-            // Reset progress for non-success states
             remainingTimeProgress = 1.0f
         }
     }
@@ -99,16 +102,22 @@ fun TicketHandlingDialog(
                 .clip(RoundedCornerShape(12.dp))
                 .border(1.dp, Color(0xFFE4E4E4), RoundedCornerShape(12.dp))
                 .background(Color.White)
+                .focusRequester(focusRequester)
+                .focusable()
                 .onPreviewKeyEvent { keyEvent ->
-                    // Handle Space key to manually dismiss dialog
-                    // Enter key is NOT handled here to allow continuous scanning
-                    if (keyEvent.type == KeyEventType.KeyDown &&
-                        keyEvent.key == Key.Spacebar) {
-                        log.info("AutoScan: Space key pressed, dismissing dialog")
-                        onDismiss()
-                        true  // Consume Space key
-                    } else {
-                        false  // Let other keys (including Enter) propagate for continuous scanning
+                    if (keyEvent.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                    when (uiState.resultState.dismissBehavior()) {
+                        DismissBehavior.AutoDismiss -> {
+                            if (keyEvent.key == Key.Spacebar || keyEvent.key == Key.Escape) {
+                                onDismiss(); true
+                            } else false
+                        }
+                        DismissBehavior.RequiresUserInteraction -> {
+                            if (keyEvent.key == Key.Escape) {
+                                onDismiss(); true
+                            } else false
+                        }
+                        DismissBehavior.Transient -> false
                     }
                 },
         ) {

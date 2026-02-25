@@ -59,6 +59,7 @@ class SettingsViewModel(
             syncAuto = appConfig.syncAuto,
             playSounds = appConfig.playSound,
             offlineMode = appConfig.offlineMode,
+            unpaidAsk = appConfig.unpaidAsk,
             uiReduceMotion = appConfig.uiReduceMotion,
             uiHideNames = appConfig.uiHideNames,
             preferredCamera = appConfig.preferredCameraName,
@@ -132,6 +133,11 @@ class SettingsViewModel(
 
     suspend fun setOfflineMode(value: Boolean) {
         appConfig.offlineMode = value
+        loadSettings()
+    }
+
+    suspend fun setUnpaidAsk(value: Boolean) {
+        appConfig.unpaidAsk = value
         loadSettings()
     }
 
