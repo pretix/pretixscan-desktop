@@ -24,6 +24,7 @@ fun FieldTextInput(
     label: String? = null,
     value: String,
     maxLines: Int = 1,
+    minLines: Int = 1,
     onValueChange: (String) -> Unit,
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
@@ -40,6 +41,7 @@ fun FieldTextInput(
             if (enabled) onValueChange(it)
         },
         maxLines = maxLines,
+        minLines = minLines,
         singleLine = maxLines == 1,
         modifier = modifier,
     ) {

@@ -149,6 +149,7 @@ fun QuestionsDialogView(
                                     value = field.value ?: "",
                                     onValueChange = { viewModel.updateAnswer(field.id, it) },
                                     maxLines = 2,
+                                    minLines = 2,
                                     label = field.label,
                                     required = field.required
                                 )
