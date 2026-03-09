@@ -113,7 +113,7 @@ class TicketCodeHandler(
 
         val withBadgeData = conf.autoPrintBadges
 
-        val allowQuestions = true
+        val allowQuestions = answers.isNullOrEmpty()
 
         val startedAt = System.currentTimeMillis()
 

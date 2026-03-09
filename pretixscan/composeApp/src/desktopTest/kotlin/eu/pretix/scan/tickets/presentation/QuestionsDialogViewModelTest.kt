@@ -687,6 +687,171 @@ class QuestionsDialogViewModelTest {
         assertNull(formField.values, "values should be null when no answer is provided, not fall back to dependencyValues")
     }
 
+    @Test
+    fun `validateForConfirm returns true when non-required photo is empty`() = runTest {
+        val photoQuestion = createPhotoQuestion(required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val isValid = viewModel.validateForConfirm()
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `validateForConfirm returns false when required photo is empty`() = runTest {
+        val photoQuestion = createPhotoQuestion(required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val isValid = viewModel.validateForConfirm()
+        assertFalse(isValid)
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
+
+    @Test
+    fun `validateForConfirm returns true when required photo is provided`() = runTest {
+        val photoQuestion = createPhotoQuestion(required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "/tmp/photo.jpg")
+
+        val isValid = viewModel.validateForConfirm()
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `updateAnswer formats file path with file protocol`() = runTest {
+        val photoQuestion = createPhotoQuestion()
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "/tmp/photo.jpg")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals("file:///tmp/photo.jpg", formField.value)
+    }
+
+    @Test
+    fun `updateAnswer preserves URL for photo answer`() = runTest {
+        val photoQuestion = createPhotoQuestion()
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "https://example.com/photo.jpg")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals("https://example.com/photo.jpg", formField.value)
+    }
+
+    @Test
+    fun `deleting photo answer sets value to null`() = runTest {
+        val photoQuestion = createPhotoQuestion()
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "/tmp/photo.jpg")
+        viewModel.updateAnswer(1L, null)
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.value)
+    }
+
+    @Test
+    fun `non-required photo does not block validation of other fields`() = runTest {
+        val textQuestion = Question(
+            id = 2L,
+            serverId = 2L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Name",
+            identifier = "name",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.T
+        )
+        val photoQuestion = createPhotoQuestion(serverId = 3L, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion, photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(2L, "John")
+
+        val isValid = viewModel.validateForConfirm()
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `getCurrentAnswers returns empty list for unanswered non-required photo`() = runTest {
+        val photoQuestion = createPhotoQuestion(required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val answers = viewModel.getCurrentAnswers(data)
+        assertTrue(answers.isEmpty())
+    }
+
+    @Test
+    fun `pre-filled photo answer is preserved in form`() = runTest {
+        val photoQuestion = createPhotoQuestion(required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = mapOf(1L to "https://example.com/photo.jpg")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals("https://example.com/photo.jpg", formField.value)
+    }
+
     private fun createTestQuestion() = Question(
         id = 1L,
         serverId = 1L,
@@ -698,5 +863,21 @@ class QuestionsDialogViewModelTest {
         askDuringCheckIn = true,
         showDuringCheckIn = true,
         type = QuestionType.TEL
+    )
+
+    private fun createPhotoQuestion(
+        serverId: Long = 1L,
+        required: Boolean = false
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Photo",
+        identifier = "photo",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = QuestionType.F
     )
 }

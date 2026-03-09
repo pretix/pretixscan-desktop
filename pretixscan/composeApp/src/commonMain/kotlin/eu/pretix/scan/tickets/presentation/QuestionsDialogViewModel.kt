@@ -47,7 +47,7 @@ class QuestionsDialogViewModel(
 
         return data.requiredQuestions
             .filter { question -> values.any { it.id == question.serverId } } // only return answers for supported questions
-            .map { question ->
+            .mapNotNull { question ->
                 val formValue = values.first { it.id == question.serverId }
                 when (formValue.fieldType) {
                     QuestionType.C -> {
@@ -59,11 +59,19 @@ class QuestionsDialogViewModel(
                         Answer(question = question, value = formattedValue, options = formValue.options)
                     }
 
+                    QuestionType.F -> {
+                        val value = formValue.value
+                        if (value.isNullOrBlank()) {
+                            null
+                        } else {
+                            Answer(question = question, value = value)
+                        }
+                    }
+
                     QuestionType.N,
                     QuestionType.S,
                     QuestionType.T,
                     QuestionType.B,
-                    QuestionType.F,
                     QuestionType.D,
                     QuestionType.H,
                     QuestionType.W,
