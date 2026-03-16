@@ -107,8 +107,6 @@ class QuestionsDialogViewModel(
             when (it.type) {
                 QuestionType.N,
                 QuestionType.EMAIL,
-                QuestionType.S,
-                QuestionType.T,
                 QuestionType.F,
                 QuestionType.B -> {
                     QuestionFormField(
@@ -117,6 +115,18 @@ class QuestionsDialogViewModel(
                         startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
                         it.required
+                    )
+                }
+
+                QuestionType.S,
+                QuestionType.T -> {
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        startingAnswerValue(it, data.answers[it.serverId]),
+                        it.type,
+                        it.required,
+                        maxLength = data.questionMaxLengths[it.serverId]
                     )
                 }
 
@@ -316,6 +326,18 @@ class QuestionsDialogViewModel(
                     }
                 }
 
+                QuestionType.S,
+                QuestionType.T -> {
+                    val value = it.value
+                    if (value.isNullOrBlank() && it.required) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else if (!value.isNullOrBlank() && it.maxLength != null && value.length > it.maxLength) {
+                        it.copy(validation = FieldValidationState.INVALID)
+                    } else {
+                        it.copy(validation = null)
+                    }
+                }
+
                 else -> {
                     if (it.required && it.value.isNullOrBlank()) {
                         it.copy(validation = FieldValidationState.MISSING)
@@ -385,6 +407,7 @@ data class QuestionFormField(
     val keyValueOptions: List<SelectableValue>? = null,
     val options: List<QuestionOption> = emptyList(),
     var validation: FieldValidationState? = null,
+    val maxLength: Int? = null,
     // Extra value used by the UI for form state which isn't part of the pretixsync model
     var uiExtra: String? = null
 )

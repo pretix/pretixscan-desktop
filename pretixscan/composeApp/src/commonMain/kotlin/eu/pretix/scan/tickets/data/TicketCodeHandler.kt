@@ -16,6 +16,7 @@ import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.models.db.toModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import pretixscan.composeapp.generated.resources.*
@@ -56,6 +57,16 @@ class TicketCodeHandler(
             }
         }
 
+        val questionMaxLengths = mutableMapOf<Long, Int>()
+        checkResult.requiredAnswers?.forEach {
+            try {
+                val jsonData = JSONObject(it.question.json_data)
+                if (jsonData.has("valid_string_length_max") && !jsonData.isNull("valid_string_length_max")) {
+                    questionMaxLengths[it.question.server_id] = jsonData.getInt("valid_string_length_max")
+                }
+            } catch (_: Exception) { }
+        }
+
         val badgeLayout = layoutFetcher.getForItemAtEvent(checkResult.positionId, checkResult.eventSlug)
         val canPrintBadge =
             conf.printBadges && checkResult.scanType != TicketCheckProvider.CheckInType.EXIT && checkResult.position != null && badgeLayout != null
@@ -79,7 +90,8 @@ class TicketCodeHandler(
             answers = questionValues,
             isPrintable = canPrintBadge,
             badgeLayout = badgeLayout,
-            position = checkResult.position
+            position = checkResult.position,
+            questionMaxLengths = questionMaxLengths
         )
 
         return resultState

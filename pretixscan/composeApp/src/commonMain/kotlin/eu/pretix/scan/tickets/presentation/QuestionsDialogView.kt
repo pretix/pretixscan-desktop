@@ -124,11 +124,24 @@ fun QuestionsDialogView(
                                 },
                                 label = field.label,
                                 maxLines = 1,
-                                required = field.required
+                                required = field.required,
+                                validation = field.validation
                             )
                         }
 
-                        QuestionType.EMAIL,
+                        QuestionType.EMAIL -> {
+                            FieldTextInput(
+                                value = field.value ?: "",
+                                onValueChange = { newValue ->
+                                    viewModel.updateAnswer(field.id, newValue)
+                                },
+                                label = field.label,
+                                maxLines = 1,
+                                required = field.required,
+                                validation = field.validation
+                            )
+                        }
+
                         QuestionType.S -> {
                             FieldTextInput(
                                 value = field.value ?: "",
@@ -137,7 +150,9 @@ fun QuestionsDialogView(
                                 },
                                 label = field.label,
                                 maxLines = 1,
-                                required = field.required
+                                required = field.required,
+                                validation = field.validation,
+                                maxLength = field.maxLength
                             )
                         }
 
@@ -151,7 +166,10 @@ fun QuestionsDialogView(
                                     maxLines = 2,
                                     minLines = 2,
                                     label = field.label,
-                                    required = field.required
+                                    required = field.required,
+                                    validation = field.validation,
+                                    maxLength = field.maxLength,
+                                    showLimitCounter = true
                                 )
                             }
                         }

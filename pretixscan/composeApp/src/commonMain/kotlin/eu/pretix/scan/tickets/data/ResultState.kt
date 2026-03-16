@@ -67,5 +67,6 @@ data class ResultStateData(
     val answers: Map<Long, String> = emptyMap(),
     val isPrintable: Boolean = false,
     val badgeLayout: BadgeLayout? = null,
-    val position: JSONObject? = null
+    val position: JSONObject? = null,
+    val questionMaxLengths: Map<Long, Int> = emptyMap()
 )

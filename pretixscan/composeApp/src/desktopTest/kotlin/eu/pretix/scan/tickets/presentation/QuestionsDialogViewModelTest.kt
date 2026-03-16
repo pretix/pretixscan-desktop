@@ -852,6 +852,133 @@ class QuestionsDialogViewModelTest {
         assertEquals("https://example.com/photo.jpg", formField.value)
     }
 
+    @Test
+    fun `text exceeding maxLength is marked INVALID on validation`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 1L, type = QuestionType.S, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = emptyMap(),
+            questionMaxLengths = mapOf(1L to 10)
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "this exceeds the limit")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `text within maxLength passes validation`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 2L, type = QuestionType.T, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = emptyMap(),
+            questionMaxLengths = mapOf(2L to 50)
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(2L, "short")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 2L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `null maxLength means no length restriction`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 3L, type = QuestionType.S, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(3L, "a".repeat(1000))
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 3L }
+        assertNull(formField.validation)
+        assertNull(formField.maxLength)
+    }
+
+    @Test
+    fun `form field correctly receives maxLength from ResultStateData`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 4L, type = QuestionType.T, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = emptyMap(),
+            questionMaxLengths = mapOf(4L to 100)
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 4L }
+        assertEquals(100, formField.maxLength)
+    }
+
+    @Test
+    fun `pre-filled value exceeding maxLength fails validation`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 5L, type = QuestionType.S, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = mapOf(5L to "this is way too long for the limit"),
+            questionMaxLengths = mapOf(5L to 5)
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 5L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `blank optional text with maxLength does not trigger INVALID`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 6L, type = QuestionType.T, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = emptyMap(),
+            questionMaxLengths = mapOf(6L to 10)
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 6L }
+        assertNull(formField.validation)
+    }
+
+    private fun createTextQuestion(
+        serverId: Long,
+        type: QuestionType = QuestionType.S,
+        required: Boolean = false
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Text Question",
+        identifier = "text-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = type
+    )
+
     private fun createTestQuestion() = Question(
         id = 1L,
         serverId = 1L,

@@ -19,6 +19,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.TextField
 import com.composeunstyled.TextInput
@@ -39,6 +40,8 @@ fun FieldTextInput(
     enabled: Boolean = true,
     required: Boolean = false,
     validation: FieldValidationState? = null,
+    maxLength: Int? = null,
+    showLimitCounter: Boolean = false,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
@@ -51,6 +54,7 @@ fun FieldTextInput(
         onValueChange = {
             if (!enabled) return@TextField
             if (isMultiline && it.count { c -> c == '\n' } >= maxLines) return@TextField
+            if (maxLength != null && it.length > maxLength) return@TextField
             onValueChange(it)
         },
         maxLines = maxLines,
@@ -88,12 +92,21 @@ fun FieldTextInput(
             trailing = trailing
         )
 
+        if (maxLength != null && showLimitCounter) {
+            Text(
+                "${value.length}/$maxLength",
+                color = if (value.length >= maxLength) CustomColor.BrandRed.asColor() else CustomColor.BrandDark.asColor(),
+                textAlign = TextAlign.End,
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+            )
+        }
+
         if (validation != null) {
             when (validation) {
                 FieldValidationState.INVALID -> {
                     Text(
                         stringResource(Res.string.question_input_invalid),
-                        color = Color.Red,
+                        color = CustomColor.BrandRed.asColor(),
                         modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
                     )
                 }
@@ -101,7 +114,7 @@ fun FieldTextInput(
                 FieldValidationState.MISSING -> {
                     Text(
                         stringResource(Res.string.question_input_required),
-                        color = Color.Red,
+                        color = CustomColor.BrandRed.asColor(),
                         modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
                     )
                 }
