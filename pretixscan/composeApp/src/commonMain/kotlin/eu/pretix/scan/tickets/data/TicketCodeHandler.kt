@@ -58,11 +58,19 @@ class TicketCodeHandler(
         }
 
         val questionMaxLengths = mutableMapOf<Long, Int>()
+        val questionNumberMin = mutableMapOf<Long, String>()
+        val questionNumberMax = mutableMapOf<Long, String>()
         checkResult.requiredAnswers?.forEach {
             try {
                 val jsonData = JSONObject(it.question.json_data)
                 if (jsonData.has("valid_string_length_max") && !jsonData.isNull("valid_string_length_max")) {
                     questionMaxLengths[it.question.server_id] = jsonData.getInt("valid_string_length_max")
+                }
+                if (jsonData.has("valid_number_min") && !jsonData.isNull("valid_number_min")) {
+                    questionNumberMin[it.question.server_id] = jsonData.getString("valid_number_min")
+                }
+                if (jsonData.has("valid_number_max") && !jsonData.isNull("valid_number_max")) {
+                    questionNumberMax[it.question.server_id] = jsonData.getString("valid_number_max")
                 }
             } catch (_: Exception) { }
         }
@@ -91,7 +99,9 @@ class TicketCodeHandler(
             isPrintable = canPrintBadge,
             badgeLayout = badgeLayout,
             position = checkResult.position,
-            questionMaxLengths = questionMaxLengths
+            questionMaxLengths = questionMaxLengths,
+            questionNumberMin = questionNumberMin,
+            questionNumberMax = questionNumberMax
         )
 
         return resultState

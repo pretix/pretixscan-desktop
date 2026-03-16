@@ -962,6 +962,160 @@ class QuestionsDialogViewModelTest {
         assertNull(formField.validation)
     }
 
+    @Test
+    fun `number exceeding max is marked INVALID on input`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMax = mapOf(1L to "10")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "11")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `number below min is marked INVALID on input`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMin = mapOf(1L to "5")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "3")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `number within range has no validation error`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMin = mapOf(1L to "1"),
+            questionNumberMax = mapOf(1L to "100")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "50")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `number range validated on submit`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMin = mapOf(1L to "10"),
+            questionNumberMax = mapOf(1L to "20")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "25")
+        val isValid = viewModel.validateForConfirm()
+
+        assertFalse(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `empty optional number with range constraints passes validation`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMin = mapOf(1L to "5"),
+            questionNumberMax = mapOf(1L to "10")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        val isValid = viewModel.validateForConfirm()
+
+        assertTrue(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `decimal input is accepted for number questions`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMin = mapOf(1L to "0"),
+            questionNumberMax = mapOf(1L to "100")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "3.14")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals("3.14", formField.value)
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `unparseable intermediate value like dash passes during input but fails on submit`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "-")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals("-", formField.value)
+
+        val isValid = viewModel.validateForConfirm()
+        assertFalse(isValid)
+        val formFieldAfterSubmit = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formFieldAfterSubmit.validation)
+    }
+
+    private fun createNumberQuestion(
+        serverId: Long = 1L,
+        required: Boolean = false
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Number",
+        identifier = "number-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = QuestionType.N
+    )
+
     private fun createTextQuestion(
         serverId: Long,
         type: QuestionType = QuestionType.S,

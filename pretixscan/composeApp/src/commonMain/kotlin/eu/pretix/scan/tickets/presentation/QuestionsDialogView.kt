@@ -36,6 +36,9 @@ import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.cancel
 import pretixscan.composeapp.generated.resources.cont
+import pretixscan.composeapp.generated.resources.question_input_number_out_of_range
+import pretixscan.composeapp.generated.resources.question_input_number_too_high
+import pretixscan.composeapp.generated.resources.question_input_number_too_low
 import pretixscan.composeapp.generated.resources.yes
 
 
@@ -117,6 +120,15 @@ fun QuestionsDialogView(
                 SelectListRow {
                     when (field.fieldType) {
                         QuestionType.N -> {
+                            val rangeMessage = when {
+                                field.numberMin != null && field.numberMax != null ->
+                                    stringResource(Res.string.question_input_number_out_of_range, field.numberMin.formatNumber(), field.numberMax.formatNumber())
+                                field.numberMin != null ->
+                                    stringResource(Res.string.question_input_number_too_low, field.numberMin.formatNumber())
+                                field.numberMax != null ->
+                                    stringResource(Res.string.question_input_number_too_high, field.numberMax.formatNumber())
+                                else -> null
+                            }
                             FieldTextInput(
                                 value = field.value ?: "",
                                 onValueChange = { newValue ->
@@ -125,7 +137,8 @@ fun QuestionsDialogView(
                                 label = field.label,
                                 maxLines = 1,
                                 required = field.required,
-                                validation = field.validation
+                                validation = field.validation,
+                                validationMessage = rangeMessage
                             )
                         }
 
@@ -385,3 +398,10 @@ fun QuestionsDialogView(
         QuestionPhoto(onDismiss = { viewModel.dismissModal(it) })
     }
 }
+
+private fun String.formatNumber(): String =
+    try {
+        java.math.BigDecimal(this).stripTrailingZeros().toPlainString()
+    } catch (_: NumberFormatException) {
+        this
+    }

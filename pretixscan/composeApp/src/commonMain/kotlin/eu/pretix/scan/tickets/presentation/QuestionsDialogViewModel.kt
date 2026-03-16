@@ -105,7 +105,18 @@ class QuestionsDialogViewModel(
 
         val formFields: List<QuestionFormField> = data.requiredQuestions.map {
             when (it.type) {
-                QuestionType.N,
+                QuestionType.N -> {
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        startingAnswerValue(it, data.answers[it.serverId]),
+                        it.type,
+                        it.required,
+                        numberMin = data.questionNumberMin[it.serverId],
+                        numberMax = data.questionNumberMax[it.serverId]
+                    )
+                }
+
                 QuestionType.EMAIL,
                 QuestionType.F,
                 QuestionType.B -> {
@@ -260,8 +271,9 @@ class QuestionsDialogViewModel(
                     }
 
                     QuestionType.N -> {
-                        if (answer != null && answer.all { it.isDigit() }) {
-                            field.copy(value = answer)
+                        if (answer.isNullOrEmpty() || answer.matches(Regex("^-?\\d*\\.?\\d*$"))) {
+                            val validation = validateNumberRange(answer, field.numberMin, field.numberMax)
+                            field.copy(value = answer, validation = validation)
                         } else {
                             field
                         }
@@ -338,6 +350,18 @@ class QuestionsDialogViewModel(
                     }
                 }
 
+                QuestionType.N -> {
+                    val value = it.value
+                    if (it.required && value.isNullOrBlank()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else if (!value.isNullOrBlank() && value.toBigDecimalOrNull() == null) {
+                        it.copy(validation = FieldValidationState.INVALID)
+                    } else {
+                        val validation = validateNumberRange(value, it.numberMin, it.numberMax)
+                        it.copy(validation = validation)
+                    }
+                }
+
                 else -> {
                     if (it.required && it.value.isNullOrBlank()) {
                         it.copy(validation = FieldValidationState.MISSING)
@@ -386,6 +410,20 @@ class QuestionsDialogViewModel(
         return null
     }
 
+    private fun validateNumberRange(value: String?, min: String?, max: String?): FieldValidationState? {
+        if (value.isNullOrEmpty()) return null
+        val number = value.toBigDecimalOrNull() ?: return null
+        if (min != null) {
+            val minVal = min.toBigDecimalOrNull()
+            if (minVal != null && number < minVal) return FieldValidationState.INVALID
+        }
+        if (max != null) {
+            val maxVal = max.toBigDecimalOrNull()
+            if (maxVal != null && number > maxVal) return FieldValidationState.INVALID
+        }
+        return null
+    }
+
     private fun formatFileAnswer(answer: String?): String? {
         return when {
             answer == null -> null
@@ -408,6 +446,8 @@ data class QuestionFormField(
     val options: List<QuestionOption> = emptyList(),
     var validation: FieldValidationState? = null,
     val maxLength: Int? = null,
+    val numberMin: String? = null,
+    val numberMax: String? = null,
     // Extra value used by the UI for form state which isn't part of the pretixsync model
     var uiExtra: String? = null
 )

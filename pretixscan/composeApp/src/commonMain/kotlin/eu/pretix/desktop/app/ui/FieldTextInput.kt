@@ -40,6 +40,7 @@ fun FieldTextInput(
     enabled: Boolean = true,
     required: Boolean = false,
     validation: FieldValidationState? = null,
+    validationMessage: String? = null,
     maxLength: Int? = null,
     showLimitCounter: Boolean = false,
     modifier: Modifier = Modifier,
@@ -105,7 +106,7 @@ fun FieldTextInput(
             when (validation) {
                 FieldValidationState.INVALID -> {
                     Text(
-                        stringResource(Res.string.question_input_invalid),
+                        validationMessage ?: stringResource(Res.string.question_input_invalid),
                         color = CustomColor.BrandRed.asColor(),
                         modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
                     )
