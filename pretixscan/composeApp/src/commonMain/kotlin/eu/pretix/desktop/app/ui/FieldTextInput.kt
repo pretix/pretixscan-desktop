@@ -9,7 +9,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.TextField
@@ -34,16 +42,35 @@ fun FieldTextInput(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
+    val isMultiline = maxLines > 1
+    val focusManager = LocalFocusManager.current
+
     TextField(
         value = value,
         editable = enabled,
         onValueChange = {
-            if (enabled) onValueChange(it)
+            if (!enabled) return@TextField
+            if (isMultiline && it.count { c -> c == '\n' } >= maxLines) return@TextField
+            onValueChange(it)
         },
         maxLines = maxLines,
         minLines = minLines,
-        singleLine = maxLines == 1,
-        modifier = modifier,
+        singleLine = !isMultiline,
+        modifier = modifier.then(
+            if (isMultiline) {
+                Modifier.onPreviewKeyEvent { event ->
+                    if (event.key == Key.Tab && event.type == KeyEventType.KeyDown) {
+                        val direction = if (event.isShiftPressed) FocusDirection.Previous else FocusDirection.Next
+                        focusManager.moveFocus(direction)
+                        true
+                    } else {
+                        false
+                    }
+                }
+            } else {
+                Modifier
+            }
+        ),
     ) {
         if (label != null) {
             RequiredTextLabel(label = label, required = required, fontWeight = FontWeight.SemiBold)
@@ -54,7 +81,7 @@ fun FieldTextInput(
             .border(1.dp, Color(0xFFBDBDBD), RoundedCornerShape(8.dp))
             .background(if (enabled) Color.White else Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
             .padding(horizontal = 16.dp, vertical = 12.dp)
-        
+
         TextInput(
             inputModifier,
             leading = leading,
