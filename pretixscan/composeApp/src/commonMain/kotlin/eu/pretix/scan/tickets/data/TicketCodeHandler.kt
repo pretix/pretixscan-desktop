@@ -60,6 +60,10 @@ class TicketCodeHandler(
         val questionMaxLengths = mutableMapOf<Long, Int>()
         val questionNumberMin = mutableMapOf<Long, String>()
         val questionNumberMax = mutableMapOf<Long, String>()
+        val questionDateMin = mutableMapOf<Long, String>()
+        val questionDateMax = mutableMapOf<Long, String>()
+        val questionDateTimeMin = mutableMapOf<Long, String>()
+        val questionDateTimeMax = mutableMapOf<Long, String>()
         checkResult.requiredAnswers?.forEach {
             try {
                 val jsonData = JSONObject(it.question.json_data)
@@ -71,6 +75,18 @@ class TicketCodeHandler(
                 }
                 if (jsonData.has("valid_number_max") && !jsonData.isNull("valid_number_max")) {
                     questionNumberMax[it.question.server_id] = jsonData.getString("valid_number_max")
+                }
+                if (jsonData.has("valid_date_min") && !jsonData.isNull("valid_date_min")) {
+                    questionDateMin[it.question.server_id] = jsonData.getString("valid_date_min")
+                }
+                if (jsonData.has("valid_date_max") && !jsonData.isNull("valid_date_max")) {
+                    questionDateMax[it.question.server_id] = jsonData.getString("valid_date_max")
+                }
+                if (jsonData.has("valid_datetime_min") && !jsonData.isNull("valid_datetime_min")) {
+                    questionDateTimeMin[it.question.server_id] = jsonData.getString("valid_datetime_min")
+                }
+                if (jsonData.has("valid_datetime_max") && !jsonData.isNull("valid_datetime_max")) {
+                    questionDateTimeMax[it.question.server_id] = jsonData.getString("valid_datetime_max")
                 }
             } catch (_: Exception) { }
         }
@@ -101,7 +117,11 @@ class TicketCodeHandler(
             position = checkResult.position,
             questionMaxLengths = questionMaxLengths,
             questionNumberMin = questionNumberMin,
-            questionNumberMax = questionNumberMax
+            questionNumberMax = questionNumberMax,
+            questionDateMin = questionDateMin,
+            questionDateMax = questionDateMax,
+            questionDateTimeMin = questionDateTimeMin,
+            questionDateTimeMax = questionDateTimeMax
         )
 
         return resultState

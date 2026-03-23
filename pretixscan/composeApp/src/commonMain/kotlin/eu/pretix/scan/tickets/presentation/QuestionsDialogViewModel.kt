@@ -18,6 +18,10 @@ import eu.pretix.scan.tickets.utils.ImageLoader
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.logging.Logger
 
 class QuestionsDialogViewModel(
@@ -196,15 +200,47 @@ class QuestionsDialogViewModel(
                     )
                 }
 
-                QuestionType.W,
                 QuestionType.D -> {
+                    val dateMinStr = data.questionDateMin[it.serverId]
+                    val dateMaxStr = data.questionDateMax[it.serverId]
+                    val minMillis = dateMinStr?.let { s ->
+                        try { java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).parse(s)?.time } catch (_: Exception) { null }
+                    }
+                    val maxMillis = dateMaxStr?.let { s ->
+                        try { java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).parse(s)?.time } catch (_: Exception) { null }
+                    }
                     QuestionFormField(
                         it.serverId,
                         it.question,
                         startingAnswerValue(it, data.answers[it.serverId]),
                         it.type,
                         it.required,
-                        dateConfig = DateConfig(minDate = it.valid_date_min, maxDate = it.valid_date_max)
+                        dateConfig = DateConfig(minDate = minMillis, maxDate = maxMillis),
+                        dateMin = dateMinStr,
+                        dateMax = dateMaxStr
+                    )
+                }
+
+                QuestionType.W -> {
+                    val dateTimeMinStr = data.questionDateTimeMin[it.serverId]
+                    val dateTimeMaxStr = data.questionDateTimeMax[it.serverId]
+                    val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+                    val dateTimeFormat = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm", java.util.Locale.US)
+                    val minMillis = dateTimeMinStr?.let { s ->
+                        try { dateFormat.parse(s.take(10))?.time } catch (_: Exception) { null }
+                    }
+                    val maxMillis = dateTimeMaxStr?.let { s ->
+                        try { dateFormat.parse(s.take(10))?.time } catch (_: Exception) { null }
+                    }
+                    QuestionFormField(
+                        it.serverId,
+                        it.question,
+                        startingAnswerValue(it, data.answers[it.serverId]),
+                        it.type,
+                        it.required,
+                        dateConfig = DateConfig(minDate = minMillis, maxDate = maxMillis),
+                        dateMin = dateTimeMinStr,
+                        dateMax = dateTimeMaxStr
                     )
                 }
 
@@ -291,6 +327,16 @@ class QuestionsDialogViewModel(
                         field.copy(value = answer, uiExtra = extra)
                     }
 
+                    QuestionType.D -> {
+                        val validation = validateDateRange(answer, field.dateMin, field.dateMax)
+                        field.copy(value = answer, validation = validation)
+                    }
+
+                    QuestionType.W -> {
+                        val validation = validateDateTimeRange(answer, field.dateMin, field.dateMax)
+                        field.copy(value = answer, validation = validation)
+                    }
+
                     else -> {
                         field.copy(value = answer)
                     }
@@ -362,6 +408,24 @@ class QuestionsDialogViewModel(
                     }
                 }
 
+                QuestionType.D -> {
+                    if (it.required && it.value.isNullOrBlank()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else {
+                        val validation = validateDateRange(it.value, it.dateMin, it.dateMax)
+                        it.copy(validation = validation)
+                    }
+                }
+
+                QuestionType.W -> {
+                    if (it.required && it.value.isNullOrBlank()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else {
+                        val validation = validateDateTimeRange(it.value, it.dateMin, it.dateMax)
+                        it.copy(validation = validation)
+                    }
+                }
+
                 else -> {
                     if (it.required && it.value.isNullOrBlank()) {
                         it.copy(validation = FieldValidationState.MISSING)
@@ -424,6 +488,40 @@ class QuestionsDialogViewModel(
         return null
     }
 
+    private fun validateDateRange(value: String?, min: String?, max: String?): FieldValidationState? {
+        if (value.isNullOrEmpty()) return null
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val date = try { LocalDate.parse(value, formatter) } catch (_: DateTimeParseException) { return null }
+        if (min != null) {
+            try {
+                if (date < LocalDate.parse(min, formatter)) return FieldValidationState.INVALID
+            } catch (_: DateTimeParseException) { }
+        }
+        if (max != null) {
+            try {
+                if (date > LocalDate.parse(max, formatter)) return FieldValidationState.INVALID
+            } catch (_: DateTimeParseException) { }
+        }
+        return null
+    }
+
+    private fun validateDateTimeRange(value: String?, min: String?, max: String?): FieldValidationState? {
+        if (value.isNullOrEmpty()) return null
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+        val dateTime = try { LocalDateTime.parse(value, formatter) } catch (_: DateTimeParseException) { return null }
+        if (min != null) {
+            try {
+                if (dateTime < LocalDateTime.parse(min, formatter)) return FieldValidationState.INVALID
+            } catch (_: DateTimeParseException) { }
+        }
+        if (max != null) {
+            try {
+                if (dateTime > LocalDateTime.parse(max, formatter)) return FieldValidationState.INVALID
+            } catch (_: DateTimeParseException) { }
+        }
+        return null
+    }
+
     private fun formatFileAnswer(answer: String?): String? {
         return when {
             answer == null -> null
@@ -448,6 +546,8 @@ data class QuestionFormField(
     val maxLength: Int? = null,
     val numberMin: String? = null,
     val numberMax: String? = null,
+    val dateMin: String? = null,
+    val dateMax: String? = null,
     // Extra value used by the UI for form state which isn't part of the pretixsync model
     var uiExtra: String? = null
 )

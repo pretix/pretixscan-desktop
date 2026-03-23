@@ -1161,4 +1161,209 @@ class QuestionsDialogViewModelTest {
         showDuringCheckIn = true,
         type = QuestionType.F
     )
+
+    private fun createDateQuestion(
+        serverId: Long = 1L,
+        type: QuestionType = QuestionType.D,
+        required: Boolean = false
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Date",
+        identifier = "date-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = type
+    )
+
+    @Test
+    fun `date before min is marked INVALID on input`() = runTest {
+        val question = createDateQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateMin = mapOf(1L to "2024-06-01")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-05-31")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `date after max is marked INVALID on input`() = runTest {
+        val question = createDateQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateMax = mapOf(1L to "2024-06-30")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-07-01")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `date within range has no validation error`() = runTest {
+        val question = createDateQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateMin = mapOf(1L to "2024-06-01"),
+            questionDateMax = mapOf(1L to "2024-06-30")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-06-15")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `date range validated on submit`() = runTest {
+        val question = createDateQuestion(serverId = 1L, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateMin = mapOf(1L to "2024-06-01"),
+            questionDateMax = mapOf(1L to "2024-06-30")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-07-15")
+        val isValid = viewModel.validateForConfirm()
+
+        assertFalse(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `required blank date is marked MISSING on submit`() = runTest {
+        val question = createDateQuestion(serverId = 1L, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        val isValid = viewModel.validateForConfirm()
+
+        assertFalse(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
+
+    @Test
+    fun `datetime before min is marked INVALID on input`() = runTest {
+        val question = createDateQuestion(serverId = 1L, type = QuestionType.W)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateTimeMin = mapOf(1L to "2024-06-15T10:00")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-06-15T09:59")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `datetime after max is marked INVALID on input`() = runTest {
+        val question = createDateQuestion(serverId = 1L, type = QuestionType.W)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateTimeMax = mapOf(1L to "2024-06-15T18:00")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-06-15T18:01")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `datetime within range has no validation error`() = runTest {
+        val question = createDateQuestion(serverId = 1L, type = QuestionType.W)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateTimeMin = mapOf(1L to "2024-06-15T10:00"),
+            questionDateTimeMax = mapOf(1L to "2024-06-15T18:00")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-06-15T14:00")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `datetime range validated on submit`() = runTest {
+        val question = createDateQuestion(serverId = 1L, type = QuestionType.W, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateTimeMin = mapOf(1L to "2024-06-15T10:00"),
+            questionDateTimeMax = mapOf(1L to "2024-06-15T18:00")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-06-15T19:00")
+        val isValid = viewModel.validateForConfirm()
+
+        assertFalse(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `required blank datetime is marked MISSING on submit`() = runTest {
+        val question = createDateQuestion(serverId = 1L, type = QuestionType.W, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        val isValid = viewModel.validateForConfirm()
+
+        assertFalse(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
 }

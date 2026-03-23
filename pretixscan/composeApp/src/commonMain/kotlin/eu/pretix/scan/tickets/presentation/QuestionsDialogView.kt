@@ -36,6 +36,9 @@ import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.cancel
 import pretixscan.composeapp.generated.resources.cont
+import pretixscan.composeapp.generated.resources.question_input_date_out_of_range
+import pretixscan.composeapp.generated.resources.question_input_date_too_early
+import pretixscan.composeapp.generated.resources.question_input_date_too_late
 import pretixscan.composeapp.generated.resources.question_input_number_out_of_range
 import pretixscan.composeapp.generated.resources.question_input_number_too_high
 import pretixscan.composeapp.generated.resources.question_input_number_too_low
@@ -262,6 +265,15 @@ fun QuestionsDialogView(
                         }
 
                         QuestionType.D -> {
+                            val dateRangeMessage = when {
+                                field.dateMin != null && field.dateMax != null ->
+                                    stringResource(Res.string.question_input_date_out_of_range, formatDateForDisplay(field.dateMin), formatDateForDisplay(field.dateMax))
+                                field.dateMin != null ->
+                                    stringResource(Res.string.question_input_date_too_early, formatDateForDisplay(field.dateMin))
+                                field.dateMax != null ->
+                                    stringResource(Res.string.question_input_date_too_late, formatDateForDisplay(field.dateMax))
+                                else -> null
+                            }
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
@@ -278,6 +290,13 @@ fun QuestionsDialogView(
                                         viewModel.updateAnswer(field.id, it)
                                     }
                                 )
+                                if (field.validation == FieldValidationState.INVALID && dateRangeMessage != null) {
+                                    Text(
+                                        dateRangeMessage,
+                                        color = CustomColor.BrandRed.asColor(),
+                                        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                                    )
+                                }
                             }
                         }
 
@@ -301,6 +320,15 @@ fun QuestionsDialogView(
                         }
 
                         QuestionType.W -> {
+                            val dateTimeRangeMessage = when {
+                                field.dateMin != null && field.dateMax != null ->
+                                    stringResource(Res.string.question_input_date_out_of_range, formatDateTimeForDisplay(field.dateMin), formatDateTimeForDisplay(field.dateMax))
+                                field.dateMin != null ->
+                                    stringResource(Res.string.question_input_date_too_early, formatDateTimeForDisplay(field.dateMin))
+                                field.dateMax != null ->
+                                    stringResource(Res.string.question_input_date_too_late, formatDateTimeForDisplay(field.dateMax))
+                                else -> null
+                            }
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
@@ -317,6 +345,13 @@ fun QuestionsDialogView(
                                         viewModel.updateAnswer(field.id, it)
                                     }
                                 )
+                                if (field.validation == FieldValidationState.INVALID && dateTimeRangeMessage != null) {
+                                    Text(
+                                        dateTimeRangeMessage,
+                                        color = CustomColor.BrandRed.asColor(),
+                                        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                                    )
+                                }
                             }
                         }
 

@@ -141,6 +141,9 @@
     <string name="question_input_number_too_low">The minimum value is %1$s.</string>
     <string name="question_input_number_too_high">The maximum value is %1$s.</string>
     <string name="question_input_number_out_of_range">The value must be between %1$s and %2$s.</string>
+    <string name="question_input_date_too_early">The earliest date is %1$s.</string>
+    <string name="question_input_date_too_late">The latest date is %1$s.</string>
+    <string name="question_input_date_out_of_range">The date must be between %1$s and %2$s.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel">Cancel</string>

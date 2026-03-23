@@ -70,5 +70,9 @@ data class ResultStateData(
     val position: JSONObject? = null,
     val questionMaxLengths: Map<Long, Int> = emptyMap(),
     val questionNumberMin: Map<Long, String> = emptyMap(),
-    val questionNumberMax: Map<Long, String> = emptyMap()
+    val questionNumberMax: Map<Long, String> = emptyMap(),
+    val questionDateMin: Map<Long, String> = emptyMap(),
+    val questionDateMax: Map<Long, String> = emptyMap(),
+    val questionDateTimeMin: Map<Long, String> = emptyMap(),
+    val questionDateTimeMax: Map<Long, String> = emptyMap()
 )

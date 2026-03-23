@@ -67,6 +67,27 @@ fun formatDateForDisplay(value: String?): String {
 }
 
 /**
+ * Converts a stored datetime value ("yyyy-MM-dd'T'HH:mm") to locale-aware display format
+ */
+fun formatDateTimeForDisplay(value: String?): String {
+    if (value == null) return ""
+
+    val dateFormat = getDateFormat()
+    val displayDateFormat = getDisplayDateFormat()
+    val displayTimeFormat = getDisplayTimeFormat()
+
+    return try {
+        val datePart = value.take(10)
+        val timePart = value.drop(11).take(5)
+        val date = dateFormat.parse(datePart)
+        val formattedDate = if (date != null) displayDateFormat.format(date) else datePart
+        "$formattedDate $timePart"
+    } catch (e: Exception) {
+        value
+    }
+}
+
+/**
  * Converts a stored time value to display format using locale-aware formatting
  */
 fun formatTimeForDisplay(value: String?): String {
