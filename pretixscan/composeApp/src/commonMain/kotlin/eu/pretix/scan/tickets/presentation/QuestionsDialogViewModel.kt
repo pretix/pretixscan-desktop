@@ -348,9 +348,10 @@ class QuestionsDialogViewModel(
     }
 
 
-    fun validateForConfirm(): Boolean {
+    fun validateForConfirm(): Int? {
         formatAndValidateForm()
-        return _form.value.all { it.validation == null }
+        val index = _form.value.indexOfFirst { it.validation != null }
+        return if (index == -1) null else index
     }
 
     fun formatAndValidateForm() {

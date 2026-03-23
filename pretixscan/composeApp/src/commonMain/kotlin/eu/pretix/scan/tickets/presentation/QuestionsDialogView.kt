@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.launch
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.BlendMode.Companion.Color
@@ -57,6 +58,7 @@ fun QuestionsDialogView(
     val uiBlinkSpecialTickets by viewModel.uiBlinkSpecialTickets.collectAsState()
     val showNames by viewModel.showNames.collectAsState()
     val state = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(data) {
         viewModel.buildQuestionsForm(data)
         viewModel.applyUiSettings()
@@ -205,6 +207,7 @@ fun QuestionsDialogView(
                                     onSelect = {
                                         viewModel.updateAnswer(field.id, it)
                                     })
+                                FieldValidationText(field.validation)
                             }
                         }
 
@@ -224,6 +227,7 @@ fun QuestionsDialogView(
                                         viewModel.updateAnswer(field.id, selectedOption?.value)
                                     }
                                 )
+                                FieldValidationText(field.validation)
                             }
                         }
 
@@ -249,6 +253,7 @@ fun QuestionsDialogView(
                                         }
                                     )
                                 }
+                                FieldValidationText(field.validation)
                             }
                         }
 
@@ -290,13 +295,7 @@ fun QuestionsDialogView(
                                         viewModel.updateAnswer(field.id, it)
                                     }
                                 )
-                                if (field.validation == FieldValidationState.INVALID && dateRangeMessage != null) {
-                                    Text(
-                                        dateRangeMessage,
-                                        color = CustomColor.BrandRed.asColor(),
-                                        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-                                    )
-                                }
+                                FieldValidationText(field.validation, dateRangeMessage)
                             }
                         }
 
@@ -316,6 +315,7 @@ fun QuestionsDialogView(
                                     },
                                     label = field.label
                                 )
+                                FieldValidationText(field.validation)
                             }
                         }
 
@@ -345,13 +345,7 @@ fun QuestionsDialogView(
                                         viewModel.updateAnswer(field.id, it)
                                     }
                                 )
-                                if (field.validation == FieldValidationState.INVALID && dateTimeRangeMessage != null) {
-                                    Text(
-                                        dateTimeRangeMessage,
-                                        color = CustomColor.BrandRed.asColor(),
-                                        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-                                    )
-                                }
+                                FieldValidationText(field.validation, dateTimeRangeMessage)
                             }
                         }
 
@@ -378,6 +372,7 @@ fun QuestionsDialogView(
                                         viewModel.updateAnswer(field.id, selectedOption?.value)
                                     }
                                 )
+                                FieldValidationText(field.validation)
                             }
 
                         }
@@ -422,8 +417,13 @@ fun QuestionsDialogView(
             primaryLabel = stringResource(Res.string.cont),
             onCancel = onCancel,
             onPrimary = {
-                if (viewModel.validateForConfirm()) {
+                val firstInvalidIndex = viewModel.validateForConfirm()
+                if (firstInvalidIndex == null) {
                     onConfirm(viewModel.getCurrentAnswers(data))
+                } else {
+                    coroutineScope.launch {
+                        state.animateScrollToItem(firstInvalidIndex + 1)
+                    }
                 }
             }
         )

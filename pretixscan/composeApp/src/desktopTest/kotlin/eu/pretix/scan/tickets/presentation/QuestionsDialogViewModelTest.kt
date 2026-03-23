@@ -207,7 +207,7 @@ class QuestionsDialogViewModelTest {
         viewModel.updateAnswer(1L, "0474 12 34 56", "BE")
 
         val isValid = viewModel.validateForConfirm()
-        assertTrue(isValid)
+        assertNull(isValid)
     }
 
     @Test
@@ -223,7 +223,7 @@ class QuestionsDialogViewModelTest {
         viewModel.buildQuestionsForm(data)
 
         val isValid = viewModel.validateForConfirm()
-        assertFalse(isValid)
+        assertNotNull(isValid)
     }
 
     @Test
@@ -612,7 +612,7 @@ class QuestionsDialogViewModelTest {
         viewModel.buildQuestionsForm(data)
         val isValid = viewModel.validateForConfirm()
 
-        assertTrue(isValid)
+        assertNull(isValid)
         val formField = viewModel.form.value.first { it.id == 100L }
         assertNull(formField.validation)
     }
@@ -700,7 +700,7 @@ class QuestionsDialogViewModelTest {
         viewModel.buildQuestionsForm(data)
 
         val isValid = viewModel.validateForConfirm()
-        assertTrue(isValid)
+        assertNull(isValid)
     }
 
     @Test
@@ -716,7 +716,7 @@ class QuestionsDialogViewModelTest {
         viewModel.buildQuestionsForm(data)
 
         val isValid = viewModel.validateForConfirm()
-        assertFalse(isValid)
+        assertNotNull(isValid)
 
         val formField = viewModel.form.value.first { it.id == 1L }
         assertEquals(FieldValidationState.MISSING, formField.validation)
@@ -736,7 +736,7 @@ class QuestionsDialogViewModelTest {
         viewModel.updateAnswer(1L, "/tmp/photo.jpg")
 
         val isValid = viewModel.validateForConfirm()
-        assertTrue(isValid)
+        assertNull(isValid)
     }
 
     @Test
@@ -817,7 +817,7 @@ class QuestionsDialogViewModelTest {
         viewModel.updateAnswer(2L, "John")
 
         val isValid = viewModel.validateForConfirm()
-        assertTrue(isValid)
+        assertNull(isValid)
     }
 
     @Test
@@ -1033,7 +1033,7 @@ class QuestionsDialogViewModelTest {
         viewModel.updateAnswer(1L, "25")
         val isValid = viewModel.validateForConfirm()
 
-        assertFalse(isValid)
+        assertNotNull(isValid)
         val formField = viewModel.form.value.first { it.id == 1L }
         assertEquals(FieldValidationState.INVALID, formField.validation)
     }
@@ -1053,7 +1053,7 @@ class QuestionsDialogViewModelTest {
         viewModel.buildQuestionsForm(data)
         val isValid = viewModel.validateForConfirm()
 
-        assertTrue(isValid)
+        assertNull(isValid)
         val formField = viewModel.form.value.first { it.id == 1L }
         assertNull(formField.validation)
     }
@@ -1095,7 +1095,7 @@ class QuestionsDialogViewModelTest {
         assertEquals("-", formField.value)
 
         val isValid = viewModel.validateForConfirm()
-        assertFalse(isValid)
+        assertNotNull(isValid)
         val formFieldAfterSubmit = viewModel.form.value.first { it.id == 1L }
         assertEquals(FieldValidationState.INVALID, formFieldAfterSubmit.validation)
     }
@@ -1250,7 +1250,7 @@ class QuestionsDialogViewModelTest {
         viewModel.updateAnswer(1L, "2024-07-15")
         val isValid = viewModel.validateForConfirm()
 
-        assertFalse(isValid)
+        assertNotNull(isValid)
         val formField = viewModel.form.value.first { it.id == 1L }
         assertEquals(FieldValidationState.INVALID, formField.validation)
     }
@@ -1268,7 +1268,7 @@ class QuestionsDialogViewModelTest {
         viewModel.buildQuestionsForm(data)
         val isValid = viewModel.validateForConfirm()
 
-        assertFalse(isValid)
+        assertNotNull(isValid)
         val formField = viewModel.form.value.first { it.id == 1L }
         assertEquals(FieldValidationState.MISSING, formField.validation)
     }
@@ -1344,7 +1344,7 @@ class QuestionsDialogViewModelTest {
         viewModel.updateAnswer(1L, "2024-06-15T19:00")
         val isValid = viewModel.validateForConfirm()
 
-        assertFalse(isValid)
+        assertNotNull(isValid)
         val formField = viewModel.form.value.first { it.id == 1L }
         assertEquals(FieldValidationState.INVALID, formField.validation)
     }
@@ -1362,7 +1362,7 @@ class QuestionsDialogViewModelTest {
         viewModel.buildQuestionsForm(data)
         val isValid = viewModel.validateForConfirm()
 
-        assertFalse(isValid)
+        assertNotNull(isValid)
         val formField = viewModel.form.value.first { it.id == 1L }
         assertEquals(FieldValidationState.MISSING, formField.validation)
     }
