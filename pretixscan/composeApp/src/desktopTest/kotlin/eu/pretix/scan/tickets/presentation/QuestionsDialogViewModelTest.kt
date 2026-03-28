@@ -1162,6 +1162,188 @@ class QuestionsDialogViewModelTest {
         type = QuestionType.F
     )
 
+    private fun createBooleanQuestion(
+        serverId: Long = 1L,
+        required: Boolean = true
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Accept Terms",
+        identifier = "terms-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = QuestionType.B
+    )
+
+    private fun createEmailQuestion(
+        serverId: Long = 1L,
+        required: Boolean = true
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Email Address",
+        identifier = "email-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = QuestionType.EMAIL
+    )
+
+    private fun createTimeQuestion(
+        serverId: Long = 1L,
+        required: Boolean = true
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Preferred Time",
+        identifier = "time-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = QuestionType.H
+    )
+
+    @Test
+    fun `required boolean with False value is marked MISSING`() = runTest {
+        val question = createBooleanQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "False")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
+
+    @Test
+    fun `required boolean with null value is marked MISSING`() = runTest {
+        val question = createBooleanQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
+
+    @Test
+    fun `required boolean with True value passes validation`() = runTest {
+        val question = createBooleanQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "True")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `invalid email format is marked INVALID`() = runTest {
+        val question = createEmailQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "not-an-email")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `valid email passes validation`() = runTest {
+        val question = createEmailQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "test@example.com")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `required empty email is marked MISSING`() = runTest {
+        val question = createEmailQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
+
+    @Test
+    fun `invalid time format is marked INVALID`() = runTest {
+        val question = createTimeQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "invalid")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `valid time passes validation`() = runTest {
+        val question = createTimeQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "14:30")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
     private fun createDateQuestion(
         serverId: Long = 1L,
         type: QuestionType = QuestionType.D,

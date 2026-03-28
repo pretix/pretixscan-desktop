@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.logging.Logger
@@ -316,11 +317,7 @@ class QuestionsDialogViewModel(
                     }
 
                     QuestionType.EMAIL -> {
-                        if (answer != null && emailValidator.isValidEmail(answer)) {
-                            field.copy(value = answer)
-                        } else {
-                            field
-                        }
+                        field.copy(value = answer)
                     }
 
                     QuestionType.TEL -> {
@@ -410,20 +407,71 @@ class QuestionsDialogViewModel(
                 }
 
                 QuestionType.D -> {
-                    if (it.required && it.value.isNullOrBlank()) {
+                    val value = it.value
+                    if (it.required && value.isNullOrBlank()) {
                         it.copy(validation = FieldValidationState.MISSING)
+                    } else if (!value.isNullOrBlank()) {
+                        try {
+                            LocalDate.parse(value, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                            val validation = validateDateRange(value, it.dateMin, it.dateMax)
+                            it.copy(validation = validation)
+                        } catch (_: DateTimeParseException) {
+                            it.copy(validation = FieldValidationState.INVALID)
+                        }
                     } else {
-                        val validation = validateDateRange(it.value, it.dateMin, it.dateMax)
-                        it.copy(validation = validation)
+                        it.copy(validation = null)
                     }
                 }
 
                 QuestionType.W -> {
-                    if (it.required && it.value.isNullOrBlank()) {
+                    val value = it.value
+                    if (it.required && value.isNullOrBlank()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else if (!value.isNullOrBlank()) {
+                        try {
+                            LocalDateTime.parse(value, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+                            val validation = validateDateTimeRange(value, it.dateMin, it.dateMax)
+                            it.copy(validation = validation)
+                        } catch (_: DateTimeParseException) {
+                            it.copy(validation = FieldValidationState.INVALID)
+                        }
+                    } else {
+                        it.copy(validation = null)
+                    }
+                }
+
+                QuestionType.B -> {
+                    if (it.required && it.value != "True") {
                         it.copy(validation = FieldValidationState.MISSING)
                     } else {
-                        val validation = validateDateTimeRange(it.value, it.dateMin, it.dateMax)
-                        it.copy(validation = validation)
+                        it.copy(validation = null)
+                    }
+                }
+
+                QuestionType.EMAIL -> {
+                    val value = it.value
+                    if (it.required && value.isNullOrBlank()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else if (!value.isNullOrBlank() && !emailValidator.isValidEmail(value)) {
+                        it.copy(validation = FieldValidationState.INVALID)
+                    } else {
+                        it.copy(validation = null)
+                    }
+                }
+
+                QuestionType.H -> {
+                    val value = it.value
+                    if (it.required && value.isNullOrBlank()) {
+                        it.copy(validation = FieldValidationState.MISSING)
+                    } else if (!value.isNullOrBlank()) {
+                        try {
+                            LocalTime.parse(value, DateTimeFormatter.ofPattern("HH:mm"))
+                            it.copy(validation = null)
+                        } catch (_: DateTimeParseException) {
+                            it.copy(validation = FieldValidationState.INVALID)
+                        }
+                    } else {
+                        it.copy(validation = null)
                     }
                 }
 
