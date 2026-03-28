@@ -91,7 +91,8 @@ class TicketCodeHandler(
             } catch (_: Exception) { }
         }
 
-        val badgeLayout = layoutFetcher.getForItemAtEvent(checkResult.positionId, checkResult.eventSlug)
+        val itemServerId = checkResult.position?.optLong("item", 0L)?.takeIf { it > 0 }
+        val badgeLayout = layoutFetcher.getForItemAtEvent(itemServerId, checkResult.eventSlug)
         val canPrintBadge =
             conf.printBadges && checkResult.scanType != TicketCheckProvider.CheckInType.EXIT && checkResult.position != null && badgeLayout != null
 
