@@ -1,11 +1,13 @@
 package eu.pretix.scan.tickets.presentation
 
 import androidx.lifecycle.ViewModel
+import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.printing.BadgeFactory
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.scan.tickets.data.ResultState
 import eu.pretix.scan.tickets.data.ResultStateData
 import eu.pretix.scan.tickets.data.TicketCodeHandler
+import eu.pretix.scan.tickets.data.shouldAutoPrint
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +17,7 @@ import java.util.logging.Logger
 class TicketHandlingDialogViewModel(
     private val tickerCodeHandler: TicketCodeHandler,
     private val badgeFactory: BadgeFactory,
+    private val appConfig: DataStoreConfigStore,
 ) : ViewModel() {
 
     private val log = Logger.getLogger("TicketHandlingDialogViewModel")
@@ -45,6 +48,15 @@ class TicketHandlingDialogViewModel(
         )
         _uiState.update {
             result
+        }
+        if (result.isPrintable && shouldAutoPrint(
+                autoPrintBadges = appConfig.autoPrintBadges,
+                resultState = result.resultState,
+                position = result.position
+            )
+        ) {
+            log.info("Auto-printing badge")
+            printBadges()
         }
     }
 

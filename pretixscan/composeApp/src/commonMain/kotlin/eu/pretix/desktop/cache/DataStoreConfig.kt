@@ -355,7 +355,7 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun getAutoPrintBadges(): Boolean =
-        dataStore.data.first()[PreferenceKeys.AUTO_PRINT_BADGES] ?: false
+        dataStore.data.first()[PreferenceKeys.AUTO_PRINT_BADGES] ?: true
 
     suspend fun setAutoPrintBadges(value: Boolean) {
         dataStore.edit { it[PreferenceKeys.AUTO_PRINT_BADGES] = value }

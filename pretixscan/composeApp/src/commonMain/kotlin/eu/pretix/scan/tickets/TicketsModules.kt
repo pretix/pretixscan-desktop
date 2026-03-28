@@ -21,7 +21,7 @@ val ticketsModule = module {
         TicketSearchBarViewModel(get(), get())
     }
     factory {
-        TicketHandlingDialogViewModel(get(), get())
+        TicketHandlingDialogViewModel(get(), get(), get())
     }
     factory {
         QuestionsDialogViewModel(get(), get())

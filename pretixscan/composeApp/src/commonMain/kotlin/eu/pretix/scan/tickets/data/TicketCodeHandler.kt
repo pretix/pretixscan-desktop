@@ -153,7 +153,7 @@ class TicketCodeHandler(
 
         val sourceType = "barcode"
 
-        val withBadgeData = conf.autoPrintBadges
+        val withBadgeData = conf.printBadges
 
         val allowQuestions = answers.isNullOrEmpty()
 

@@ -6,6 +6,7 @@ data class ConfigurableSettings(
     val version: String = "",
     val printers: List<SelectableValue> = emptyList(),
     val printBadges: Boolean = false,
+    val autoPrintBadges: Boolean = true,
     val badgePrinter: SelectableValue? = null,
     val badgeLayout: SelectableValue? = null,
     val layouts: List<SelectableValue> = emptyList(),

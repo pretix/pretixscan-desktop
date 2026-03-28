@@ -220,6 +220,23 @@ fun SettingsScreen(
                                     Column(
                                         horizontalAlignment = Alignment.Start
                                     ) {
+                                        CheckboxWithLabel(
+                                            label = stringResource(Res.string.preference_autobadgeprint_enable),
+                                            description = null,
+                                            checked = form.autoPrintBadges,
+                                            onCheckedChange = {
+                                                coroutineScope.launch {
+                                                    viewModel.setAutoPrintBadges(it)
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
+
+                                Setting {
+                                    Column(
+                                        horizontalAlignment = Alignment.Start
+                                    ) {
                                         Text(
                                             stringResource(Res.string.settings_printers_badge)
                                         )
