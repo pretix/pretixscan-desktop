@@ -39,7 +39,7 @@ class SelectCheckInListViewModel(
                     appCache.db.checkInListQueries
                         .selectByEventSlug(eventSlug)
                         .executeAsList()
-                        .filter { it.subevent_id == null || it.subevent_id == subEventId }
+                        .filter { it.subevent_id == null || it.subevent_id == 0L || it.subevent_id == subEventId }
                 } else {
                     appCache.db.checkInListQueries.selectByEventSlug(eventSlug).executeAsList()
                 }

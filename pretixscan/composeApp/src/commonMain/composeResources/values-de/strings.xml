@@ -195,6 +195,7 @@
     <string name="pin_protection_enter">PIN eingeben</string>
     <string name="currently_inside">aktuell anwesend</string>
     <string name="error_no_available_events">Es wurde kein gegenwärtiges oder zukünftiges Event gefunden. Bitte prüfen Sie das Datum und die Zugriffsrechte Ihrer Veranstaltungen.</string>
+    <string name="error_no_available_checkinlists">Keine Einlass-Listen für dieses Event verfügbar. Bitte prüfen Sie die Konfiguration Ihrer Einlass-Listen.</string>
     <string name="event_select_calendar">Kalender anzeigen</string>
     <string name="connect_instruction_heading">So verbinden Sie Ihr pretix-Konto</string>
     <string name="connect_instruction_step1">Loggen Sie sich bei pretix ein und öffnen Sie die Seite "Geräte" in Ihrem Veranstalterkonto</string>

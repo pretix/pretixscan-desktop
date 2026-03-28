@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pretixscan.composeapp.generated.resources.Res
-import pretixscan.composeapp.generated.resources.error_no_available_events
+import pretixscan.composeapp.generated.resources.error_no_available_checkinlists
 
 @Composable
 @Preview
@@ -51,7 +51,7 @@ fun SelectCheckInList(
     when (uiState) {
         SelectCheckInListUiState.Empty -> {
             SelectListRow {
-                Text(stringResource(Res.string.error_no_available_events))
+                Text(stringResource(Res.string.error_no_available_checkinlists))
             }
         }
 
