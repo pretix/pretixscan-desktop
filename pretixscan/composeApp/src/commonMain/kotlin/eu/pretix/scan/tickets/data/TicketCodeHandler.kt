@@ -116,6 +116,7 @@ class TicketCodeHandler(
             isPrintable = canPrintBadge,
             badgeLayout = badgeLayout,
             position = checkResult.position,
+            eventSlug = checkResult.eventSlug,
             questionMaxLengths = questionMaxLengths,
             questionNumberMin = questionNumberMin,
             questionNumberMax = questionNumberMax,
