@@ -6,7 +6,6 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -154,7 +153,7 @@ fun TicketHandlingDialog(
                 )
 
                 ResultState.WARNING -> {
-                    Text(uiState.resultText ?: "")
+                    TicketWarning(data = uiState, remainingTimeProgress = remainingTimeProgress)
                 }
 
                 ResultState.SUCCESS -> {
