@@ -27,7 +27,7 @@ import java.util.logging.Logger
 class TicketCodeHandler(
     private val conf: DataStoreConfigStore,
     private val appCache: AppCache,
-    private val checkProvider: TicketCheckProvider,
+    private val checkProviderFactory: () -> TicketCheckProvider,
     private val audioPlayer: GadulkaPlayer,
     private val logHandler: SentryInterface,
     private val connectivityHelper: ConnectivityHelper,
@@ -163,6 +163,9 @@ class TicketCodeHandler(
 
         try {
             val effectiveIgnoreUnpaid = ignoreUnpaid || !conf.unpaidAsk
+
+            val checkProvider = checkProviderFactory()
+            log.info("Scanning with ${checkProvider::class.simpleName}")
 
             val checkResult = checkProvider.check(
                 conf.eventSelectionToMap(),

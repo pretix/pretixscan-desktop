@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 
 @OptIn(FlowPreview::class)
 class TicketSearchBarViewModel(
-    private val ticketProvider: TicketCheckProvider,
+    private val ticketProviderFactory: () -> TicketCheckProvider,
     private val appConfig: DataStoreConfigStore
 ) : ViewModel() {
 
@@ -31,7 +31,7 @@ class TicketSearchBarViewModel(
             } else {
                 withContext(Dispatchers.IO) {
                     try {
-                        val result = ticketProvider.search(appConfig.eventSelectionToMap(), it, 1)
+                        val result = ticketProviderFactory().search(appConfig.eventSelectionToMap(), it, 1)
                         result
                     } catch (e: Throwable) {
                         e.printStackTrace()
