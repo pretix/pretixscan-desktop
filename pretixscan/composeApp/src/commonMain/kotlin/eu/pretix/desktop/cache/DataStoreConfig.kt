@@ -341,7 +341,7 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun getUiHideNames(): Boolean =
-        dataStore.data.first()[PreferenceKeys.UI_HIDE_NAMES] ?: true
+        dataStore.data.first()[PreferenceKeys.UI_HIDE_NAMES] ?: false
 
     suspend fun setUiHideNames(value: Boolean) {
         dataStore.edit { it[PreferenceKeys.UI_HIDE_NAMES] = value }
