@@ -33,7 +33,8 @@ fun TicketSuccess(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.End
             ) {
                 Button(onClick = onPrintBadges) {
                     Text(stringResource(Res.string.settings_label_print_badges))
