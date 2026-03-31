@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import eu.pretix.desktop.app.ui.CustomColor
 import eu.pretix.desktop.app.ui.Logo
+import eu.pretix.desktop.app.ui.Tooltip
 import eu.pretix.desktop.app.ui.asColor
 import eu.pretix.desktop.webcam.data.ImageData
 import eu.pretix.desktop.webcam.data.Video
@@ -30,7 +31,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.*
 
 @Composable
-fun WebCam(onPhotoTaken: (String?) -> Unit) {
+fun WebCam(onCancel: () -> Unit, onPhotoTaken: (String?) -> Unit) {
     val viewModel = koinViewModel<WebCamViewModel>()
 
     val uiState by viewModel.uiState.collectAsState()
@@ -59,7 +60,8 @@ fun WebCam(onPhotoTaken: (String?) -> Unit) {
                     availableVideo
                         ?.find { it.name == selectedDevice }
                         ?.let { viewModel.selectVideo(it) }
-                }
+                },
+                onCancel = onCancel
             )
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -101,14 +103,16 @@ fun WebCam(onPhotoTaken: (String?) -> Unit) {
 fun Toolbar(
     selectedDevice: String?,
     availableDeviceNames: List<String>?,
-    onDeviceSelect: (String) -> Unit
+    onDeviceSelect: (String) -> Unit,
+    onCancel: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier.fillMaxWidth()
             .background(CustomColor.BrandDark.asColor())
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Logo()
         Spacer(Modifier.weight(1f))
@@ -148,6 +152,16 @@ fun Toolbar(
             }
         } else {
             DeviceListLoading()
+        }
+
+        Tooltip(stringResource(Res.string.cancel)) {
+            IconButton(onClick = onCancel) {
+                Icon(
+                    Icons.Filled.Close,
+                    contentDescription = stringResource(Res.string.cancel),
+                    tint = CustomColor.White.asColor()
+                )
+            }
         }
     }
 }

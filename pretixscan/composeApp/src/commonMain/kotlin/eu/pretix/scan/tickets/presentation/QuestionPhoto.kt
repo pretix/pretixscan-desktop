@@ -2,15 +2,25 @@ package eu.pretix.scan.tickets.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import com.composables.core.Dialog
 import com.composables.core.DialogPanel
@@ -23,6 +33,7 @@ fun QuestionPhoto(
     onDismiss: (String?) -> Unit,
 ) {
     val dialogState = rememberDialogState(initiallyVisible = true)
+    val focusRequester = remember { FocusRequester() }
 
     Dialog(
         state = dialogState,
@@ -37,12 +48,23 @@ fun QuestionPhoto(
                 .padding(20.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .border(1.dp, Color(0xFFE4E4E4), RoundedCornerShape(12.dp))
-                .background(Color.White),
+                .background(Color.White)
+                .focusRequester(focusRequester)
+                .focusable()
+                .onPreviewKeyEvent { keyEvent ->
+                    if (keyEvent.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                    if (keyEvent.key == Key.Escape || keyEvent.key == Key.Back) {
+                        onDismiss(null); true
+                    } else false
+                },
         ) {
-            WebCam(onPhotoTaken = {
-                onDismiss(it)
-            })
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
+            WebCam(
+                onCancel = { onDismiss(null) },
+                onPhotoTaken = { onDismiss(it) }
+            )
         }
     }
 }
-
