@@ -10,11 +10,14 @@ import eu.pretix.libpretixsync.db.NonceGenerator
 import eu.pretix.scan.tickets.data.ResultState
 import eu.pretix.scan.tickets.data.ResultStateData
 import eu.pretix.scan.tickets.data.TicketCodeHandler
+import eu.pretix.scan.tickets.data.isPreviouslyPrinted
 import eu.pretix.scan.tickets.data.shouldAutoPrint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -59,6 +62,7 @@ class TicketHandlingDialogViewModel(
         _uiState.update {
             result
         }
+        log.info("Auto-print check: isPrintable=${result.isPrintable}, autoPrintBadges=${appConfig.autoPrintBadges}, resultState=${result.resultState}, hasPosition=${result.position != null}, previouslyPrinted=${result.position?.let { isPreviouslyPrinted(it) }}")
         if (result.isPrintable && shouldAutoPrint(
                 autoPrintBadges = appConfig.autoPrintBadges,
                 resultState = result.resultState,
@@ -85,9 +89,11 @@ class TicketHandlingDialogViewModel(
         }
 
         try {
-            badgeFactory.setup()
-            badgeFactory.printBadges(layout, position)
-            logSuccessfulPrint()
+            withContext(Dispatchers.IO) {
+                badgeFactory.setup()
+                badgeFactory.printBadges(layout, position)
+                logSuccessfulPrint()
+            }
         } catch (e: Exception) {
             _localTicketHandlingErrors.update { TicketHandlingErrors.Error(e.localizedMessage) }
         }

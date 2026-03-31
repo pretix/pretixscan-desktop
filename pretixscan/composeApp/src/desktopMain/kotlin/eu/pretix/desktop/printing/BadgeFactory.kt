@@ -84,12 +84,7 @@ class DesktopBadgeFactory(
         job.jobName = "pretixSCAN badge"
 
         log.info("Sending to printer...")
-        try {
-            job.print(attributes)
-        } catch (e: java.lang.ClassCastException) {
-            // FIXME: perhaps we can avoid this?
-            log.warning("We're probably not using the correct coroutine magic for JVM Compose ${e.stackTraceToString()}")
-        }
+        job.print(attributes)
         log.info("Printing done.")
     }
 

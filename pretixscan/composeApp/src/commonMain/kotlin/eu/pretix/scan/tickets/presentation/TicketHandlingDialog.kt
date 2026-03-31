@@ -20,8 +20,6 @@ import eu.pretix.desktop.app.ui.ErrorDialog
 import eu.pretix.scan.tickets.data.DismissBehavior
 import eu.pretix.scan.tickets.data.ResultState
 import eu.pretix.scan.tickets.data.dismissBehavior
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -160,7 +158,7 @@ fun TicketHandlingDialog(
                     TicketSuccess(
                         data = uiState,
                         onPrintBadges = {
-                            CoroutineScope(Dispatchers.IO).launch {
+                            coroutineScope.launch {
                                 viewModel.printBadges()
                             }
                         },
@@ -172,7 +170,7 @@ fun TicketHandlingDialog(
                     TicketSuccess(
                         data = uiState,
                         onPrintBadges = {
-                            CoroutineScope(Dispatchers.IO).launch {
+                            coroutineScope.launch {
                                 viewModel.printBadges()
                             }
                         },

@@ -126,6 +126,7 @@ class TicketCodeHandler(
             questionDateTimeMax = questionDateTimeMax
         )
 
+        log.info("Scan result: resultState=${resultState.resultState}, isPrintable=${resultState.isPrintable}, hasBadgeLayout=${badgeLayout != null}, hasPosition=${checkResult.position != null}, printBadgesEnabled=${conf.printBadges}, scanType=${checkResult.scanType}")
         return resultState
     }
 
