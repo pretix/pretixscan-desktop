@@ -64,14 +64,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pretixSCAN-${{ env.pretixVersion }}-linux-amd64.deb
-          path: ./pretixscan/composeApp/build/compose/binaries/main/deb/pretixscan_${{ env.pretixVersion }}-1_amd64.deb
+          path: ./pretixscan/composeApp/build/compose/binaries/main/deb/pretixscan_${{ env.pretixVersion }}_amd64.deb
 
       - name: Upload Linux arm
         if: matrix.os == 'ubuntu-24.04-arm'
         uses: actions/upload-artifact@v4
         with:
           name: pretixSCAN-${{ env.pretixVersion }}-linux-arm64.deb
-          path: ./pretixscan/composeApp/build/compose/binaries/main/deb/pretixscan_${{ env.pretixVersion }}-1_arm64.deb
+          path: ./pretixscan/composeApp/build/compose/binaries/main/deb/pretixscan_${{ env.pretixVersion }}_arm64.deb
 
       # Upload MacOS package
       - name: Upload MacOS App
