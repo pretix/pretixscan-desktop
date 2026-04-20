@@ -2,6 +2,7 @@ package eu.pretix.scan.tickets.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +19,7 @@ import pretixscan.composeapp.generated.resources.ic_error_white_24dp
 
 @Preview
 @Composable
-fun TicketFailure(modifier: Modifier = Modifier, data: ResultStateData) {
+fun TicketFailure(modifier: Modifier = Modifier, data: ResultStateData, remainingTimeProgress: Float = 1.0f) {
     Column(
         modifier = Modifier.background(data.resultState.color()),
     ) {
@@ -34,5 +35,14 @@ fun TicketFailure(modifier: Modifier = Modifier, data: ResultStateData) {
         ) {
             Text(data.orderCodeAndPositionId ?: "", style = MaterialTheme.typography.bodyLarge)
         }
+
+        LinearProgressIndicator(
+            progress = { remainingTimeProgress },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp),
+            color = CustomColor.White.asColor().copy(alpha = 0.8f),
+            trackColor = data.resultState.color().copy(alpha = 0.3f)
+        )
     }
 }

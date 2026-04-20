@@ -131,7 +131,7 @@ fun TicketHandlingDialog(
                 }
 
                 ResultState.ERROR -> {
-                    TicketFailure(data = uiState)
+                    TicketFailure(data = uiState, remainingTimeProgress = remainingTimeProgress)
                 }
 
                 ResultState.DIALOG_UNPAID -> UnpaidDialogView(data = uiState, onCancel = onDismiss, onCheckInAnyway = {
