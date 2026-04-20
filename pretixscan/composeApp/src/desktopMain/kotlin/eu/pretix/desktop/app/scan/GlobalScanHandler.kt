@@ -88,7 +88,11 @@ class GlobalScanHandler {
             KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(keyEventDispatcher)
             isRegistered = false
         }
-        scope.cancel()
-        log.info("GlobalScanHandler disposed")
+        timeoutJob?.cancel()
+        timeoutJob = null
+        scanBuffer.clear()
+        onHandleDirectScan = null
+        stateFlow = null
+        log.info("GlobalScanHandler unregistered")
     }
 }
