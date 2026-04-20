@@ -158,7 +158,7 @@ class TicketCodeHandler(
 
         val withBadgeData = conf.printBadges
 
-        val allowQuestions = answers.isNullOrEmpty()
+        val allowQuestions = true
 
         val startedAt = System.currentTimeMillis()
 
