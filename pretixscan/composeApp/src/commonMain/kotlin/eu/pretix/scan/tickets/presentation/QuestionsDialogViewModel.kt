@@ -65,12 +65,7 @@ class QuestionsDialogViewModel(
                     }
 
                     QuestionType.F -> {
-                        val value = formValue.value
-                        if (value.isNullOrBlank()) {
-                            null
-                        } else {
-                            Answer(question = question, value = value)
-                        }
+                        Answer(question = question, value = formValue.value ?: "")
                     }
 
                     QuestionType.N,

@@ -821,7 +821,7 @@ class QuestionsDialogViewModelTest {
     }
 
     @Test
-    fun `getCurrentAnswers returns empty list for unanswered non-required photo`() = runTest {
+    fun `getCurrentAnswers returns blank answer for unanswered non-required photo`() = runTest {
         val photoQuestion = createPhotoQuestion(required = false)
 
         val data = ResultStateData(
@@ -833,7 +833,8 @@ class QuestionsDialogViewModelTest {
         viewModel.buildQuestionsForm(data)
 
         val answers = viewModel.getCurrentAnswers(data)
-        assertTrue(answers.isEmpty())
+        assertEquals(1, answers.size)
+        assertEquals("", answers[0].value)
     }
 
     @Test
