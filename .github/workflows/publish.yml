@@ -23,7 +23,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest, ubuntu-24.04-arm]
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true # needed for libpretixsync and libpretixprint
       - name: Set up JDK 23
