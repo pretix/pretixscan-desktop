@@ -81,7 +81,7 @@ class TicketCodeHandlerTest {
             @Suppress("UNCHECKED_CAST")
             capturedAnswers = args[3] as? List<Answer>
             capturedAllowQuestions = args[8] as Boolean
-            TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.VALID)
+            TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.VALID, "valid")
         }
     }
 
