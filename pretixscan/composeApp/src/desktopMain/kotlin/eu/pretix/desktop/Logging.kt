@@ -2,12 +2,39 @@ package eu.pretix.desktop
 
 import java.io.OutputStream
 import java.io.PrintStream
+import java.util.logging.ConsoleHandler
 import java.util.logging.Level
+import java.util.logging.LogManager
 import java.util.logging.Logger
+import java.util.logging.StreamHandler
 
 internal fun installSystemStreamLoggers() {
+    val originalErr = System.err
+    rerouteConsoleHandlersTo(originalErr)
     System.setOut(loggingPrintStream("System.out", Level.INFO))
     System.setErr(loggingPrintStream("System.err", Level.WARNING))
+}
+
+private fun rerouteConsoleHandlersTo(target: PrintStream) {
+    val rootLogger = LogManager.getLogManager().getLogger("")
+    val visited = mutableSetOf<Logger>()
+
+    fun visit(logger: Logger) {
+        if (!visited.add(logger)) return
+        logger.handlers
+            .filterIsInstance<ConsoleHandler>()
+            .forEach { consoleHandler ->
+                val replacement = StreamHandler(target, consoleHandler.formatter).apply {
+                    level = consoleHandler.level
+                    consoleHandler.filter?.let { filter = it }
+                }
+                logger.removeHandler(consoleHandler)
+                logger.addHandler(replacement)
+            }
+        logger.parent?.let { visit(it) }
+    }
+
+    visit(rootLogger)
 }
 
 internal fun installUncaughtExceptionLogger() {
