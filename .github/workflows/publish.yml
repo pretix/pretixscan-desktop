@@ -54,21 +54,21 @@ jobs:
       # Upload Windows executables and installers
       - name: Upload Windows Apps
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pretixSCAN-${{ env.pretixVersion }}-win-x86_64.msi
           path: ./pretixscan/composeApp/build/compose/binaries/main/msi/pretixSCAN Desktop-${{ env.pretixVersion }}.msi
 
       - name: Upload Linux amd64
         if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pretixSCAN-${{ env.pretixVersion }}-linux-amd64.deb
           path: ./pretixscan/composeApp/build/compose/binaries/main/deb/pretixscan_${{ env.pretixVersion }}_amd64.deb
 
       - name: Upload Linux arm
         if: matrix.os == 'ubuntu-24.04-arm'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pretixSCAN-${{ env.pretixVersion }}-linux-arm64.deb
           path: ./pretixscan/composeApp/build/compose/binaries/main/deb/pretixscan_${{ env.pretixVersion }}_arm64.deb
@@ -76,7 +76,7 @@ jobs:
       # Upload MacOS package
       - name: Upload MacOS App
         if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pretixSCAN-${{ env.pretixVersion }}-macOS.dmg
           path: ./pretixscan/composeApp/build/compose/binaries/main/dmg/pretixscan-${{ env.pretixVersion }}.dmg
