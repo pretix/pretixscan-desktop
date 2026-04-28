@@ -145,7 +145,7 @@ class TicketCodeHandler(
 
         if (conf.playSound && answers.isNullOrEmpty()) {
             withContext(Dispatchers.Main) {
-                audioPlayer.play(Res.getUri("files/beep.m4a"))
+                audioPlayer.play(Res.getUri("files/beep.wav"))
             }
         }
 
@@ -246,12 +246,12 @@ fun TicketCheckProvider.CheckResult.pathForSound(): String =
         TicketCheckProvider.CheckResult.Type.VALID -> when (scanType) {
             TicketCheckProvider.CheckInType.ENTRY ->
                 if (isRequireAttention) {
-                    Res.getUri("files/attention.m4a")
+                    Res.getUri("files/attention.wav")
                 } else {
-                    Res.getUri("files/enter.m4a")
+                    Res.getUri("files/enter.wav")
                 }
 
-            TicketCheckProvider.CheckInType.EXIT -> Res.getUri("files/exit.m4a")
+            TicketCheckProvider.CheckInType.EXIT -> Res.getUri("files/exit.wav")
         }
 
         null,
@@ -267,7 +267,7 @@ fun TicketCheckProvider.CheckResult.pathForSound(): String =
         TicketCheckProvider.CheckResult.Type.AMBIGUOUS,
         TicketCheckProvider.CheckResult.Type.REVOKED,
         TicketCheckProvider.CheckResult.Type.UNAPPROVED,
-        TicketCheckProvider.CheckResult.Type.INVALID -> Res.getUri("files/error.m4a")
+        TicketCheckProvider.CheckResult.Type.INVALID -> Res.getUri("files/error.wav")
     }
 
 
