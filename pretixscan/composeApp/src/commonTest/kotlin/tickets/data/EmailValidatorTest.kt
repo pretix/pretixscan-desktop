@@ -7,7 +7,7 @@ import kotlin.test.assertTrue
 
 class EmailValidatorTest {
     companion object {
-        val sampleData = listOf(
+        val sampleData: List<Array<Any>> = listOf(
             // These are from https://github.com/django/django/blob/1b5338d03ecc962af8ab4678426bc60b0672b8dd/tests/validators/tests.py#L279
             arrayOf("email@here.com", true),
             arrayOf("weirder-email@here.and.there.com", true),
