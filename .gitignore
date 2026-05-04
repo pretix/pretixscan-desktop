@@ -40,3 +40,5 @@ release.sh
 
 *.keystore
 *.bak
+
+pretixscan/.kotlin/sessions
