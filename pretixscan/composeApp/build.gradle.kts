@@ -92,12 +92,12 @@ kotlin {
                 "osx-aarch_64" -> "mac-aarch64"
                 else -> throw IllegalStateException("Unknown OS: ${osdetector.classifier}")
             }
-            implementation("org.openjfx:javafx-base:19:${fxSuffix}")
-            implementation("org.openjfx:javafx-graphics:19:${fxSuffix}")
-            implementation("org.openjfx:javafx-controls:19:${fxSuffix}")
-            implementation("org.openjfx:javafx-swing:19:${fxSuffix}")
-            implementation("org.openjfx:javafx-web:19:${fxSuffix}")
-            implementation("org.openjfx:javafx-media:19:${fxSuffix}")
+            implementation("org.openjfx:javafx-base:23:${fxSuffix}")
+            implementation("org.openjfx:javafx-graphics:23:${fxSuffix}")
+            implementation("org.openjfx:javafx-controls:23:${fxSuffix}")
+            implementation("org.openjfx:javafx-swing:23:${fxSuffix}")
+            implementation("org.openjfx:javafx-web:23:${fxSuffix}")
+            implementation("org.openjfx:javafx-media:23:${fxSuffix}")
         }
 
         val desktopTest by getting

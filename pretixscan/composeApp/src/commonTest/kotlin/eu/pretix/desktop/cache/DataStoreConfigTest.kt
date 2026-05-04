@@ -209,6 +209,7 @@ class DataStoreConfigTest {
         assertEquals(emptyList(), config.getEventSelections())
         assertEquals(emptySet(), config.getKnownLiveEventSlugs())
         assertFalse(config.isMigrationComplete())
+        assertFalse(config.getUiHideNames())
     }
 
     @Test

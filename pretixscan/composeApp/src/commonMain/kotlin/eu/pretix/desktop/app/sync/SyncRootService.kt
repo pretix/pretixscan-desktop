@@ -3,7 +3,9 @@ package eu.pretix.desktop.app.sync
 import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
+import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -15,7 +17,10 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Coordinates sync across the app.
  */
-class SyncRootService(private val appConfig: DataStoreConfigStore) : ViewModel() {
+class SyncRootService(
+    private val appConfig: DataStoreConfigStore,
+    private val appCache: AppCache,
+) : ViewModel() {
     private val log = Logger.getLogger("SyncRootService")
 
     private val _syncState = MutableStateFlow<SyncState>(SyncState.Idle)
@@ -120,6 +125,7 @@ class SyncRootService(private val appConfig: DataStoreConfigStore) : ViewModel()
             }
 
             _syncState.value = SyncState.Success(lastSync = nowMillis)
+            logEventSummary()
             appConfig.lastFailedSync = 0L
             appConfig.lastSync = nowMillis
             appConfig.lastDownload = nowMillis
@@ -140,6 +146,32 @@ class SyncRootService(private val appConfig: DataStoreConfigStore) : ViewModel()
             _syncState.value = SyncState.Error(e.localizedMessage ?: "Unknown error")
             appConfig.lastFailedSync = nowMillis
             appConfig.lastFailedSyncMsg = e.localizedMessage ?: "Unknown error"
+        }
+    }
+
+    private fun logEventSummary() {
+        val selections = appConfig.eventSelections
+        if (selections.isEmpty()) {
+            log.info("sync summary: no events selected")
+            return
+        }
+        selections.forEach { selection ->
+            val timezone = runCatching<String?> {
+                appCache.db.eventQueries
+                    .selectBySlug(selection.eventSlug)
+                    .executeAsOneOrNull()
+                    ?.toModel()
+                    ?.timezone
+                    ?.id
+            }.getOrNull() ?: "unknown"
+
+            val subEventPart = selection.subEventId?.let { " sub_event=$it" } ?: ""
+            log.info(
+                "sync summary: event=${selection.eventSlug} (${selection.eventName})" +
+                    subEventPart +
+                    " check_in_list=${selection.checkInListId} (${selection.checkInListName})" +
+                    " timezone=$timezone"
+            )
         }
     }
 

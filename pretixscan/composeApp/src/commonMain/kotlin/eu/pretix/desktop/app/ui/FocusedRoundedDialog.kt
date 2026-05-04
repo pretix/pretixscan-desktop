@@ -46,7 +46,7 @@ fun FocusedRoundedDialog(
                 .border(1.dp, Color(0xFFE4E4E4), RoundedCornerShape(12.dp))
                 .background(Color.White)
         ) {
-            Box {
+            Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()

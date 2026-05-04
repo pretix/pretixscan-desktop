@@ -10,8 +10,9 @@ import eu.pretix.desktop.cache.Version
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.libpretixsync.sqldelight.CheckInList
+import eu.pretix.scan.tickets.data.DismissBehavior
 import eu.pretix.scan.tickets.data.ResultState
-import eu.pretix.scan.tickets.data.requiresUserInteraction
+import eu.pretix.scan.tickets.data.dismissBehavior
 import kotlinx.coroutines.flow.*
 import java.util.logging.Logger
 
@@ -197,12 +198,18 @@ class MainViewModel(
             is MainUiState.HandlingTicket -> {
                 val currentResultState = currentState.data.resultState
 
-                if (currentResultState?.requiresUserInteraction() == true) {
-                    log.info("AutoScan: Ignoring new scan - current dialog requires user interaction (state: $currentResultState)")
-                    return
+                when (currentResultState?.dismissBehavior()) {
+                    DismissBehavior.RequiresUserInteraction,
+                    DismissBehavior.Transient,
+                    null -> {
+                        log.info("AutoScan: Ignoring new scan - dialog requires user interaction or is still loading (state: $currentResultState)")
+                        return
+                    }
+                    DismissBehavior.AutoDismiss -> {
+                        log.info("AutoScan: New scan while handling auto-dismissible dialog, interrupting")
+                    }
                 }
 
-                log.info("AutoScan: New scan while handling auto-dismissible dialog, interrupting")
                 _uiState.update { MainUiState.ReadyToScan(currentState.data.secret(null)) }
                 _uiState.update {
                     MainUiState.HandlingTicket(

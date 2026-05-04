@@ -75,7 +75,7 @@ fun FiledFileUpload(
                 FieldValidationState.INVALID -> {
                     Text(
                         stringResource(Res.string.question_input_invalid),
-                        color = Color.Red,
+                        color = CustomColor.BrandRed.asColor(),
                         modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
                     )
                 }
@@ -83,7 +83,7 @@ fun FiledFileUpload(
                 FieldValidationState.MISSING -> {
                     Text(
                         stringResource(Res.string.question_input_required),
-                        color = Color.Red,
+                        color = CustomColor.BrandRed.asColor(),
                         modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
                     )
                 }

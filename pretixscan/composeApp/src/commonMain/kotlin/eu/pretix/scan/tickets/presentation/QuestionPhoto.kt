@@ -11,6 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import com.composables.core.Dialog
 import com.composables.core.DialogPanel
@@ -37,12 +42,18 @@ fun QuestionPhoto(
                 .padding(20.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .border(1.dp, Color(0xFFE4E4E4), RoundedCornerShape(12.dp))
-                .background(Color.White),
+                .background(Color.White)
+                .onPreviewKeyEvent { keyEvent ->
+                    if (keyEvent.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                    if (keyEvent.key == Key.Escape || keyEvent.key == Key.Back) {
+                        onDismiss(null); true
+                    } else false
+                },
         ) {
-            WebCam(onPhotoTaken = {
-                onDismiss(it)
-            })
+            WebCam(
+                onCancel = { onDismiss(null) },
+                onPhotoTaken = { onDismiss(it) }
+            )
         }
     }
 }
-

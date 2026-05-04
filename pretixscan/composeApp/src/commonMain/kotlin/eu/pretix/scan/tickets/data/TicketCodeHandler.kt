@@ -16,6 +16,7 @@ import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.models.db.toModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import pretixscan.composeapp.generated.resources.*
@@ -26,7 +27,7 @@ import java.util.logging.Logger
 class TicketCodeHandler(
     private val conf: DataStoreConfigStore,
     private val appCache: AppCache,
-    private val checkProvider: TicketCheckProvider,
+    private val checkProviderFactory: () -> TicketCheckProvider,
     private val audioPlayer: GadulkaPlayer,
     private val logHandler: SentryInterface,
     private val connectivityHelper: ConnectivityHelper,
@@ -56,7 +57,42 @@ class TicketCodeHandler(
             }
         }
 
-        val badgeLayout = layoutFetcher.getForItemAtEvent(checkResult.positionId, checkResult.eventSlug)
+        val questionMaxLengths = mutableMapOf<Long, Int>()
+        val questionNumberMin = mutableMapOf<Long, String>()
+        val questionNumberMax = mutableMapOf<Long, String>()
+        val questionDateMin = mutableMapOf<Long, String>()
+        val questionDateMax = mutableMapOf<Long, String>()
+        val questionDateTimeMin = mutableMapOf<Long, String>()
+        val questionDateTimeMax = mutableMapOf<Long, String>()
+        checkResult.requiredAnswers?.forEach {
+            try {
+                val jsonData = JSONObject(it.question.json_data)
+                if (jsonData.has("valid_string_length_max") && !jsonData.isNull("valid_string_length_max")) {
+                    questionMaxLengths[it.question.server_id] = jsonData.getInt("valid_string_length_max")
+                }
+                if (jsonData.has("valid_number_min") && !jsonData.isNull("valid_number_min")) {
+                    questionNumberMin[it.question.server_id] = jsonData.getString("valid_number_min")
+                }
+                if (jsonData.has("valid_number_max") && !jsonData.isNull("valid_number_max")) {
+                    questionNumberMax[it.question.server_id] = jsonData.getString("valid_number_max")
+                }
+                if (jsonData.has("valid_date_min") && !jsonData.isNull("valid_date_min")) {
+                    questionDateMin[it.question.server_id] = jsonData.getString("valid_date_min")
+                }
+                if (jsonData.has("valid_date_max") && !jsonData.isNull("valid_date_max")) {
+                    questionDateMax[it.question.server_id] = jsonData.getString("valid_date_max")
+                }
+                if (jsonData.has("valid_datetime_min") && !jsonData.isNull("valid_datetime_min")) {
+                    questionDateTimeMin[it.question.server_id] = jsonData.getString("valid_datetime_min")
+                }
+                if (jsonData.has("valid_datetime_max") && !jsonData.isNull("valid_datetime_max")) {
+                    questionDateTimeMax[it.question.server_id] = jsonData.getString("valid_datetime_max")
+                }
+            } catch (_: Exception) { }
+        }
+
+        val itemServerId = checkResult.position?.optLong("item", 0L)?.takeIf { it > 0 }
+        val badgeLayout = layoutFetcher.getForItemAtEvent(itemServerId, checkResult.eventSlug)
         val canPrintBadge =
             conf.printBadges && checkResult.scanType != TicketCheckProvider.CheckInType.EXIT && checkResult.position != null && badgeLayout != null
 
@@ -79,9 +115,18 @@ class TicketCodeHandler(
             answers = questionValues,
             isPrintable = canPrintBadge,
             badgeLayout = badgeLayout,
-            position = checkResult.position
+            position = checkResult.position,
+            eventSlug = checkResult.eventSlug,
+            questionMaxLengths = questionMaxLengths,
+            questionNumberMin = questionNumberMin,
+            questionNumberMax = questionNumberMax,
+            questionDateMin = questionDateMin,
+            questionDateMax = questionDateMax,
+            questionDateTimeMin = questionDateTimeMin,
+            questionDateTimeMax = questionDateTimeMax
         )
 
+        log.info("Scan result: resultState=${resultState.resultState}, isPrintable=${resultState.isPrintable}, hasBadgeLayout=${badgeLayout != null}, hasPosition=${checkResult.position != null}, printBadgesEnabled=${conf.printBadges}, scanType=${checkResult.scanType}")
         return resultState
     }
 
@@ -100,7 +145,7 @@ class TicketCodeHandler(
 
         if (conf.playSound && answers.isNullOrEmpty()) {
             withContext(Dispatchers.Main) {
-                audioPlayer.play(Res.getUri("files/beep.m4a"))
+                audioPlayer.play(Res.getUri("files/beep.wav"))
             }
         }
 
@@ -111,19 +156,24 @@ class TicketCodeHandler(
 
         val sourceType = "barcode"
 
-        val withBadgeData = conf.autoPrintBadges
+        val withBadgeData = conf.printBadges
 
         val allowQuestions = true
 
         val startedAt = System.currentTimeMillis()
 
         try {
+            val effectiveIgnoreUnpaid = ignoreUnpaid || !conf.unpaidAsk
+
+            val checkProvider = checkProviderFactory()
+            log.info("Scanning with ${checkProvider::class.simpleName}")
+
             val checkResult = checkProvider.check(
                 conf.eventSelectionToMap(),
                 ticketid = rawResult,
                 source_type = sourceType,
                 answers = answers,
-                ignore_unpaid = ignoreUnpaid,
+                ignore_unpaid = effectiveIgnoreUnpaid,
                 with_badge_data = withBadgeData,
                 scanType,
                 allowQuestions = allowQuestions
@@ -196,12 +246,12 @@ fun TicketCheckProvider.CheckResult.pathForSound(): String =
         TicketCheckProvider.CheckResult.Type.VALID -> when (scanType) {
             TicketCheckProvider.CheckInType.ENTRY ->
                 if (isRequireAttention) {
-                    Res.getUri("files/attention.m4a")
+                    Res.getUri("files/attention.wav")
                 } else {
-                    Res.getUri("files/enter.m4a")
+                    Res.getUri("files/enter.wav")
                 }
 
-            TicketCheckProvider.CheckInType.EXIT -> Res.getUri("files/exit.m4a")
+            TicketCheckProvider.CheckInType.EXIT -> Res.getUri("files/exit.wav")
         }
 
         null,
@@ -217,7 +267,7 @@ fun TicketCheckProvider.CheckResult.pathForSound(): String =
         TicketCheckProvider.CheckResult.Type.AMBIGUOUS,
         TicketCheckProvider.CheckResult.Type.REVOKED,
         TicketCheckProvider.CheckResult.Type.UNAPPROVED,
-        TicketCheckProvider.CheckResult.Type.INVALID -> Res.getUri("files/error.m4a")
+        TicketCheckProvider.CheckResult.Type.INVALID -> Res.getUri("files/error.wav")
     }
 
 

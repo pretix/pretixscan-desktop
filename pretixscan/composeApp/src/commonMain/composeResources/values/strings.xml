@@ -138,6 +138,12 @@
     <string name="question_validation_error">Some of your input could not be validated.</string>
     <string name="question_input_required">This field is required.</string>
     <string name="question_input_invalid">This input is not valid.</string>
+    <string name="question_input_number_too_low">The minimum value is %1$s.</string>
+    <string name="question_input_number_too_high">The maximum value is %1$s.</string>
+    <string name="question_input_number_out_of_range">The value must be between %1$s and %2$s.</string>
+    <string name="question_input_date_too_early">The earliest date is %1$s.</string>
+    <string name="question_input_date_too_late">The latest date is %1$s.</string>
+    <string name="question_input_date_out_of_range">The date must be between %1$s and %2$s.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel">Cancel</string>
@@ -197,6 +203,7 @@
     <string name="pin_protection_enter">Enter PIN</string>
     <string name="currently_inside">currently attending</string>
     <string name="error_no_available_events">No current or future event could be found. Please check the dates and access rights of your events.</string>
+    <string name="error_no_available_checkinlists">No check-in lists are available for this event. Please check the configuration of your check-in lists.</string>
     <string name="event_select_calendar">Show calendar</string>
     <string name="connect_instruction_heading">Here's how to connect to your pretix account</string>
     <string name="connect_instruction_step1">Log in to pretix and open the "Devices" page of your organizer account</string>

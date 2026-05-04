@@ -130,6 +130,12 @@
     <string name="question_validation_error">Teile der Eingabe waren ungültig.</string>
     <string name="question_input_required">Diese Frage muss beantwortet werden.</string>
     <string name="question_input_invalid">Die eingegebene Antwort ist nicht gültig.</string>
+    <string name="question_input_number_too_low">Der Mindestwert ist %1$s.</string>
+    <string name="question_input_number_too_high">Der Höchstwert ist %1$s.</string>
+    <string name="question_input_number_out_of_range">Der Wert muss zwischen %1$s und %2$s liegen.</string>
+    <string name="question_input_date_too_early">Das früheste Datum ist %1$s.</string>
+    <string name="question_input_date_too_late">Das späteste Datum ist %1$s.</string>
+    <string name="question_input_date_out_of_range">Das Datum muss zwischen %1$s und %2$s liegen.</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="cancel">Abbrechen</string>
@@ -189,6 +195,7 @@
     <string name="pin_protection_enter">PIN eingeben</string>
     <string name="currently_inside">aktuell anwesend</string>
     <string name="error_no_available_events">Es wurde kein gegenwärtiges oder zukünftiges Event gefunden. Bitte prüfen Sie das Datum und die Zugriffsrechte Ihrer Veranstaltungen.</string>
+    <string name="error_no_available_checkinlists">Keine Einlass-Listen für dieses Event verfügbar. Bitte prüfen Sie die Konfiguration Ihrer Einlass-Listen.</string>
     <string name="event_select_calendar">Kalender anzeigen</string>
     <string name="connect_instruction_heading">So verbinden Sie Ihr pretix-Konto</string>
     <string name="connect_instruction_step1">Loggen Sie sich bei pretix ein und öffnen Sie die Seite "Geräte" in Ihrem Veranstalterkonto</string>

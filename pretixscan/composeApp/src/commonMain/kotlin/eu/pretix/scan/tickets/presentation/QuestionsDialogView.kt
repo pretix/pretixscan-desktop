@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.launch
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.BlendMode.Companion.Color
@@ -36,6 +37,12 @@ import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.cancel
 import pretixscan.composeapp.generated.resources.cont
+import pretixscan.composeapp.generated.resources.question_input_date_out_of_range
+import pretixscan.composeapp.generated.resources.question_input_date_too_early
+import pretixscan.composeapp.generated.resources.question_input_date_too_late
+import pretixscan.composeapp.generated.resources.question_input_number_out_of_range
+import pretixscan.composeapp.generated.resources.question_input_number_too_high
+import pretixscan.composeapp.generated.resources.question_input_number_too_low
 import pretixscan.composeapp.generated.resources.yes
 
 
@@ -51,6 +58,7 @@ fun QuestionsDialogView(
     val uiBlinkSpecialTickets by viewModel.uiBlinkSpecialTickets.collectAsState()
     val showNames by viewModel.showNames.collectAsState()
     val state = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(data) {
         viewModel.buildQuestionsForm(data)
         viewModel.applyUiSettings()
@@ -117,6 +125,15 @@ fun QuestionsDialogView(
                 SelectListRow {
                     when (field.fieldType) {
                         QuestionType.N -> {
+                            val rangeMessage = when {
+                                field.numberMin != null && field.numberMax != null ->
+                                    stringResource(Res.string.question_input_number_out_of_range, field.numberMin.formatNumber(), field.numberMax.formatNumber())
+                                field.numberMin != null ->
+                                    stringResource(Res.string.question_input_number_too_low, field.numberMin.formatNumber())
+                                field.numberMax != null ->
+                                    stringResource(Res.string.question_input_number_too_high, field.numberMax.formatNumber())
+                                else -> null
+                            }
                             FieldTextInput(
                                 value = field.value ?: "",
                                 onValueChange = { newValue ->
@@ -124,11 +141,25 @@ fun QuestionsDialogView(
                                 },
                                 label = field.label,
                                 maxLines = 1,
-                                required = field.required
+                                required = field.required,
+                                validation = field.validation,
+                                validationMessage = rangeMessage
                             )
                         }
 
-                        QuestionType.EMAIL,
+                        QuestionType.EMAIL -> {
+                            FieldTextInput(
+                                value = field.value ?: "",
+                                onValueChange = { newValue ->
+                                    viewModel.updateAnswer(field.id, newValue)
+                                },
+                                label = field.label,
+                                maxLines = 1,
+                                required = field.required,
+                                validation = field.validation
+                            )
+                        }
+
                         QuestionType.S -> {
                             FieldTextInput(
                                 value = field.value ?: "",
@@ -137,7 +168,9 @@ fun QuestionsDialogView(
                                 },
                                 label = field.label,
                                 maxLines = 1,
-                                required = field.required
+                                required = field.required,
+                                validation = field.validation,
+                                maxLength = field.maxLength
                             )
                         }
 
@@ -149,8 +182,12 @@ fun QuestionsDialogView(
                                     value = field.value ?: "",
                                     onValueChange = { viewModel.updateAnswer(field.id, it) },
                                     maxLines = 2,
+                                    minLines = 2,
                                     label = field.label,
-                                    required = field.required
+                                    required = field.required,
+                                    validation = field.validation,
+                                    maxLength = field.maxLength,
+                                    showLimitCounter = true
                                 )
                             }
                         }
@@ -170,6 +207,7 @@ fun QuestionsDialogView(
                                     onSelect = {
                                         viewModel.updateAnswer(field.id, it)
                                     })
+                                FieldValidationText(field.validation)
                             }
                         }
 
@@ -189,6 +227,7 @@ fun QuestionsDialogView(
                                         viewModel.updateAnswer(field.id, selectedOption?.value)
                                     }
                                 )
+                                FieldValidationText(field.validation)
                             }
                         }
 
@@ -214,6 +253,7 @@ fun QuestionsDialogView(
                                         }
                                     )
                                 }
+                                FieldValidationText(field.validation)
                             }
                         }
 
@@ -230,6 +270,15 @@ fun QuestionsDialogView(
                         }
 
                         QuestionType.D -> {
+                            val dateRangeMessage = when {
+                                field.dateMin != null && field.dateMax != null ->
+                                    stringResource(Res.string.question_input_date_out_of_range, formatDateForDisplay(field.dateMin), formatDateForDisplay(field.dateMax))
+                                field.dateMin != null ->
+                                    stringResource(Res.string.question_input_date_too_early, formatDateForDisplay(field.dateMin))
+                                field.dateMax != null ->
+                                    stringResource(Res.string.question_input_date_too_late, formatDateForDisplay(field.dateMax))
+                                else -> null
+                            }
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
@@ -246,6 +295,7 @@ fun QuestionsDialogView(
                                         viewModel.updateAnswer(field.id, it)
                                     }
                                 )
+                                FieldValidationText(field.validation, dateRangeMessage)
                             }
                         }
 
@@ -265,10 +315,20 @@ fun QuestionsDialogView(
                                     },
                                     label = field.label
                                 )
+                                FieldValidationText(field.validation)
                             }
                         }
 
                         QuestionType.W -> {
+                            val dateTimeRangeMessage = when {
+                                field.dateMin != null && field.dateMax != null ->
+                                    stringResource(Res.string.question_input_date_out_of_range, formatDateTimeForDisplay(field.dateMin), formatDateTimeForDisplay(field.dateMax))
+                                field.dateMin != null ->
+                                    stringResource(Res.string.question_input_date_too_early, formatDateTimeForDisplay(field.dateMin))
+                                field.dateMax != null ->
+                                    stringResource(Res.string.question_input_date_too_late, formatDateTimeForDisplay(field.dateMax))
+                                else -> null
+                            }
                             Column(
                                 horizontalAlignment = Alignment.Start
                             ) {
@@ -285,6 +345,7 @@ fun QuestionsDialogView(
                                         viewModel.updateAnswer(field.id, it)
                                     }
                                 )
+                                FieldValidationText(field.validation, dateTimeRangeMessage)
                             }
                         }
 
@@ -311,6 +372,7 @@ fun QuestionsDialogView(
                                         viewModel.updateAnswer(field.id, selectedOption?.value)
                                     }
                                 )
+                                FieldValidationText(field.validation)
                             }
 
                         }
@@ -355,8 +417,13 @@ fun QuestionsDialogView(
             primaryLabel = stringResource(Res.string.cont),
             onCancel = onCancel,
             onPrimary = {
-                if (viewModel.validateForConfirm()) {
+                val firstInvalidIndex = viewModel.validateForConfirm()
+                if (firstInvalidIndex == null) {
                     onConfirm(viewModel.getCurrentAnswers(data))
+                } else {
+                    coroutineScope.launch {
+                        state.animateScrollToItem(firstInvalidIndex + 1)
+                    }
                 }
             }
         )
@@ -366,3 +433,10 @@ fun QuestionsDialogView(
         QuestionPhoto(onDismiss = { viewModel.dismissModal(it) })
     }
 }
+
+private fun String.formatNumber(): String =
+    try {
+        java.math.BigDecimal(this).stripTrailingZeros().toPlainString()
+    } catch (_: NumberFormatException) {
+        this
+    }

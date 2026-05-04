@@ -56,9 +56,11 @@ class SettingsViewModel(
             badgeLayout = printerSource.selectPrinterOrientation(appConfig.badgePrinterOrientation),
             layouts = printerSource.listPrinterOrientations(),
             printBadges = appConfig.printBadges,
+            autoPrintBadges = appConfig.autoPrintBadges,
             syncAuto = appConfig.syncAuto,
             playSounds = appConfig.playSound,
             offlineMode = appConfig.offlineMode,
+            unpaidAsk = appConfig.unpaidAsk,
             uiReduceMotion = appConfig.uiReduceMotion,
             uiHideNames = appConfig.uiHideNames,
             preferredCamera = appConfig.preferredCameraName,
@@ -110,6 +112,11 @@ class SettingsViewModel(
         }
     }
 
+    suspend fun setAutoPrintBadges(value: Boolean) {
+        appConfig.autoPrintBadges = value
+        loadSettings()
+    }
+
     suspend fun setSyncAuto(value: Boolean) {
         appConfig.syncAuto = value
         loadSettings()
@@ -132,6 +139,11 @@ class SettingsViewModel(
 
     suspend fun setOfflineMode(value: Boolean) {
         appConfig.offlineMode = value
+        loadSettings()
+    }
+
+    suspend fun setUnpaidAsk(value: Boolean) {
+        appConfig.unpaidAsk = value
         loadSettings()
     }
 

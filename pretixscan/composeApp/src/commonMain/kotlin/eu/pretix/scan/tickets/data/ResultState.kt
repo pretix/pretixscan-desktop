@@ -29,12 +29,23 @@ fun ResultState.color(): Color {
     }
 }
 
-fun ResultState.requiresUserInteraction(): Boolean {
-    return this == ResultState.DIALOG_UNPAID || this == ResultState.DIALOG_QUESTIONS
+sealed interface DismissBehavior {
+    data object AutoDismiss : DismissBehavior
+    data object RequiresUserInteraction : DismissBehavior
+    data object Transient : DismissBehavior
 }
 
-fun ResultState.isAutoDismissible(): Boolean {
-    return this == ResultState.SUCCESS || this == ResultState.SUCCESS_EXIT
+fun ResultState.dismissBehavior(): DismissBehavior = when (this) {
+    ResultState.EMPTY,
+    ResultState.LOADING -> DismissBehavior.Transient
+
+    ResultState.SUCCESS,
+    ResultState.SUCCESS_EXIT,
+    ResultState.ERROR,
+    ResultState.WARNING -> DismissBehavior.AutoDismiss
+
+    ResultState.DIALOG_UNPAID,
+    ResultState.DIALOG_QUESTIONS -> DismissBehavior.RequiresUserInteraction
 }
 
 data class ResultStateData(
@@ -56,5 +67,13 @@ data class ResultStateData(
     val answers: Map<Long, String> = emptyMap(),
     val isPrintable: Boolean = false,
     val badgeLayout: BadgeLayout? = null,
-    val position: JSONObject? = null
+    val position: JSONObject? = null,
+    val eventSlug: String? = null,
+    val questionMaxLengths: Map<Long, Int> = emptyMap(),
+    val questionNumberMin: Map<Long, String> = emptyMap(),
+    val questionNumberMax: Map<Long, String> = emptyMap(),
+    val questionDateMin: Map<Long, String> = emptyMap(),
+    val questionDateMax: Map<Long, String> = emptyMap(),
+    val questionDateTimeMin: Map<Long, String> = emptyMap(),
+    val questionDateTimeMax: Map<Long, String> = emptyMap()
 )

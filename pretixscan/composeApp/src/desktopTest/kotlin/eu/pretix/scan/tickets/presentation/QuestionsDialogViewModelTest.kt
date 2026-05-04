@@ -207,7 +207,7 @@ class QuestionsDialogViewModelTest {
         viewModel.updateAnswer(1L, "0474 12 34 56", "BE")
 
         val isValid = viewModel.validateForConfirm()
-        assertTrue(isValid)
+        assertNull(isValid)
     }
 
     @Test
@@ -223,7 +223,7 @@ class QuestionsDialogViewModelTest {
         viewModel.buildQuestionsForm(data)
 
         val isValid = viewModel.validateForConfirm()
-        assertFalse(isValid)
+        assertNotNull(isValid)
     }
 
     @Test
@@ -612,7 +612,7 @@ class QuestionsDialogViewModelTest {
         viewModel.buildQuestionsForm(data)
         val isValid = viewModel.validateForConfirm()
 
-        assertTrue(isValid)
+        assertNull(isValid)
         val formField = viewModel.form.value.first { it.id == 100L }
         assertNull(formField.validation)
     }
@@ -687,6 +687,453 @@ class QuestionsDialogViewModelTest {
         assertNull(formField.values, "values should be null when no answer is provided, not fall back to dependencyValues")
     }
 
+    @Test
+    fun `validateForConfirm returns true when non-required photo is empty`() = runTest {
+        val photoQuestion = createPhotoQuestion(required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val isValid = viewModel.validateForConfirm()
+        assertNull(isValid)
+    }
+
+    @Test
+    fun `validateForConfirm returns false when required photo is empty`() = runTest {
+        val photoQuestion = createPhotoQuestion(required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val isValid = viewModel.validateForConfirm()
+        assertNotNull(isValid)
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
+
+    @Test
+    fun `validateForConfirm returns true when required photo is provided`() = runTest {
+        val photoQuestion = createPhotoQuestion(required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "/tmp/photo.jpg")
+
+        val isValid = viewModel.validateForConfirm()
+        assertNull(isValid)
+    }
+
+    @Test
+    fun `updateAnswer formats file path with file protocol`() = runTest {
+        val photoQuestion = createPhotoQuestion()
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "/tmp/photo.jpg")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals("file:///tmp/photo.jpg", formField.value)
+    }
+
+    @Test
+    fun `updateAnswer preserves URL for photo answer`() = runTest {
+        val photoQuestion = createPhotoQuestion()
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "https://example.com/photo.jpg")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals("https://example.com/photo.jpg", formField.value)
+    }
+
+    @Test
+    fun `deleting photo answer sets value to null`() = runTest {
+        val photoQuestion = createPhotoQuestion()
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "/tmp/photo.jpg")
+        viewModel.updateAnswer(1L, null)
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.value)
+    }
+
+    @Test
+    fun `non-required photo does not block validation of other fields`() = runTest {
+        val textQuestion = Question(
+            id = 2L,
+            serverId = 2L,
+            eventSlug = "test-event",
+            position = 0,
+            required = true,
+            question = "Name",
+            identifier = "name",
+            askDuringCheckIn = true,
+            showDuringCheckIn = true,
+            type = QuestionType.T
+        )
+        val photoQuestion = createPhotoQuestion(serverId = 3L, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion, photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(2L, "John")
+
+        val isValid = viewModel.validateForConfirm()
+        assertNull(isValid)
+    }
+
+    @Test
+    fun `getCurrentAnswers returns blank answer for unanswered non-required photo`() = runTest {
+        val photoQuestion = createPhotoQuestion(required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val answers = viewModel.getCurrentAnswers(data)
+        assertEquals(1, answers.size)
+        assertEquals("", answers[0].value)
+    }
+
+    @Test
+    fun `pre-filled photo answer is preserved in form`() = runTest {
+        val photoQuestion = createPhotoQuestion(required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(photoQuestion),
+            answers = mapOf(1L to "https://example.com/photo.jpg")
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals("https://example.com/photo.jpg", formField.value)
+    }
+
+    @Test
+    fun `text exceeding maxLength is marked INVALID on validation`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 1L, type = QuestionType.S, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = emptyMap(),
+            questionMaxLengths = mapOf(1L to 10)
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "this exceeds the limit")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `text within maxLength passes validation`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 2L, type = QuestionType.T, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = emptyMap(),
+            questionMaxLengths = mapOf(2L to 50)
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(2L, "short")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 2L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `null maxLength means no length restriction`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 3L, type = QuestionType.S, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(3L, "a".repeat(1000))
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 3L }
+        assertNull(formField.validation)
+        assertNull(formField.maxLength)
+    }
+
+    @Test
+    fun `form field correctly receives maxLength from ResultStateData`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 4L, type = QuestionType.T, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = emptyMap(),
+            questionMaxLengths = mapOf(4L to 100)
+        )
+
+        viewModel.buildQuestionsForm(data)
+
+        val formField = viewModel.form.value.first { it.id == 4L }
+        assertEquals(100, formField.maxLength)
+    }
+
+    @Test
+    fun `pre-filled value exceeding maxLength fails validation`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 5L, type = QuestionType.S, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = mapOf(5L to "this is way too long for the limit"),
+            questionMaxLengths = mapOf(5L to 5)
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 5L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `blank optional text with maxLength does not trigger INVALID`() = runTest {
+        val textQuestion = createTextQuestion(serverId = 6L, type = QuestionType.T, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(textQuestion),
+            answers = emptyMap(),
+            questionMaxLengths = mapOf(6L to 10)
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 6L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `number exceeding max is marked INVALID on input`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMax = mapOf(1L to "10")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "11")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `number below min is marked INVALID on input`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMin = mapOf(1L to "5")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "3")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `number within range has no validation error`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMin = mapOf(1L to "1"),
+            questionNumberMax = mapOf(1L to "100")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "50")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `number range validated on submit`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMin = mapOf(1L to "10"),
+            questionNumberMax = mapOf(1L to "20")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "25")
+        val isValid = viewModel.validateForConfirm()
+
+        assertNotNull(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `empty optional number with range constraints passes validation`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L, required = false)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMin = mapOf(1L to "5"),
+            questionNumberMax = mapOf(1L to "10")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        val isValid = viewModel.validateForConfirm()
+
+        assertNull(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `decimal input is accepted for number questions`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap(),
+            questionNumberMin = mapOf(1L to "0"),
+            questionNumberMax = mapOf(1L to "100")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "3.14")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals("3.14", formField.value)
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `unparseable intermediate value like dash passes during input but fails on submit`() = runTest {
+        val numberQuestion = createNumberQuestion(serverId = 1L, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(numberQuestion),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "-")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals("-", formField.value)
+
+        val isValid = viewModel.validateForConfirm()
+        assertNotNull(isValid)
+        val formFieldAfterSubmit = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formFieldAfterSubmit.validation)
+    }
+
+    private fun createNumberQuestion(
+        serverId: Long = 1L,
+        required: Boolean = false
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Number",
+        identifier = "number-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = QuestionType.N
+    )
+
+    private fun createTextQuestion(
+        serverId: Long,
+        type: QuestionType = QuestionType.S,
+        required: Boolean = false
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Text Question",
+        identifier = "text-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = type
+    )
+
     private fun createTestQuestion() = Question(
         id = 1L,
         serverId = 1L,
@@ -699,4 +1146,407 @@ class QuestionsDialogViewModelTest {
         showDuringCheckIn = true,
         type = QuestionType.TEL
     )
+
+    private fun createPhotoQuestion(
+        serverId: Long = 1L,
+        required: Boolean = false
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Photo",
+        identifier = "photo",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = QuestionType.F
+    )
+
+    private fun createBooleanQuestion(
+        serverId: Long = 1L,
+        required: Boolean = true
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Accept Terms",
+        identifier = "terms-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = QuestionType.B
+    )
+
+    private fun createEmailQuestion(
+        serverId: Long = 1L,
+        required: Boolean = true
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Email Address",
+        identifier = "email-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = QuestionType.EMAIL
+    )
+
+    private fun createTimeQuestion(
+        serverId: Long = 1L,
+        required: Boolean = true
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Preferred Time",
+        identifier = "time-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = QuestionType.H
+    )
+
+    @Test
+    fun `required boolean with False value is marked MISSING`() = runTest {
+        val question = createBooleanQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "False")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
+
+    @Test
+    fun `required boolean with null value is marked MISSING`() = runTest {
+        val question = createBooleanQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
+
+    @Test
+    fun `required boolean with True value passes validation`() = runTest {
+        val question = createBooleanQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "True")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `invalid email format is marked INVALID`() = runTest {
+        val question = createEmailQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "not-an-email")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `valid email passes validation`() = runTest {
+        val question = createEmailQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "test@example.com")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `required empty email is marked MISSING`() = runTest {
+        val question = createEmailQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
+
+    @Test
+    fun `invalid time format is marked INVALID`() = runTest {
+        val question = createTimeQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "invalid")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `valid time passes validation`() = runTest {
+        val question = createTimeQuestion()
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "14:30")
+        viewModel.formatAndValidateForm()
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    private fun createDateQuestion(
+        serverId: Long = 1L,
+        type: QuestionType = QuestionType.D,
+        required: Boolean = false
+    ) = Question(
+        id = serverId,
+        serverId = serverId,
+        eventSlug = "test-event",
+        position = 0,
+        required = required,
+        question = "Date",
+        identifier = "date-$serverId",
+        askDuringCheckIn = true,
+        showDuringCheckIn = true,
+        type = type
+    )
+
+    @Test
+    fun `date before min is marked INVALID on input`() = runTest {
+        val question = createDateQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateMin = mapOf(1L to "2024-06-01")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-05-31")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `date after max is marked INVALID on input`() = runTest {
+        val question = createDateQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateMax = mapOf(1L to "2024-06-30")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-07-01")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `date within range has no validation error`() = runTest {
+        val question = createDateQuestion(serverId = 1L)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateMin = mapOf(1L to "2024-06-01"),
+            questionDateMax = mapOf(1L to "2024-06-30")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-06-15")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `date range validated on submit`() = runTest {
+        val question = createDateQuestion(serverId = 1L, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateMin = mapOf(1L to "2024-06-01"),
+            questionDateMax = mapOf(1L to "2024-06-30")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-07-15")
+        val isValid = viewModel.validateForConfirm()
+
+        assertNotNull(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `required blank date is marked MISSING on submit`() = runTest {
+        val question = createDateQuestion(serverId = 1L, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        val isValid = viewModel.validateForConfirm()
+
+        assertNotNull(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
+
+    @Test
+    fun `datetime before min is marked INVALID on input`() = runTest {
+        val question = createDateQuestion(serverId = 1L, type = QuestionType.W)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateTimeMin = mapOf(1L to "2024-06-15T10:00")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-06-15T09:59")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `datetime after max is marked INVALID on input`() = runTest {
+        val question = createDateQuestion(serverId = 1L, type = QuestionType.W)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateTimeMax = mapOf(1L to "2024-06-15T18:00")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-06-15T18:01")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `datetime within range has no validation error`() = runTest {
+        val question = createDateQuestion(serverId = 1L, type = QuestionType.W)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateTimeMin = mapOf(1L to "2024-06-15T10:00"),
+            questionDateTimeMax = mapOf(1L to "2024-06-15T18:00")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-06-15T14:00")
+
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertNull(formField.validation)
+    }
+
+    @Test
+    fun `datetime range validated on submit`() = runTest {
+        val question = createDateQuestion(serverId = 1L, type = QuestionType.W, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap(),
+            questionDateTimeMin = mapOf(1L to "2024-06-15T10:00"),
+            questionDateTimeMax = mapOf(1L to "2024-06-15T18:00")
+        )
+
+        viewModel.buildQuestionsForm(data)
+        viewModel.updateAnswer(1L, "2024-06-15T19:00")
+        val isValid = viewModel.validateForConfirm()
+
+        assertNotNull(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.INVALID, formField.validation)
+    }
+
+    @Test
+    fun `required blank datetime is marked MISSING on submit`() = runTest {
+        val question = createDateQuestion(serverId = 1L, type = QuestionType.W, required = true)
+
+        val data = ResultStateData(
+            resultState = ResultState.DIALOG_QUESTIONS,
+            requiredQuestions = listOf(question),
+            answers = emptyMap()
+        )
+
+        viewModel.buildQuestionsForm(data)
+        val isValid = viewModel.validateForConfirm()
+
+        assertNotNull(isValid)
+        val formField = viewModel.form.value.first { it.id == 1L }
+        assertEquals(FieldValidationState.MISSING, formField.validation)
+    }
 }

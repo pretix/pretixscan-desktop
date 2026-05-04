@@ -23,9 +23,9 @@ class PrintLayoutFetcher(private val appCache: AppCache) {
             return null
         }
 
-        val localItem = appCache.db.itemQueries.selectById(serverId).executeAsOneOrNull()
+        val localItem = appCache.db.itemQueries.selectByServerIdAndEventSlug(serverId, slug).executeAsOneOrNull()
         if (localItem == null) {
-            log.info("Print layout not found: local item position not found for $serverId.")
+            log.info("Print layout not found: item not found for server_id $serverId.")
             return null
         }
 

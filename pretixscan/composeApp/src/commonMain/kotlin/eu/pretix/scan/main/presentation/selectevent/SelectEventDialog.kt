@@ -48,7 +48,8 @@ fun SelectEventDialog(
     FocusedRoundedDialog(onDismiss = { onSelectEvent(null) }, content = {
         Column(
             modifier = Modifier
-                .background(CustomColor.BrandDark.asColor()),
+                .background(CustomColor.BrandDark.asColor())
+                .padding(vertical = 12.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {

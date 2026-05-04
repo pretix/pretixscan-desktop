@@ -12,16 +12,16 @@ import org.koin.dsl.onClose
 
 val ticketsModule = module {
     factory<TicketCodeHandler> {
-        TicketCodeHandler(get(), get(), get(), get(), get(), get(), get())
+        TicketCodeHandler(get(), get(), { get() }, get(), get(), get(), get())
     }
     factory<ConnectivityHelper> {
         ConnectivityHelper()
     }
     factory {
-        TicketSearchBarViewModel(get(), get())
+        TicketSearchBarViewModel({ get() }, get())
     }
     factory {
-        TicketHandlingDialogViewModel(get(), get())
+        TicketHandlingDialogViewModel(get(), get(), get(), get(), get())
     }
     factory {
         QuestionsDialogViewModel(get(), get())

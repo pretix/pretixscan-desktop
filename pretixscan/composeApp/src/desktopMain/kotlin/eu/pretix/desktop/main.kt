@@ -67,6 +67,8 @@ private fun initializeLogging() {
 
 fun main() = application {
     initializeLogging()
+    installSystemStreamLoggers()
+    installUncaughtExceptionLogger()
 
     startKoin {
         initModules()

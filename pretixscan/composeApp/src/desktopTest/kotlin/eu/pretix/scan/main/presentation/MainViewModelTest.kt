@@ -150,6 +150,28 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `onHandleDirectScan blocks new scan when dialog is still loading - null resultState`() = runTest {
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleDirectScan("FIRST_SCAN")
+        testScheduler.advanceUntilIdle()
+
+        val stateAfterFirstScan = viewModel.uiState.value
+        assertTrue(stateAfterFirstScan is MainUiState.HandlingTicket)
+        assertNull((stateAfterFirstScan as MainUiState.HandlingTicket).data.resultState,
+            "resultState should be null before dialog determines its result")
+
+        viewModel.onHandleDirectScan("SECOND_SCAN")
+        testScheduler.advanceUntilIdle()
+
+        val stateAfterSecondScan = viewModel.uiState.value
+        assertTrue(stateAfterSecondScan is MainUiState.HandlingTicket, "Should still be HandlingTicket")
+        assertEquals("FIRST_SCAN", (stateAfterSecondScan as MainUiState.HandlingTicket).data.secret,
+            "Secret should NOT change - scan should be blocked while dialog is loading")
+    }
+
+    @Test
     fun `onHandleDirectScan allows interruption when current dialog is auto-dismissible - SUCCESS`() = runTest {
         viewModel = createViewModel()
         testScheduler.advanceUntilIdle()
@@ -187,5 +209,45 @@ class MainViewModelTest {
         assertTrue(stateAfterSecondScan is MainUiState.HandlingTicket, "Should be HandlingTicket")
         assertEquals("SECOND_SCAN", (stateAfterSecondScan as MainUiState.HandlingTicket).data.secret,
             "Secret SHOULD change - scan should interrupt SUCCESS_EXIT dialog")
+    }
+
+    @Test
+    fun `onHandleDirectScan allows interruption when current dialog is auto-dismissible - ERROR`() = runTest {
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleDirectScan("FIRST_SCAN")
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onTicketResultDetermined(ResultState.ERROR)
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleDirectScan("SECOND_SCAN")
+        testScheduler.advanceUntilIdle()
+
+        val stateAfterSecondScan = viewModel.uiState.value
+        assertTrue(stateAfterSecondScan is MainUiState.HandlingTicket, "Should be HandlingTicket")
+        assertEquals("SECOND_SCAN", (stateAfterSecondScan as MainUiState.HandlingTicket).data.secret,
+            "Secret SHOULD change - scan should interrupt ERROR dialog")
+    }
+
+    @Test
+    fun `onHandleDirectScan allows interruption when current dialog is auto-dismissible - WARNING`() = runTest {
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleDirectScan("FIRST_SCAN")
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onTicketResultDetermined(ResultState.WARNING)
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleDirectScan("SECOND_SCAN")
+        testScheduler.advanceUntilIdle()
+
+        val stateAfterSecondScan = viewModel.uiState.value
+        assertTrue(stateAfterSecondScan is MainUiState.HandlingTicket, "Should be HandlingTicket")
+        assertEquals("SECOND_SCAN", (stateAfterSecondScan as MainUiState.HandlingTicket).data.secret,
+            "Secret SHOULD change - scan should interrupt WARNING dialog")
     }
 }
