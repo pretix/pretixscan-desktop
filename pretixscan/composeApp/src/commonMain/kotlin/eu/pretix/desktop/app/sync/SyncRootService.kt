@@ -9,6 +9,8 @@ import eu.pretix.libpretixsync.models.db.toModel
 import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.core.context.GlobalContext
 import java.util.logging.Logger
 import kotlin.time.Duration
@@ -42,7 +44,13 @@ class SyncRootService(
         route == "/eu/pretix/scan/main" && shouldSync
     }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    private var mainSyncJob: Job? = null
+    private val syncMutex = Mutex()
+
+    @Volatile
+    private var activeSyncManager: SyncManager? = null
+
+    @Volatile
+    private var cancellationRequested = false
 
     private fun tickerFlow(period: Duration, initialDelay: Duration = Duration.ZERO) = flow {
         delay(initialDelay)
@@ -57,9 +65,12 @@ class SyncRootService(
         tickerFlow(5.seconds)
             .filter { _shouldSync.value }
             .onEach {
-                mainSyncJob?.cancel()
-                mainSyncJob = viewModelScope.launch(Dispatchers.IO) {
-                    executeSync()
+                if (syncMutex.isLocked) {
+                    log.info("sync already running, skipping tick")
+                    return@onEach
+                }
+                viewModelScope.launch(Dispatchers.IO) {
+                    syncMutex.withLock { executeSync() }
                 }
             }
             .flowOn(Dispatchers.Main)
@@ -68,6 +79,7 @@ class SyncRootService(
 
     private fun executeSync(force: Boolean = false, nowMillis: Long = System.currentTimeMillis()) {
         try {
+            cancellationRequested = false
             if (!appConfig.isConfigured) {
                 log.info("skip sync while logged out")
                 _syncState.value = SyncState.Idle
@@ -95,23 +107,22 @@ class SyncRootService(
 
             _syncState.value = SyncState.InProgress("Syncing ${events.size} event(s)...")
             val syncManager = GlobalContext.get().get<SyncManager>()
+            activeSyncManager = syncManager
 
-            val syncResult = syncManager.sync(force) { message ->
-                runBlocking {
-                    withContext(Dispatchers.Main) {
-                        _syncState.value = SyncState.InProgress(message)
-
-                        // Update per-event state based on message content
-                        events.forEach { event ->
-                            if (message.contains(event.eventSlug, ignoreCase = true) ||
-                                message.contains(event.eventName, ignoreCase = true)) {
-                                _eventSyncStates.update { states ->
-                                    states + (event.eventSlug to EventSyncState.InProgress(message))
-                                }
+            val syncResult = try {
+                syncManager.sync(force) { message ->
+                    _syncState.value = SyncState.InProgress(message)
+                    events.forEach { event ->
+                        if (message.contains(event.eventSlug, ignoreCase = true) ||
+                            message.contains(event.eventName, ignoreCase = true)) {
+                            _eventSyncStates.update { states ->
+                                states + (event.eventSlug to EventSyncState.InProgress(message))
                             }
                         }
                     }
                 }
+            } finally {
+                activeSyncManager = null
             }
 
             if (syncResult.exception != null) {
@@ -130,6 +141,13 @@ class SyncRootService(
             appConfig.lastSync = nowMillis
             appConfig.lastDownload = nowMillis
         } catch (e: Exception) {
+            if (cancellationRequested) {
+                cancellationRequested = false
+                log.info("sync canceled")
+                _syncState.value = SyncState.Idle
+                return
+            }
+
             log.warning("sync failed: ${e.stackTraceToString()}")
 
             // Mark in-progress events as error
@@ -195,28 +213,41 @@ class SyncRootService(
     suspend fun minimalSync(nowMillis: Long = System.currentTimeMillis()) {
         log.info("Running a minimal sync")
         val shouldResume = skipFutureSyncs()
+        cancellationRequested = true
+        activeSyncManager?.cancel()
         _minimumSyncState.value = SyncState.InProgress("")
 
         withContext(Dispatchers.IO) {
-            try {
-                if (!appConfig.isConfigured) {
-                    log.info("skip minimal sync while logged out")
-                    _minimumSyncState.value = SyncState.Idle
-                    return@withContext
-                }
-                val syncManager = GlobalContext.get().get<SyncManager>()
-                syncManager.syncMinimalEventSet(appConfig.eventSlug, appConfig.subEventId ?: 0L) {
-                    runBlocking {
-                        withContext(Dispatchers.Main) {
-                            _minimumSyncState.value = SyncState.InProgress(it)
+            syncMutex.withLock {
+                try {
+                    cancellationRequested = false
+                    if (!appConfig.isConfigured) {
+                        log.info("skip minimal sync while logged out")
+                        _minimumSyncState.value = SyncState.Idle
+                        return@withLock
+                    }
+                    val syncManager = GlobalContext.get().get<SyncManager>()
+                    activeSyncManager = syncManager
+                    try {
+                        val result = syncManager.syncMinimalEventSet(appConfig.eventSlug, appConfig.subEventId ?: 0L) { message ->
+                            _minimumSyncState.value = SyncState.InProgress(message)
                         }
+                        if (result.exception != null) throw result.exception
+                    } finally {
+                        activeSyncManager = null
+                    }
+                    _minimumSyncState.value = SyncState.Success(lastSync = nowMillis)
+                    log.info("minimal sync completed")
+                } catch (e: Exception) {
+                    if (cancellationRequested) {
+                        cancellationRequested = false
+                        log.info("minimal sync canceled")
+                        _minimumSyncState.value = SyncState.Idle
+                    } else {
+                        log.warning("minimal sync failed: ${e.stackTraceToString()}")
+                        _minimumSyncState.value = SyncState.Error(e.localizedMessage ?: "Unknown error")
                     }
                 }
-                _minimumSyncState.value = SyncState.Success(lastSync = nowMillis)
-                log.info("skip sync completed")
-            } catch (e: Exception) {
-                log.warning("minimal sync failed: ${e.stackTraceToString()}")
-                _minimumSyncState.value = SyncState.Error(e.localizedMessage ?: "Unknown error")
             }
         }
 
@@ -227,17 +258,19 @@ class SyncRootService(
 
     fun forceSync(nowMillis: Long = System.currentTimeMillis()) {
         log.info("Full sync requested")
-        val shouldResume = skipFutureSyncs()
-        runBlocking {
-            mainSyncJob?.cancel()
-            mainSyncJob = viewModelScope.launch(Dispatchers.IO) {
-                executeSync(true, nowMillis)
+        cancellationRequested = true
+        activeSyncManager?.cancel()
+        viewModelScope.launch(Dispatchers.IO) {
+            syncMutex.withLock {
+                executeSync(force = true, nowMillis = nowMillis)
             }
         }
-        log.info("Full sync completed")
-        if (shouldResume) {
-            resumeSync()
-        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        cancellationRequested = true
+        activeSyncManager?.cancel()
     }
 }
 
