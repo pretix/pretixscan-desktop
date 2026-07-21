@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,35 +49,14 @@ fun MainToolbar(
             viewModel.updateEventButtonDisplay()
         }
 
-        val buttonLabel by viewModel.eventButtonLabel.collectAsState()
-        val tooltipText by viewModel.eventButtonTooltip.collectAsState()
+        val eventSelectionDisplay by viewModel.eventSelectionDisplay.collectAsState()
 
-        val buttonContent = @Composable {
-            Button(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                onClick = {
-                    viewModel.beginEventSelection()
-                }
-            ) {
-                Row {
-                    Text(buttonLabel)
-                    Icon(
-                        Icons.Default.ArrowDropDown,
-                        contentDescription = stringResource(Res.string.operation_select_event),
-                        tint = CustomColor.White.asColor()
-                    )
-                }
+        EventSelectionButton(
+            display = eventSelectionDisplay,
+            onClick = {
+                viewModel.beginEventSelection()
             }
-        }
-
-        // Apply tooltip only when it's not empty (multiple events)
-        if (tooltipText.isNotEmpty()) {
-            Tooltip(tooltipText) {
-                buttonContent()
-            }
-        } else {
-            buttonContent()
-        }
+        )
 
         Spacer(Modifier.weight(1f))
 

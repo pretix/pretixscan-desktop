@@ -250,4 +250,60 @@ class MainViewModelTest {
         assertEquals("SECOND_SCAN", (stateAfterSecondScan as MainUiState.HandlingTicket).data.secret,
             "Secret SHOULD change - scan should interrupt WARNING dialog")
     }
+
+    @Test
+    fun `updateEventButtonDisplay shows Single when there is one event selection`() = runTest {
+        every { appConfig.eventSelections } returns listOf(testEventSelection)
+
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.updateEventButtonDisplay()
+
+        val display = viewModel.eventSelectionDisplay.value
+        assertTrue(display is EventSelectionDisplay.Single, "Expected Single but got ${display::class.simpleName}")
+        assertEquals(testEventSelection.eventName, (display as EventSelectionDisplay.Single).eventName)
+        assertEquals(testEventSelection.checkInListName, display.listName)
+    }
+
+    @Test
+    fun `updateEventButtonDisplay shows Single with empty names when there are no event selections`() = runTest {
+        every { appConfig.eventSelections } returns emptyList()
+
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.updateEventButtonDisplay()
+
+        val display = viewModel.eventSelectionDisplay.value
+        assertTrue(display is EventSelectionDisplay.Single, "Expected Single but got ${display::class.simpleName}")
+        assertEquals("", (display as EventSelectionDisplay.Single).eventName)
+        assertEquals("", display.listName)
+    }
+
+    @Test
+    fun `updateEventButtonDisplay shows Multiple in input order when there are several event selections`() = runTest {
+        val secondEventSelection = testEventSelection.copy(
+            eventSlug = "second-event",
+            eventName = "Second Event",
+            checkInListId = 2L,
+            checkInListName = "Second List"
+        )
+        every { appConfig.eventSelections } returns listOf(testEventSelection, secondEventSelection)
+
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.updateEventButtonDisplay()
+
+        val display = viewModel.eventSelectionDisplay.value
+        assertTrue(display is EventSelectionDisplay.Multiple, "Expected Multiple but got ${display::class.simpleName}")
+        assertEquals(
+            listOf(
+                testEventSelection.eventName to testEventSelection.checkInListName,
+                secondEventSelection.eventName to secondEventSelection.checkInListName
+            ),
+            (display as EventSelectionDisplay.Multiple).selections
+        )
+    }
 }

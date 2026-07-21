@@ -13,6 +13,11 @@ data class EventForSelection(
     val dateTo: DateTime?
 )
 
+sealed interface EventSelectionDisplay {
+    data class Single(val eventName: String, val listName: String) : EventSelectionDisplay
+    data class Multiple(val selections: List<Pair<String, String>>) : EventSelectionDisplay
+}
+
 sealed class MainUiState<out T> {
     data class ReadyToScan<out T>(val data: T) : MainUiState<T>()
 
