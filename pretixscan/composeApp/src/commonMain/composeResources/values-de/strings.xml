@@ -38,7 +38,7 @@
     <string name="action_reload_events">Veranstaltungen neu laden</string>
     <string name="operation_select_event">Veranstaltung auswählen</string>
     <string name="operation_select_events">Veranstaltungen auswählen</string>
-    <string name="events_selected">%s Veranstaltungen ausgewählt</string>
+    <string name="events_selected">%1$s Veranstaltungen ausgewählt</string>
     <string name="operation_select_checkinlist">Check-In-Liste auswählen</string>
     <string name="advanced_mode">Exoerten-Modus</string>
     <string name="advanced_mode_description">Wählen Sie mehrere Veranstaltungen aus, die gleichzeitig geprüft werden sollen</string>

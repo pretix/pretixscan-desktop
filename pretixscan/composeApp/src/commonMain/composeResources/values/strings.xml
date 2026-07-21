@@ -38,7 +38,7 @@
     <string name="action_reload_events">Reload Events</string>
     <string name="operation_select_event">Select Event</string>
     <string name="operation_select_events">Select Events</string>
-    <string name="events_selected">%s events selected</string>
+    <string name="events_selected">%1$s events selected</string>
     <string name="operation_select_checkinlist">Select Check-in list</string>
     <string name="advanced_mode">Advanced Mode</string>
     <string name="advanced_mode_description">Select multiple events for concurrent scanning</string>
