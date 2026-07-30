@@ -1,6 +1,7 @@
 package eu.pretix.desktop.cache
 
 import eu.pretix.libpretixsync.config.ConfigStore
+import eu.pretix.scan.tickets.data.BadgePrintPolicy
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 
@@ -221,7 +222,7 @@ class DataStoreConfigStore(
         get() = runBlocking { dataStoreConfig.getUiReduceMotion() }
         set(value) = runBlocking { dataStoreConfig.setUiReduceMotion(value) }
 
-    var autoPrintBadges: Boolean
+    var autoPrintBadges: BadgePrintPolicy
         get() = runBlocking { dataStoreConfig.getAutoPrintBadges() }
         set(value) = runBlocking { dataStoreConfig.setAutoPrintBadges(value) }
 

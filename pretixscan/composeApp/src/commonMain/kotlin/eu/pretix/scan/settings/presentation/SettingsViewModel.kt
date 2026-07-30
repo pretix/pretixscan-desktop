@@ -11,6 +11,7 @@ import eu.pretix.desktop.cache.Version
 import eu.pretix.desktop.webcam.data.VideoSource
 import eu.pretix.scan.settings.data.ConfigurableSettings
 import eu.pretix.scan.settings.data.PrinterSource
+import eu.pretix.scan.tickets.data.BadgePrintPolicy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -112,7 +113,7 @@ class SettingsViewModel(
         }
     }
 
-    suspend fun setAutoPrintBadges(value: Boolean) {
+    suspend fun setAutoPrintBadges(value: BadgePrintPolicy) {
         appConfig.autoPrintBadges = value
         loadSettings()
     }

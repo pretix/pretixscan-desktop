@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import eu.pretix.desktop.migration.ConfigMigration
 import eu.pretix.pretixscan.desktop.AppConfig
+import eu.pretix.scan.tickets.data.BadgePrintPolicy
 import kotlinx.coroutines.test.runTest
 import okio.Path.Companion.toPath
 import kotlin.io.path.createTempDirectory
@@ -97,7 +98,7 @@ class ConfigMigrationTest {
         assertEquals(false, newConfig.getPlaySound())
         assertEquals(false, newConfig.getUiHideNames())
         assertEquals(true, newConfig.getUiReduceMotion())
-        assertEquals(true, newConfig.getAutoPrintBadges())
+        assertEquals(BadgePrintPolicy.ONCE_IF_NOT_PRINTED, newConfig.getAutoPrintBadges())
         assertEquals("Logitech C920", newConfig.getPreferredCameraName())
         assertEquals("exit", newConfig.getScanType())
         assertEquals("Canon Pixma", newConfig.getBadgePrinterName())

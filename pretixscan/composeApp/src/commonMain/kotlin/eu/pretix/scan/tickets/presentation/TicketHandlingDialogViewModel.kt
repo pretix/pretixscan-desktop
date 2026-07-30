@@ -62,9 +62,9 @@ class TicketHandlingDialogViewModel(
         _uiState.update {
             result
         }
-        log.info("Auto-print check: isPrintable=${result.isPrintable}, autoPrintBadges=${appConfig.autoPrintBadges}, resultState=${result.resultState}, hasPosition=${result.position != null}, previouslyPrinted=${result.position?.let { isPreviouslyPrinted(it) }}")
+        log.info("Auto-print check: isPrintable=${result.isPrintable}, autoPrintBadgesPolicy=${appConfig.autoPrintBadges}, resultState=${result.resultState}, hasPosition=${result.position != null}, previouslyPrinted=${result.position?.let { isPreviouslyPrinted(it) }}")
         if (result.isPrintable && shouldAutoPrint(
-                autoPrintBadges = appConfig.autoPrintBadges,
+                policy = appConfig.autoPrintBadges,
                 resultState = result.resultState,
                 position = result.position
             )

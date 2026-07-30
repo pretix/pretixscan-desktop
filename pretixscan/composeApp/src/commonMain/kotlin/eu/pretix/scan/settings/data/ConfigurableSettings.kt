@@ -1,12 +1,13 @@
 package eu.pretix.scan.settings.data
 
 import eu.pretix.desktop.app.ui.SelectableValue
+import eu.pretix.scan.tickets.data.BadgePrintPolicy
 
 data class ConfigurableSettings(
     val version: String = "",
     val printers: List<SelectableValue> = emptyList(),
     val printBadges: Boolean = false,
-    val autoPrintBadges: Boolean = true,
+    val autoPrintBadges: BadgePrintPolicy = BadgePrintPolicy.ONCE_IF_NOT_PRINTED,
     val badgePrinter: SelectableValue? = null,
     val badgeLayout: SelectableValue? = null,
     val layouts: List<SelectableValue> = emptyList(),

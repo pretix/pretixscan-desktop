@@ -58,46 +58,62 @@ class AutoPrintDecisionTest {
     }
 
     @Test
-    fun `shouldAutoPrint returns false when autoPrintBadges is disabled`() {
+    fun `shouldAutoPrint returns false for WHEN_BUTTON_PRESSED even on SUCCESS with no prior prints`() {
         val position = JSONObject()
-        assertFalse(shouldAutoPrint(false, ResultState.SUCCESS, position))
+        assertFalse(shouldAutoPrint(BadgePrintPolicy.WHEN_BUTTON_PRESSED, ResultState.SUCCESS, position))
     }
 
     @Test
     fun `shouldAutoPrint returns false for non-SUCCESS result states`() {
         val position = JSONObject()
-        assertFalse(shouldAutoPrint(true, ResultState.ERROR, position))
-        assertFalse(shouldAutoPrint(true, ResultState.WARNING, position))
-        assertFalse(shouldAutoPrint(true, ResultState.SUCCESS_EXIT, position))
-        assertFalse(shouldAutoPrint(true, ResultState.LOADING, position))
+        assertFalse(shouldAutoPrint(BadgePrintPolicy.ONCE_IF_NOT_PRINTED, ResultState.ERROR, position))
+        assertFalse(shouldAutoPrint(BadgePrintPolicy.ONCE_IF_NOT_PRINTED, ResultState.WARNING, position))
+        assertFalse(shouldAutoPrint(BadgePrintPolicy.ONCE_IF_NOT_PRINTED, ResultState.SUCCESS_EXIT, position))
+        assertFalse(shouldAutoPrint(BadgePrintPolicy.ONCE_IF_NOT_PRINTED, ResultState.LOADING, position))
     }
 
     @Test
     fun `shouldAutoPrint returns false when position is null`() {
-        assertFalse(shouldAutoPrint(true, ResultState.SUCCESS, null))
+        assertFalse(shouldAutoPrint(BadgePrintPolicy.ONCE_IF_NOT_PRINTED, ResultState.SUCCESS, null))
     }
 
     @Test
-    fun `shouldAutoPrint returns true for SUCCESS with no prior prints`() {
+    fun `shouldAutoPrint returns true for ONCE_IF_NOT_PRINTED on SUCCESS with no prior prints`() {
         val position = JSONObject()
-        assertTrue(shouldAutoPrint(true, ResultState.SUCCESS, position))
+        assertTrue(shouldAutoPrint(BadgePrintPolicy.ONCE_IF_NOT_PRINTED, ResultState.SUCCESS, position))
     }
 
     @Test
-    fun `shouldAutoPrint returns false for SUCCESS when already printed`() {
+    fun `shouldAutoPrint returns false for ONCE_IF_NOT_PRINTED on SUCCESS when already printed`() {
         val printLog = JSONObject()
             .put("successful", true)
             .put("type", "badge")
         val position = JSONObject().put("print_logs", JSONArray().put(printLog))
-        assertFalse(shouldAutoPrint(true, ResultState.SUCCESS, position))
+        assertFalse(shouldAutoPrint(BadgePrintPolicy.ONCE_IF_NOT_PRINTED, ResultState.SUCCESS, position))
     }
 
     @Test
-    fun `shouldAutoPrint returns true for SUCCESS with only failed prior prints`() {
+    fun `shouldAutoPrint returns true for ONCE_IF_NOT_PRINTED on SUCCESS with only failed prior prints`() {
         val printLog = JSONObject()
             .put("successful", false)
             .put("type", "badge")
         val position = JSONObject().put("print_logs", JSONArray().put(printLog))
-        assertTrue(shouldAutoPrint(true, ResultState.SUCCESS, position))
+        assertTrue(shouldAutoPrint(BadgePrintPolicy.ONCE_IF_NOT_PRINTED, ResultState.SUCCESS, position))
+    }
+
+    @Test
+    fun `shouldAutoPrint returns true for ALWAYS on SUCCESS even when already printed`() {
+        val printLog = JSONObject()
+            .put("successful", true)
+            .put("type", "badge")
+        val position = JSONObject().put("print_logs", JSONArray().put(printLog))
+        assertTrue(shouldAutoPrint(BadgePrintPolicy.ALWAYS, ResultState.SUCCESS, position))
+    }
+
+    @Test
+    fun `shouldAutoPrint returns false for ALWAYS on non-SUCCESS or null position`() {
+        val position = JSONObject()
+        assertFalse(shouldAutoPrint(BadgePrintPolicy.ALWAYS, ResultState.ERROR, position))
+        assertFalse(shouldAutoPrint(BadgePrintPolicy.ALWAYS, ResultState.SUCCESS, null))
     }
 }

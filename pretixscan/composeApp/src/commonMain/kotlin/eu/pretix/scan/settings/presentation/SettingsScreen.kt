@@ -25,7 +25,9 @@ import eu.pretix.desktop.cache.getLogDirectory
 import eu.pretix.desktop.cache.getUserDataFolder
 import eu.pretix.desktop.cache.openPathInFileBrowser
 import eu.pretix.desktop.webcam.data.VideoSource
+import eu.pretix.scan.tickets.data.BadgePrintPolicy
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.*
@@ -220,15 +222,25 @@ fun SettingsScreen(
                                     Column(
                                         horizontalAlignment = Alignment.Start
                                     ) {
-                                        CheckboxWithLabel(
-                                            label = stringResource(Res.string.preference_autobadgeprint_enable),
-                                            description = null,
-                                            checked = form.autoPrintBadges,
-                                            onCheckedChange = {
-                                                coroutineScope.launch {
-                                                    viewModel.setAutoPrintBadges(it)
+                                        Text(
+                                            stringResource(Res.string.preference_autobadgeprint_enable)
+                                        )
+                                        val autoPrintBadgesLabels = stringArrayResource(Res.array.settings_valuelabels_auto_print_badges)
+                                        val autoPrintBadgesOptions = listOf(
+                                            SelectableValue(BadgePrintPolicy.WHEN_BUTTON_PRESSED.storageValue, autoPrintBadgesLabels[0]),
+                                            SelectableValue(BadgePrintPolicy.ONCE_IF_NOT_PRINTED.storageValue, autoPrintBadgesLabels[1]),
+                                            SelectableValue(BadgePrintPolicy.ALWAYS.storageValue, autoPrintBadgesLabels[2]),
+                                        )
+                                        FieldSpinner(
+                                            selectedValue = form.autoPrintBadges.storageValue,
+                                            availableOptions = autoPrintBadgesOptions,
+                                            onSelect = {
+                                                if (it != null) {
+                                                    coroutineScope.launch {
+                                                        viewModel.setAutoPrintBadges(BadgePrintPolicy.fromStorageValue(it.value))
+                                                    }
                                                 }
-                                            }
+                                            },
                                         )
                                     }
                                 }

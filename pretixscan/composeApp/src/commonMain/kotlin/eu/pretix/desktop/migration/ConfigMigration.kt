@@ -2,6 +2,7 @@ package eu.pretix.desktop.migration
 
 import eu.pretix.desktop.cache.DataStoreConfig
 import eu.pretix.pretixscan.desktop.AppConfig
+import eu.pretix.scan.tickets.data.BadgePrintPolicy
 import java.util.logging.Logger
 
 /**
@@ -87,7 +88,9 @@ class ConfigMigration(
             newConfig.setPlaySound(oldConfig.playSound)
             newConfig.setUiHideNames(oldConfig.uiHideNames)
             newConfig.setUiReduceMotion(oldConfig.uiReduceMotion)
-            newConfig.setAutoPrintBadges(oldConfig.autoPrintBadges)
+            newConfig.setAutoPrintBadges(
+                if (oldConfig.autoPrintBadges) BadgePrintPolicy.ONCE_IF_NOT_PRINTED else BadgePrintPolicy.WHEN_BUTTON_PRESSED
+            )
 
             // Hardware Settings
             newConfig.setPreferredCameraName(oldConfig.preferredCameraName)

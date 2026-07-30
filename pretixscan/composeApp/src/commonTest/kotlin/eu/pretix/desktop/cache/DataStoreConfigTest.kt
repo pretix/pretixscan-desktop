@@ -3,6 +3,9 @@ package eu.pretix.desktop.cache
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import eu.pretix.scan.tickets.data.BadgePrintPolicy
 import kotlinx.coroutines.test.runTest
 import okio.Path.Companion.toPath
 import org.joda.time.DateTime
@@ -58,6 +61,36 @@ class DataStoreConfigTest {
         val result = config.getOfflineMode()
 
         assertTrue(result)
+    }
+
+    @Test
+    fun test_auto_print_badges_round_trip() = runTest {
+        val dataStore = createTestDataStore()
+        val config = DataStoreConfig(dataStore)
+
+        config.setAutoPrintBadges(BadgePrintPolicy.ALWAYS)
+
+        assertEquals(BadgePrintPolicy.ALWAYS, config.getAutoPrintBadges())
+    }
+
+    @Test
+    fun test_auto_print_badges_falls_back_to_legacy_boolean_when_true() = runTest {
+        val dataStore = createTestDataStore()
+        val config = DataStoreConfig(dataStore)
+
+        dataStore.edit { it[booleanPreferencesKey("auto_print_badges")] = true }
+
+        assertEquals(BadgePrintPolicy.ONCE_IF_NOT_PRINTED, config.getAutoPrintBadges())
+    }
+
+    @Test
+    fun test_auto_print_badges_falls_back_to_legacy_boolean_when_false() = runTest {
+        val dataStore = createTestDataStore()
+        val config = DataStoreConfig(dataStore)
+
+        dataStore.edit { it[booleanPreferencesKey("auto_print_badges")] = false }
+
+        assertEquals(BadgePrintPolicy.WHEN_BUTTON_PRESSED, config.getAutoPrintBadges())
     }
 
     @Test
