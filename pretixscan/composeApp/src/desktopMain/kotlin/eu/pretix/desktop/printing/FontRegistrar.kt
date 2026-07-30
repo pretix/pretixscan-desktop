@@ -3,6 +3,7 @@ package eu.pretix.desktop.printing
 import eu.pretix.libpretixprint.templating.FontRegistry
 import eu.pretix.libpretixprint.templating.FontSpecification.Style
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.json.JSONObject
 import pretixscan.composeapp.generated.resources.Res
 import java.io.File
 
@@ -24,15 +25,6 @@ class FontRegistrar {
         registerFontFamilies(dataDir, "Open Sans", "files/fonts/OpenSans-%s.ttf")
         registerFontFamilies(
             dataDir,
-            "Almarai",
-            "files/fonts/almarai-v5-arabic-%s.ttf",
-            "regular",
-            "800",
-            "800",
-            "regular"
-        )
-        registerFontFamilies(
-            dataDir,
             "Baloo Bhaijaan",
             "files/fonts/baloo-bhaijaan-v6-latin-ext_vietnamese_latin_arabic-%s.ttf",
             "regular",
@@ -40,83 +32,36 @@ class FontRegistrar {
             "regular",
             "regular"
         )
-        registerFontFamilies(dataDir, "Noto Sans", "files/fonts/NotoSans-%s-webfont.ttf")
-        registerFontFamilies(
-            dataDir,
-            "Noto Sans Japanese",
-            "files/fonts/noto-sans-jp-v52-cyrillic_japanese_latin_latin-ext_vietnamese-%s.ttf",
-            "regular",
-            "700",
-            "700",
-            "regular"
-        )
-        registerFontFamilies(
-            dataDir,
-            "Noto Sans Traditional Chinese",
-            "files/fonts/noto-sans-tc-v35-chinese-traditional_cyrillic_latin_latin-ext_vietnamese-%s.ttf",
-            "regular",
-            "700",
-            "700",
-            "regular"
-        )
-        registerFontFamilies(
-            dataDir,
-            "Noto Sans Simplified Chinese",
-            "files/fonts/noto-sans-sc-v36-chinese-simplified_cyrillic_latin_latin-ext_vietnamese-%s.ttf",
-            "regular",
-            "700",
-            "700",
-            "regular"
-        )
-
-        registerFontFamilies(dataDir, "Roboto", "files/fonts/Roboto-%s.ttf")
         registerFontFamilies(dataDir, "Droid Serif", "files/fonts/DroidSerif-%s-webfont.ttf")
-        registerFontFamilies(dataDir, "Fira Sans", "files/fonts/firasans-%s-webfont.ttf")
-        registerFontFamilies(dataDir, "Lato", "files/fonts/Lato-%s.ttf")
-        registerFontFamilies(dataDir, "Vollkorn", "files/fonts/Vollkorn-%s.ttf")
-        registerFontFamilies(dataDir, "Montserrat", "files/fonts/montserrat-%s-webfont.ttf")
-        registerFontFamilies(dataDir, "Oswald", "files/fonts/oswald-%s-webfont.ttf")
-        registerFontFamilies(dataDir, "Roboto Condensed", "files/fonts/RobotoCondensed-%s-webfont.ttf")
-        registerFontFamilies(
-            dataDir,
-            "Tajawal",
-            "files/fonts/tajawal-v3-latin_arabic-%s.ttf",
-            "regular",
-            "700",
-            "700",
-            "regular"
-        )
-        registerFontFamilies(dataDir, "Titillium", "files/fonts/titillium-%s-webfont.ttf")
         registerFontFamilies(
             dataDir,
             "Titillium Upright",
             "files/fonts/titillium-%s-webfont.ttf",
-            "RegularUpright",
-            "BoldUpright",
-            "BoldUpright",
-            "RegularUpright"
+            "regularupright",
+            "boldupright",
+            "boldupright",
+            "regularupright"
         )
         registerFontFamilies(
             dataDir,
             "Titillium Semibold Upright",
             "files/fonts/titillium-%s-webfont.ttf",
-            "SemiboldUpright",
-            "BoldUpright",
-            "BoldUpright",
-            "SemiboldUpright"
+            "semiboldupright",
+            "boldupright",
+            "boldupright",
+            "semiboldupright"
         )
         registerFontFamilies(dataDir, "DejaVu Sans", "files/fonts/DejaVuSans-%s-webfont.ttf")
-        registerFontFamilies(dataDir, "Poppins", "files/fonts/Poppins-%s-webfont.ttf")
-        registerFontFamilies(dataDir, "Space Mono", "files/fonts/Space-Mono-%s.ttf")
-        registerFontFamilies(
-            dataDir,
-            "Ubuntu",
-            "files/fonts/ubuntu-v15-latin-ext_latin-%s.ttf",
-            "regular",
-            "700",
-            "700italic",
-            "italic"
-        )
+        val cat_json = Res.readBytes("files/fonts/catalog.json").decodeToString()
+        val cat = JSONObject(cat_json)
+        for (family in cat.keys()) {
+            val familyConfig = cat.getJSONObject(family)
+            val regularName = familyConfig.getJSONObject("regular").getString("truetype")
+            val boldName = if (familyConfig.has("bold")) familyConfig.getJSONObject("bold").getString("truetype") else regularName
+            val italicName = if (familyConfig.has("italic")) familyConfig.getJSONObject("italic").getString("truetype") else regularName
+            val boldItalicName = if (familyConfig.has("bolditalic")) familyConfig.getJSONObject("bolditalic").getString("truetype") else regularName
+            registerFontFamilies(dataDir, family, "files/fonts/%s", regularName, boldName, boldItalicName, italicName)
+        }
     }
 
 
