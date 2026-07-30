@@ -5,6 +5,7 @@ import eu.pretix.scan.tickets.data.BadgePrintPolicy
 
 data class ConfigurableSettings(
     val version: String = "",
+    val deviceName: String = "",
     val printers: List<SelectableValue> = emptyList(),
     val printBadges: Boolean = false,
     val printBadgesTwice: Boolean = false,

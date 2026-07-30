@@ -69,6 +69,7 @@ class SetupViewModel(
                     Version.versionCode
                 )
                 configStore.proxyMode = token.startsWith("proxy=")
+                configStore.deviceKnownName = init.device_name
                 if (init.gate_name != null) {
                     configStore.deviceKnownGateName = init.gate_name!!
                     configStore.deviceKnownGateID = init.gate_id!!

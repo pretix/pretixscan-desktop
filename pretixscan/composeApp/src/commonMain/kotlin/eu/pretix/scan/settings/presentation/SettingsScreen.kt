@@ -334,6 +334,12 @@ fun SettingsScreen(
                                     description = form.version
                                 )
                             }
+                            Setting {
+                                SettingLabel(
+                                    label = stringResource(Res.string.settings_label_device_name),
+                                    description = form.deviceName
+                                )
+                            }
                         }
                     }
 

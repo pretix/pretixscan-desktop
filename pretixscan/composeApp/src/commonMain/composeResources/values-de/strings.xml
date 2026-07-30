@@ -173,6 +173,7 @@
     <string name="force_full_resync">Komplett synchronisieren</string>
     <string name="settings_label_datawedge">DataWedge-Profil installieren</string>
     <string name="settings_label_version">Version</string>
+    <string name="settings_label_device_name">Gerätename</string>
     <string name="settings_label_troubleshooting">Fehlersuche</string>
     <string name="force_full_resync_help">Dies löscht keine lokalen Daten, aber die nächste Synchronisation jeder Veranstaltung wird alle Daten neu herunterladen, nicht nur kürzlich geänderte.</string>
     <string name="full_delete">Gerät zurücksetzen (alle lokalen Daten werden gelöscht)</string>
