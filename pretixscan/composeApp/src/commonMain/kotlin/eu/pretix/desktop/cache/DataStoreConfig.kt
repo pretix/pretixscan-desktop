@@ -78,6 +78,7 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
 
         // Feature Flags
         val PRINT_BADGES = booleanPreferencesKey("print_badges")
+        val PRINT_BADGES_TWICE = booleanPreferencesKey("print_badges_twice")
         val SYNC_ORDERS = booleanPreferencesKey("sync_orders")
         val SYNC_AUTO = booleanPreferencesKey("sync_auto")
         val UNPAID_ASK = booleanPreferencesKey("unpaid_ask")
@@ -423,6 +424,13 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
 
     suspend fun setPrintBadges(value: Boolean) {
         dataStore.edit { it[PreferenceKeys.PRINT_BADGES] = value }
+    }
+
+    suspend fun getPrintBadgesTwice(): Boolean =
+        dataStore.data.first()[PreferenceKeys.PRINT_BADGES_TWICE] ?: false
+
+    suspend fun setPrintBadgesTwice(value: Boolean) {
+        dataStore.edit { it[PreferenceKeys.PRINT_BADGES_TWICE] = value }
     }
 
     suspend fun getSyncOrders(): Boolean =

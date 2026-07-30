@@ -64,6 +64,18 @@ class DataStoreConfigTest {
     }
 
     @Test
+    fun test_print_badges_twice_round_trip() = runTest {
+        val dataStore = createTestDataStore()
+        val config = DataStoreConfig(dataStore)
+
+        assertFalse(config.getPrintBadgesTwice())
+
+        config.setPrintBadgesTwice(true)
+
+        assertTrue(config.getPrintBadgesTwice())
+    }
+
+    @Test
     fun test_auto_print_badges_round_trip() = runTest {
         val dataStore = createTestDataStore()
         val config = DataStoreConfig(dataStore)

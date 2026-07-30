@@ -84,7 +84,8 @@ class DesktopBadgeFactory(
         job.jobName = "pretixSCAN badge"
 
         log.info("Sending to printer...")
-        job.print(attributes)
+        val copies = if (appConfig.printBadgesTwice) 2 else 1
+        repeat(copies) { job.print(attributes) }
         log.info("Printing done.")
     }
 

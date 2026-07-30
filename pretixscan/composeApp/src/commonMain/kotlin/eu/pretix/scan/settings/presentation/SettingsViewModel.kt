@@ -57,6 +57,7 @@ class SettingsViewModel(
             badgeLayout = printerSource.selectPrinterOrientation(appConfig.badgePrinterOrientation),
             layouts = printerSource.listPrinterOrientations(),
             printBadges = appConfig.printBadges,
+            printBadgesTwice = appConfig.printBadgesTwice,
             autoPrintBadges = appConfig.autoPrintBadges,
             syncAuto = appConfig.syncAuto,
             playSounds = appConfig.playSound,
@@ -115,6 +116,11 @@ class SettingsViewModel(
 
     suspend fun setAutoPrintBadges(value: BadgePrintPolicy) {
         appConfig.autoPrintBadges = value
+        loadSettings()
+    }
+
+    suspend fun setPrintBadgesTwice(value: Boolean) {
+        appConfig.printBadgesTwice = value
         loadSettings()
     }
 

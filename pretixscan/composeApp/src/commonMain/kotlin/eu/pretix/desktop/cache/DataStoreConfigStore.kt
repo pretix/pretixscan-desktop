@@ -231,6 +231,10 @@ class DataStoreConfigStore(
         get() = runBlocking { dataStoreConfig.getPrintBadges() }
         set(value) = runBlocking { dataStoreConfig.setPrintBadges(value) }
 
+    var printBadgesTwice: Boolean
+        get() = runBlocking { dataStoreConfig.getPrintBadgesTwice() }
+        set(value) = runBlocking { dataStoreConfig.setPrintBadgesTwice(value) }
+
     var syncOrders: Boolean
         get() = runBlocking { dataStoreConfig.getSyncOrders() }
         set(value) = runBlocking { dataStoreConfig.setSyncOrders(value) }

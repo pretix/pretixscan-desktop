@@ -249,6 +249,23 @@ fun SettingsScreen(
                                     Column(
                                         horizontalAlignment = Alignment.Start
                                     ) {
+                                        CheckboxWithLabel(
+                                            label = stringResource(Res.string.preference_badges_twice),
+                                            description = null,
+                                            checked = form.printBadgesTwice,
+                                            onCheckedChange = {
+                                                coroutineScope.launch {
+                                                    viewModel.setPrintBadgesTwice(it)
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
+
+                                Setting {
+                                    Column(
+                                        horizontalAlignment = Alignment.Start
+                                    ) {
                                         Text(
                                             stringResource(Res.string.settings_printers_badge)
                                         )
