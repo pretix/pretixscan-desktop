@@ -41,6 +41,7 @@ fun TicketHandlingDialog(
 
     val viewModel = koinViewModel<TicketHandlingDialogViewModel>()
     val uiState by viewModel.uiState.collectAsState()
+    val uiBlinkSpecialTickets by viewModel.uiBlinkSpecialTickets.collectAsState()
     val localTicketHandlingErrors by viewModel.localTicketHandlingErrors.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val dialogState = rememberDialogState(initiallyVisible = true)
@@ -137,7 +138,7 @@ fun TicketHandlingDialog(
                 }
 
                 ResultState.ERROR -> {
-                    TicketFailure(data = uiState, onPrintBadges = onPrintBadges, remainingTimeProgress = remainingTimeProgress)
+                    TicketFailure(data = uiState, onPrintBadges = onPrintBadges, remainingTimeProgress = remainingTimeProgress, uiBlinkSpecialTickets = uiBlinkSpecialTickets)
                 }
 
                 ResultState.DIALOG_UNPAID -> UnpaidDialogView(data = uiState, onCancel = onDismiss, onCheckInAnyway = {
@@ -157,11 +158,11 @@ fun TicketHandlingDialog(
                 )
 
                 ResultState.WARNING -> {
-                    TicketWarning(data = uiState, onPrintBadges = onPrintBadges, remainingTimeProgress = remainingTimeProgress)
+                    TicketWarning(data = uiState, onPrintBadges = onPrintBadges, remainingTimeProgress = remainingTimeProgress, uiBlinkSpecialTickets = uiBlinkSpecialTickets)
                 }
 
                 ResultState.SUCCESS, ResultState.SUCCESS_EXIT -> {
-                    TicketSuccess(data = uiState, onPrintBadges = onPrintBadges, remainingTimeProgress = remainingTimeProgress)
+                    TicketSuccess(data = uiState, onPrintBadges = onPrintBadges, remainingTimeProgress = remainingTimeProgress, uiBlinkSpecialTickets = uiBlinkSpecialTickets)
                 }
             }
         }

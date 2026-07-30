@@ -38,6 +38,9 @@ class TicketHandlingDialogViewModel(
     private val _uiState = MutableStateFlow(ResultStateData(resultState = ResultState.EMPTY))
     val uiState = _uiState.asStateFlow()
 
+    private val _uiBlinkSpecialTickets = MutableStateFlow(true)
+    val uiBlinkSpecialTickets = _uiBlinkSpecialTickets.asStateFlow()
+
     fun resetTicketHandlingState() {
         _uiState.value = ResultStateData(resultState = ResultState.EMPTY)
     }
@@ -51,6 +54,7 @@ class TicketHandlingDialogViewModel(
 
     suspend fun handleTicket(secret: String?, answers: List<Answer>? = null, ignoreUnpaid: Boolean = false) {
         log.info("Handling ticket")
+        _uiBlinkSpecialTickets.value = !appConfig.uiReduceMotion
         _uiState.update {
             ResultStateData(resultState = ResultState.LOADING)
         }

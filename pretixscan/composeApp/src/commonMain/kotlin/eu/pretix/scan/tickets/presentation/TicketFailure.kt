@@ -23,7 +23,8 @@ fun TicketFailure(
     modifier: Modifier = Modifier,
     data: ResultStateData,
     onPrintBadges: () -> Unit,
-    remainingTimeProgress: Float = 1.0f
+    remainingTimeProgress: Float = 1.0f,
+    uiBlinkSpecialTickets: Boolean = true
 ) {
     Column(
         modifier = Modifier.background(data.resultState.color()),
@@ -31,6 +32,10 @@ fun TicketFailure(
         PrintBadgesButton(data = data, onPrintBadges = onPrintBadges)
 
         TicketResultHeader(icon = Res.drawable.ic_error_white_24dp, data = data)
+
+        if (data.attention) {
+            AttentionTicketBar(Modifier.blinking(alphaEnabled = uiBlinkSpecialTickets))
+        }
 
         Row(
             modifier = Modifier
