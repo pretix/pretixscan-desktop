@@ -19,10 +19,17 @@ import pretixscan.composeapp.generated.resources.ic_error_white_24dp
 
 @Preview
 @Composable
-fun TicketFailure(modifier: Modifier = Modifier, data: ResultStateData, remainingTimeProgress: Float = 1.0f) {
+fun TicketFailure(
+    modifier: Modifier = Modifier,
+    data: ResultStateData,
+    onPrintBadges: () -> Unit,
+    remainingTimeProgress: Float = 1.0f
+) {
     Column(
         modifier = Modifier.background(data.resultState.color()),
     ) {
+        PrintBadgesButton(data = data, onPrintBadges = onPrintBadges)
+
         TicketResultHeader(icon = Res.drawable.ic_error_white_24dp, data = data)
 
         Row(
