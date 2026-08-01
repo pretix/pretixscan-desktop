@@ -1,0 +1,513 @@
+{
+	"Noto Sans": {
+		"pdf_only": false,
+		"sample": "\u0421\u044a\u0435\u0448\u044c \u0436\u0435 \u0435\u0449\u0451 \u044d\u0442\u0438\u0445 \u043c\u044f\u0433\u043a\u0438\u0445 \u0444\u0440\u0430\u043d\u0446\u0443\u0437\u0441\u043a\u0438\u0445 \u0431\u0443\u043b\u043e\u043a \u0434\u0430 \u0432\u044b\u043f\u0435\u0439 \u0447\u0430\u044e.<br>\u03a4\u03b1\u03c7\u03af\u03c3\u03c4\u03b7 \u03b1\u03bb\u03ce\u03c0\u03b7\u03be \u03b2\u03b1\u03c6\u03ae\u03c2 \u03c8\u03b7\u03bc\u03ad\u03bd\u03b7 \u03b3\u03b7, \u03b4\u03c1\u03b1\u03c3\u03ba\u03b5\u03bb\u03af\u03b6\u03b5\u03b9 \u03c5\u03c0\u03ad\u03c1 \u03bd\u03c9\u03b8\u03c1\u03bf\u03cd \u03ba\u03c5\u03bd\u03cc\u03c2",
+		"regular": {
+			"truetype": "Noto-Sans_v42_regular.ttf",
+			"woff2": "Noto-Sans_v42_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans_v42_bold.ttf",
+			"woff2": "Noto-Sans_v42_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Noto-Sans_v42_italic.ttf",
+			"woff2": "Noto-Sans_v42_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Noto-Sans_v42_bolditalic.ttf",
+			"woff2": "Noto-Sans_v42_bolditalic.woff2"
+		}
+	},
+	"Roboto": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Roboto_v51_regular.ttf",
+			"woff2": "Roboto_v51_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Roboto_v51_bold.ttf",
+			"woff2": "Roboto_v51_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Roboto_v51_italic.ttf",
+			"woff2": "Roboto_v51_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Roboto_v51_bolditalic.ttf",
+			"woff2": "Roboto_v51_bolditalic.woff2"
+		}
+	},
+	"Roboto Condensed": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Roboto-Condensed_v31_regular.ttf",
+			"woff2": "Roboto-Condensed_v31_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Roboto-Condensed_v31_bold.ttf",
+			"woff2": "Roboto-Condensed_v31_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Roboto-Condensed_v31_italic.ttf",
+			"woff2": "Roboto-Condensed_v31_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Roboto-Condensed_v31_bolditalic.ttf",
+			"woff2": "Roboto-Condensed_v31_bolditalic.woff2"
+		}
+	},
+	"Fira Sans": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Fira-Sans_v18_regular.ttf",
+			"woff2": "Fira-Sans_v18_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Fira-Sans_v18_bold.ttf",
+			"woff2": "Fira-Sans_v18_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Fira-Sans_v18_italic.ttf",
+			"woff2": "Fira-Sans_v18_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Fira-Sans_v18_bolditalic.ttf",
+			"woff2": "Fira-Sans_v18_bolditalic.woff2"
+		}
+	},
+	"Lato": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Lato_v25_regular.ttf",
+			"woff2": "Lato_v25_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Lato_v25_bold.ttf",
+			"woff2": "Lato_v25_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Lato_v25_italic.ttf",
+			"woff2": "Lato_v25_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Lato_v25_bolditalic.ttf",
+			"woff2": "Lato_v25_bolditalic.woff2"
+		}
+	},
+	"Oswald": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Oswald_v57_regular.ttf",
+			"woff2": "Oswald_v57_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Oswald_v57_bold.ttf",
+			"woff2": "Oswald_v57_bold.woff2"
+		}
+	},
+	"Montserrat": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Montserrat_v31_regular.ttf",
+			"woff2": "Montserrat_v31_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Montserrat_v31_bold.ttf",
+			"woff2": "Montserrat_v31_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Montserrat_v31_italic.ttf",
+			"woff2": "Montserrat_v31_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Montserrat_v31_bolditalic.ttf",
+			"woff2": "Montserrat_v31_bolditalic.woff2"
+		}
+	},
+	"Vollkorn": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Vollkorn_v30_regular.ttf",
+			"woff2": "Vollkorn_v30_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Vollkorn_v30_bold.ttf",
+			"woff2": "Vollkorn_v30_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Vollkorn_v30_italic.ttf",
+			"woff2": "Vollkorn_v30_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Vollkorn_v30_bolditalic.ttf",
+			"woff2": "Vollkorn_v30_bolditalic.woff2"
+		}
+	},
+	"Tajawal": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Tajawal_v12_regular.ttf",
+			"woff2": "Tajawal_v12_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Tajawal_v12_bold.ttf",
+			"woff2": "Tajawal_v12_bold.woff2"
+		}
+	},
+	"Poppins": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Poppins_v24_regular.ttf",
+			"woff2": "Poppins_v24_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Poppins_v24_bold.ttf",
+			"woff2": "Poppins_v24_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Poppins_v24_italic.ttf",
+			"woff2": "Poppins_v24_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Poppins_v24_bolditalic.ttf",
+			"woff2": "Poppins_v24_bolditalic.woff2"
+		}
+	},
+	"Almarai": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Almarai_v19_regular.ttf",
+			"woff2": "Almarai_v19_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Almarai_v19_bold.ttf",
+			"woff2": "Almarai_v19_bold.woff2"
+		}
+	},
+	"Ubuntu": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Ubuntu_v21_regular.ttf",
+			"woff2": "Ubuntu_v21_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Ubuntu_v21_bold.ttf",
+			"woff2": "Ubuntu_v21_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Ubuntu_v21_italic.ttf",
+			"woff2": "Ubuntu_v21_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Ubuntu_v21_bolditalic.ttf",
+			"woff2": "Ubuntu_v21_bolditalic.woff2"
+		}
+	},
+	"Space Mono": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Space-Mono_v17_regular.ttf",
+			"woff2": "Space-Mono_v17_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Space-Mono_v17_bold.ttf",
+			"woff2": "Space-Mono_v17_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Space-Mono_v17_italic.ttf",
+			"woff2": "Space-Mono_v17_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Space-Mono_v17_bolditalic.ttf",
+			"woff2": "Space-Mono_v17_bolditalic.woff2"
+		}
+	},
+	"Titillium": {
+		"pdf_only": false,
+		"regular": {
+			"truetype": "Titillium-Web_v19_regular.ttf",
+			"woff2": "Titillium-Web_v19_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Titillium-Web_v19_bold.ttf",
+			"woff2": "Titillium-Web_v19_bold.woff2"
+		},
+		"italic": {
+			"truetype": "Titillium-Web_v19_italic.ttf",
+			"woff2": "Titillium-Web_v19_italic.woff2"
+		},
+		"bolditalic": {
+			"truetype": "Titillium-Web_v19_bolditalic.ttf",
+			"woff2": "Titillium-Web_v19_bolditalic.woff2"
+		}
+	},
+	"Noto Sans Japanese": {
+		"pdf_only": false,
+		"sample": "\u3042\u306a\u305f\u306b\u4f1a\u3048\u3066\u5149\u6804\u3067\u3059\u3002",
+		"regular": {
+			"truetype": "Noto-Sans-JP_v56_regular.ttf",
+			"woff2": "Noto-Sans-JP_v56_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-JP_v56_bold.ttf",
+			"woff2": "Noto-Sans-JP_v56_bold.woff2"
+		}
+	},
+	"Noto Sans Simplified Chinese": {
+		"pdf_only": false,
+		"sample": "\u771f\u662f\u96be\u4ee5\u7f6e\u4fe1\uff01",
+		"regular": {
+			"truetype": "Noto-Sans-SC_v40_regular.ttf",
+			"woff2": "Noto-Sans-SC_v40_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-SC_v40_bold.ttf",
+			"woff2": "Noto-Sans-SC_v40_bold.woff2"
+		}
+	},
+	"Noto Sans Traditional Chinese": {
+		"pdf_only": false,
+		"sample": "\u6211\u771f\u6b61\u559c\u4f6e\u4f60\u719f\u4f3c",
+		"regular": {
+			"truetype": "Noto-Sans-TC_v39_regular.ttf",
+			"woff2": "Noto-Sans-TC_v39_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-TC_v39_bold.ttf",
+			"woff2": "Noto-Sans-TC_v39_bold.woff2"
+		}
+	},
+	"Noto Sans Thai": {
+		"pdf_only": false,
+		"sample": "\u0e2a\u0e38\u0e19\u0e31\u0e02\u0e08\u0e34\u0e49\u0e07\u0e08\u0e2d\u0e01\u0e2a\u0e35\u0e21\u0e48\u0e27\u0e07",
+		"regular": {
+			"truetype": "Noto-Sans-Thai_v29_regular.ttf",
+			"woff2": "Noto-Sans-Thai_v29_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Thai_v29_bold.ttf",
+			"woff2": "Noto-Sans-Thai_v29_bold.woff2"
+		}
+	},
+	"Noto Sans Adlam": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Adlam_v27_regular.ttf",
+			"woff2": "Noto-Sans-Adlam_v27_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Adlam_v27_bold.ttf",
+			"woff2": "Noto-Sans-Adlam_v27_bold.woff2"
+		}
+	},
+	"Noto Sans Arabic": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Arabic_v33_regular.ttf",
+			"woff2": "Noto-Sans-Arabic_v33_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Arabic_v33_bold.ttf",
+			"woff2": "Noto-Sans-Arabic_v33_bold.woff2"
+		}
+	},
+	"Noto Sans Armenian": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Armenian_v47_regular.ttf",
+			"woff2": "Noto-Sans-Armenian_v47_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Armenian_v47_bold.ttf",
+			"woff2": "Noto-Sans-Armenian_v47_bold.woff2"
+		}
+	},
+	"Noto Sans Bengali": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Bengali_v33_regular.ttf",
+			"woff2": "Noto-Sans-Bengali_v33_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Bengali_v33_bold.ttf",
+			"woff2": "Noto-Sans-Bengali_v33_bold.woff2"
+		}
+	},
+	"Noto Sans Cherokee": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Cherokee_v25_regular.ttf",
+			"woff2": "Noto-Sans-Cherokee_v25_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Cherokee_v25_bold.ttf",
+			"woff2": "Noto-Sans-Cherokee_v25_bold.woff2"
+		}
+	},
+	"Noto Sans Ethiopic": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Ethiopic_v50_regular.ttf",
+			"woff2": "Noto-Sans-Ethiopic_v50_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Ethiopic_v50_bold.ttf",
+			"woff2": "Noto-Sans-Ethiopic_v50_bold.woff2"
+		}
+	},
+	"Noto Sans Georgian": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Georgian_v48_regular.ttf",
+			"woff2": "Noto-Sans-Georgian_v48_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Georgian_v48_bold.ttf",
+			"woff2": "Noto-Sans-Georgian_v48_bold.woff2"
+		}
+	},
+	"Noto Sans Gujarati": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Gujarati_v27_regular.ttf",
+			"woff2": "Noto-Sans-Gujarati_v27_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Gujarati_v27_bold.ttf",
+			"woff2": "Noto-Sans-Gujarati_v27_bold.woff2"
+		}
+	},
+	"Noto Sans Gurmukhi": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Gurmukhi_v29_regular.ttf",
+			"woff2": "Noto-Sans-Gurmukhi_v29_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Gurmukhi_v29_bold.ttf",
+			"woff2": "Noto-Sans-Gurmukhi_v29_bold.woff2"
+		}
+	},
+	"Noto Sans Hebrew": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Hebrew_v50_regular.ttf",
+			"woff2": "Noto-Sans-Hebrew_v50_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Hebrew_v50_bold.ttf",
+			"woff2": "Noto-Sans-Hebrew_v50_bold.woff2"
+		}
+	},
+	"Noto Sans Kannada": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Kannada_v32_regular.ttf",
+			"woff2": "Noto-Sans-Kannada_v32_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Kannada_v32_bold.ttf",
+			"woff2": "Noto-Sans-Kannada_v32_bold.woff2"
+		}
+	},
+	"Noto Sans Khmer": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Khmer_v29_regular.ttf",
+			"woff2": "Noto-Sans-Khmer_v29_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Khmer_v29_bold.ttf",
+			"woff2": "Noto-Sans-Khmer_v29_bold.woff2"
+		}
+	},
+	"Noto Sans Korean": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-KR_v39_regular.ttf",
+			"woff2": "Noto-Sans-KR_v39_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-KR_v39_bold.ttf",
+			"woff2": "Noto-Sans-KR_v39_bold.woff2"
+		}
+	},
+	"Noto Sans Lao": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Lao_v33_regular.ttf",
+			"woff2": "Noto-Sans-Lao_v33_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Lao_v33_bold.ttf",
+			"woff2": "Noto-Sans-Lao_v33_bold.woff2"
+		}
+	},
+	"Noto Sans Malayalam": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Malayalam_v29_regular.ttf",
+			"woff2": "Noto-Sans-Malayalam_v29_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Malayalam_v29_bold.ttf",
+			"woff2": "Noto-Sans-Malayalam_v29_bold.woff2"
+		}
+	},
+	"Noto Sans Myanmar": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Myanmar_v27_regular.ttf",
+			"woff2": "Noto-Sans-Myanmar_v27_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Myanmar_v27_bold.ttf",
+			"woff2": "Noto-Sans-Myanmar_v27_bold.woff2"
+		}
+	},
+	"Noto Sans Oriya": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Oriya_v35_regular.ttf",
+			"woff2": "Noto-Sans-Oriya_v35_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Oriya_v35_bold.ttf",
+			"woff2": "Noto-Sans-Oriya_v35_bold.woff2"
+		}
+	},
+	"Noto Sans Sinhala": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Sinhala_v36_regular.ttf",
+			"woff2": "Noto-Sans-Sinhala_v36_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Sinhala_v36_bold.ttf",
+			"woff2": "Noto-Sans-Sinhala_v36_bold.woff2"
+		}
+	},
+	"Noto Sans Tamil": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Tamil_v31_regular.ttf",
+			"woff2": "Noto-Sans-Tamil_v31_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Tamil_v31_bold.ttf",
+			"woff2": "Noto-Sans-Tamil_v31_bold.woff2"
+		}
+	},
+	"Noto Sans Telugu": {
+		"pdf_only": true,
+		"regular": {
+			"truetype": "Noto-Sans-Telugu_v30_regular.ttf",
+			"woff2": "Noto-Sans-Telugu_v30_regular.woff2"
+		},
+		"bold": {
+			"truetype": "Noto-Sans-Telugu_v30_bold.ttf",
+			"woff2": "Noto-Sans-Telugu_v30_bold.woff2"
+		}
+	}
+}
