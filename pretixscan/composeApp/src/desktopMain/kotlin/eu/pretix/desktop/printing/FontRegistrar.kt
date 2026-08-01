@@ -51,15 +51,23 @@ class FontRegistrar {
             "boldupright",
             "semiboldupright"
         )
-        registerFontFamilies(dataDir, "DejaVu Sans", "files/fonts/DejaVuSans-%s-webfont.ttf")
-        val cat_json = Res.readBytes("files/fonts/catalog.json").decodeToString()
-        val cat = JSONObject(cat_json)
-        for (family in cat.keys()) {
-            val familyConfig = cat.getJSONObject(family)
+        registerFontFamilies(
+            dataDir,
+            "DejaVu Sans",
+            "files/fonts/DejaVuSans%s-webfont.ttf",
+            "",
+            "-Bold",
+            "-BoldOblique",
+            "-Oblique"
+        )
+        val catalogJson = Res.readBytes("files/fonts/catalog.json").decodeToString()
+        val catalog = JSONObject(catalogJson)
+        for (family in catalog.keys()) {
+            val familyConfig = catalog.getJSONObject(family)
             val regularName = familyConfig.getJSONObject("regular").getString("truetype")
             val boldName = if (familyConfig.has("bold")) familyConfig.getJSONObject("bold").getString("truetype") else regularName
             val italicName = if (familyConfig.has("italic")) familyConfig.getJSONObject("italic").getString("truetype") else regularName
-            val boldItalicName = if (familyConfig.has("bolditalic")) familyConfig.getJSONObject("bolditalic").getString("truetype") else regularName
+            val boldItalicName = if (familyConfig.has("bolditalic")) familyConfig.getJSONObject("bolditalic").getString("truetype") else boldName
             registerFontFamilies(dataDir, family, "files/fonts/%s", regularName, boldName, boldItalicName, italicName)
         }
     }
