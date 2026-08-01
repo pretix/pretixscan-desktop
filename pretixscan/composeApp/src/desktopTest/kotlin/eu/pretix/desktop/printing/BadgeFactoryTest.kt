@@ -25,6 +25,6 @@ class BadgeFactoryTest {
 
         // do
         sut.exportAndRegisterAllFonts(dataFolder)
-        assertEquals(74, fontsDir.list().size)
+        assertEquals(114, fontsDir.list().size)
     }
 }
