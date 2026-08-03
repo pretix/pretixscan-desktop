@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import eu.pretix.desktop.webcam.data.VideoSource
 import eu.pretix.libpretixsync.api.PretixApi
+import eu.pretix.scan.tickets.data.BadgePrintPolicy
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
@@ -67,6 +68,7 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
         val UI_HIDE_NAMES = booleanPreferencesKey("ui_hide_names")
         val UI_REDUCE_MOTION = booleanPreferencesKey("ui_reduce_motion")
         val AUTO_PRINT_BADGES = booleanPreferencesKey("auto_print_badges")
+        val AUTO_PRINT_BADGES_POLICY = stringPreferencesKey("auto_print_badges_policy")
 
         // Hardware Settings
         val PREFERRED_CAMERA_NAME = stringPreferencesKey("preferred_camera_name")
@@ -76,6 +78,7 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
 
         // Feature Flags
         val PRINT_BADGES = booleanPreferencesKey("print_badges")
+        val PRINT_BADGES_TWICE = booleanPreferencesKey("print_badges_twice")
         val SYNC_ORDERS = booleanPreferencesKey("sync_orders")
         val SYNC_AUTO = booleanPreferencesKey("sync_auto")
         val UNPAID_ASK = booleanPreferencesKey("unpaid_ask")
@@ -354,11 +357,24 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
         dataStore.edit { it[PreferenceKeys.UI_REDUCE_MOTION] = value }
     }
 
-    suspend fun getAutoPrintBadges(): Boolean =
-        dataStore.data.first()[PreferenceKeys.AUTO_PRINT_BADGES] ?: true
+    suspend fun getAutoPrintBadges(): BadgePrintPolicy {
+        val prefs = dataStore.data.first()
+        val policy = prefs[PreferenceKeys.AUTO_PRINT_BADGES_POLICY]
+        if (policy != null) {
+            return BadgePrintPolicy.fromStorageValue(policy)
+        }
+        return when (prefs[PreferenceKeys.AUTO_PRINT_BADGES]) {
+            true -> BadgePrintPolicy.ONCE_IF_NOT_PRINTED
+            false -> BadgePrintPolicy.WHEN_BUTTON_PRESSED
+            null -> BadgePrintPolicy.ONCE_IF_NOT_PRINTED
+        }
+    }
 
-    suspend fun setAutoPrintBadges(value: Boolean) {
-        dataStore.edit { it[PreferenceKeys.AUTO_PRINT_BADGES] = value }
+    suspend fun setAutoPrintBadges(value: BadgePrintPolicy) {
+        dataStore.edit {
+            it[PreferenceKeys.AUTO_PRINT_BADGES_POLICY] = value.storageValue
+            it.remove(PreferenceKeys.AUTO_PRINT_BADGES)
+        }
     }
 
     // ============================================================
@@ -408,6 +424,13 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
 
     suspend fun setPrintBadges(value: Boolean) {
         dataStore.edit { it[PreferenceKeys.PRINT_BADGES] = value }
+    }
+
+    suspend fun getPrintBadgesTwice(): Boolean =
+        dataStore.data.first()[PreferenceKeys.PRINT_BADGES_TWICE] ?: false
+
+    suspend fun setPrintBadgesTwice(value: Boolean) {
+        dataStore.edit { it[PreferenceKeys.PRINT_BADGES_TWICE] = value }
     }
 
     suspend fun getSyncOrders(): Boolean =

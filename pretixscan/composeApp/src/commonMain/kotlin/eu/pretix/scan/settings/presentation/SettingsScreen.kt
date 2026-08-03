@@ -25,7 +25,9 @@ import eu.pretix.desktop.cache.getLogDirectory
 import eu.pretix.desktop.cache.getUserDataFolder
 import eu.pretix.desktop.cache.openPathInFileBrowser
 import eu.pretix.desktop.webcam.data.VideoSource
+import eu.pretix.scan.tickets.data.BadgePrintPolicy
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.*
@@ -220,13 +222,40 @@ fun SettingsScreen(
                                     Column(
                                         horizontalAlignment = Alignment.Start
                                     ) {
+                                        Text(
+                                            stringResource(Res.string.preference_autobadgeprint_enable)
+                                        )
+                                        val autoPrintBadgesLabels = stringArrayResource(Res.array.settings_valuelabels_auto_print_badges)
+                                        val autoPrintBadgesOptions = listOf(
+                                            SelectableValue(BadgePrintPolicy.WHEN_BUTTON_PRESSED.storageValue, autoPrintBadgesLabels[0]),
+                                            SelectableValue(BadgePrintPolicy.ONCE_IF_NOT_PRINTED.storageValue, autoPrintBadgesLabels[1]),
+                                            SelectableValue(BadgePrintPolicy.ALWAYS.storageValue, autoPrintBadgesLabels[2]),
+                                        )
+                                        FieldSpinner(
+                                            selectedValue = form.autoPrintBadges.storageValue,
+                                            availableOptions = autoPrintBadgesOptions,
+                                            onSelect = {
+                                                if (it != null) {
+                                                    coroutineScope.launch {
+                                                        viewModel.setAutoPrintBadges(BadgePrintPolicy.fromStorageValue(it.value))
+                                                    }
+                                                }
+                                            },
+                                        )
+                                    }
+                                }
+
+                                Setting {
+                                    Column(
+                                        horizontalAlignment = Alignment.Start
+                                    ) {
                                         CheckboxWithLabel(
-                                            label = stringResource(Res.string.preference_autobadgeprint_enable),
+                                            label = stringResource(Res.string.preference_badges_twice),
                                             description = null,
-                                            checked = form.autoPrintBadges,
+                                            checked = form.printBadgesTwice,
                                             onCheckedChange = {
                                                 coroutineScope.launch {
-                                                    viewModel.setAutoPrintBadges(it)
+                                                    viewModel.setPrintBadgesTwice(it)
                                                 }
                                             }
                                         )
@@ -303,6 +332,12 @@ fun SettingsScreen(
                                 SettingLabel(
                                     label = stringResource(Res.string.settings_label_version),
                                     description = form.version
+                                )
+                            }
+                            Setting {
+                                SettingLabel(
+                                    label = stringResource(Res.string.settings_label_device_name),
+                                    description = form.deviceName
                                 )
                             }
                         }

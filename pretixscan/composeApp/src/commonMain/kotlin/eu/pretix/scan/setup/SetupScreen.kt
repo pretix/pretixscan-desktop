@@ -13,6 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -42,10 +47,15 @@ fun SetupScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    // Auto-parse handshake JSON if token field contains it
-    LaunchedEffect(token) {
-        if (token.trim().startsWith("{")) {
-            SetupViewModel.parseHandshakeQR(token)?.let { (parsedUrl, parsedToken) ->
+    // Auto-parse handshake JSON if url or token field contains it
+    LaunchedEffect(url, token) {
+        val handshakeSource = when {
+            url.trim().startsWith("{") -> url
+            token.trim().startsWith("{") -> token
+            else -> null
+        }
+        handshakeSource?.let {
+            SetupViewModel.parseHandshakeQR(it)?.let { (parsedUrl, parsedToken) ->
                 url = parsedUrl
                 token = parsedToken
                 coroutineScope.launch {
@@ -101,6 +111,23 @@ fun SetupScreen(
                             )
                         )
 
+                        val submitEnabled = uiState != SetupUiState.Loading && token.isNotEmpty() && url.isNotEmpty()
+                        val submit: () -> Unit = {
+                            val apiToken = token
+                            val apiUrl = url
+                            coroutineScope.launch {
+                                viewModel.verifyTokenAndSetup(token = apiToken, url = apiUrl)
+                            }
+                        }
+                        val submitOnEnter = Modifier.onPreviewKeyEvent { event ->
+                            if (event.type == KeyEventType.KeyDown && (event.key == Key.Enter || event.key == Key.NumPadEnter)) {
+                                if (submitEnabled) submit()
+                                submitEnabled
+                            } else {
+                                false
+                            }
+                        }
+
                         Row(modifier = Modifier.padding(vertical = 16.dp)) {
                             FieldTextInput(
                                 value = url,
@@ -108,7 +135,8 @@ fun SetupScreen(
                                 label = stringResource(Res.string.hint_url),
                                 maxLines = 1,
                                 required = true,
-                                enabled = uiState != SetupUiState.Loading
+                                enabled = uiState != SetupUiState.Loading,
+                                modifier = submitOnEnter
                             )
                         }
 
@@ -120,7 +148,7 @@ fun SetupScreen(
                                 maxLines = 1,
                                 required = true,
                                 enabled = uiState != SetupUiState.Loading,
-                                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+                                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester).then(submitOnEnter)
                             )
                         }
 
@@ -136,14 +164,8 @@ fun SetupScreen(
                                 )
                             }
                             Button(
-                                onClick = {
-                                    val apiToken = token
-                                    val apiUrl = url
-                                    coroutineScope.launch {
-                                        viewModel.verifyTokenAndSetup(token = apiToken, url = apiUrl)
-                                    }
-                                },
-                                enabled = uiState != SetupUiState.Loading && token.isNotEmpty() && url.isNotEmpty()
+                                onClick = submit,
+                                enabled = submitEnabled
                             ) {
                                 Text(stringResource(Res.string.connect_check_token))
                             }

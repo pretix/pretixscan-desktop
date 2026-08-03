@@ -52,7 +52,7 @@ fun TicketSearchBar(
         Row(modifier = Modifier.padding(top = 16.dp).padding(horizontal = 16.dp)) {
             SearchTextField(
                 value = searchQuery,
-                hint = stringResource(Res.string.searchfield_prompt),
+                hint = currentSecret ?: stringResource(Res.string.searchfield_prompt),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),

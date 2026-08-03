@@ -11,6 +11,7 @@ import eu.pretix.desktop.cache.Version
 import eu.pretix.desktop.webcam.data.VideoSource
 import eu.pretix.scan.settings.data.ConfigurableSettings
 import eu.pretix.scan.settings.data.PrinterSource
+import eu.pretix.scan.tickets.data.BadgePrintPolicy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,11 +52,13 @@ class SettingsViewModel(
         val badgePrinterWasSelected = appConfig.printBadges && appConfig.badgePrinterName != null
         _form.value = _form.value.copy(
             version = "${Version.version} (${Version.versionCode})",
+            deviceName = appConfig.deviceKnownName,
             printers = printerSource.listPrinters(),
             badgePrinter = printerSource.selectOption(appConfig.badgePrinterName),
             badgeLayout = printerSource.selectPrinterOrientation(appConfig.badgePrinterOrientation),
             layouts = printerSource.listPrinterOrientations(),
             printBadges = appConfig.printBadges,
+            printBadgesTwice = appConfig.printBadgesTwice,
             autoPrintBadges = appConfig.autoPrintBadges,
             syncAuto = appConfig.syncAuto,
             playSounds = appConfig.playSound,
@@ -112,8 +115,13 @@ class SettingsViewModel(
         }
     }
 
-    suspend fun setAutoPrintBadges(value: Boolean) {
+    suspend fun setAutoPrintBadges(value: BadgePrintPolicy) {
         appConfig.autoPrintBadges = value
+        loadSettings()
+    }
+
+    suspend fun setPrintBadgesTwice(value: Boolean) {
+        appConfig.printBadgesTwice = value
         loadSettings()
     }
 

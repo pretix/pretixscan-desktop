@@ -14,12 +14,14 @@ fun isPreviouslyPrinted(position: JSONObject): Boolean {
 }
 
 fun shouldAutoPrint(
-    autoPrintBadges: Boolean,
+    policy: BadgePrintPolicy,
     resultState: ResultState,
     position: JSONObject?
 ): Boolean {
-    if (!autoPrintBadges) return false
-    if (resultState != ResultState.SUCCESS) return false
-    if (position == null) return false
-    return !isPreviouslyPrinted(position)
+    return when (policy) {
+        BadgePrintPolicy.WHEN_BUTTON_PRESSED -> false
+        BadgePrintPolicy.ALWAYS -> resultState == ResultState.SUCCESS && position != null
+        BadgePrintPolicy.ONCE_IF_NOT_PRINTED ->
+            resultState == ResultState.SUCCESS && position != null && !isPreviouslyPrinted(position)
+    }
 }

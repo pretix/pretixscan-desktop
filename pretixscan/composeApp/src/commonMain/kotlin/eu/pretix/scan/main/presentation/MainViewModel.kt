@@ -31,11 +31,10 @@ class MainViewModel(
     val scanType: StateFlow<String> = _scanType
 
     // Event button display
-    private val _eventButtonLabel = MutableStateFlow("")
-    val eventButtonLabel = _eventButtonLabel.asStateFlow()
-
-    private val _eventButtonTooltip = MutableStateFlow("")
-    val eventButtonTooltip = _eventButtonTooltip.asStateFlow()
+    private val _eventSelectionDisplay = MutableStateFlow<EventSelectionDisplay>(
+        EventSelectionDisplay.Single(eventName = "", listName = "")
+    )
+    val eventSelectionDisplay = _eventSelectionDisplay.asStateFlow()
 
 
     private var lastEventSelectionBeforeBeginSelect: EventSelection? = null
@@ -96,18 +95,15 @@ class MainViewModel(
     fun updateEventButtonDisplay() {
         val selections = appConfig.eventSelections
 
-        if (selections.size <= 1) {
-            // Single event or no event
-            val eventName = selections.firstOrNull()?.eventName ?: ""
-            val listName = selections.firstOrNull()?.checkInListName ?: ""
-            _eventButtonLabel.value = eventName
-            _eventButtonTooltip.value = "$eventName - $listName"
+        _eventSelectionDisplay.value = if (selections.size <= 1) {
+            EventSelectionDisplay.Single(
+                eventName = selections.firstOrNull()?.eventName ?: "",
+                listName = selections.firstOrNull()?.checkInListName ?: ""
+            )
         } else {
-            // Multiple events
-            _eventButtonLabel.value = "${selections.size} selected events"
-            _eventButtonTooltip.value = selections.joinToString("\n") { event ->
-                "${event.eventName} - ${event.checkInListName}"
-            }
+            EventSelectionDisplay.Multiple(
+                selections = selections.map { it.eventName to it.checkInListName }
+            )
         }
     }
 

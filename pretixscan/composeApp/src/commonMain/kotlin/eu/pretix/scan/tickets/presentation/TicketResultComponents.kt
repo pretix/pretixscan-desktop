@@ -3,6 +3,7 @@ package eu.pretix.scan.tickets.presentation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.first_scanned
+import pretixscan.composeapp.generated.resources.settings_label_print_badges
 
 @Composable
 fun TicketResultHeader(icon: DrawableResource, data: ResultStateData) {
@@ -62,6 +64,24 @@ fun TicketResultHeader(icon: DrawableResource, data: ResultStateData) {
                     color = CustomColor.White.asColor()
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun PrintBadgesButton(data: ResultStateData, onPrintBadges: () -> Unit) {
+    if (!data.isPrintable) {
+        return
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.End
+    ) {
+        Button(onClick = onPrintBadges) {
+            Text(stringResource(Res.string.settings_label_print_badges))
         }
     }
 }

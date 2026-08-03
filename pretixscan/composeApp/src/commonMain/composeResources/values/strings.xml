@@ -38,7 +38,7 @@
     <string name="action_reload_events">Reload Events</string>
     <string name="operation_select_event">Select Event</string>
     <string name="operation_select_events">Select Events</string>
-    <string name="events_selected">%s events selected</string>
+    <string name="events_selected">%1$s events selected</string>
     <string name="operation_select_checkinlist">Select Check-in list</string>
     <string name="advanced_mode">Advanced Mode</string>
     <string name="advanced_mode_description">Select multiple events for concurrent scanning</string>
@@ -181,6 +181,7 @@
     <string name="force_full_resync">Force a full synchronization</string>
     <string name="settings_label_datawedge">Install DataWedge profile</string>
     <string name="settings_label_version">Version</string>
+    <string name="settings_label_device_name">Device name</string>
     <string name="settings_label_troubleshooting">Troubleshooting</string>
     <string name="force_full_resync_help">This will not delete any of your local data, but it will force the next synchronization of every event to be a full synchronization, i.e. downloading all data again instead of only changed data.</string>
     <string name="full_delete">Delete all local data and reset device</string>

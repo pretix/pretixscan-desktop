@@ -19,12 +19,20 @@ import pretixscan.composeapp.generated.resources.ic_warning_white_24dp
 fun TicketWarning(
     modifier: Modifier = Modifier,
     data: ResultStateData,
-    remainingTimeProgress: Float = 1.0f
+    onPrintBadges: () -> Unit,
+    remainingTimeProgress: Float = 1.0f,
+    uiBlinkSpecialTickets: Boolean = true
 ) {
     Column(
         modifier = Modifier.background(data.resultState.color()),
     ) {
+        PrintBadgesButton(data = data, onPrintBadges = onPrintBadges)
+
         TicketResultHeader(icon = Res.drawable.ic_warning_white_24dp, data = data)
+
+        if (data.attention) {
+            AttentionTicketBar(Modifier.blinking(alphaEnabled = uiBlinkSpecialTickets))
+        }
 
         TicketResultDetails(data = data)
 

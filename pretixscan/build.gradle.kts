@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.google.protobuf) apply false
     alias(libs.plugins.app.cash.sqldelight) apply false
     alias(libs.plugins.osdetector) apply false
-    alias(libs.plugins.composeHotReload) apply false
     alias(libs.plugins.gmazzo) apply false
 }
 

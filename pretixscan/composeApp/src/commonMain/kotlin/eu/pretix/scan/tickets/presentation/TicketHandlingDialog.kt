@@ -41,6 +41,7 @@ fun TicketHandlingDialog(
 
     val viewModel = koinViewModel<TicketHandlingDialogViewModel>()
     val uiState by viewModel.uiState.collectAsState()
+    val uiBlinkSpecialTickets by viewModel.uiBlinkSpecialTickets.collectAsState()
     val localTicketHandlingErrors by viewModel.localTicketHandlingErrors.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val dialogState = rememberDialogState(initiallyVisible = true)
@@ -118,6 +119,12 @@ fun TicketHandlingDialog(
                     }
                 },
         ) {
+            val onPrintBadges: () -> Unit = {
+                coroutineScope.launch {
+                    viewModel.printBadges()
+                }
+            }
+
             when (uiState.resultState) {
                 ResultState.EMPTY -> {}
                 ResultState.LOADING -> {
@@ -131,7 +138,7 @@ fun TicketHandlingDialog(
                 }
 
                 ResultState.ERROR -> {
-                    TicketFailure(data = uiState, remainingTimeProgress = remainingTimeProgress)
+                    TicketFailure(data = uiState, onPrintBadges = onPrintBadges, remainingTimeProgress = remainingTimeProgress, uiBlinkSpecialTickets = uiBlinkSpecialTickets)
                 }
 
                 ResultState.DIALOG_UNPAID -> UnpaidDialogView(data = uiState, onCancel = onDismiss, onCheckInAnyway = {
@@ -151,31 +158,11 @@ fun TicketHandlingDialog(
                 )
 
                 ResultState.WARNING -> {
-                    TicketWarning(data = uiState, remainingTimeProgress = remainingTimeProgress)
+                    TicketWarning(data = uiState, onPrintBadges = onPrintBadges, remainingTimeProgress = remainingTimeProgress, uiBlinkSpecialTickets = uiBlinkSpecialTickets)
                 }
 
-                ResultState.SUCCESS -> {
-                    TicketSuccess(
-                        data = uiState,
-                        onPrintBadges = {
-                            coroutineScope.launch {
-                                viewModel.printBadges()
-                            }
-                        },
-                        remainingTimeProgress = remainingTimeProgress
-                    )
-                }
-
-                ResultState.SUCCESS_EXIT -> {
-                    TicketSuccess(
-                        data = uiState,
-                        onPrintBadges = {
-                            coroutineScope.launch {
-                                viewModel.printBadges()
-                            }
-                        },
-                        remainingTimeProgress = remainingTimeProgress
-                    )
+                ResultState.SUCCESS, ResultState.SUCCESS_EXIT -> {
+                    TicketSuccess(data = uiState, onPrintBadges = onPrintBadges, remainingTimeProgress = remainingTimeProgress, uiBlinkSpecialTickets = uiBlinkSpecialTickets)
                 }
             }
         }

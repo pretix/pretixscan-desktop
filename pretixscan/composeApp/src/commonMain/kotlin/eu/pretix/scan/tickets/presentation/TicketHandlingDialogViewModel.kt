@@ -38,6 +38,9 @@ class TicketHandlingDialogViewModel(
     private val _uiState = MutableStateFlow(ResultStateData(resultState = ResultState.EMPTY))
     val uiState = _uiState.asStateFlow()
 
+    private val _uiBlinkSpecialTickets = MutableStateFlow(true)
+    val uiBlinkSpecialTickets = _uiBlinkSpecialTickets.asStateFlow()
+
     fun resetTicketHandlingState() {
         _uiState.value = ResultStateData(resultState = ResultState.EMPTY)
     }
@@ -51,6 +54,7 @@ class TicketHandlingDialogViewModel(
 
     suspend fun handleTicket(secret: String?, answers: List<Answer>? = null, ignoreUnpaid: Boolean = false) {
         log.info("Handling ticket")
+        _uiBlinkSpecialTickets.value = !appConfig.uiReduceMotion
         _uiState.update {
             ResultStateData(resultState = ResultState.LOADING)
         }
@@ -62,9 +66,9 @@ class TicketHandlingDialogViewModel(
         _uiState.update {
             result
         }
-        log.info("Auto-print check: isPrintable=${result.isPrintable}, autoPrintBadges=${appConfig.autoPrintBadges}, resultState=${result.resultState}, hasPosition=${result.position != null}, previouslyPrinted=${result.position?.let { isPreviouslyPrinted(it) }}")
+        log.info("Auto-print check: isPrintable=${result.isPrintable}, autoPrintBadgesPolicy=${appConfig.autoPrintBadges}, resultState=${result.resultState}, hasPosition=${result.position != null}, previouslyPrinted=${result.position?.let { isPreviouslyPrinted(it) }}")
         if (result.isPrintable && shouldAutoPrint(
-                autoPrintBadges = appConfig.autoPrintBadges,
+                policy = appConfig.autoPrintBadges,
                 resultState = result.resultState,
                 position = result.position
             )
