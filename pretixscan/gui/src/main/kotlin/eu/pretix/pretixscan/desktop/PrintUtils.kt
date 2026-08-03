@@ -228,30 +228,22 @@ class Renderer(private val layout: JSONArray, private val position: JSONObject, 
     companion object {
         fun registerFonts(application: PretixScanMain) {
             registerFontFamily(application, "Open Sans", "fonts/OpenSans-%s.ttf")
-            registerFontFamily(application, "Almarai", "fonts/almarai-v5-arabic-%s.ttf", "regular", "800", "800", "regular")
             registerFontFamily(application, "Baloo Bhaijaan", "fonts/baloo-bhaijaan-v6-latin-ext_vietnamese_latin_arabic-%s.ttf", "regular", "regular", "regular", "regular")
-            registerFontFamily(application, "Noto Sans", "fonts/NotoSans-%s-webfont.ttf")
-            registerFontFamily(application, "Noto Sans Japanese", "fonts/noto-sans-jp-v52-cyrillic_japanese_latin_latin-ext_vietnamese-%s.ttf", "regular", "700", "700", "regular")
-            registerFontFamily(application, "Noto Sans Traditional Chinese", "fonts/noto-sans-tc-v35-chinese-traditional_cyrillic_latin_latin-ext_vietnamese-%s.ttf", "regular", "700", "700", "regular")
-            registerFontFamily(application, "Noto Sans Simplified Chinese", "fonts/noto-sans-sc-v36-chinese-simplified_cyrillic_latin_latin-ext_vietnamese-%s.ttf", "regular", "700", "700", "regular")
-
-            registerFontFamily(application, "Roboto", "fonts/Roboto-%s.ttf")
             registerFontFamily(application, "Droid Serif", "fonts/DroidSerif-%s-webfont.ttf")
-            registerFontFamily(application, "Fira Sans", "fonts/firasans-%s-webfont.ttf")
-            registerFontFamily(application, "Lato", "fonts/Lato-%s.ttf")
-            registerFontFamily(application, "Vollkorn", "fonts/Vollkorn-%s.ttf")
-            registerFontFamily(application, "Montserrat", "fonts/montserrat-%s-webfont.ttf")
-            registerFontFamily(application, "Oswald", "fonts/oswald-%s-webfont.ttf")
-            registerFontFamily(application, "Roboto Condensed", "fonts/RobotoCondensed-%s-webfont.ttf")
-            registerFontFamily(application, "Tajawal", "fonts/tajawal-v3-latin_arabic-%s.ttf", "regular", "700", "700", "regular")
-            registerFontFamily(application, "Titillium", "fonts/titillium-%s-webfont.ttf")
-            registerFontFamily(application, "Titillium Upright", "fonts/titillium-%s-webfont.ttf", "RegularUpright", "BoldUpright", "BoldUpright", "RegularUpright")
-            registerFontFamily(application, "Titillium Semibold Upright", "fonts/titillium-%s-webfont.ttf", "SemiboldUpright", "BoldUpright", "BoldUpright", "SemiboldUpright")
-            registerFontFamily(application, "DejaVu Sans", "fonts/DejaVuSans-%s-webfont.ttf")
-            registerFontFamily(application, "Poppins", "fonts/Poppins-%s-webfont.ttf")
-            registerFontFamily(application, "Space Mono", "fonts/Space-Mono-%s.ttf")
-            registerFontFamily(application, "Ubuntu", "fonts/ubuntu-v15-latin-ext_latin-%s.ttf", "regular", "700", "700italic", "italic")
+            registerFontFamily(application, "Titillium Upright", "fonts/titillium-%s-webfont.ttf", "regularupright", "boldupright", "boldupright", "regularupright")
+            registerFontFamily(application, "Titillium Semibold Upright", "fonts/titillium-%s-webfont.ttf", "semiboldupright", "boldupright", "boldupright", "semiboldupright")
+            registerFontFamily(application, "DejaVu Sans", "fonts/DejaVuSans%s-webfont.ttf", "", "-Bold", "-Oblique", "-BoldOblique")
 
+            val cat_json = application.assets.open("fonts/catalog.json").bufferedReader().use { it.readText() }
+            val cat = JSONObject(cat_json)
+            for (family in cat.keys()) {
+                val familyConfig = cat.getJSONObject(family);
+                val regularName = familyConfig.getJSONObject("regular").getString("truetype")
+                val boldName = if (familyConfig.has("bold")) familyConfig.getJSONObject("bold").getString("truetype") else regularName
+                val italicName = if (familyConfig.has("italic")) familyConfig.getJSONObject("italic").getString("truetype") else regularName
+                val boldItalicName = if (familyConfig.has("bolditalic")) familyConfig.getJSONObject("bolditalic").getString("truetype") else regularName
+                registerFontFamily(application, family, "fonts/%s", regularName, boldName, boldItalicName, italicName)
+            }
         }
 
         fun storeFont(application: PretixScanMain, path: String): String {
