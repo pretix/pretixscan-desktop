@@ -1,11 +1,8 @@
 pretixSCAN
 ==========
 
-.. image:: https://travis-ci.org/pretix/pretixscan-desktop.svg?branch=master
-   :target: https://travis-ci.org/pretix/pretixscan-desktop
-
 .. image:: https://ci.appveyor.com/api/projects/status/n3n5tp3wl3i2qg5p?svg=true
-   :target: https://ci.appveyor.com/project/raphaelm/pretixscan-desktop
+   :target: https://ci.appveyor.com/project/raphaelm/pretixdesk
 
 Checking in your attendees, one ticket at a time.
 
@@ -24,19 +21,7 @@ use it, but do have a backup plan.
 Building and Running
 --------------------
 
-This project contains a submodule, so the first command you execute should be::
-
-    git submodule update --init
-
-This project is built using Gradle. It requires a JDK in version 11.
-You can then build and run the project using::
-
-    cd pretixscan/tornadofx-repo
-    JAVA_HOME=/usr/lib/jvm/java-11-jdk mvn -DskipTests package
-    cd ..
-    JAVA_HOME=/usr/lib/jvm/java-11-jdk ./gradlew :gui:run
-
-To create packages, see PACKAGES.md.
+To build and run the app locally, please refer to the [developer readme](pretixscan/README.md).
 
 FAQ
 ---
@@ -54,7 +39,7 @@ as well, but `tornadofx`_ has a nice Kotlin abstraction and
 `JFoenix`_ has nice material-design elements.
 
 Additionally, with the choice of a JVM-based language we can reuse lots of code from our
-`pretixdroid`_ Android application, making it easier to
+`pretixscan`_ Android application, making it easier to
 bring new features to both platforms.
 
 **Why not just a web app?**
@@ -78,21 +63,16 @@ questions in the process, please do not hesitate to ask us.
 Please note that we have a `Code of Conduct`_
 in place that applies to all project contributions, including issues, pull requests, etc.
 
-Security
---------
-
-If you discover a security issue, please contact us at security@pretix.eu and see our [Responsible Disclosure Policy](https://docs.pretix.eu/trust/security/disclosure/) further information.
-
 License
 -------
-The code in this repository is published under the terms of the Apache License. 
+The code in this repository is published under the terms of the Apache License.
 See the LICENSE file for the complete license text.
 
-This project is maintained by Raphael Michel <support@pretix.eu>. See the
+This project is maintained by Raphael Michel <mail@raphaelmichel.de>. See the
 AUTHORS file for a list of all the awesome folks who contributed to this project.
 
 This project is 100 percent free and open source software. If you are interested in
-commercial support, hosting services or supporting this project financially, please 
+commercial support, hosting services or supporting this project financially, please
 go to `pretix.eu`_ or contact Raphael directly.
 
 .. _pretix: https://pretix.eu
@@ -102,5 +82,4 @@ go to `pretix.eu`_ or contact Raphael directly.
 .. _Kotlin: https://kotlinlang.org/
 .. _tornadofx: https://github.com/edvin/tornadofx
 .. _JFoenix: https://github.com/jfoenixadmin/JFoenix
-.. _pretixdroid: https://github.com/pretix/pretixdroid
-.. _pretixscan-git: https://aur.archlinux.org/packages/pretixscan-git/
+.. _pretixscan: https://github.com/pretix/pretixscan-android
