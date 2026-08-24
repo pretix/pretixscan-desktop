@@ -1,9 +1,6 @@
 pretixSCAN
 ==========
 
-.. image:: https://ci.appveyor.com/api/projects/status/n3n5tp3wl3i2qg5p?svg=true
-   :target: https://ci.appveyor.com/project/raphaelm/pretixdesk
-
 Checking in your attendees, one ticket at a time.
 
 What is this?
