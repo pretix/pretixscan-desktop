@@ -30,7 +30,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
       - name: Gradle build
         working-directory: ./pretixscan
-        run: ./gradlew :cyclonedxBom
+        run: ./gradlew cyclonedxBom
       - name: Install Python dependencies
         run: pip3 install -U "prisma-sbom-submit"
       - name: Submit SBOM
