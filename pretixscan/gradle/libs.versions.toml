@@ -26,6 +26,7 @@ datastore = "1.1.7"
 mockk = "1.14.6"
 okhttp = "4.9.3"
 gmazzo = "5.7.1"
+cyclonedx-bom = "3.4.1"
 
 [libraries]
 apache-pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
@@ -75,3 +76,5 @@ google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
 app-cash-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 osdetector = { id = "com.google.osdetector", version = "1.7.3" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+cyclonedx-bom = { id = "org.cyclonedx.bom", version.ref = "cyclonedx-bom" }
+
