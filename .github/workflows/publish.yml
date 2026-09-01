@@ -50,7 +50,7 @@ jobs:
 
       # Only sign on releases to stay within the monthly signature quota
       - name: Sign Windows Installer
-        if: matrix.os == 'windows-latest' && github.event_name == 'release'
+        if: matrix.os == 'windows-latest' #&& github.event_name == 'release'
         uses: azure/artifact-signing-action@v2
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
