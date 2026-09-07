@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           java-version: "23"
-          distribution: "temurin"
+          distribution: ${{ runner.os == 'Windows' && 'zulu' || 'temurin' }} # zulu only for Windows to enable signing MSI contents
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
@@ -43,14 +43,57 @@ jobs:
           test -n "$version"
           echo "pretixVersion=$version" >> "$GITHUB_ENV"
 
-      - name: Package App
+      - name: (macOS, Linux) package app
+        if: runner.os != 'Windows'
         working-directory: ./pretixscan
         shell: bash
-        run: ./gradlew packageDistributionForCurrentOS -PappPackageName="${{ runner.os == 'Windows' && 'pretixSCAN Desktop' || 'pretixSCAN' }}"
+        run: ./gradlew packageDistributionForCurrentOS -PappPackageName="pretixSCAN"
 
-      # Only sign on releases to stay within the monthly signature quota
-      - name: Sign Windows Installer
-        if: matrix.os == 'windows-latest' && github.event_name == 'release'
+      # Windows: the app image is built first so its binaries can be signed before they are packaged into the MSI
+      - name: (Windows) create application image
+        if: runner.os == 'Windows'
+        working-directory: ./pretixscan
+        shell: bash
+        run: ./gradlew :composeApp:createDistributable -PappPackageName="pretixSCAN Desktop"
+
+      - name: (Windows) copy application image for signing
+        if: runner.os == 'Windows'
+        working-directory: ./pretixscan
+        shell: bash
+        run: |
+          rm -rf composeApp/build/signing
+          mkdir -p composeApp/build/signing/app
+          cp -R "composeApp/build/compose/binaries/main/app/pretixSCAN Desktop" composeApp/build/signing/app/
+          chmod -R u+w "composeApp/build/signing/app/pretixSCAN Desktop"
+          test -f "composeApp/build/signing/app/pretixSCAN Desktop/pretixSCAN Desktop.exe"
+          test -f "composeApp/build/signing/app/pretixSCAN Desktop/app/.jpackage.xml"
+
+      - name: (Windows) sign application binaries
+        if: runner.os == 'Windows' #&& github.event_name == 'release'
+        uses: azure/artifact-signing-action@v2
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://neu.codesigning.azure.net/
+          signing-account-name: pretix
+          certificate-profile-name: pretix
+          files-folder: ${{ github.workspace }}\pretixscan\composeApp\build\signing\app\pretixSCAN Desktop
+          files-folder-filter: exe,dll
+          files-folder-recurse: true
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          exclude-azure-cli-credential: true
+
+      - name: (Windows) build installer
+        if: runner.os == 'Windows'
+        working-directory: ./pretixscan
+        shell: bash
+        run: ./gradlew :composeApp:packageMsi -PappPackageName="pretixSCAN Desktop" -PappImageDir="${{ github.workspace }}\pretixscan\composeApp\build\signing\app\pretixSCAN Desktop"
+
+      - name: (Windows) sign installer
+        if: runner.os == 'Windows' #&& github.event_name == 'release'
         uses: azure/artifact-signing-action@v2
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
