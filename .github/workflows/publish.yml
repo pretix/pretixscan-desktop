@@ -81,6 +81,8 @@ jobs:
           files-folder: ${{ github.workspace }}\pretixscan\composeApp\build\signing\app\pretixSCAN Desktop
           files-folder-filter: exe,dll
           files-folder-recurse: true
+          description: pretixSCAN Desktop
+          description-url: https://pretix.eu
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
@@ -104,6 +106,8 @@ jobs:
           certificate-profile-name: pretix
           files-folder: ${{ github.workspace }}\pretixscan\composeApp\build\compose\binaries\main\msi
           files-folder-filter: msi
+          description: pretixSCAN Desktop
+          description-url: https://pretix.eu
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
