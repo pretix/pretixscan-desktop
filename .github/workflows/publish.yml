@@ -69,7 +69,7 @@ jobs:
           test -f "composeApp/build/signing/app/pretixSCAN Desktop/app/.jpackage.xml"
 
       - name: (Windows) sign application binaries
-        if: runner.os == 'Windows' #&& github.event_name == 'release'
+        if: runner.os == 'Windows' && github.event_name == 'release'
         uses: azure/artifact-signing-action@v2
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -95,7 +95,7 @@ jobs:
         run: ./gradlew :composeApp:packageMsi -PappPackageName="pretixSCAN Desktop" -PappImageDir="${{ github.workspace }}\pretixscan\composeApp\build\signing\app\pretixSCAN Desktop"
 
       - name: (Windows) sign installer
-        if: runner.os == 'Windows' #&& github.event_name == 'release'
+        if: runner.os == 'Windows' && github.event_name == 'release'
         uses: azure/artifact-signing-action@v2
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
