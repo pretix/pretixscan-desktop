@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -193,6 +194,15 @@ compose.desktop {
             linux {
                 iconFile.set(File("logo/pretix_app_icon.png"))
             }
+        }
+    }
+}
+
+// -PappImageDir makes packageMsi build the MSI from that app image
+findProperty("appImageDir")?.toString()?.takeIf { it.isNotBlank() }?.let { appImageDir ->
+    afterEvaluate {
+        tasks.named<AbstractJPackageTask>("packageMsi") {
+            appImage.set(file(appImageDir))
         }
     }
 }
