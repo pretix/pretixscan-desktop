@@ -8,3 +8,7 @@
 [submodule "pretixscan/tornadofx-repo"]
 	path = pretixscan/tornadofx-repo
 	url = https://github.com/pretix-unofficial/tornadofx.git
+[submodule "pretixscan/libpretixnfc-repo"]
+	path = pretixscan/libpretixnfc-repo
+	url = https://github.com/pretix/libpretixnfc.git
+	branch = main

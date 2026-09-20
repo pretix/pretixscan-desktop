@@ -26,6 +26,11 @@ dependencyResolutionManagement {
         }
         mavenCentral()
     }
+    versionCatalogs {
+        create("nfcCoreLibs") {
+            from(files("libpretixnfc-repo/libpretixnfc/gradle/libs.versions.toml"))
+        }
+    }
 }
 
 plugins {
@@ -38,5 +43,8 @@ project(":libpretixsync").projectDir = file("libpretixsync-repo/libpretixsync")
 
 include(":libpretixprint")
 project(":libpretixprint").projectDir = file("libpretixprint-repo/libpretixprint")
+
+include(":libpretixnfc")
+project(":libpretixnfc").projectDir = file("libpretixnfc-repo/libpretixnfc")
 
 include(":composeApp")

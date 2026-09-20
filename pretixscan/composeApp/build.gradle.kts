@@ -77,6 +77,7 @@ kotlin {
 
             implementation(project(":libpretixsync"))
             implementation(project(":libpretixprint"))
+            implementation(project(":libpretixnfc"))
 
             implementation(libs.okhttp)
 
