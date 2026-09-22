@@ -21,11 +21,14 @@ import eu.pretix.desktop.app.ui.asColor
 import eu.pretix.desktop.nfc.NfcState
 import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.scan.tickets.data.ExchangeSupport
+import eu.pretix.scan.tickets.data.ResultState
 import eu.pretix.scan.tickets.data.ResultStateData
+import eu.pretix.scan.tickets.data.color
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import pretixscan.composeapp.generated.resources.Res
 import pretixscan.composeapp.generated.resources.cancel
+import pretixscan.composeapp.generated.resources.ic_error_white_24dp
 import pretixscan.composeapp.generated.resources.nfc_no_reader
 import pretixscan.composeapp.generated.resources.ok
 import pretixscan.composeapp.generated.resources.reusable_media_exchange_needed
@@ -55,62 +58,86 @@ fun ExchangeDialogView(
         onMediumScanned(scannedMedium.first, scannedMedium.second)
     }
 
-    Column(
-        modifier = modifier.padding(16.dp).fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            stringResource(Res.string.reusable_media_exchange_needed),
-            style = MaterialTheme.typography.titleLarge
+    when (uiState.support) {
+        ExchangeSupport.NOT_IMPLEMENTED -> ExchangeRefused(
+            modifier = modifier,
+            data = data,
+            reason = stringResource(Res.string.reusable_media_exchange_not_implemented),
+            onConfirm = onCancel
         )
 
-        when (uiState.support) {
-            ExchangeSupport.NOT_IMPLEMENTED -> ExchangeUnsupported(
-                message = stringResource(Res.string.reusable_media_exchange_not_implemented),
-                onCancel = onCancel
+        ExchangeSupport.NO_NFC -> ExchangeRefused(
+            modifier = modifier,
+            data = data,
+            reason = stringResource(Res.string.reusable_media_exchange_no_nfc_support),
+            onConfirm = onCancel
+        )
+
+        ExchangeSupport.SUPPORTED -> Column(
+            modifier = modifier.padding(16.dp).fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                stringResource(Res.string.reusable_media_exchange_needed),
+                style = MaterialTheme.typography.titleLarge
             )
 
-            ExchangeSupport.NO_NFC -> ExchangeUnsupported(
-                message = stringResource(Res.string.reusable_media_exchange_no_nfc_support),
-                onCancel = onCancel
+            if (!data.ticketAndVariationName.isNullOrBlank()) {
+                Text(data.ticketAndVariationName, style = MaterialTheme.typography.bodyLarge)
+            }
+
+            TicketResultDetails(data)
+
+            val warning = uiState.error?.let { stringResource(it) }
+                ?: stringResource(Res.string.nfc_no_reader).takeIf { uiState.nfcState == NfcState.DISABLED }
+            if (warning != null) {
+                ExchangeWarning(warning)
+            }
+
+            Icon(
+                Icons.Default.Nfc,
+                contentDescription = stringResource(Res.string.reusable_media_exchange_nfc_scan),
+                modifier = Modifier.size(48.dp)
             )
 
-            ExchangeSupport.SUPPORTED -> {
-                if (!data.ticketAndVariationName.isNullOrBlank()) {
-                    Text(data.ticketAndVariationName, style = MaterialTheme.typography.bodyLarge)
-                }
+            Text(stringResource(Res.string.reusable_media_exchange_nfc_scan))
 
-                TicketResultDetails(data)
-
-                val warning = uiState.error?.let { stringResource(it) }
-                    ?: stringResource(Res.string.nfc_no_reader).takeIf { uiState.nfcState == NfcState.DISABLED }
-                if (warning != null) {
-                    ExchangeWarning(warning)
-                }
-
-                Icon(
-                    Icons.Default.Nfc,
-                    contentDescription = stringResource(Res.string.reusable_media_exchange_nfc_scan),
-                    modifier = Modifier.size(48.dp)
-                )
-
-                Text(stringResource(Res.string.reusable_media_exchange_nfc_scan))
-
-                Button(onClick = onCancel) {
-                    Text(stringResource(Res.string.cancel))
-                }
+            Button(onClick = onCancel) {
+                Text(stringResource(Res.string.cancel))
             }
         }
     }
 }
 
 @Composable
-private fun ExchangeUnsupported(message: String, onCancel: () -> Unit) {
-    Text(message, style = MaterialTheme.typography.bodyLarge)
+private fun ExchangeRefused(
+    modifier: Modifier = Modifier,
+    data: ResultStateData,
+    reason: String,
+    onConfirm: () -> Unit
+) {
+    val refusal = data.copy(
+        resultState = ResultState.ERROR,
+        resultText = stringResource(Res.string.reusable_media_exchange_needed),
+        reasonExplanation = reason
+    )
 
-    Button(onClick = onCancel) {
-        Text(stringResource(Res.string.ok))
+    Column(modifier = modifier.background(refusal.resultState.color())) {
+        TicketResultHeader(icon = Res.drawable.ic_error_white_24dp, data = refusal)
+
+        TicketResultDetails(refusal)
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(onClick = onConfirm) {
+                Text(stringResource(Res.string.ok))
+            }
+        }
     }
 }
 
