@@ -30,6 +30,9 @@ dependencyResolutionManagement {
         create("nfcCoreLibs") {
             from(files("libpretixnfc-repo/libpretixnfc/gradle/libs.versions.toml"))
         }
+        create("syncLibs") {
+            from(files("libpretixsync-repo/libpretixsync/gradle/libs.versions.toml"))
+        }
     }
 }
 
@@ -46,5 +49,8 @@ project(":libpretixprint").projectDir = file("libpretixprint-repo/libpretixprint
 
 include(":libpretixnfc")
 project(":libpretixnfc").projectDir = file("libpretixnfc-repo/libpretixnfc")
+
+include(":libpretixnfc-desktop")
+project(":libpretixnfc-desktop").projectDir = file("libpretixnfc-repo/libpretixnfc-desktop")
 
 include(":composeApp")

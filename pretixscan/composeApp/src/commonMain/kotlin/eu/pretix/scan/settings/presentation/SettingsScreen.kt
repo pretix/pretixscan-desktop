@@ -24,6 +24,7 @@ import eu.pretix.desktop.app.ui.*
 import eu.pretix.desktop.cache.getLogDirectory
 import eu.pretix.desktop.cache.getUserDataFolder
 import eu.pretix.desktop.cache.openPathInFileBrowser
+import eu.pretix.desktop.nfc.NfcReaderService
 import eu.pretix.desktop.webcam.data.VideoSource
 import eu.pretix.scan.tickets.data.BadgePrintPolicy
 import kotlinx.coroutines.launch
@@ -318,6 +319,29 @@ fun SettingsScreen(
                                         onSelect = {
                                             coroutineScope.launch {
                                                 viewModel.setPreferredCamera(it?.value)
+                                            }
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        Section(stringResource(Res.string.preference_nfc_head)) {
+                            Setting {
+                                Column(
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.preference_nfc_reader_label)
+                                    )
+                                    FieldSpinner(
+                                        selectedValue = form.nfcReader ?: NfcReaderService.ANY_READER_NAME,
+                                        availableOptions = listOf(SelectableValue(NfcReaderService.ANY_READER_NAME, stringResource(Res.string.preference_nfc_reader_auto))) + form.nfcReaders,
+                                        onSelect = {
+                                            coroutineScope.launch {
+                                                viewModel.setNfcReader(it?.value)
                                             }
                                         },
                                     )

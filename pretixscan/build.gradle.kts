@@ -4,11 +4,13 @@ plugins {
     alias(libs.plugins.jetbrainsCompose) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
-    alias(libs.plugins.google.protobuf) apply false
-    alias(libs.plugins.app.cash.sqldelight) apply false
     alias(libs.plugins.osdetector) apply false
-    alias(libs.plugins.gmazzo) apply false
     alias(libs.plugins.cyclonedx.bom) apply false
+    alias(syncLibs.plugins.kotlin.jvm) apply false
+    alias(syncLibs.plugins.kotlin.kapt) apply false
+    alias(syncLibs.plugins.protobuf) apply false
+    alias(syncLibs.plugins.buildconfig) apply false
+    alias(syncLibs.plugins.sqldelight) apply false
 }
 
 buildscript {

@@ -158,6 +158,10 @@
     <string name="scan_result_invalid_time">Ticket momentan nicht gültig</string>
     <string name="scan_result_blocked">Ticket gesperrt</string>
     <string name="scan_result_canceled">Ticket storniert</string>
+    <string name="scan_result_already_exchanged">Ticket bereits in ein Medium umgetauscht</string>
+    <string name="scan_result_medium_invalid">Wiederverwendbares Medium nicht gültig</string>
+    <string name="scan_result_medium_exists">Wiederverwendbares Medium existiert bereits</string>
+    <string name="scan_result_medium_exchange_required_offline">Ticket muss in ein Medium umgetauscht werden, dies ist jedoch Offline nicht möglich</string>
     <string name="error_sync_in_background">Eine Synchronisation läuft bereits im Hintergrund.</string>
     <string name="dialog_unpaid_title">Unbezahlte Bestellung</string>
     <string name="dialog_unpaid_text">Dieses Ticket gehört zu einer Bestellung die noch nicht bezahlt wurde. Möchten Sie den Teilnehmer trotzdem einchecken\? Die Bestellung wird dadurch NICHT auf bezahlt gestellt.</string>
@@ -231,4 +235,21 @@
     <string name="settings_preferred_camera_label">Bevorzugte Kamera</string>
     <string name="settings_camera_auto">Auto</string>
     <string name="no_available_cameras">Keine Kamera verfügbar</string>
+    <string name="nfc_random_uid">Dieses Medium hat eine zufällige UID und kann nicht benutzt werden.</string>
+    <string name="nfc_read_error">Der NFC-Chip konnte nicht gelesen werden. Probieren Sie, ihn länger am Gerät zu halten.</string>
+    <string name="nfc_unknown_chip_type">Diese Art von NFC-Chip wird nicht unterstützt.</string>
+    <string name="nfc_foreign_chip">Dieser NFC-Chip ist von einem anderen System kodiert.</string>
+    <string name="nfc_empty_chip">Dieser NFC-Chip ist noch nicht kodiert.</string>
+    <string name="reusable_media_exchange_unknown_type">Dieser Typ eines wiedervendbaren Mediums wird von dieser Version von pretixSCAN noch nicht unterstützt</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_unknown">Der gescannte NFC-Chip wird von dieser pretixSCAN-Version nicht unterstützt</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_uid">Es wird ein NFC-Chip auf UID-Basis benötigt</string>
+    <string name="reusable_media_exchange_nfc_needs_nfc_mf0aes">Es wird ein NFC Mifare Ultralight AES-Chip benötigt</string>
+    <string name="reusable_media_exchange_needed">Medientausch notwendig</string>
+    <string name="reusable_media_exchange_not_implemented">Dieses Ticket muss in ein wiederverwendbares Medium getauscht werden. Leider unterstützt diese Version von pretixSCAN dies noch nicht.</string>
+    <string name="reusable_media_exchange_no_nfc_support">Dieses Ticket muss in ein NFC-basiertes wiederverwendbares Medium getauscht werden. Leider unterstützt dieses Gerät kein NFC, sodass der Tausch nicht möglich ist.</string>
+    <string name="reusable_media_exchange_nfc_scan">Bitte einen NFC-Chip einlesen</string>
+    <string name="nfc_no_reader">Es ist kein NFC-Lesegerät angeschlossen.</string>
+    <string name="preference_nfc_head">NFC</string>
+    <string name="preference_nfc_reader_label">NFC-Lesegerät</string>
+    <string name="preference_nfc_reader_auto">Auto</string>
 </resources>

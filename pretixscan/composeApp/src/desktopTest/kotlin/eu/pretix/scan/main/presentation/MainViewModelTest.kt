@@ -4,6 +4,9 @@ import eu.pretix.desktop.app.sync.SyncRootService
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.cache.EventSelection
+import eu.pretix.desktop.nfc.NfcReadEvent
+import eu.pretix.libpretixnfc.communication.ChipReadError
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.scan.tickets.data.ResultState
 import io.mockk.every
 import io.mockk.mockk
@@ -249,6 +252,73 @@ class MainViewModelTest {
         assertTrue(stateAfterSecondScan is MainUiState.HandlingTicket, "Should be HandlingTicket")
         assertEquals("SECOND_SCAN", (stateAfterSecondScan as MainUiState.HandlingTicket).data.secret,
             "Secret SHOULD change - scan should interrupt WARNING dialog")
+    }
+
+    @Test
+    fun `onHandleChipRead is blocked while the exchange dialog owns the chip reads`() = runTest {
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleDirectScan("FIRST_SCAN")
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onTicketResultDetermined(ResultState.DIALOG_EXCHANGE)
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleChipRead(NfcReadEvent.Success("04AABBCC", ReusableMediaType.NFC_UID))
+        testScheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state is MainUiState.HandlingTicket, "Should still be HandlingTicket")
+        assertEquals("FIRST_SCAN", (state as MainUiState.HandlingTicket).data.secret,
+            "Secret should NOT change - the exchange dialog handles the chip read")
+    }
+
+    @Test
+    fun `onHandleChipRead carries the media type into the scan`() = runTest {
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleChipRead(NfcReadEvent.Success("04AABBCC", ReusableMediaType.NFC_UID))
+        testScheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state is MainUiState.HandlingTicket, "Expected HandlingTicket but got ${state::class.simpleName}")
+        assertEquals("04AABBCC", (state as MainUiState.HandlingTicket).data.secret)
+        assertEquals(ReusableMediaType.NFC_UID, state.data.sourceType)
+    }
+
+    @Test
+    fun `onHandleChipRead reports a read error without a secret`() = runTest {
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleChipRead(NfcReadEvent.Error(ChipReadError.FOREIGN_CHIP))
+        testScheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state is MainUiState.HandlingTicket, "Expected HandlingTicket but got ${state::class.simpleName}")
+        assertNull((state as MainUiState.HandlingTicket).data.secret)
+        assertEquals(ChipReadError.FOREIGN_CHIP, state.data.chipReadError)
+    }
+
+    @Test
+    fun `a barcode scan clears the chip read error of the previous result`() = runTest {
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleChipRead(NfcReadEvent.Error(ChipReadError.IO_ERROR))
+        testScheduler.advanceUntilIdle()
+        viewModel.onTicketResultDetermined(ResultState.ERROR)
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleDirectScan("TEST123")
+        testScheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state is MainUiState.HandlingTicket, "Expected HandlingTicket but got ${state::class.simpleName}")
+        assertNull((state as MainUiState.HandlingTicket).data.chipReadError)
+        assertEquals(ReusableMediaType.BARCODE, state.data.sourceType)
     }
 
     @Test

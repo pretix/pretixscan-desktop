@@ -21,4 +21,6 @@ data class ConfigurableSettings(
     val unpaidAsk: Boolean = true,
     val cameras: List<String> = emptyList(),
     val preferredCamera: String? = null,
+    val nfcReaders: List<SelectableValue> = emptyList(),
+    val nfcReader: String? = null,
 )

@@ -7,6 +7,7 @@ import eu.pretix.libpretixsync.SentryInterface
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixsync.models.Question
 import eu.pretix.libpretixsync.sqldelight.SyncDatabase
 import io.mockk.every
@@ -39,6 +40,10 @@ class TicketCodeHandlerTest {
 
     private var capturedAnswers: List<Answer>? = null
     private var capturedAllowQuestions: Boolean = false
+    private var capturedSourceType: String? = null
+    private var capturedExchangeMediumType: String? = null
+    private var capturedExchangeMediumIdentifier: String? = null
+    private var providerCalls: Int = 0
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -64,6 +69,10 @@ class TicketCodeHandlerTest {
 
         capturedAnswers = null
         capturedAllowQuestions = false
+        capturedSourceType = null
+        capturedExchangeMediumType = null
+        capturedExchangeMediumIdentifier = null
+        providerCalls = 0
 
         every {
             checkProvider.check(
@@ -76,11 +85,18 @@ class TicketCodeHandlerTest {
                 any(),
                 nonce = any(),
                 allowQuestions = any(),
+                useOrderLocale = any(),
+                exchange_medium_type = any(),
+                exchange_medium_identifier = any(),
             )
         } answers {
             @Suppress("UNCHECKED_CAST")
             capturedAnswers = args[3] as? List<Answer>
             capturedAllowQuestions = args[8] as Boolean
+            capturedSourceType = args[2] as String
+            capturedExchangeMediumType = args[10] as String?
+            capturedExchangeMediumIdentifier = args[11] as String?
+            providerCalls++
             TicketCheckProvider.CheckResult(TicketCheckProvider.CheckResult.Type.VALID, "valid")
         }
     }
@@ -115,7 +131,7 @@ class TicketCodeHandlerTest {
 
     @Test
     fun `allowQuestions is always true regardless of whether answers are provided`() = runTest {
-        createHandler().handleScan("S", answers = null, ignoreUnpaid = true)
+        createHandler().handleScan("S", ReusableMediaType.BARCODE, answers = null, ignoreUnpaid = true)
         testScheduler.advanceUntilIdle()
         assertEquals(true, capturedAllowQuestions)
     }
@@ -124,7 +140,7 @@ class TicketCodeHandlerTest {
     fun `allowQuestions is true when user supplies answers`() = runTest {
         val answer = Answer(makeQuestion(123L), "foo")
 
-        createHandler().handleScan("S", answers = listOf(answer), ignoreUnpaid = true)
+        createHandler().handleScan("S", ReusableMediaType.BARCODE, answers = listOf(answer), ignoreUnpaid = true)
         testScheduler.advanceUntilIdle()
 
         assertEquals(true, capturedAllowQuestions)
@@ -135,7 +151,7 @@ class TicketCodeHandlerTest {
         val q = makeQuestion(42L)
         val answer = Answer(q, "some-value")
 
-        createHandler().handleScan("S", answers = listOf(answer), ignoreUnpaid = true)
+        createHandler().handleScan("S", ReusableMediaType.BARCODE, answers = listOf(answer), ignoreUnpaid = true)
         testScheduler.advanceUntilIdle()
 
         val captured = capturedAnswers
@@ -151,7 +167,7 @@ class TicketCodeHandlerTest {
         val answer1 = Answer(q1, "value-10")
         val answer2 = Answer(q2, "value-20")
 
-        createHandler().handleScan("S", answers = listOf(answer1, answer2), ignoreUnpaid = true)
+        createHandler().handleScan("S", ReusableMediaType.BARCODE, answers = listOf(answer1, answer2), ignoreUnpaid = true)
         testScheduler.advanceUntilIdle()
 
         val captured = capturedAnswers
@@ -163,7 +179,7 @@ class TicketCodeHandlerTest {
 
     @Test
     fun `null answers are passed through as null`() = runTest {
-        createHandler().handleScan("S", answers = null, ignoreUnpaid = false)
+        createHandler().handleScan("S", ReusableMediaType.BARCODE, answers = null, ignoreUnpaid = false)
         testScheduler.advanceUntilIdle()
 
         val captured = capturedAnswers
@@ -175,11 +191,65 @@ class TicketCodeHandlerTest {
         val q = makeQuestion(99L)
         val answer = Answer(q, "answer-value")
 
-        createHandler().handleScan("S", answers = listOf(answer), ignoreUnpaid = true)
+        createHandler().handleScan("S", ReusableMediaType.BARCODE, answers = listOf(answer), ignoreUnpaid = true)
         testScheduler.advanceUntilIdle()
 
         val captured = capturedAnswers
         assertNotNull(captured)
         assertSame(q, captured[0].question)
+    }
+
+    @Test
+    fun `barcode scans reach the provider as source type barcode`() = runTest {
+        createHandler().handleScan("S", ReusableMediaType.BARCODE, answers = null, ignoreUnpaid = false)
+        testScheduler.advanceUntilIdle()
+
+        assertEquals("barcode", capturedSourceType)
+    }
+
+    @Test
+    fun `chip reads reach the provider as source type nfc_uid`() = runTest {
+        createHandler().handleScan("04AABBCC", ReusableMediaType.NFC_UID, answers = null, ignoreUnpaid = false)
+        testScheduler.advanceUntilIdle()
+
+        assertEquals("nfc_uid", capturedSourceType)
+    }
+
+    @Test
+    fun `exchange parameters are forwarded to the provider`() = runTest {
+        createHandler().handleScan(
+            "S",
+            ReusableMediaType.BARCODE,
+            answers = null,
+            ignoreUnpaid = false,
+            exchangeMediumType = ReusableMediaType.NFC_UID,
+            exchangeMediumIdentifier = "04AABBCC",
+        )
+        testScheduler.advanceUntilIdle()
+
+        assertEquals("nfc_uid", capturedExchangeMediumType)
+        assertEquals("04AABBCC", capturedExchangeMediumIdentifier)
+    }
+
+    @Test
+    fun `a chip answering with a random uid is rejected without asking the provider`() = runTest {
+        val result = createHandler().handleScan(
+            "08AABBCC",
+            ReusableMediaType.NFC_UID,
+            answers = null,
+            ignoreUnpaid = false,
+        )
+        testScheduler.advanceUntilIdle()
+
+        assertEquals(TicketCheckProvider.CheckResult.Type.ERROR, result.type)
+        assertEquals(0, providerCalls)
+    }
+
+    @Test
+    fun `a barcode starting with the random uid prefix still reaches the provider`() = runTest {
+        createHandler().handleScan("08AABBCC", ReusableMediaType.BARCODE, answers = null, ignoreUnpaid = false)
+        testScheduler.advanceUntilIdle()
+
+        assertEquals(1, providerCalls)
     }
 }
