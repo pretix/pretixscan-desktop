@@ -10,14 +10,19 @@ import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixsync.models.Question
 import eu.pretix.libpretixsync.sqldelight.SyncDatabase
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -49,6 +54,9 @@ class TicketCodeHandlerTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+
+        mockkStatic("org.jetbrains.compose.resources.StringResourcesKt")
+        coEvery { getString(any<StringResource>()) } returns "stubbed string resource"
 
         conf = mockk(relaxed = true)
         appCache = mockk(relaxed = true)
@@ -104,6 +112,7 @@ class TicketCodeHandlerTest {
     @AfterTest
     fun teardown() {
         Dispatchers.resetMain()
+        unmockkAll()
     }
 
     private fun makeQuestion(serverId: Long): Question = Question(
