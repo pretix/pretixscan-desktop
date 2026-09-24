@@ -1,2 +1,11 @@
-- [ ] Bump version in all places
-- [ ] Commit
+- [ ] Set `version` and `versionCode` in `pretixscan/gradle.properties`.
+      - `version` must be plain numeric MAJOR.MINOR.PATCH, and greater than the previous value so the MSI upgrades an existing install.
+      - `versionCode` is sent to the pretix server as the device software version.
+- [ ] `cd pretixscan && ./gradlew clean build` passes.
+- [ ] Commit as `Bump to X.Y.Z` on a branch and open a PR to `master`.
+- [ ] Build and Publish workflows succeeded on the PR.
+- [ ] Merge the PR.
+- [ ] Confirm the SBOM workflow for the merge has succeeded.
+- [ ] Create a GitHub release targeting master with a new tag `vX.Y.Z`.
+- [ ] The "Sign Windows Installer" job succeeds.
+- [ ] The MSI and DEBs installers are attached to the release.

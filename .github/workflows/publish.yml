@@ -1,15 +1,18 @@
 name: Publish
 on:
   release:
-    types: [released, prereleased]
+    types: [published]
   pull_request:
     branches:
       - master
 
+permissions:
+  contents: write
+
 # prevent duplicate runs on the same branch
 concurrency:
-  group: ${{ github.workflow }}-${{ github.sha }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'release' }}
 
 jobs:
   publish:
@@ -17,7 +20,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #os: [ubuntu-latest, windows-latest, macos-latest, ubuntu-24.04-arm]
         os: [ubuntu-latest, windows-latest, ubuntu-24.04-arm]
     steps:
       - name: Check out code
@@ -28,53 +30,114 @@ jobs:
         uses: actions/setup-java@v5
         with:
           java-version: "23"
-          distribution: "temurin"
+          distribution: ${{ runner.os == 'Windows' && 'zulu' || 'temurin' }} # zulu only for Windows to enable signing MSI contents
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Package App
-        working-directory: ./pretixscan
-        shell: bash
-        run: ./gradlew packageDistributionForCurrentOS -PappPackageName="${{ runner.os == 'Windows' && 'pretixSCAN Desktop' || 'pretixSCAN' }}"
-
       - name: Read version
         working-directory: ./pretixscan
         shell: bash
-        run: ./gradlew -q printVersion >> $GITHUB_ENV
+        run: |
+          version="$(./gradlew -q printVersion | sed -n 's/^pretixVersion=//p' | tr -d '\r')"
+          test -n "$version"
+          echo "pretixVersion=$version" >> "$GITHUB_ENV"
 
-      # - name: Sign Windows Installer
-      #   if: matrix.os == 'windows-latest'
-      #   working-directory: ./pretixscan
-      #   shell: bash
-      #   run: ./gradlew signWindowsMsi
+      - name: (macOS, Linux) package app
+        if: runner.os != 'Windows'
+        working-directory: ./pretixscan
+        shell: bash
+        run: ./gradlew packageDistributionForCurrentOS -PappPackageName="pretixSCAN"
 
-      # Upload Windows executables and installers
-      - name: Upload Windows Apps
-        if: matrix.os == 'windows-latest'
+      # Windows: the app image is built first so its binaries can be signed before they are packaged into the MSI
+      - name: (Windows) create application image
+        if: runner.os == 'Windows'
+        working-directory: ./pretixscan
+        shell: bash
+        run: ./gradlew :composeApp:createDistributable -PappPackageName="pretixSCAN Desktop"
+
+      - name: (Windows) copy application image for signing
+        if: runner.os == 'Windows'
+        working-directory: ./pretixscan
+        shell: bash
+        run: |
+          rm -rf composeApp/build/signing
+          mkdir -p composeApp/build/signing/app
+          cp -R "composeApp/build/compose/binaries/main/app/pretixSCAN Desktop" composeApp/build/signing/app/
+          chmod -R u+w "composeApp/build/signing/app/pretixSCAN Desktop"
+          test -f "composeApp/build/signing/app/pretixSCAN Desktop/pretixSCAN Desktop.exe"
+          test -f "composeApp/build/signing/app/pretixSCAN Desktop/app/.jpackage.xml"
+
+      - name: (Windows) sign application binaries
+        if: runner.os == 'Windows' && github.event_name == 'release'
+        uses: azure/artifact-signing-action@v2
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://neu.codesigning.azure.net/
+          signing-account-name: pretix
+          certificate-profile-name: pretix
+          files-folder: ${{ github.workspace }}\pretixscan\composeApp\build\signing\app\pretixSCAN Desktop
+          files-folder-filter: exe,dll
+          files-folder-recurse: true
+          description: pretixSCAN Desktop
+          description-url: https://pretix.eu
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          exclude-azure-cli-credential: true
+
+      - name: (Windows) build installer
+        if: runner.os == 'Windows'
+        working-directory: ./pretixscan
+        shell: bash
+        run: ./gradlew :composeApp:packageMsi -PappPackageName="pretixSCAN Desktop" -PappImageDir="${{ github.workspace }}\pretixscan\composeApp\build\signing\app\pretixSCAN Desktop"
+
+      - name: (Windows) sign installer
+        if: runner.os == 'Windows' && github.event_name == 'release'
+        uses: azure/artifact-signing-action@v2
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://neu.codesigning.azure.net/
+          signing-account-name: pretix
+          certificate-profile-name: pretix
+          files-folder: ${{ github.workspace }}\pretixscan\composeApp\build\compose\binaries\main\msi
+          files-folder-filter: msi
+          description: pretixSCAN Desktop
+          description-url: https://pretix.eu
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          exclude-azure-cli-credential: true
+
+      - name: Collect installer
+        shell: bash
+        run: |
+          mkdir dist
+          binaries=./pretixscan/composeApp/build/compose/binaries/main
+          case "${{ matrix.os }}" in
+            windows-latest)
+              cp "$binaries/msi/pretixSCAN Desktop-${pretixVersion}.msi" "dist/pretixSCAN-${pretixVersion}-win-x86_64.msi" ;;
+            ubuntu-latest)
+              cp "$binaries/deb/pretixscan_${pretixVersion}_amd64.deb" "dist/pretixSCAN-${pretixVersion}-linux-amd64.deb" ;;
+            ubuntu-24.04-arm)
+              cp "$binaries/deb/pretixscan_${pretixVersion}_arm64.deb" "dist/pretixSCAN-${pretixVersion}-linux-arm64.deb" ;;
+          esac
+          echo "installer=$(ls dist)" >> "$GITHUB_ENV"
+
+      - name: Upload workflow artifact
         uses: actions/upload-artifact@v7
         with:
-          name: pretixSCAN-${{ env.pretixVersion }}-win-x86_64.msi
-          path: ./pretixscan/composeApp/build/compose/binaries/main/msi/pretixSCAN Desktop-${{ env.pretixVersion }}.msi
+          name: ${{ env.installer }}
+          path: dist/${{ env.installer }}
+          if-no-files-found: error
 
-      - name: Upload Linux amd64
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v7
-        with:
-          name: pretixSCAN-${{ env.pretixVersion }}-linux-amd64.deb
-          path: ./pretixscan/composeApp/build/compose/binaries/main/deb/pretixscan_${{ env.pretixVersion }}_amd64.deb
-
-      - name: Upload Linux arm
-        if: matrix.os == 'ubuntu-24.04-arm'
-        uses: actions/upload-artifact@v7
-        with:
-          name: pretixSCAN-${{ env.pretixVersion }}-linux-arm64.deb
-          path: ./pretixscan/composeApp/build/compose/binaries/main/deb/pretixscan_${{ env.pretixVersion }}_arm64.deb
-
-      # Upload MacOS package
-      - name: Upload MacOS App
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v7
-        with:
-          name: pretixSCAN-${{ env.pretixVersion }}-macOS.dmg
-          path: ./pretixscan/composeApp/build/compose/binaries/main/dmg/pretixscan-${{ env.pretixVersion }}.dmg
+      - name: Attach installer to release
+        if: github.event_name == 'release'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" "dist/${installer}" --clobber

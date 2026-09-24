@@ -1,10 +1,11 @@
 name: Build
 on:
   push:
+    branches: ['**']
 
 # prevent duplicate runs on the same branch
 concurrency:
-  group: ${{ github.workflow }}-${{ github.sha }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -13,7 +14,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #os: [ubuntu-latest, windows-latest, macos-latest]
         os: [ubuntu-latest, windows-latest]
     steps:
       - name: Check out code

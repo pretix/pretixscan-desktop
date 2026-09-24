@@ -3,7 +3,6 @@ name: SBOM
 on:
   push:
     branches: [ master, main, sbom ]
-    tags: [ 'v.*' ]
 
 permissions:
   contents: read  #  to fetch code (actions/checkout)
@@ -16,7 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Submission
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          submodules: true # needed for libpretixsync and libpretixprint
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
