@@ -47,6 +47,11 @@ class ResultStateTest {
     }
 
     @Test
+    fun `DIALOG_EXCHANGE requires user interaction`() {
+        assertEquals(DismissBehavior.RequiresUserInteraction, ResultState.DIALOG_EXCHANGE.dismissBehavior())
+    }
+
+    @Test
     fun `all ResultState entries have a dismiss behavior`() {
         ResultState.entries.forEach { state ->
             assertNotNull(state.dismissBehavior(), "Missing dismiss behavior for $state")

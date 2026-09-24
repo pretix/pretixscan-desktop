@@ -1,6 +1,8 @@
 package eu.pretix.scan.main.presentation
 
 import eu.pretix.desktop.cache.EventSelection
+import eu.pretix.libpretixnfc.communication.ChipReadError
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.scan.tickets.data.ResultState
 import org.joda.time.DateTime
 
@@ -37,10 +39,15 @@ sealed class MainUiState<out T> {
 data class MainUiStateData(
     val eventSelection: EventSelection,
     val secret: String? = null,
+    val sourceType: ReusableMediaType = ReusableMediaType.BARCODE,
+    val chipReadError: ChipReadError? = null,
     val scanTimestamp: Long = 0L,
     val resultState: ResultState? = null
 )
 
-fun MainUiStateData.secret(secret: String?): MainUiStateData {
-    return this.copy(secret = secret)
+fun MainUiStateData.secret(
+    secret: String?,
+    sourceType: ReusableMediaType = ReusableMediaType.BARCODE
+): MainUiStateData {
+    return this.copy(secret = secret, sourceType = sourceType, chipReadError = null)
 }

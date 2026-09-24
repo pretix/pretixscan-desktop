@@ -1,10 +1,14 @@
 [submodule "pretixscan/libpretixsync-repo"]
 	path = pretixscan/libpretixsync-repo
-	url = https://github.com/pretix/libpretixsync.git
-	branch = master
+	url = https://github.com/kkostov/libpretixsync.git
+	branch = fix/media-fallback-position-selection
 [submodule "pretixscan/libpretixprint-repo"]
 	path = pretixscan/libpretixprint-repo
 	url = https://github.com/pretix/libpretixprint.git
 [submodule "pretixscan/tornadofx-repo"]
 	path = pretixscan/tornadofx-repo
 	url = https://github.com/pretix-unofficial/tornadofx.git
+[submodule "pretixscan/libpretixnfc-repo"]
+	path = pretixscan/libpretixnfc-repo
+	url = https://github.com/pretix/libpretixnfc.git
+	branch = feat/kmp-module

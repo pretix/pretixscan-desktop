@@ -2,7 +2,11 @@ package di
 
 import eu.pretix.desktop.app.scan.GlobalScanHandler
 import eu.pretix.desktop.cache.*
+import eu.pretix.desktop.nfc.NfcReaderService
+import eu.pretix.desktop.nfc.PcscNfcReaderService
 import eu.pretix.desktop.printing.*
+import eu.pretix.libpretixnfc.desktop.platform.FileKeyStore
+import eu.pretix.libpretixnfc.platform.HardwareBackedKeyStore
 import eu.pretix.libpretixsync.SentryInterface
 import eu.pretix.libpretixsync.api.DefaultHttpClientFactory
 import eu.pretix.libpretixsync.api.HttpClientFactory
@@ -14,12 +18,18 @@ import eu.pretix.scan.settings.data.PrinterSource
 import org.json.JSONObject
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import java.io.File
+import java.util.logging.Logger
+
+private val log = Logger.getLogger("PlatformModules")
 
 actual val platformModules: List<Module>
     get() = listOf(
         module {
             single<LocalCacheFactory> { JvmLocalCacheFactory() }
             single { GlobalScanHandler() }
+            single<HardwareBackedKeyStore> { FileKeyStore(File(getUserDataDir(), "keys")) }
+            single<NfcReaderService> { PcscNfcReaderService(get(), get(), get(), get()) }
         },
         module {
             factory<HttpClientFactory> {
@@ -64,7 +74,7 @@ actual val platformModules: List<Module>
                     System.getProperty("os.version"),
                     "pretixSCAN Desktop",
                     Version.version,
-                    null,
+                    devicePublicKey(get()),
                     null,
                     null
                 )
@@ -91,3 +101,13 @@ actual val platformModules: List<Module>
             }
         }
     )
+
+/**
+ * Returns the PEM encoded device key the server encrypts the media key sets for, or null when it
+ * cannot be read. Without it the server sends no key sets, while everything else keeps syncing.
+ */
+private fun devicePublicKey(keyStore: HardwareBackedKeyStore): String? =
+    runCatching { keyStore.getOrCreateRsaPubKey(NfcReaderService.DEVICE_KEY_NAME) }
+        .onFailure { log.warning("Could not read the device key: ${it.message}") }
+        .getOrNull()
+        ?.toString(Charsets.UTF_8)

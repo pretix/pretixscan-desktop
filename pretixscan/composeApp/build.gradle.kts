@@ -12,7 +12,12 @@ plugins {
 
 
 kotlin {
-    jvm("desktop")
+    jvm("desktop") {
+        compilerOptions {
+            // javax.smartcardio is not part of the default module set
+            freeCompilerArgs.add("-Xadd-modules=java.smartcardio")
+        }
+    }
 
     sourceSets {
         // Add generated source to the source set
@@ -77,6 +82,8 @@ kotlin {
 
             implementation(project(":libpretixsync"))
             implementation(project(":libpretixprint"))
+            implementation(project(":libpretixnfc"))
+            implementation(project(":libpretixnfc-desktop"))
 
             implementation(libs.okhttp)
 
@@ -168,7 +175,7 @@ compose.desktop {
             copyright = "pretix.eu, Raphael Michel"
             licenseFile.set(project.rootProject.file("LICENSE"))
             // run `./gradlew suggestModules` to determine list of modules
-            modules("java.instrument", "java.sql.rowset", "jdk.unsupported")
+            modules("java.instrument", "java.smartcardio", "java.sql.rowset", "jdk.unsupported")
             // if distribution size is not important, we can also:
             // alternatively: includeAllModules = true
 

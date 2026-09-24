@@ -8,6 +8,7 @@ import eu.pretix.desktop.app.ui.SelectableValue
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.cache.Version
+import eu.pretix.desktop.nfc.NfcReaderService
 import eu.pretix.desktop.webcam.data.VideoSource
 import eu.pretix.scan.settings.data.ConfigurableSettings
 import eu.pretix.scan.settings.data.PrinterSource
@@ -26,7 +27,8 @@ class SettingsViewModel(
     private val printerSource: PrinterSource,
     private val videoSource: VideoSource,
     private val appCache: AppCache,
-    private val syncRootService: SyncRootService
+    private val syncRootService: SyncRootService,
+    private val nfcReaderService: NfcReaderService
 ) : ViewModel() {
 
     private val _form = MutableStateFlow(ConfigurableSettings())
@@ -45,6 +47,13 @@ class SettingsViewModel(
                 val cameraNames = webcams.map { it.name }
                 _form.update { it.copy(cameras = cameraNames) }
             }
+        }
+    }
+
+    private fun loadNfcReaders() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val readers = nfcReaderService.listReaders()
+            _form.update { it.copy(nfcReaders = readers) }
         }
     }
 
@@ -67,8 +76,10 @@ class SettingsViewModel(
             uiReduceMotion = appConfig.uiReduceMotion,
             uiHideNames = appConfig.uiHideNames,
             preferredCamera = appConfig.preferredCameraName,
+            nfcReader = appConfig.nfcReaderName,
         )
         loadCameras()
+        loadNfcReaders()
 
         if (_form.value.printBadges && badgePrinterWasSelected && _form.value.badgePrinter == null) {
             _uiState.update { SettingsUiState.ErrorSelectedPrinterNotAvailable }
@@ -157,6 +168,11 @@ class SettingsViewModel(
 
     suspend fun setPreferredCamera(name: String?) {
         appConfig.preferredCameraName = name ?: VideoSource.NO_CAMERA_NAME
+        loadSettings()
+    }
+
+    suspend fun setNfcReader(name: String?) {
+        appConfig.nfcReaderName = name?.takeIf { it != NfcReaderService.ANY_READER_NAME }
         loadSettings()
     }
 

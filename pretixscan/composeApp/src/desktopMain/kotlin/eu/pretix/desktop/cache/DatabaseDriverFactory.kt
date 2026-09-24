@@ -39,11 +39,18 @@ class JvmLocalCacheFactory : LocalCacheFactory {
         return driver
     }
 
-    override fun getSyncDataSource(): SyncDatabase {
-        // NB: this implementation assumes the database schema has already been created by requery
-        val dbFile = getDatabasePath()
-        val url = jdbcConnectionString(dbFile)
-        log.info("Using database file with sqldelight at $dbFile")
+    /**
+    Replaces blank expiry dates of reusable media with NULL so that they can be decoded as dates.
+     */
+    private fun clearBlankMediumExpiryDates(driver: SqlDriver) {
+        driver.execute(
+            identifier = null,
+            sql = "UPDATE ReusableMedium SET expires = NULL WHERE expires = '';",
+            parameters = 0,
+        )
+    }
+
+    internal fun openSyncDatabase(url: String): SyncDatabase {
         val driver = createDriver(url)
         log.info("Enabling wal-mode")
         driver.execute(
@@ -51,10 +58,18 @@ class JvmLocalCacheFactory : LocalCacheFactory {
             sql = "PRAGMA journal_mode = wal;",
             parameters = 0,
         )
+        log.info("Clearing blank expiry dates of reusable media")
+        clearBlankMediumExpiryDates(driver)
         return createSyncDatabase(
-            driver = createDriver(url),
+            driver = driver,
             dateAdapter = AndroidUtilDateAdapter(),
             bigDecimalAdapter = BigDecimalAdapter(),
         )
+    }
+
+    override fun getSyncDataSource(): SyncDatabase {
+        val dbFile = getDatabasePath()
+        log.info("Using database file with sqldelight at $dbFile")
+        return openSyncDatabase(jdbcConnectionString(dbFile))
     }
 }

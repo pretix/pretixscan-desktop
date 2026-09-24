@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import eu.pretix.desktop.app.navigation.Route
 import eu.pretix.desktop.app.scan.GlobalScanSetup
 import eu.pretix.desktop.app.ui.ScreenContentRoot
+import eu.pretix.desktop.nfc.NfcScanSetup
 import eu.pretix.scan.main.presentation.selectevent.SelectEventDialog
 import eu.pretix.scan.main.presentation.selectlist.SelectCheckInListDialog
 import eu.pretix.scan.main.presentation.toolbar.MainToolbar
@@ -35,6 +36,14 @@ fun MainScreen(
         onHandleDirectScan = { secret ->
             coroutineScope.launch {
                 viewModel.onHandleDirectScan(secret)
+            }
+        }
+    )
+
+    NfcScanSetup(
+        onChipRead = { event ->
+            coroutineScope.launch {
+                viewModel.onHandleChipRead(event)
             }
         }
     )
@@ -140,6 +149,8 @@ fun MainScreen(
             }
             TicketHandlingDialog(
                 secret = data.secret,
+                sourceType = data.sourceType,
+                chipReadError = data.chipReadError,
                 scanTimestamp = data.scanTimestamp,
                 onDismiss = viewModel::onHandleTicketHandlingDismissed,
                 onResultStateChanged = viewModel::onTicketResultDetermined

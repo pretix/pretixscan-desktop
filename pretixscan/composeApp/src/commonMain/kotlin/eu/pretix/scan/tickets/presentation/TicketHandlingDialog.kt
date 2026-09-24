@@ -17,6 +17,8 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import com.composables.core.*
 import eu.pretix.desktop.app.ui.ErrorDialog
+import eu.pretix.libpretixnfc.communication.ChipReadError
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.scan.tickets.data.DismissBehavior
 import eu.pretix.scan.tickets.data.ResultState
 import eu.pretix.scan.tickets.data.dismissBehavior
@@ -34,6 +36,8 @@ private val log = Logger.getLogger("TicketHandlingDialog")
 @Composable
 fun TicketHandlingDialog(
     secret: String?,
+    sourceType: ReusableMediaType,
+    chipReadError: ChipReadError?,
     scanTimestamp: Long,
     onDismiss: () -> Unit,
     onResultStateChanged: (ResultState) -> Unit = {}
@@ -50,7 +54,11 @@ fun TicketHandlingDialog(
 
     LaunchedEffect(secret, scanTimestamp) {
         viewModel.resetTicketHandlingState()
-        viewModel.handleTicket(secret)
+        if (chipReadError != null) {
+            viewModel.showChipReadError(chipReadError)
+        } else {
+            viewModel.handleTicket(secret, sourceType)
+        }
     }
 
     LaunchedEffect(uiState.resultState) {
@@ -143,7 +151,7 @@ fun TicketHandlingDialog(
 
                 ResultState.DIALOG_UNPAID -> UnpaidDialogView(data = uiState, onCancel = onDismiss, onCheckInAnyway = {
                     coroutineScope.launch {
-                        viewModel.handleTicket(secret, ignoreUnpaid = true)
+                        viewModel.handleTicket(secret, sourceType, ignoreUnpaid = true)
                     }
                 })
 
@@ -151,7 +159,17 @@ fun TicketHandlingDialog(
                     data = uiState,
                     onConfirm = { answers ->
                         coroutineScope.launch {
-                            viewModel.handleTicket(secret, answers = answers, ignoreUnpaid = true)
+                            viewModel.handleTicket(secret, sourceType, answers = answers, ignoreUnpaid = true)
+                        }
+                    },
+                    onCancel = onDismiss
+                )
+
+                ResultState.DIALOG_EXCHANGE -> ExchangeDialogView(
+                    data = uiState,
+                    onMediumScanned = { identifier, mediaType ->
+                        coroutineScope.launch {
+                            viewModel.handleMediumExchange(secret, sourceType, mediaType, identifier)
                         }
                     },
                     onCancel = onDismiss
