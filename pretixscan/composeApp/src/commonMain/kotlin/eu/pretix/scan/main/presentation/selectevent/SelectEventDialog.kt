@@ -81,8 +81,8 @@ fun SelectEventDialog(
                         enabled = syncState !is SyncState.InProgress
                     ) {
                         Image(
-                            painter = if (advancedMode) painterResource(Res.drawable.ic_shuffle_dark_24dp) else painterResource(
-                                Res.drawable.ic_shuffle_24dp
+                            painter = if (advancedMode) painterResource(Res.drawable.ic_calendar_add_on_dark_24dp) else painterResource(
+                                Res.drawable.ic_calendar_add_on_24dp
                             ),
                             contentDescription = stringResource(Res.string.advanced_mode),
                             modifier = Modifier.size(18.dp)
