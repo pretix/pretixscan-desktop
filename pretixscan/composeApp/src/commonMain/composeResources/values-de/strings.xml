@@ -119,7 +119,8 @@
     <string name="settings_label_ui_reduce_motion_summary">Deaktiviert einige Features; bspw. das Blinken für spezielle Ticket-Typen.</string>
     <string name="settings_label_sounds">Signaltöne abspielen</string>
     <string name="settings_label_hide_names">Verstecke Namen und andere Personendaten</string>
-    <string name="settings_label_hide_names_summary">Wirkt sich nicht auf die Suche aus, nützlich z.B. in Verbindung mit dem Kiosk-Modus</string>
+    <string name="settings_label_hide_names_summary">Wirkt sich nicht auf die Suche aus</string>
+    <string name="settings_label_hide_names_summary_kiosk">Wirkt sich nicht auf die Suche aus, nützlich z.B. in Verbindung mit dem Kiosk-Modus</string>
     <string name="settings_label_badges">Badges</string>
     <string name="settings_label_print_badges">Drucke Badges</string>
     <string name="preference_badges_twice">Jedes Badge doppelt drucken</string>

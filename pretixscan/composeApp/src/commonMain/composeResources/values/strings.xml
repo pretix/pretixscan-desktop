@@ -127,7 +127,8 @@
     </string>
     <string name="settings_label_sounds">Play sounds</string>
     <string name="settings_label_hide_names">Hide names and other personal information</string>
-    <string name="settings_label_hide_names_summary">Does not affect search, useful e.g. in combination with kiosk mode</string>
+    <string name="settings_label_hide_names_summary">Does not affect search</string>
+    <string name="settings_label_hide_names_summary_kiosk">Does not affect search, useful e.g. in combination with kiosk mode</string>
     <string name="settings_label_badges">Badges</string>
     <string name="settings_label_print_badges">Print badges</string>
     <string name="preference_badges_twice">Print every badge twice</string>
