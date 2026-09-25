@@ -72,7 +72,7 @@
     </plurals>
     <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
     <string name="short_datetime_format">dd.MM. HH:mm</string>
-    <string name="first_scanned">Zuerst gescannt: %s</string>
+    <string name="first_scanned">Zuerst gescannt: </string>
     <string name="datetime_format">%1$td.%1$tm.%1$tY %1$tH:%1$tM</string>
     <string name="ok">OK</string>
     <string name="tutorial_setup">Legen Sie bitte im Abschnitt "Geräte" Ihres Veranstalterskonto im pretix-Backend ein neues Gerät an um mit der Einrichtung zu beginnen. Es wird Ihnen dann ein QR-Code zum scannen angezeigt.</string>
