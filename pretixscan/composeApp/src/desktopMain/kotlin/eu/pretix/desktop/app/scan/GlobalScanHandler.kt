@@ -13,18 +13,15 @@ class GlobalScanHandler {
     private val log = Logger.getLogger("GlobalScanHandler")
     private val scanBuffer = StringBuilder()
     private var timeoutJob: Job? = null
-    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     private var stateFlow: StateFlow<MainUiState<MainUiStateData>>? = null
     private var onHandleDirectScan: (suspend (String) -> Unit)? = null
     private var isRegistered = false
+    private var isSwallowingEnter = false
 
     private val keyEventDispatcher = KeyEventDispatcher { event ->
-        if (event.id == KeyEvent.KEY_TYPED) {
-            handleKeyEvent(event)
-        } else {
-            false
-        }
+        handleKeyEvent(event)
     }
 
     fun setHandlers(
@@ -41,9 +38,22 @@ class GlobalScanHandler {
         }
     }
 
-    private fun handleKeyEvent(event: KeyEvent): Boolean {
-        val char = event.keyChar
+    internal fun handleKeyEvent(event: KeyEvent): Boolean =
+        when (event.id) {
+            KeyEvent.KEY_PRESSED -> handleKeyPressed(event.keyCode)
+            KeyEvent.KEY_TYPED -> handleKeyTyped(event.keyChar)
+            KeyEvent.KEY_RELEASED -> handleKeyReleased(event.keyCode)
+            else -> false
+        }
 
+    private fun handleKeyPressed(keyCode: Int): Boolean {
+        if (keyCode == KeyEvent.VK_ENTER) {
+            isSwallowingEnter = false
+        }
+        return false
+    }
+
+    private fun handleKeyTyped(char: Char): Boolean {
         when (char) {
             '\n', '\r' -> {
                 val scanned = scanBuffer.toString().trim()
@@ -52,15 +62,12 @@ class GlobalScanHandler {
                     scope.launch {
                         onHandleDirectScan?.invoke(scanned)
                     }
-                    scanBuffer.clear()
-                    timeoutJob?.cancel()
-                    timeoutJob = null
+                    discardTypedInput()
+                    isSwallowingEnter = true
                     return true
                 } else {
                     log.info("GlobalScan: Enter detected but buffer doesn't match barcode pattern: '$scanned'")
-                    scanBuffer.clear()
-                    timeoutJob?.cancel()
-                    timeoutJob = null
+                    discardTypedInput()
                     return false
                 }
             }
@@ -83,6 +90,20 @@ class GlobalScanHandler {
         }
     }
 
+    private fun handleKeyReleased(keyCode: Int): Boolean {
+        if (keyCode != KeyEvent.VK_ENTER || !isSwallowingEnter) {
+            return false
+        }
+        isSwallowingEnter = false
+        return true
+    }
+
+    fun discardTypedInput() {
+        scanBuffer.clear()
+        timeoutJob?.cancel()
+        timeoutJob = null
+    }
+
     fun dispose() {
         if (isRegistered) {
             KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(keyEventDispatcher)
@@ -91,6 +112,7 @@ class GlobalScanHandler {
         timeoutJob?.cancel()
         timeoutJob = null
         scanBuffer.clear()
+        isSwallowingEnter = false
         onHandleDirectScan = null
         stateFlow = null
         log.info("GlobalScanHandler unregistered")

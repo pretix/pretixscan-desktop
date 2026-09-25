@@ -160,9 +160,10 @@ class SettingsViewModel(
         loadSettings()
     }
 
-    fun logout() {
-        syncRootService.skipFutureSyncs()
-        appCache.reset()
-        appConfig.resetEventConfig()
+    suspend fun logout() {
+        syncRootService.runWithSyncStopped {
+            appCache.reset()
+            appConfig.resetEventConfig()
+        }
     }
 }

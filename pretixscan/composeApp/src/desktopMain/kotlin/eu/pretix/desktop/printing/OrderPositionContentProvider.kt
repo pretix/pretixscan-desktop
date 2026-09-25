@@ -54,7 +54,7 @@ class OrderPositionContentProvider(
         } else if (content == "other_i18n") {
             if (textI18n != null) interpolate(i18nToString(textI18n) ?: "") else ""
         } else if (op.has("pdf_data") && op.getJSONObject("pdf_data").has(content)) {
-            op.getJSONObject("pdf_data").getString(content)
+            op.getJSONObject("pdf_data").optString(content, "")
         } else {
             "???"
         }

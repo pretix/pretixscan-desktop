@@ -72,7 +72,7 @@
     </plurals>
     <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
     <string name="short_datetime_format">dd.MM. HH:mm</string>
-    <string name="first_scanned">Zuerst gescannt: %s</string>
+    <string name="first_scanned">Zuerst gescannt: </string>
     <string name="datetime_format">%1$td.%1$tm.%1$tY %1$tH:%1$tM</string>
     <string name="ok">OK</string>
     <string name="tutorial_setup">Legen Sie bitte im Abschnitt "Geräte" Ihres Veranstalterskonto im pretix-Backend ein neues Gerät an um mit der Einrichtung zu beginnen. Es wird Ihnen dann ein QR-Code zum scannen angezeigt.</string>
@@ -159,6 +159,11 @@
     <string name="scan_result_invalid_time">Ticket momentan nicht gültig</string>
     <string name="scan_result_blocked">Ticket gesperrt</string>
     <string name="scan_result_canceled">Ticket storniert</string>
+    <string name="scan_result_already_exchanged">Ticket bereits in ein Medium umgetauscht</string>
+    <string name="scan_result_medium_invalid">Wiederverwendbares Medium nicht gültig</string>
+    <string name="scan_result_medium_exists">Wiederverwendbares Medium existiert bereits</string>
+    <string name="scan_result_medium_exchange_required">Dieses Ticket muss in ein wiederverwendbares Medium getauscht werden. Leider unterstützt diese Version von pretixSCAN dies noch nicht.</string>
+    <string name="scan_result_medium_exchange_required_offline">Ticket muss in ein Medium umgetauscht werden, dies ist jedoch Offline nicht möglich</string>
     <string name="error_sync_in_background">Eine Synchronisation läuft bereits im Hintergrund.</string>
     <string name="dialog_unpaid_title">Unbezahlte Bestellung</string>
     <string name="dialog_unpaid_text">Dieses Ticket gehört zu einer Bestellung die noch nicht bezahlt wurde. Möchten Sie den Teilnehmer trotzdem einchecken\? Die Bestellung wird dadurch NICHT auf bezahlt gestellt.</string>
@@ -228,8 +233,10 @@
     <string name="badge_printing_not_available">Badge-Druck nicht verfügbar</string>
     <string name="badge_printing_not_possible_no_available_printer">Es sind keine Drucker auf diesem System vorhanden. Bitte konfigurieren Sie einen und versuchen Sie es erneut.</string>
     <string name="badge_printing_selected_printer_not_available">Der ausgewählte Drucker ist nicht verfügbar. Bitte prüfen Sie dass das Gerät online ist und mit dem System verbunden ist.</string>
+    <string name="badge_printing_no_printer_selected">Es ist kein Badge-Drucker ausgewählt. Bitte wählen Sie in den Einstellungen einen Badge-Drucker aus.</string>
     <string name="settings_section_camera">Kamera</string>
     <string name="settings_preferred_camera_label">Bevorzugte Kamera</string>
     <string name="settings_camera_auto">Auto</string>
     <string name="no_available_cameras">Keine Kamera verfügbar</string>
+    <string name="migration_token_rejected">Die Verbindung aus der vorherigen Version von pretixSCAN ist nicht mehr gültig. Bitte verbinden Sie dieses Gerät erneut mit einem neuen Token aus Ihrem pretix-Veranstalterkonto.</string>
 </resources>

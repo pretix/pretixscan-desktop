@@ -42,5 +42,5 @@ data class MainUiStateData(
 )
 
 fun MainUiStateData.secret(secret: String?): MainUiStateData {
-    return this.copy(secret = secret)
+    return this.copy(secret = secret, resultState = null)
 }
