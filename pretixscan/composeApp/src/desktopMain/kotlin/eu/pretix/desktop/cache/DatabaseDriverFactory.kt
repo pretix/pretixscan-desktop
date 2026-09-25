@@ -1,5 +1,6 @@
 package eu.pretix.desktop.cache
 
+import app.cash.sqldelight.db.AfterVersion
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import eu.pretix.libpretixsync.sqldelight.AndroidUtilDateAdapter
@@ -11,6 +12,14 @@ import java.io.File
 import java.util.*
 import java.util.logging.Logger
 
+val clearEmptyReusableMediumExpiryCallback = AfterVersion(116L) { driver ->
+    driver.execute(
+        identifier = null,
+        sql = "UPDATE ReusableMedium SET expires = NULL WHERE expires = '';",
+        parameters = 0,
+    )
+}
+
 class JvmLocalCacheFactory : LocalCacheFactory {
     val log = Logger.getLogger("JvmLocalCacheFactory")
 
@@ -20,10 +29,15 @@ class JvmLocalCacheFactory : LocalCacheFactory {
 
     override fun deleteDataSource() {
         val dbFile = getDatabasePath()
-        if (dbFile.exists()) {
-            log.info("Deleting database at $dbFile")
-            dbFile.delete()
-        }
+        listOf("", "-wal", "-shm")
+            .map { File(dbFile.path + it) }
+            .filter { it.exists() }
+            .forEach { file ->
+                log.info("Deleting database file at $file")
+                if (!file.delete()) {
+                    log.warning("Failed to delete $file")
+                }
+            }
     }
 
     private fun createDriver(url: String): SqlDriver {
@@ -33,6 +47,7 @@ class JvmLocalCacheFactory : LocalCacheFactory {
             schema = SyncDatabase.Schema,
             callbacks = arrayOf(
                 minVersionCallback,
+                clearEmptyReusableMediumExpiryCallback,
                 clearResourceSyncStatusCallback,
             ),
         )

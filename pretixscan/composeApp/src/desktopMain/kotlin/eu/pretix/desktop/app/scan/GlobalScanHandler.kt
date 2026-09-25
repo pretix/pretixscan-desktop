@@ -13,7 +13,7 @@ class GlobalScanHandler {
     private val log = Logger.getLogger("GlobalScanHandler")
     private val scanBuffer = StringBuilder()
     private var timeoutJob: Job? = null
-    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     private var stateFlow: StateFlow<MainUiState<MainUiStateData>>? = null
     private var onHandleDirectScan: (suspend (String) -> Unit)? = null
@@ -41,7 +41,7 @@ class GlobalScanHandler {
         }
     }
 
-    private fun handleKeyEvent(event: KeyEvent): Boolean {
+    internal fun handleKeyEvent(event: KeyEvent): Boolean {
         val char = event.keyChar
 
         when (char) {
@@ -52,15 +52,11 @@ class GlobalScanHandler {
                     scope.launch {
                         onHandleDirectScan?.invoke(scanned)
                     }
-                    scanBuffer.clear()
-                    timeoutJob?.cancel()
-                    timeoutJob = null
+                    discardTypedInput()
                     return true
                 } else {
                     log.info("GlobalScan: Enter detected but buffer doesn't match barcode pattern: '$scanned'")
-                    scanBuffer.clear()
-                    timeoutJob?.cancel()
-                    timeoutJob = null
+                    discardTypedInput()
                     return false
                 }
             }
@@ -81,6 +77,12 @@ class GlobalScanHandler {
                 }
             }
         }
+    }
+
+    fun discardTypedInput() {
+        scanBuffer.clear()
+        timeoutJob?.cancel()
+        timeoutJob = null
     }
 
     fun dispose() {

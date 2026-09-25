@@ -1,9 +1,11 @@
 package eu.pretix.scan.tickets.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.printing.BadgeFactory
+import eu.pretix.desktop.printing.BadgePrinterUnavailableException
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.NonceGenerator
@@ -12,17 +14,27 @@ import eu.pretix.scan.tickets.data.ResultStateData
 import eu.pretix.scan.tickets.data.TicketCodeHandler
 import eu.pretix.scan.tickets.data.isPreviouslyPrinted
 import eu.pretix.scan.tickets.data.shouldAutoPrint
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.StringResource
 import org.json.JSONObject
+import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.badge_printing_no_printer_selected
+import pretixscan.composeapp.generated.resources.badge_printing_selected_printer_not_available
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.logging.Level
 import java.util.logging.Logger
 
 class TicketHandlingDialogViewModel(
@@ -31,9 +43,12 @@ class TicketHandlingDialogViewModel(
     private val appConfig: DataStoreConfigStore,
     private val appCache: AppCache,
     private val api: PretixApi,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
 
     private val log = Logger.getLogger("TicketHandlingDialogViewModel")
+
+    private val printMutex = Mutex()
 
     private val _uiState = MutableStateFlow(ResultStateData(resultState = ResultState.EMPTY))
     val uiState = _uiState.asStateFlow()
@@ -43,6 +58,7 @@ class TicketHandlingDialogViewModel(
 
     fun resetTicketHandlingState() {
         _uiState.value = ResultStateData(resultState = ResultState.EMPTY)
+        _localTicketHandlingErrors.value = TicketHandlingErrors.None
     }
 
     private val _localTicketHandlingErrors = MutableStateFlow<TicketHandlingErrors<String>>(TicketHandlingErrors.None)
@@ -78,10 +94,11 @@ class TicketHandlingDialogViewModel(
         }
     }
 
-    suspend fun printBadges() {
+    fun printBadges() {
         log.info("User requested to print a badge")
         val layout = _uiState.value.badgeLayout
         val position = _uiState.value.position
+        val eventSlug = _uiState.value.eventSlug
         if (layout == null) {
             log.warning("No layout, aborting print")
             return
@@ -92,20 +109,41 @@ class TicketHandlingDialogViewModel(
             return
         }
 
-        try {
-            withContext(Dispatchers.IO) {
-                badgeFactory.setup()
-                badgeFactory.printBadges(layout, position)
-                logSuccessfulPrint()
+        viewModelScope.launch {
+            printMutex.withLock {
+                try {
+                    withContext(ioDispatcher) {
+                        badgeFactory.setup()
+                        badgeFactory.printBadges(layout, position)
+                        logSuccessfulPrint(position, eventSlug)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: BadgePrinterUnavailableException) {
+                    log.warning("Badge printer unavailable: ${e.message}")
+                    showPrintError(position, e.userMessage())
+                } catch (e: Exception) {
+                    log.log(Level.WARNING, "Badge printing failed", e)
+                }
             }
-        } catch (e: Exception) {
-            _localTicketHandlingErrors.update { TicketHandlingErrors.Error(e.localizedMessage) }
         }
     }
 
-    private fun logSuccessfulPrint() {
-        val positionId = _uiState.value.position?.optLong("id", 0L) ?: 0L
-        val eventSlug = _uiState.value.eventSlug
+    private fun BadgePrinterUnavailableException.userMessage(): StringResource = when (this) {
+        is BadgePrinterUnavailableException.NotSelected -> Res.string.badge_printing_no_printer_selected
+        is BadgePrinterUnavailableException.NotFound -> Res.string.badge_printing_selected_printer_not_available
+    }
+
+    private fun showPrintError(position: JSONObject, message: StringResource) {
+        if (_uiState.value.position !== position) {
+            log.info("Discarding badge print error for a ticket that is no longer shown")
+            return
+        }
+        _localTicketHandlingErrors.value = TicketHandlingErrors.Error(message)
+    }
+
+    private fun logSuccessfulPrint(position: JSONObject, eventSlug: String?) {
+        val positionId = position.optLong("id", 0L)
 
         if (positionId <= 0L || eventSlug.isNullOrBlank()) {
             log.warning("Cannot log print: positionId=$positionId eventSlug=$eventSlug")
@@ -134,5 +172,5 @@ class TicketHandlingDialogViewModel(
 
 sealed class TicketHandlingErrors<out T> {
     object None : TicketHandlingErrors<Nothing>()
-    data class Error(val exception: String) : TicketHandlingErrors<Nothing>()
+    data class Error(val message: StringResource) : TicketHandlingErrors<Nothing>()
 }

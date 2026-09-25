@@ -12,16 +12,12 @@ class AppCache(val cacheFactory: LocalCacheFactory) {
 
     private var _db: SyncDatabase? = null
     val db: SyncDatabase
-        get() {
-            if (_db == null) {
-                _db = cacheFactory.getSyncDataSource()
-            }
-            return _db!!
-        }
+        @Synchronized get() = _db ?: cacheFactory.getSyncDataSource().also { _db = it }
 
+    @Synchronized
     fun reset() {
-        cacheFactory.deleteDataSource()
         _db = null
+        cacheFactory.deleteDataSource()
     }
 }
 

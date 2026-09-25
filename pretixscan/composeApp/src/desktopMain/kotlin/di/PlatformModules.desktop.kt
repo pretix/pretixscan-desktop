@@ -39,12 +39,8 @@ actual val platformModules: List<Module>
             factory<SyncManager> {
                 val config = get<DataStoreConfigStore>()
 
-                val uploadInterval: Long = 1000
-                var downloadInterval: Long = 30000
-                if (!config.offlineMode) {
-                    downloadInterval = 120000
-                }
-
+                val uploadInterval: Long = 60000
+                val downloadInterval: Long = 5 * 60000L
 
                 SyncManager(
                     get<DataStoreConfigStore>(),
