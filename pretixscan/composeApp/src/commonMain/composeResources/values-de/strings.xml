@@ -50,16 +50,16 @@
     <string name="settings_label_auto_switch">Automatische Veranstaltungswahl</string>
     <string name="settings_summary_auto_switch">Mit dieser Option fragt pretixSCAN den Server bei der Synchronisierung, ob ein Wechsel zu einer anderen Veranstaltung und Check-in-Liste empfohlen wird und führt diesen Wechsel automatisch durch.</string>
     <plurals name="sync_status_time_minutes">
-        <item quantity="one">vor %d Minute synchronisiert</item>
-        <item quantity="other">vor %d Minuten synchronisiert</item>
+        <item quantity="one">vor %1$d Minute synchronisiert</item>
+        <item quantity="other">vor %1$d Minuten synchronisiert</item>
     </plurals>
     <plurals name="sync_status_time_hours">
-        <item quantity="one">vor %d Stunde synchronisiert</item>
-        <item quantity="other">vor %d Stunden synchronisiert</item>
+        <item quantity="one">vor %1$d Stunde synchronisiert</item>
+        <item quantity="other">vor %1$d Stunden synchronisiert</item>
     </plurals>
     <plurals name="sync_status_time_days">
-        <item quantity="one">vor %d Tag synchronisiert</item>
-        <item quantity="other">vor %d Tagen synchronisiert</item>
+        <item quantity="one">vor %1$d Tag synchronisiert</item>
+        <item quantity="other">vor %1$d Tagen synchronisiert</item>
     </plurals>
     <string name="sync_status">Synchronisations-Status</string>
     <string name="sync_status_last">Letzte erfolgreiche Synchronisierung:</string>
@@ -73,7 +73,7 @@
     </plurals>
     <string name="sync_status_date_format">dd.MM.yyyy HH:mm:ss</string>
     <string name="short_datetime_format">dd.MM. HH:mm</string>
-    <string name="first_scanned">Zuerst gescannt: %s</string>
+    <string name="first_scanned">Zuerst gescannt:</string>
     <string name="datetime_format">%1$td.%1$tm.%1$tY %1$tH:%1$tM</string>
     <string name="ok">OK</string>
     <string name="tutorial_setup">Legen Sie bitte im Abschnitt "Geräte" Ihres Veranstalterskonto im pretix-Backend ein neues Gerät an um mit der Einrichtung zu beginnen. Es wird Ihnen dann ein QR-Code zum scannen angezeigt.</string>
