@@ -15,6 +15,7 @@ fun createSyncDatabase(
         driver = driver,
         CheckInAdapter = CheckIn.Adapter(
             datetimeAdapter = dateAdapter,
+            local_annulledAdapter = dateAdapter,
         ),
         ClosingAdapter = Closing.Adapter(
             cash_countedAdapter = bigDecimalAdapter,
@@ -36,6 +37,7 @@ fun createSyncDatabase(
             tax_rateAdapter = bigDecimalAdapter,
             tax_valueAdapter = bigDecimalAdapter,
             line_price_grossAdapter = bigDecimalAdapter,
+            manual_discount_percentAdapter = bigDecimalAdapter,
         ),
         ReceiptAdapter = Receipt.Adapter(
             datetime_closedAdapter = dateAdapter,
@@ -48,10 +50,16 @@ fun createSyncDatabase(
             date_fromAdapter = dateAdapter,
             date_toAdapter = dateAdapter,
         ),
-        QueuedCheckInAdapter = QueuedCheckIn.Adapter(datetimeAdapter = dateAdapter),
+        QueuedCheckInAdapter = QueuedCheckIn.Adapter(
+            datetimeAdapter = dateAdapter,
+            annulledAdapter = dateAdapter,
+        ),
         DiscountAdapter = Discount.Adapter(
             available_fromAdapter = dateAdapter,
             available_untilAdapter = dateAdapter,
+        ),
+        ReusableMediumAdapter = ReusableMedium.Adapter(
+            expiresAdapter = dateAdapter,
         ),
     )
 }

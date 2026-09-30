@@ -260,6 +260,10 @@ class DataStoreConfigStore(
         get() = runBlocking { dataStoreConfig.getBadgePrinterOrientation() }
         set(value) = runBlocking { dataStoreConfig.setBadgePrinterOrientation(value) }
 
+    var nfcReaderName: String?
+        get() = runBlocking { dataStoreConfig.getNfcReaderName() }
+        set(value) = runBlocking { dataStoreConfig.setNfcReaderName(value) }
+
     // Bulk Operations
     fun setDeviceConfig(url: String, key: String, orgaSlug: String, deviceId: Long, serial: String, sentVersion: Int) {
         runBlocking {

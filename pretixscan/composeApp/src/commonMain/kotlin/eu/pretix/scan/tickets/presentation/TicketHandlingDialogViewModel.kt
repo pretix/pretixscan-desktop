@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.printing.BadgeFactory
+import eu.pretix.libpretixnfc.communication.ChipReadError
 import eu.pretix.libpretixsync.api.PretixApi
 import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.libpretixsync.db.NonceGenerator
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.scan.tickets.data.ResultState
 import eu.pretix.scan.tickets.data.ResultStateData
 import eu.pretix.scan.tickets.data.TicketCodeHandler
@@ -48,20 +50,59 @@ class TicketHandlingDialogViewModel(
     private val _localTicketHandlingErrors = MutableStateFlow<TicketHandlingErrors<String>>(TicketHandlingErrors.None)
     val localTicketHandlingErrors: StateFlow<TicketHandlingErrors<String>> = _localTicketHandlingErrors
 
+    private var lastIgnoreUnpaid = false
+
     fun dismissError() {
         _localTicketHandlingErrors.update { TicketHandlingErrors.None }
     }
 
-    suspend fun handleTicket(secret: String?, answers: List<Answer>? = null, ignoreUnpaid: Boolean = false) {
+    suspend fun showChipReadError(error: ChipReadError) {
+        log.info("Handling chip read error $error")
+        _uiBlinkSpecialTickets.value = !appConfig.uiReduceMotion
+        _uiState.update {
+            tickerCodeHandler.handleChipReadError(error)
+        }
+    }
+
+    /**
+     * Repeats the scan that asked for a medium exchange, this time linking the scanned medium.
+     */
+    suspend fun handleMediumExchange(
+        secret: String?,
+        sourceType: ReusableMediaType,
+        mediumType: ReusableMediaType,
+        mediumIdentifier: String
+    ) {
+        handleTicket(
+            secret,
+            sourceType,
+            ignoreUnpaid = lastIgnoreUnpaid,
+            exchangeMediumType = mediumType,
+            exchangeMediumIdentifier = mediumIdentifier
+        )
+    }
+
+    suspend fun handleTicket(
+        secret: String?,
+        sourceType: ReusableMediaType,
+        answers: List<Answer>? = null,
+        ignoreUnpaid: Boolean = false,
+        exchangeMediumType: ReusableMediaType? = null,
+        exchangeMediumIdentifier: String? = null
+    ) {
         log.info("Handling ticket")
+        lastIgnoreUnpaid = ignoreUnpaid
         _uiBlinkSpecialTickets.value = !appConfig.uiReduceMotion
         _uiState.update {
             ResultStateData(resultState = ResultState.LOADING)
         }
         val result = tickerCodeHandler.handleScanResult(
             secret,
+            sourceType = sourceType,
             answers = answers,
-            ignoreUnpaid = ignoreUnpaid
+            ignoreUnpaid = ignoreUnpaid,
+            exchangeMediumType = exchangeMediumType,
+            exchangeMediumIdentifier = exchangeMediumIdentifier
         )
         _uiState.update {
             result

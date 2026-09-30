@@ -8,11 +8,14 @@ import androidx.compose.ui.text.withStyle
 import eu.iamkonstantin.kotlin.gadulka.GadulkaPlayer
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
+import eu.pretix.desktop.nfc.stringResource
+import eu.pretix.libpretixnfc.communication.ChipReadError
 import eu.pretix.libpretixsync.SentryInterface
 import eu.pretix.libpretixsync.check.OnlineCheckProvider
 import eu.pretix.libpretixsync.check.QuestionType
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.libpretixsync.db.Answer
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixsync.models.db.toModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,10 +40,20 @@ class TicketCodeHandler(
 
     suspend fun handleScanResult(
         rawResult: String?,
+        sourceType: ReusableMediaType,
         answers: List<Answer>? = null,
-        ignoreUnpaid: Boolean
+        ignoreUnpaid: Boolean,
+        exchangeMediumType: ReusableMediaType? = null,
+        exchangeMediumIdentifier: String? = null
     ): ResultStateData {
-        val checkResult = handleScan(rawResult, answers, ignoreUnpaid)
+        val checkResult = handleScan(
+            rawResult,
+            sourceType,
+            answers,
+            ignoreUnpaid,
+            exchangeMediumType,
+            exchangeMediumIdentifier
+        )
 
         val scannedEvent = calculateScannedEvent(checkResult.eventSlug)
 
@@ -117,6 +130,8 @@ class TicketCodeHandler(
             badgeLayout = badgeLayout,
             position = checkResult.position,
             eventSlug = checkResult.eventSlug,
+            requiredMediaType = checkResult.requiredMediaType,
+            requiredMediaPolicy = checkResult.requiredMediaPolicy,
             questionMaxLengths = questionMaxLengths,
             questionNumberMin = questionNumberMin,
             questionNumberMax = questionNumberMax,
@@ -130,10 +145,26 @@ class TicketCodeHandler(
         return resultState
     }
 
+    suspend fun handleChipReadError(error: ChipReadError): ResultStateData {
+        val checkResult = TicketCheckProvider.CheckResult(
+            TicketCheckProvider.CheckResult.Type.ERROR,
+            getString(error.stringResource())
+        )
+        playResultSound(checkResult)
+
+        return ResultStateData(
+            resultState = checkResult.resultState(),
+            resultText = checkResult.message
+        )
+    }
+
     suspend fun handleScan(
         rawResult: String?,
+        sourceType: ReusableMediaType,
         answers: List<Answer>?,
-        ignoreUnpaid: Boolean
+        ignoreUnpaid: Boolean,
+        exchangeMediumType: ReusableMediaType? = null,
+        exchangeMediumIdentifier: String? = null
     ): TicketCheckProvider.CheckResult {
         if (rawResult.isNullOrEmpty()) {
             connectivityHelper.recordError()
@@ -143,7 +174,16 @@ class TicketCodeHandler(
             )
         }
 
-        if (conf.playSound && answers.isNullOrEmpty()) {
+        if (sourceType.isNfcBased() && rawResult.startsWith(RANDOM_UID_PREFIX)) {
+            val checkResult = TicketCheckProvider.CheckResult(
+                TicketCheckProvider.CheckResult.Type.ERROR,
+                getString(Res.string.nfc_random_uid)
+            )
+            playResultSound(checkResult)
+            return checkResult
+        }
+
+        if (conf.playSound && answers.isNullOrEmpty() && exchangeMediumIdentifier == null) {
             withContext(Dispatchers.Main) {
                 audioPlayer.play(Res.getUri("files/beep.wav"))
             }
@@ -153,8 +193,6 @@ class TicketCodeHandler(
             "exit" -> TicketCheckProvider.CheckInType.EXIT
             else -> TicketCheckProvider.CheckInType.ENTRY
         }
-
-        val sourceType = "barcode"
 
         val withBadgeData = conf.printBadges
 
@@ -171,12 +209,14 @@ class TicketCodeHandler(
             val checkResult = checkProvider.check(
                 conf.eventSelectionToMap(),
                 ticketid = rawResult,
-                source_type = sourceType,
+                source_type = sourceType.serverName!!,
                 answers = answers,
                 ignore_unpaid = effectiveIgnoreUnpaid,
                 with_badge_data = withBadgeData,
                 scanType,
-                allowQuestions = allowQuestions
+                allowQuestions = allowQuestions,
+                exchange_medium_type = exchangeMediumType?.serverName,
+                exchange_medium_identifier = exchangeMediumIdentifier
             )
 
             log.info("Check result type: ${checkResult.type}")
@@ -207,16 +247,14 @@ class TicketCodeHandler(
                     TicketCheckProvider.CheckResult.Type.UNPAID -> getString(Res.string.scan_result_unpaid)
                     TicketCheckProvider.CheckResult.Type.CANCELED -> getString(Res.string.scan_result_canceled)
                     TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(Res.string.scan_result_product)
+                    TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> getString(Res.string.scan_result_already_exchanged)
+                    TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID -> getString(Res.string.scan_result_medium_invalid)
+                    TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS -> getString(Res.string.scan_result_medium_exists)
                     else -> null
                 }
             }
 
-            if (conf.playSound) {
-                withContext(Dispatchers.Main) {
-                    audioPlayer.play(checkResult.pathForSound())
-                }
-            }
-
+            playResultSound(checkResult)
 
             return checkResult
         } catch (e: Exception) {
@@ -231,12 +269,25 @@ class TicketCodeHandler(
         )
     }
 
+    private suspend fun playResultSound(checkResult: TicketCheckProvider.CheckResult) {
+        if (conf.playSound) {
+            withContext(Dispatchers.Main) {
+                audioPlayer.play(checkResult.pathForSound())
+            }
+        }
+    }
+
     private fun calculateScannedEvent(eventSlug: String?): eu.pretix.libpretixsync.models.Event? {
         if (!eventSlug.isNullOrBlank() && conf.eventSelections.size > 1) {
             return appCache.db.eventQueries.selectBySlug(eventSlug).executeAsOneOrNull()?.toModel()
         }
 
         return null
+    }
+
+    private companion object {
+        /** Chips configured to answer with a random UID report one starting with this byte. */
+        const val RANDOM_UID_PREFIX = "08"
     }
 }
 
@@ -254,6 +305,9 @@ fun TicketCheckProvider.CheckResult.pathForSound(): String =
             TicketCheckProvider.CheckInType.EXIT -> Res.getUri("files/exit.wav")
         }
 
+        TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED,
+        TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE -> Res.getUri("files/attention.wav")
+
         null,
         TicketCheckProvider.CheckResult.Type.USED,
         TicketCheckProvider.CheckResult.Type.ERROR,
@@ -267,6 +321,9 @@ fun TicketCheckProvider.CheckResult.pathForSound(): String =
         TicketCheckProvider.CheckResult.Type.AMBIGUOUS,
         TicketCheckProvider.CheckResult.Type.REVOKED,
         TicketCheckProvider.CheckResult.Type.UNAPPROVED,
+        TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED,
+        TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID,
+        TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS,
         TicketCheckProvider.CheckResult.Type.INVALID -> Res.getUri("files/error.wav")
     }
 
@@ -291,9 +348,15 @@ fun TicketCheckProvider.CheckResult.resultState(): ResultState =
         TicketCheckProvider.CheckResult.Type.RULES,
         TicketCheckProvider.CheckResult.Type.AMBIGUOUS,
         TicketCheckProvider.CheckResult.Type.REVOKED,
+        TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED,
+        TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID,
+        TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS,
+        TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE,
         TicketCheckProvider.CheckResult.Type.UNAPPROVED -> ResultState.ERROR
 
         TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ResultState.DIALOG_QUESTIONS
+
+        TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> ResultState.DIALOG_EXCHANGE
 
         TicketCheckProvider.CheckResult.Type.UNPAID -> {
             if (isCheckinAllowed) {
@@ -316,9 +379,13 @@ fun TicketCheckProvider.CheckResult.ticketAndVariationName(): String? {
     return null
 }
 
-fun TicketCheckProvider.CheckResult.reasonExplanation(): String? {
+suspend fun TicketCheckProvider.CheckResult.reasonExplanation(): String? {
     if (reasonExplanation.isNullOrBlank()) {
         return null
+    }
+
+    if (type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE) {
+        return getString(Res.string.scan_result_medium_exchange_required_offline)
     }
 
     return reasonExplanation

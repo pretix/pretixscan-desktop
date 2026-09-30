@@ -75,6 +75,7 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
         val SCAN_TYPE = stringPreferencesKey("scan_type")
         val BADGE_PRINTER_NAME = stringPreferencesKey("badge_printer_name")
         val BADGE_PRINTER_ORIENTATION = stringPreferencesKey("badge_printer_orientation")
+        val NFC_READER_NAME = stringPreferencesKey("nfc_reader_name")
 
         // Feature Flags
         val PRINT_BADGES = booleanPreferencesKey("print_badges")
@@ -413,6 +414,19 @@ class DataStoreConfig(private val dataStore: DataStore<Preferences>) {
 
     suspend fun setBadgePrinterOrientation(value: String) {
         dataStore.edit { it[PreferenceKeys.BADGE_PRINTER_ORIENTATION] = value }
+    }
+
+    suspend fun getNfcReaderName(): String? =
+        dataStore.data.first()[PreferenceKeys.NFC_READER_NAME]
+
+    suspend fun setNfcReaderName(value: String?) {
+        dataStore.edit { prefs ->
+            if (value != null) {
+                prefs[PreferenceKeys.NFC_READER_NAME] = value
+            } else {
+                prefs.remove(PreferenceKeys.NFC_READER_NAME)
+            }
+        }
     }
 
     // ============================================================

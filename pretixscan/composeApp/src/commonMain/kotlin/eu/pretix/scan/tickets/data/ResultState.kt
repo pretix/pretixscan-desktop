@@ -5,6 +5,8 @@ import androidx.compose.ui.text.AnnotatedString
 import eu.pretix.desktop.app.ui.CustomColor
 import eu.pretix.desktop.app.ui.asColor
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.libpretixsync.db.MediaPolicy
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixsync.models.BadgeLayout
 import eu.pretix.libpretixsync.models.Question
 import org.json.JSONObject
@@ -15,6 +17,7 @@ enum class ResultState {
     ERROR,
     DIALOG_UNPAID,
     DIALOG_QUESTIONS,
+    DIALOG_EXCHANGE,
     WARNING,
     SUCCESS,
     SUCCESS_EXIT
@@ -22,7 +25,7 @@ enum class ResultState {
 
 fun ResultState.color(): Color {
     return when (this) {
-        ResultState.EMPTY, ResultState.DIALOG_UNPAID, ResultState.DIALOG_QUESTIONS, ResultState.LOADING -> CustomColor.BrandLightGray.asColor()
+        ResultState.EMPTY, ResultState.DIALOG_UNPAID, ResultState.DIALOG_QUESTIONS, ResultState.DIALOG_EXCHANGE, ResultState.LOADING -> CustomColor.BrandLightGray.asColor()
         ResultState.ERROR -> CustomColor.BrandRed.asColor()
         ResultState.WARNING -> CustomColor.BrandOrange.asColor()
         ResultState.SUCCESS, ResultState.SUCCESS_EXIT -> CustomColor.BrandGreen.asColor()
@@ -45,7 +48,8 @@ fun ResultState.dismissBehavior(): DismissBehavior = when (this) {
     ResultState.WARNING -> DismissBehavior.AutoDismiss
 
     ResultState.DIALOG_UNPAID,
-    ResultState.DIALOG_QUESTIONS -> DismissBehavior.RequiresUserInteraction
+    ResultState.DIALOG_QUESTIONS,
+    ResultState.DIALOG_EXCHANGE -> DismissBehavior.RequiresUserInteraction
 }
 
 data class ResultStateData(
@@ -69,6 +73,8 @@ data class ResultStateData(
     val badgeLayout: BadgeLayout? = null,
     val position: JSONObject? = null,
     val eventSlug: String? = null,
+    val requiredMediaType: ReusableMediaType? = null,
+    val requiredMediaPolicy: MediaPolicy? = null,
     val questionMaxLengths: Map<Long, Int> = emptyMap(),
     val questionNumberMin: Map<Long, String> = emptyMap(),
     val questionNumberMax: Map<Long, String> = emptyMap(),
