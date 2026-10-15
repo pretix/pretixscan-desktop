@@ -193,6 +193,7 @@ compose.desktop {
 
             linux {
                 iconFile.set(File("logo/pretix_app_icon.png"))
+                debMaintainer = "support@pretix.eu"
             }
         }
     }
