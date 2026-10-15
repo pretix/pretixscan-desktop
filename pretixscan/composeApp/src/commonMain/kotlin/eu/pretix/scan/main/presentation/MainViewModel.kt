@@ -7,7 +7,9 @@ import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.desktop.cache.EventSelection
 import eu.pretix.desktop.cache.Version
+import eu.pretix.desktop.nfc.NfcReadEvent
 import eu.pretix.libpretixsync.check.TicketCheckProvider
+import eu.pretix.libpretixsync.db.ReusableMediaType
 import eu.pretix.libpretixsync.setup.RemoteEvent
 import eu.pretix.libpretixsync.sqldelight.CheckInList
 import eu.pretix.scan.tickets.data.DismissBehavior
@@ -179,14 +181,30 @@ class MainViewModel(
         }
     }
 
-    suspend fun onHandleDirectScan(secret: String) {
+    suspend fun onHandleDirectScan(
+        secret: String,
+        sourceType: ReusableMediaType = ReusableMediaType.BARCODE
+    ) {
         log.info("AutoScan: Handling direct scan for ticket")
+        beginHandlingTicket { it.secret(secret, sourceType) }
+    }
+
+    suspend fun onHandleChipRead(event: NfcReadEvent) {
+        when (event) {
+            is NfcReadEvent.Success -> onHandleDirectScan(event.identifier, event.mediaType)
+            is NfcReadEvent.Error -> {
+                log.info("AutoScan: Handling chip read error ${event.error}")
+                beginHandlingTicket { it.secret(null).copy(chipReadError = event.error) }
+            }
+        }
+    }
+
+    private fun beginHandlingTicket(scan: (MainUiStateData) -> MainUiStateData) {
         when (val currentState = _uiState.value) {
             is MainUiState.ReadyToScan -> {
                 _uiState.update {
                     MainUiState.HandlingTicket(
-                        currentState.data
-                            .secret(secret)
+                        scan(currentState.data)
                             .copy(scanTimestamp = System.currentTimeMillis())
                     )
                 }
@@ -209,8 +227,7 @@ class MainViewModel(
                 _uiState.update { MainUiState.ReadyToScan(currentState.data.secret(null)) }
                 _uiState.update {
                     MainUiState.HandlingTicket(
-                        currentState.data
-                            .secret(secret)
+                        scan(currentState.data)
                             .copy(scanTimestamp = System.currentTimeMillis())
                     )
                 }

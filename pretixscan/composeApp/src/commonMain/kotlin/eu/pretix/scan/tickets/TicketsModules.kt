@@ -3,6 +3,7 @@ package eu.pretix.scan.tickets
 import eu.iamkonstantin.kotlin.gadulka.GadulkaPlayer
 import eu.pretix.scan.tickets.data.ConnectivityHelper
 import eu.pretix.scan.tickets.data.TicketCodeHandler
+import eu.pretix.scan.tickets.presentation.ExchangeDialogViewModel
 import eu.pretix.scan.tickets.presentation.QuestionsDialogViewModel
 import eu.pretix.scan.tickets.presentation.TicketHandlingDialogViewModel
 import eu.pretix.scan.tickets.presentation.TicketSearchBarViewModel
@@ -25,6 +26,9 @@ val ticketsModule = module {
     }
     factory {
         QuestionsDialogViewModel(get(), get())
+    }
+    factory {
+        ExchangeDialogViewModel(get())
     }
     factory<GadulkaPlayer> {
         GadulkaPlayer()

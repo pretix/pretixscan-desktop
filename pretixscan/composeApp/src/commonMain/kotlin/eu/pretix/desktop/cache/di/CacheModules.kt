@@ -6,6 +6,7 @@ import eu.pretix.desktop.cache.*
 import eu.pretix.desktop.migration.ConfigMigration
 import eu.pretix.desktop.migration.V1DirectoryLocator
 import eu.pretix.libpretixsync.config.ConfigStore
+import eu.pretix.libpretixsync.utils.SettingsManager
 import eu.pretix.pretixscan.desktop.AppConfig
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -46,5 +47,7 @@ val cacheModules
             single<ConfigStore> { get<DataStoreConfigStore>() }
 
             singleOf(::AppCache)
+
+            single<SettingsManager> { CacheSettingsManager(get()) }
         },
     )

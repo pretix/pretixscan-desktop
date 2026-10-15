@@ -118,4 +118,34 @@ class ResultStateMappingTest {
         val result = checkResult(TicketCheckProvider.CheckResult.Type.PRODUCT)
         assertEquals(ResultState.ERROR, result.resultState())
     }
+
+    @Test
+    fun `ALREADY_EXCHANGED maps to ERROR`() {
+        val result = checkResult(TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED)
+        assertEquals(ResultState.ERROR, result.resultState())
+    }
+
+    @Test
+    fun `MEDIUM_INVALID maps to ERROR`() {
+        val result = checkResult(TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID)
+        assertEquals(ResultState.ERROR, result.resultState())
+    }
+
+    @Test
+    fun `MEDIUM_EXISTS maps to ERROR`() {
+        val result = checkResult(TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS)
+        assertEquals(ResultState.ERROR, result.resultState())
+    }
+
+    @Test
+    fun `EXCHANGE_REQUIRED_OFFLINE maps to ERROR`() {
+        val result = checkResult(TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE)
+        assertEquals(ResultState.ERROR, result.resultState())
+    }
+
+    @Test
+    fun `EXCHANGE_REQUIRED maps to DIALOG_EXCHANGE`() {
+        val result = checkResult(TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED)
+        assertEquals(ResultState.DIALOG_EXCHANGE, result.resultState())
+    }
 }
