@@ -16,6 +16,7 @@ import java.awt.Dimension
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.util.logging.LogManager
+import java.util.logging.Logger
 
 private fun initializeLogging() {
     try {
@@ -65,21 +66,26 @@ private fun initializeLogging() {
     }
 }
 
-fun main() = application {
+fun main() {
     initializeLogging()
     installSystemStreamLoggers()
     installUncaughtExceptionLogger()
 
+    val log = Logger.getLogger("Startup")
+    log.info("Starting dependency injection")
     startKoin {
         initModules()
     }
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = stringResource(Res.string.app_name),
-        state = WindowState(placement = WindowPlacement.Maximized),
-        icon = painterResource("pretix_app_icon.png")
-    ) {
-        window.minimumSize = Dimension(1024, 768)
-        Root()
+    log.info("Opening main window")
+    application {
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = stringResource(Res.string.app_name),
+            state = WindowState(placement = WindowPlacement.Maximized),
+            icon = painterResource("pretix_app_icon.png")
+        ) {
+            window.minimumSize = Dimension(1024, 768)
+            Root()
+        }
     }
 }
