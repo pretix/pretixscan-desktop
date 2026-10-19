@@ -29,7 +29,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("syncLibs") {
             from(files("libpretixsync-repo/libpretixsync/gradle/libs.versions.toml"))
-            version("kotlin", "2.3.20")
+            version("kotlin", "2.4.21")
             version("protobufPlugin", "0.9.4")
         }
     }
