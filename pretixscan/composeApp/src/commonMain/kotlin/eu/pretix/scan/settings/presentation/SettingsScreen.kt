@@ -371,9 +371,11 @@ fun SettingsScreen(
                                 PrimaryButton(
                                     onClick = {
                                         // TODO: confirm reset
-                                        viewModel.logout()
-                                        navHostController.popBackStack()
-                                        navHostController.navigate(Route.Welcome.route)
+                                        coroutineScope.launch {
+                                            viewModel.logout()
+                                            navHostController.popBackStack()
+                                            navHostController.navigate(Route.Welcome.route)
+                                        }
                                     },
                                     label = stringResource(Res.string.full_delete_action)
                                 )

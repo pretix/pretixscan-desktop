@@ -1,11 +1,11 @@
 [versions]
-compose-plugin = "1.10.3"
+compose-plugin = "1.12.2"
 junit = "4.13.2"
-kotlin = "2.3.20"
-androidx-lifecycle = "2.10.0"
-androidx-navigation = "2.9.2"
-koin = "4.2.0"
-koin-compose = "4.2.0"
+kotlin = "2.4.21"
+androidx-lifecycle = "2.11.0"
+androidx-navigation = "2.10.0-rc01"
+koin = "4.2.2"
+koin-compose = "4.2.2"
 appdirs = "1.2.2"
 sqlite_jdbc_version = "3.46.1.0"
 org_json = "20240303"
@@ -72,6 +72,8 @@ gmazzo = { id = "com.github.gmazzo.buildconfig", version.ref = "gmazzo" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
 app-cash-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 osdetector = { id = "com.google.osdetector", version = "1.7.3" }

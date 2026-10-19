@@ -3,6 +3,8 @@ package eu.pretix.scan.tickets.data
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class ResultStateMappingTest {
 
@@ -117,5 +119,46 @@ class ResultStateMappingTest {
     fun `PRODUCT maps to ERROR`() {
         val result = checkResult(TicketCheckProvider.CheckResult.Type.PRODUCT)
         assertEquals(ResultState.ERROR, result.resultState())
+    }
+
+    @Test
+    fun `reusable medium results map to ERROR`() {
+        listOf(
+            TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED,
+            TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID,
+            TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS,
+            TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED,
+            TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE,
+        ).forEach { type ->
+            assertEquals(ResultState.ERROR, checkResult(type).resultState(), "$type")
+        }
+    }
+
+    @Test
+    fun `reusable medium failures play the error sound`() {
+        listOf(
+            TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED,
+            TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID,
+            TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS,
+        ).forEach { type ->
+            assertTrue(checkResult(type).pathForSound().endsWith("files/error.wav"), "$type")
+        }
+    }
+
+    @Test
+    fun `required medium exchanges play the attention sound`() {
+        listOf(
+            TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED,
+            TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE,
+        ).forEach { type ->
+            assertTrue(checkResult(type).pathForSound().endsWith("files/attention.wav"), "$type")
+        }
+    }
+
+    @Test
+    fun `EXCHANGE_REQUIRED_OFFLINE hides the untranslated reason explanation`() {
+        val result = checkResult(TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE)
+        result.reasonExplanation = "This ticket needs to be exchanged, but this isn't possible while offline"
+        assertNull(result.reasonExplanation())
     }
 }

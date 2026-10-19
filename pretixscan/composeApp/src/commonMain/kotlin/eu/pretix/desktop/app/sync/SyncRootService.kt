@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import eu.pretix.desktop.cache.AppCache
 import eu.pretix.desktop.cache.DataStoreConfigStore
 import eu.pretix.libpretixsync.models.db.toModel
+import eu.pretix.libpretixsync.sync.SyncException
 import eu.pretix.libpretixsync.sync.SyncManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -100,17 +101,18 @@ class SyncRootService(
 
             log.info("performing sync for ${events.size} events")
 
-            // Initialize event sync states
-            _eventSyncStates.value = events.associate {
-                it.eventSlug to EventSyncState.Pending
-            }
-
-            _syncState.value = SyncState.InProgress("Syncing ${events.size} event(s)...")
             val syncManager = GlobalContext.get().get<SyncManager>()
             activeSyncManager = syncManager
 
+            var started = false
             val syncResult = try {
                 syncManager.sync(force) { message ->
+                    if (!started) {
+                        started = true
+                        _eventSyncStates.value = events.associate {
+                            it.eventSlug to EventSyncState.Pending
+                        }
+                    }
                     _syncState.value = SyncState.InProgress(message)
                     events.forEach { event ->
                         if (message.contains(event.eventSlug, ignoreCase = true) ||
@@ -130,6 +132,10 @@ class SyncRootService(
                 throw syncResult.exception
             }
 
+            if (!syncResult.isDataUploaded && !syncResult.isDataDownloaded) {
+                return
+            }
+
             // Mark all as success
             _eventSyncStates.value = events.associate {
                 it.eventSlug to EventSyncState.Success
@@ -137,9 +143,6 @@ class SyncRootService(
 
             _syncState.value = SyncState.Success(lastSync = nowMillis)
             logEventSummary()
-            appConfig.lastFailedSync = 0L
-            appConfig.lastSync = nowMillis
-            appConfig.lastDownload = nowMillis
         } catch (e: Exception) {
             if (cancellationRequested) {
                 cancellationRequested = false
@@ -162,8 +165,10 @@ class SyncRootService(
             }
 
             _syncState.value = SyncState.Error(e.localizedMessage ?: "Unknown error")
-            appConfig.lastFailedSync = nowMillis
-            appConfig.lastFailedSyncMsg = e.localizedMessage ?: "Unknown error"
+            if (e !is SyncException) {
+                appConfig.lastFailedSync = System.currentTimeMillis()
+                appConfig.lastFailedSyncMsg = e.localizedMessage ?: "Unknown error"
+            }
         }
     }
 
@@ -213,8 +218,7 @@ class SyncRootService(
     suspend fun minimalSync(nowMillis: Long = System.currentTimeMillis()) {
         log.info("Running a minimal sync")
         val shouldResume = skipFutureSyncs()
-        cancellationRequested = true
-        activeSyncManager?.cancel()
+        cancelActiveSync()
         _minimumSyncState.value = SyncState.InProgress("")
 
         withContext(Dispatchers.IO) {
@@ -256,10 +260,18 @@ class SyncRootService(
         }
     }
 
+    suspend fun runWithSyncStopped(action: () -> Unit) {
+        log.info("Stopping sync")
+        skipFutureSyncs()
+        cancelActiveSync()
+        viewModelScope.launch(Dispatchers.IO) {
+            syncMutex.withLock { action() }
+        }.join()
+    }
+
     fun forceSync(nowMillis: Long = System.currentTimeMillis()) {
         log.info("Full sync requested")
-        cancellationRequested = true
-        activeSyncManager?.cancel()
+        cancelActiveSync()
         viewModelScope.launch(Dispatchers.IO) {
             syncMutex.withLock {
                 executeSync(force = true, nowMillis = nowMillis)
@@ -269,6 +281,10 @@ class SyncRootService(
 
     override fun onCleared() {
         super.onCleared()
+        cancelActiveSync()
+    }
+
+    private fun cancelActiveSync() {
         cancellationRequested = true
         activeSyncManager?.cancel()
     }

@@ -1,16 +1,21 @@
 package eu.pretix.desktop.migration
 
+import eu.pretix.libpretixsync.api.DeviceAccessRevokedException
+import eu.pretix.libpretixsync.api.UnauthorizedApiException
+import kotlinx.coroutines.CancellationException
 import java.util.logging.Logger
 
 sealed class MigrationResult {
     object Success : MigrationResult()
+    object TokenRejected : MigrationResult()
     data class Failure(val error: String, val canRetry: Boolean) : MigrationResult()
 }
 
 class MigrationCoordinator(
     private val configMigration: ConfigMigration,
     private val tokenRoller: TokenRoller,
-    private val v1DirectoryLocator: V1DirectoryLocator = V1DirectoryLocator
+    private val v1DirectoryLocator: V1DirectoryLocator = V1DirectoryLocator,
+    private val cleanupV1Storage: () -> CleanupResult = V1StorageCleaner::cleanup
 ) {
     private val logger = Logger.getLogger(MigrationCoordinator::class.java.name)
 
@@ -38,7 +43,11 @@ class MigrationCoordinator(
             logger.info("Settings migration completed successfully")
 
             // Step 2: Roll API token
-            rollToken()
+            if (!rollToken()) {
+                configMigration.discardMigratedSettings()
+                logger.warning("Migrated settings discarded, device must be set up again")
+                return MigrationResult.TokenRejected
+            }
 
             // Step 3: Cleanup V1 storage
             performCleanup()
@@ -58,8 +67,8 @@ class MigrationCoordinator(
     /**
      * Roll device API token to invalidate old app access.
      */
-    private suspend fun rollToken() {
-        try {
+    private suspend fun rollToken(): Boolean {
+        return try {
             logger.info("Attempting to roll device API token")
             val result = tokenRoller.rollApiToken()
 
@@ -67,14 +76,24 @@ class MigrationCoordinator(
                 onSuccess = { newKey ->
                     tokenRoller.updateApiKey(newKey)
                     logger.info("Token rolled successfully - old app access revoked")
+                    true
                 },
                 onFailure = { error ->
-                    logger.warning("Token rolling failed (non-fatal): ${error.message}")
-                    logger.warning("Old app may still have access - user can manually revoke device")
+                    if (error is UnauthorizedApiException || error is DeviceAccessRevokedException) {
+                        logger.warning("Server rejected the migrated token: ${error.message}")
+                        false
+                    } else {
+                        logger.warning("Token rolling failed (non-fatal): ${error.message}")
+                        logger.warning("Old app may still have access - user can manually revoke device")
+                        true
+                    }
                 }
             )
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             logger.warning("Token rolling failed (non-fatal): ${e.message}")
+            true
         }
     }
 
@@ -94,7 +113,7 @@ class MigrationCoordinator(
 
         logger.info("Starting automatic cleanup of V1 storage")
 
-        when (val result = V1StorageCleaner.cleanup()) {
+        when (val result = cleanupV1Storage()) {
             is CleanupResult.Success -> {
                 logger.info("V1 storage cleanup successful: from $dataPath and $cachePath")
             }

@@ -167,6 +167,11 @@
     <string name="scan_result_invalid_time">Ticket currently not valid</string>
     <string name="scan_result_blocked">Ticket blocked</string>
     <string name="scan_result_canceled">Order canceled</string>
+    <string name="scan_result_already_exchanged">Ticket already exchanged</string>
+    <string name="scan_result_medium_invalid">Reusable medium invalid</string>
+    <string name="scan_result_medium_exists">Reusable medium already exists</string>
+    <string name="scan_result_medium_exchange_required">This ticket requires to be exchanged to a reusable medium. Sadly this version of pretixSCAN isn't able to do this yet.</string>
+    <string name="scan_result_medium_exchange_required_offline">This ticket needs to be exchanged, but this isn't possible while offline</string>
     <string name="error_sync_in_background">A synchronization is already running in the background.</string>
     <string name="dialog_unpaid_title">Unpaid order</string>
     <string name="dialog_unpaid_text">This ticket belongs to an order that has not yet been paid. Do you still want to check it in? This will not mark the order as paid.</string>
@@ -237,11 +242,11 @@
     <string name="badge_printing_not_possible_no_available_printer">There are no available printers on the system.
         Please, configure at least one printer and try again.
     </string>
-    <string name="badge_printing_selected_printer_not_available">The selected printer is currently unavailable. Please
-        check that the device is online and connected to the system.
-    </string>
+    <string name="badge_printing_selected_printer_not_available">The selected printer is currently unavailable. Please check that the device is online and connected to the system.</string>
+    <string name="badge_printing_no_printer_selected">No badge printer is selected. Please choose a badge printer in the settings.</string>
     <string name="settings_section_camera">Camera</string>
     <string name="settings_preferred_camera_label">Preferred camera</string>
     <string name="settings_camera_auto">Auto</string>
     <string name="no_available_cameras">No available cameras</string>
+    <string name="migration_token_rejected">The connection from the previous version of pretixSCAN is no longer valid. Please connect this device again using a new token from your pretix organizer account.</string>
 </resources>

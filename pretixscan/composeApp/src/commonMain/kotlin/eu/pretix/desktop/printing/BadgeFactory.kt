@@ -9,3 +9,8 @@ interface BadgeFactory {
 
     fun printBadges(layout: BadgeLayout?, position: JSONObject)
 }
+
+sealed class BadgePrinterUnavailableException(message: String) : Exception(message) {
+    class NotSelected : BadgePrinterUnavailableException("No badge printer selected in settings.")
+    class NotFound(printerName: String) : BadgePrinterUnavailableException("Badge printer $printerName is not available on this system.")
+}

@@ -22,6 +22,11 @@ class ConfigMigration(
         oldConfig.resetEventConfig()
     }
 
+    suspend fun discardMigratedSettings() {
+        newConfig.resetEventConfig()
+        deleteOldConfig()
+    }
+
     /**
      * Check if old configuration exists and hasn't been migrated yet.
      */

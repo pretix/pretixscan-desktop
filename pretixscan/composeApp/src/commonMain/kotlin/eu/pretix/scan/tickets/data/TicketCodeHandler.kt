@@ -207,7 +207,14 @@ class TicketCodeHandler(
                     TicketCheckProvider.CheckResult.Type.UNPAID -> getString(Res.string.scan_result_unpaid)
                     TicketCheckProvider.CheckResult.Type.CANCELED -> getString(Res.string.scan_result_canceled)
                     TicketCheckProvider.CheckResult.Type.PRODUCT -> getString(Res.string.scan_result_product)
-                    else -> null
+                    TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED -> getString(Res.string.scan_result_already_exchanged)
+                    TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID -> getString(Res.string.scan_result_medium_invalid)
+                    TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS -> getString(Res.string.scan_result_medium_exists)
+                    TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED -> getString(Res.string.scan_result_medium_exchange_required)
+                    TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE -> getString(Res.string.scan_result_medium_exchange_required_offline)
+                    null,
+                    TicketCheckProvider.CheckResult.Type.ERROR,
+                    TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> null
                 }
             }
 
@@ -254,6 +261,9 @@ fun TicketCheckProvider.CheckResult.pathForSound(): String =
             TicketCheckProvider.CheckInType.EXIT -> Res.getUri("files/exit.wav")
         }
 
+        TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED,
+        TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE -> Res.getUri("files/attention.wav")
+
         null,
         TicketCheckProvider.CheckResult.Type.USED,
         TicketCheckProvider.CheckResult.Type.ERROR,
@@ -267,6 +277,9 @@ fun TicketCheckProvider.CheckResult.pathForSound(): String =
         TicketCheckProvider.CheckResult.Type.AMBIGUOUS,
         TicketCheckProvider.CheckResult.Type.REVOKED,
         TicketCheckProvider.CheckResult.Type.UNAPPROVED,
+        TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED,
+        TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID,
+        TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS,
         TicketCheckProvider.CheckResult.Type.INVALID -> Res.getUri("files/error.wav")
     }
 
@@ -291,7 +304,12 @@ fun TicketCheckProvider.CheckResult.resultState(): ResultState =
         TicketCheckProvider.CheckResult.Type.RULES,
         TicketCheckProvider.CheckResult.Type.AMBIGUOUS,
         TicketCheckProvider.CheckResult.Type.REVOKED,
-        TicketCheckProvider.CheckResult.Type.UNAPPROVED -> ResultState.ERROR
+        TicketCheckProvider.CheckResult.Type.UNAPPROVED,
+        TicketCheckProvider.CheckResult.Type.ALREADY_EXCHANGED,
+        TicketCheckProvider.CheckResult.Type.MEDIUM_INVALID,
+        TicketCheckProvider.CheckResult.Type.MEDIUM_EXISTS,
+        TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED,
+        TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE -> ResultState.ERROR
 
         TicketCheckProvider.CheckResult.Type.ANSWERS_REQUIRED -> ResultState.DIALOG_QUESTIONS
 
@@ -317,7 +335,7 @@ fun TicketCheckProvider.CheckResult.ticketAndVariationName(): String? {
 }
 
 fun TicketCheckProvider.CheckResult.reasonExplanation(): String? {
-    if (reasonExplanation.isNullOrBlank()) {
+    if (reasonExplanation.isNullOrBlank() || type == TicketCheckProvider.CheckResult.Type.EXCHANGE_REQUIRED_OFFLINE) {
         return null
     }
 

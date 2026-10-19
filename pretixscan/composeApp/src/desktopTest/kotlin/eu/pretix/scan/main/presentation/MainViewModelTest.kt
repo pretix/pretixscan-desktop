@@ -252,6 +252,35 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `onHandleDirectScan blocks new scan while the ticket that interrupted a result is still loading`() = runTest {
+        viewModel = createViewModel()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleDirectScan("FIRST_SCAN")
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onTicketResultDetermined(ResultState.SUCCESS)
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onHandleDirectScan("SECOND_SCAN")
+        testScheduler.advanceUntilIdle()
+
+        val stateAfterSecondScan = viewModel.uiState.value
+        assertTrue(stateAfterSecondScan is MainUiState.HandlingTicket, "Should be HandlingTicket")
+        assertEquals("SECOND_SCAN", (stateAfterSecondScan as MainUiState.HandlingTicket).data.secret)
+        assertNull(stateAfterSecondScan.data.resultState,
+            "resultState should be null before dialog determines the result of the second scan")
+
+        viewModel.onHandleDirectScan("THIRD_SCAN")
+        testScheduler.advanceUntilIdle()
+
+        val stateAfterThirdScan = viewModel.uiState.value
+        assertTrue(stateAfterThirdScan is MainUiState.HandlingTicket, "Should still be HandlingTicket")
+        assertEquals("SECOND_SCAN", (stateAfterThirdScan as MainUiState.HandlingTicket).data.secret,
+            "Secret should NOT change - scan should be blocked while the second scan is loading")
+    }
+
+    @Test
     fun `updateEventButtonDisplay shows Single when there is one event selection`() = runTest {
         every { appConfig.eventSelections } returns listOf(testEventSelection)
 

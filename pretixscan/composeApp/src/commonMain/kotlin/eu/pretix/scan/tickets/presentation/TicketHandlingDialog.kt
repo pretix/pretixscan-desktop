@@ -17,6 +17,7 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import com.composables.core.*
 import eu.pretix.desktop.app.ui.ErrorDialog
+import eu.pretix.libpretixsync.db.Answer
 import eu.pretix.scan.tickets.data.DismissBehavior
 import eu.pretix.scan.tickets.data.ResultState
 import eu.pretix.scan.tickets.data.dismissBehavior
@@ -48,15 +49,22 @@ fun TicketHandlingDialog(
     var remainingTimeProgress by remember { mutableStateOf(1.0f) }
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(secret, scanTimestamp) {
-        viewModel.resetTicketHandlingState()
-        viewModel.handleTicket(secret)
+    suspend fun handleTicketAndReportResult(answers: List<Answer>? = null, ignoreUnpaid: Boolean = false) {
+        viewModel.handleTicket(secret, answers = answers, ignoreUnpaid = ignoreUnpaid)
+        val resultState = viewModel.uiState.value.resultState
+        if (resultState != ResultState.EMPTY && resultState != ResultState.LOADING) {
+            onResultStateChanged(resultState)
+        }
     }
 
-    LaunchedEffect(uiState.resultState) {
+    LaunchedEffect(secret, scanTimestamp) {
+        viewModel.resetTicketHandlingState()
+        handleTicketAndReportResult()
+    }
+
+    LaunchedEffect(scanTimestamp, uiState.resultState) {
         if (uiState.resultState != ResultState.EMPTY && uiState.resultState != ResultState.LOADING) {
             focusRequester.requestFocus()
-            onResultStateChanged(uiState.resultState)
         }
 
         if (uiState.resultState.dismissBehavior() == DismissBehavior.AutoDismiss) {
@@ -119,11 +127,7 @@ fun TicketHandlingDialog(
                     }
                 },
         ) {
-            val onPrintBadges: () -> Unit = {
-                coroutineScope.launch {
-                    viewModel.printBadges()
-                }
-            }
+            val onPrintBadges: () -> Unit = { viewModel.printBadges() }
 
             when (uiState.resultState) {
                 ResultState.EMPTY -> {}
@@ -143,7 +147,7 @@ fun TicketHandlingDialog(
 
                 ResultState.DIALOG_UNPAID -> UnpaidDialogView(data = uiState, onCancel = onDismiss, onCheckInAnyway = {
                     coroutineScope.launch {
-                        viewModel.handleTicket(secret, ignoreUnpaid = true)
+                        handleTicketAndReportResult(ignoreUnpaid = true)
                     }
                 })
 
@@ -151,7 +155,7 @@ fun TicketHandlingDialog(
                     data = uiState,
                     onConfirm = { answers ->
                         coroutineScope.launch {
-                            viewModel.handleTicket(secret, answers = answers, ignoreUnpaid = true)
+                            handleTicketAndReportResult(answers = answers, ignoreUnpaid = true)
                         }
                     },
                     onCancel = onDismiss
@@ -174,7 +178,7 @@ fun TicketHandlingDialog(
         is TicketHandlingErrors.Error -> {
             ErrorDialog(
                 title = stringResource(Res.string.badge_printing_not_available),
-                message = (localTicketHandlingErrors as TicketHandlingErrors.Error).exception,
+                message = stringResource((localTicketHandlingErrors as TicketHandlingErrors.Error).message),
                 onDismiss = {
                     viewModel.dismissError()
                 }

@@ -12,9 +12,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
+import pretixscan.composeapp.generated.resources.Res
+import pretixscan.composeapp.generated.resources.migration_token_rejected
 
 class SetupViewModel(
     private val setupManager: SetupManager,
@@ -47,6 +50,10 @@ class SetupViewModel(
             }
             is MigrationResult.Failure -> {
                 _uiState.update { SetupUiState.Error(result.error) }
+            }
+            is MigrationResult.TokenRejected -> {
+                val message = getString(Res.string.migration_token_rejected)
+                _uiState.update { SetupUiState.Error(message) }
             }
         }
     }

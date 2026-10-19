@@ -3,6 +3,7 @@ package eu.pretix.desktop.migration
 import eu.pretix.desktop.cache.DataStoreConfig
 import eu.pretix.libpretixsync.api.HttpClientFactory
 import eu.pretix.libpretixsync.api.PretixApi
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -41,6 +42,8 @@ class TokenRoller(
 
             logger.info("Token rolled successfully, new key received")
             Result.success(newKey)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             logger.warning("Token rolling failed (non-fatal): ${e.message}")
             Result.failure(e)

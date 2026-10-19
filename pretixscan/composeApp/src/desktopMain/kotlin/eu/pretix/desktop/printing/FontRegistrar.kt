@@ -75,13 +75,12 @@ class FontRegistrar {
 
     @OptIn(ExperimentalResourceApi::class)
     private suspend fun exportFont(dataDir: String, path: String): String {
-        val bytes = Res.readBytes(path)
         val file = File(dataDir, path)
         if (file.exists()) {
             // already done
             return file.absolutePath
         }
-        file.writeBytes(bytes)
+        file.writeBytes(Res.readBytes(path))
         return file.absolutePath
     }
 

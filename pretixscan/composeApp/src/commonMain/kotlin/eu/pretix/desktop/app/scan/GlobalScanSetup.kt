@@ -10,3 +10,6 @@ expect fun GlobalScanSetup(
     stateFlow: StateFlow<MainUiState<MainUiStateData>>,
     onHandleDirectScan: suspend (String) -> Unit
 )
+
+@Composable
+expect fun rememberDiscardGlobalScanInput(): () -> Unit

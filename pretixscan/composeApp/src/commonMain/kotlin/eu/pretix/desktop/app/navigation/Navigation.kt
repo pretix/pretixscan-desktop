@@ -17,6 +17,9 @@ import eu.pretix.scan.setup.SetupScreen
 import eu.pretix.scan.status.presentation.StatusScreen
 import eu.pretix.scan.welcome.WelcomeScreen
 import org.koin.compose.koinInject
+import java.util.logging.Logger
+
+private val log = Logger.getLogger("Startup")
 
 @Composable
 fun Navigation(
@@ -24,7 +27,10 @@ fun Navigation(
     modifier: Modifier = Modifier,
 ) {
     val appConfig = koinInject<DataStoreConfigStore>()
-    val startDestination: String = if (appConfig.isConfigured) Route.Main.route else Route.Welcome.route
+    val startDestination: String = remember {
+        log.info("Reading startDestination")
+        if (appConfig.isConfigured) Route.Main.route else Route.Welcome.route
+    }
 
     SyncRoot(navHostController) {
         NavHost(

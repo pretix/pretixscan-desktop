@@ -48,45 +48,51 @@ class DesktopBadgeFactory(
             throw IllegalStateException("BadgeLayout can't be null")
         }
 
-        val outputFile = File(getUserCacheFolder(), "print.pdf")
-        if (!outputFile.parentFile.exists()) {
-            outputFile.parentFile.mkdirs()
-        }
-
-        val backgroundFileName = layout.backgroundFilename
-        if (backgroundFileName != null) {
-            log.info("Rendering PDF with background filename: $backgroundFileName")
-            fileStorage.getFile(backgroundFileName).inputStream().use { backgroundStream ->
-                renderer.writePDF(layout.layout, position, backgroundStream, outputFile)
-            }
-        } else {
-            log.info("Rendering PDF with no background filename")
-            renderer.writePDF(layout.layout, position, null, outputFile)
-        }
-
         val service = getPreferredPrinterService()
-        val document: PDDocument = Loader.loadPDF(outputFile)
 
-        val orientation = appConfig.badgePrinterOrientation
-        val job = PrinterJob.getPrinterJob()
-        job.printService = service
-
-        val attributes = HashPrintRequestAttributeSet()
-
-        if (orientation == "Auto") {
-            log.info("Printing with automatic orientation")
-            updateJobNewWay(document, attributes, job)
-        } else {
-            log.info("Printing with user selected orientation (old way)")
-            updateJobOldWay(orientation, job, document, attributes)
+        val cacheFolder = File(getUserCacheFolder())
+        if (!cacheFolder.exists()) {
+            cacheFolder.mkdirs()
         }
+        val outputFile = File.createTempFile("badge", ".pdf", cacheFolder)
 
-        job.jobName = "pretixSCAN badge"
+        try {
+            val backgroundFileName = layout.backgroundFilename
+            if (backgroundFileName != null) {
+                log.info("Rendering PDF with background filename: $backgroundFileName")
+                fileStorage.getFile(backgroundFileName).inputStream().use { backgroundStream ->
+                    renderer.writePDF(layout.layout, position, backgroundStream, outputFile)
+                }
+            } else {
+                log.info("Rendering PDF with no background filename")
+                renderer.writePDF(layout.layout, position, null, outputFile)
+            }
 
-        log.info("Sending to printer...")
-        val copies = if (appConfig.printBadgesTwice) 2 else 1
-        repeat(copies) { job.print(attributes) }
-        log.info("Printing done.")
+            Loader.loadPDF(outputFile).use { document ->
+                val orientation = appConfig.badgePrinterOrientation
+                val job = PrinterJob.getPrinterJob()
+                job.printService = service
+
+                val attributes = HashPrintRequestAttributeSet()
+
+                if (orientation == "Auto") {
+                    log.info("Printing with automatic orientation")
+                    updateJobNewWay(document, attributes, job)
+                } else {
+                    log.info("Printing with user selected orientation (old way)")
+                    updateJobOldWay(orientation, job, document, attributes)
+                }
+
+                job.jobName = "pretixSCAN badge"
+
+                log.info("Sending to printer...")
+                val copies = if (appConfig.printBadgesTwice) 2 else 1
+                repeat(copies) { job.print(attributes) }
+                log.info("Printing done.")
+            }
+        } finally {
+            outputFile.delete()
+        }
     }
 
     private fun updateJobOldWay(
@@ -140,15 +146,19 @@ class DesktopBadgeFactory(
     }
 
     private fun getPreferredPrinterService(): PrintService {
-        val choice = printerSource.selectOption(appConfig.badgePrinterName)
-            ?: throw IllegalStateException("No printer service selected in settings.")
+        val printerName = appConfig.badgePrinterName
+        if (printerName.isNullOrBlank()) {
+            throw BadgePrinterUnavailableException.NotSelected()
+        }
+        val choice = printerSource.selectOption(printerName)
+            ?: throw BadgePrinterUnavailableException.NotFound(printerName)
 
         val service = PrintServiceLookup.lookupPrintServices(DocFlavor.SERVICE_FORMATTED.PAGEABLE, null)
             .firstOrNull {
                 it.name == choice.value
             }
         if (service == null) {
-            throw IllegalStateException("Couldn't find print service ${choice.value}.")
+            throw BadgePrinterUnavailableException.NotFound(printerName)
         }
 
         return service

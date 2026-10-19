@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import eu.pretix.desktop.app.scan.rememberDiscardGlobalScanInput
 import eu.pretix.libpretixsync.check.TicketCheckProvider
 import eu.pretix.scan.main.presentation.MainUiState
 import eu.pretix.scan.main.presentation.MainViewModel
@@ -36,6 +37,7 @@ fun TicketSearchBar(
     val isSearching by viewModel.isSearching.collectAsState()
     val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
     val mainUiState by mainViewModel.uiState.collectAsState()
+    val discardGlobalScanInput = rememberDiscardGlobalScanInput()
 
     val barcodePattern = remember { Regex("[a-zA-Z0-9=+/]{5,}") }
 
@@ -58,6 +60,7 @@ fun TicketSearchBar(
                     .padding(16.dp),
                 onSearchValueChanged = viewModel::onSearchTextChange,
                 onEnterPressed = {
+                    discardGlobalScanInput()
                     if (searchSuggestions.isNotEmpty()) {
                         log.info("AutoScan: Enter pressed with search results, selecting first result")
                         viewModel.clearSearch()

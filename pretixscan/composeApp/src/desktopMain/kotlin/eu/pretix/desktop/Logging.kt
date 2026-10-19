@@ -3,8 +3,10 @@ package eu.pretix.desktop
 import java.io.OutputStream
 import java.io.PrintStream
 import java.util.logging.ConsoleHandler
+import java.util.logging.Formatter
 import java.util.logging.Level
 import java.util.logging.LogManager
+import java.util.logging.LogRecord
 import java.util.logging.Logger
 import java.util.logging.StreamHandler
 
@@ -24,7 +26,7 @@ private fun rerouteConsoleHandlersTo(target: PrintStream) {
         logger.handlers
             .filterIsInstance<ConsoleHandler>()
             .forEach { consoleHandler ->
-                val replacement = StreamHandler(target, consoleHandler.formatter).apply {
+                val replacement = FlushingStreamHandler(target, consoleHandler.formatter).apply {
                     level = consoleHandler.level
                     consoleHandler.filter?.let { filter = it }
                 }
@@ -35,6 +37,20 @@ private fun rerouteConsoleHandlersTo(target: PrintStream) {
     }
 
     visit(rootLogger)
+}
+
+
+private class FlushingStreamHandler(target: OutputStream, formatter: Formatter) : StreamHandler(target, formatter) {
+    @Synchronized
+    override fun publish(record: LogRecord?) {
+        super.publish(record)
+        flush()
+    }
+
+    @Synchronized
+    override fun close() {
+        flush()
+    }
 }
 
 internal fun installUncaughtExceptionLogger() {
