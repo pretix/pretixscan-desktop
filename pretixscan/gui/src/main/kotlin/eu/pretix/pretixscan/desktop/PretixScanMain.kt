@@ -34,8 +34,8 @@ import java.util.logging.*
 import kotlin.reflect.jvm.jvmName
 
 
-val VERSION = "1.23.0"
-val VERSION_CODE = 72
+val VERSION = "1.23.1"
+val VERSION_CODE = 73
 val APP_ID = "eu.pretix.pretixscan.desktop"
 
 class PretixScanMain : App(MainView::class, MainStyleSheet::class) {
