@@ -2,7 +2,7 @@ build: off
 
 install:
   - git submodule update --init
-  - choco install termurin11 --force --version 11.0.33
+  - choco install temurin11 --force --version 11.0.33
   - SET JAVA_HOME=C:\Program Files\Temurin\jdk-11.0.33+10
   - SET PATH=C:\Program Files\Temurin\jdk-11.0.33+10\bin;%PATH%
   - curl -o jdk.packager-windows.zip http://download2.gluonhq.com/jpackager/11/jdk.packager-windows.zip
