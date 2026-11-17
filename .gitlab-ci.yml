@@ -1,6 +1,6 @@
 default:
   image: 
-  name: adoptopenjdk/openjdk11:x86_64-ubuntu-jdk-11.0.33_10
+    name: "adoptopenjdk/openjdk11:x86_64-ubuntu-jdk-11.0.33_10"
     entrypoint: [""]
 variables:
   GIT_SUBMODULE_STRATEGY: "recursive"
