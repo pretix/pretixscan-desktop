@@ -14,7 +14,7 @@ install:
   - curl -o mvn.zip https://downloads.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip
   - 7z x mvn.zip
   - cd pretixscan\tornadofx-repo
-  - ..\..\apache-maven-3.9.4\bin\mvn package
+  - ..\..\apache-maven-3.9.16\bin\mvn package
   - cd ..\..
 
 cache:
